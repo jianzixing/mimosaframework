@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mimosa name="mimosa_test" description="测试用的配置">
+    <convert name="H2U"/>
+    <mapping scan="tables"/>
+    <format showSql="true"/>
+    <datasource wrapper="default"/>
+
+    <wrappers>
+        <wrapper name="default" master="master" slaves="slave"/>
+    </wrappers>
+
+    <dslist>
+        <ds name="master">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3306/mimosa?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true
+            </property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="5"/>
+            <property name="maxActive" value="10000"/>
+            <property name="maxWait" value="60000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+        <ds name="slave">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3307/mimosa?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true
+            </property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="5"/>
+            <property name="maxActive" value="10000"/>
+            <property name="maxWait" value="60000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+    </dslist>
+</mimosa>

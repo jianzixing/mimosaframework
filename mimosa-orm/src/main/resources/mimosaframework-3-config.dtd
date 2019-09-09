@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE mimosa [
+        <!ELEMENT mimosa (convert|mapping|format|transaction|datasource|wrappers|strategies|dslist|center|cluster)*>
+        <!ELEMENT convert (#PCDATA)>
+        <!ATTLIST convert
+                name CDATA #REQUIRED>
+        <!ELEMENT mapping (value)*>
+        <!ATTLIST mapping
+                scan CDATA #REQUIRED>
+        <!ELEMENT value (#PCDATA)>
+        <!ELEMENT format (#PCDATA)>
+        <!ATTLIST format
+                showSql CDATA #REQUIRED>
+        <!ELEMENT transaction (#PCDATA)>
+        <!ATTLIST transaction
+                managedByMimosa CDATA #REQUIRED>
+        <!ELEMENT datasource (#PCDATA)>
+        <!ATTLIST datasource
+                master CDATA #IMPLIED
+                slaves CDATA #IMPLIED
+                wrapper CDATA #IMPLIED>
+        <!ELEMENT wrappers (wrapper)*>
+        <!ELEMENT wrapper (#PCDATA)>
+        <!ATTLIST wrapper
+                master CDATA #REQUIRED
+                name CDATA #REQUIRED
+                slaves CDATA #REQUIRED>
+        <!ELEMENT strategies (strategy)*>
+        <!ELEMENT strategy (#PCDATA)>
+        <!ATTLIST strategy
+                class CDATA #REQUIRED
+                field CDATA #REQUIRED
+                master CDATA #REQUIRED
+                wrapper CDATA #REQUIRED>
+        <!ELEMENT dslist (ds)*>
+        <!ELEMENT ds (property)*>
+        <!ATTLIST ds
+                name CDATA #REQUIRED>
+        <!ELEMENT property (#PCDATA)>
+        <!ATTLIST property
+                name CDATA #REQUIRED
+                value CDATA #IMPLIED>
+        <!ELEMENT center (#PCDATA)>
+        <!ATTLIST center
+                port CDATA #REQUIRED
+                server CDATA #REQUIRED
+                clientName CDATA #REQUIRED>
+        <!ELEMENT cluster (database)*>
+        <!ATTLIST cluster
+                enable CDATA #REQUIRED>
+        <!ELEMENT database (datasource|table)*>
+        <!ATTLIST database
+                name CDATA #REQUIRED>
+        <!ELEMENT table (tableClass|datasource|split)*>
+        <!ATTLIST table
+                tableName CDATA #REQUIRED>
+        <!ELEMENT tableClass (#PCDATA)>
+        <!ATTLIST tableClass
+                value CDATA #REQUIRED>
+        <!ELEMENT split (tableClass|datasource)*>
+        <!ATTLIST split
+                tableName CDATA #REQUIRED
+                shardTableName CDATA #REQUIRED>
+        ]>

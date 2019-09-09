@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <name>{project.groupId}:${project.artifactId}</name>
+    <description>Java编写的MVC、ORM框架(北京简子行科技有限公司,https://www.jianzixing.com.cn)</description>
+
+    <modules>
+        <module>mimosa-core</module>
+        <module>mimosa-mvc</module>
+        <module>mimosa-orm</module>
+    </modules>
+
+    <groupId>org.mimosaframework</groupId>
+    <artifactId>mimosa</artifactId>
+    <version>3.3.7</version>
+    <packaging>pom</packaging>
+    <url>https://github.com/yangankang/mimosa</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <developers>
+        <developer>
+            <name>yangankang</name>
+            <email>yak1992@foxmail.com</email>
+        </developer>
+    </developers>
+</project>

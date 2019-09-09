@@ -1,0 +1,21 @@
+package org.mimosaframework.orm;
+
+import org.mimosaframework.orm.exception.ContextException;
+
+import java.io.InputStream;
+
+public class MimosaSessionFactoryBuilder implements SessionFactoryBuilder {
+    private ContextValues contextValues;
+
+    public MimosaSessionFactoryBuilder(ContextValues contextValues) {
+        this.contextValues = contextValues;
+    }
+
+    @Override
+    public SessionFactory build() throws ContextException {
+        if (this.contextValues == null) {
+            throw new ContextException("没有初始化上下文");
+        }
+        return new MimosaSessionFactory(this.contextValues);
+    }
+}

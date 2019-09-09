@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mimosa name="mimosa_test" description="测试用的配置">
+    <convert name="H2U"/>
+    <mapping scan="tables"/>
+    <format showSql="false"/>
+    <datasource wrapper="default"/>
+
+    <wrappers>
+        <wrapper name="default" master="master_main"/>
+        <wrapper name="split_1" master="master_1"/>
+        <wrapper name="split_2" master="master_2"/>
+        <wrapper name="split_3" master="master_3"/>
+    </wrappers>
+
+    <strategies>
+        <strategy class="tables.TableDisperseByUser"
+                  table="creator.AutoIncrementCreator"
+                  field="id" master="master_main"/>
+        <strategy class="tables.TableDisperseByOrder"
+                  table="creator.AutoIncrementCreator"
+                  field="id" master="master_main"/>
+    </strategies>
+
+    <dslist>
+        <ds name="master_main">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3306/mimosa_main?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true
+            </property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="1"/>
+            <property name="maxActive" value="1000"/>
+            <property name="maxWait" value="60000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+        <ds name="master_1">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3306/mimosa_1?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true
+            </property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="1"/>
+            <property name="maxActive" value="1000"/>
+            <property name="maxWait" value="60000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+        <ds name="master_2">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3306/mimosa_2?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true
+            </property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="1"/>
+            <property name="maxActive" value="1000"/>
+            <property name="maxWait" value="60000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+        <ds name="master_3">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3306/mimosa_3?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true
+            </property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="1"/>
+            <property name="maxActive" value="1000"/>
+            <property name="maxWait" value="60000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+    </dslist>
+
+    <cluster enable="true">
+        <database name="水平分库">
+            <table tableName="TableDisperseByUser">
+                <tableClass value="tables.TableDisperseByUser"/>
+                <disperseStrategy value="CHD" field="userId"/>
+                <split tableName="TableDisperseByUser" shardTableName="t_disperse_by_user_1">
+                    <tableClass value="tables.TableDisperseByUser"/>
+                    <datasource wrapper="split_1"/>
+                </split>
+                <split tableName="TableDisperseByUser" shardTableName="t_disperse_by_user_2">
+                    <tableClass value="tables.TableDisperseByUser"/>
+                    <datasource wrapper="split_2"/>
+                </split>
+                <split tableName="TableDisperseByUser" shardTableName="t_disperse_by_user_3">
+                    <tableClass value="tables.TableDisperseByUser"/>
+                    <datasource wrapper="split_3"/>
+                </split>
+            </table>
+
+            <table tableName="TableDisperseByOrder">
+                <tableClass value="tables.TableDisperseByOrder"/>
+                <disperseStrategy value="CHD" field="userId"/>
+                <split tableName="TableDisperseByOrder" shardTableName="t_disperse_by_order_1">
+                    <tableClass value="tables.TableDisperseByOrder"/>
+                    <datasource wrapper="split_1"/>
+                </split>
+                <split tableName="TableDisperseByOrder" shardTableName="t_disperse_by_order_2">
+                    <tableClass value="tables.TableDisperseByOrder"/>
+                    <datasource wrapper="split_2"/>
+                </split>
+                <split tableName="TableDisperseByOrder" shardTableName="t_disperse_by_order_3">
+                    <tableClass value="tables.TableDisperseByOrder"/>
+                    <datasource wrapper="split_3"/>
+                </split>
+            </table>
+        </database>
+    </cluster>
+</mimosa>
