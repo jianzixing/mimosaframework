@@ -434,9 +434,6 @@ public class MimosaRequestHandlerMapping extends RequestMappingInfoHandlerMappin
     }
 
     protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
-        if (!MemberConsoleInfo.isRun()) {
-            MemberConsoleInfo.setDomain(request);
-        }
         return super.getHandlerInternal(request);
     }
 
