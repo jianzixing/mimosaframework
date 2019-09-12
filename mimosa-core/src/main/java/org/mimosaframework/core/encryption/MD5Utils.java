@@ -33,8 +33,8 @@ public class MD5Utils {
     /**
      * 二进制转十六进制
      *
-     * @param bytes
-     * @return
+     * @param bytes 字节码
+     * @return 返回十六进制字符串
      */
     public static String bytesToHex(byte[] bytes) {
         StringBuffer md5str = new StringBuffer();

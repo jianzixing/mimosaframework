@@ -26,9 +26,9 @@ public class AESUtils {
     /**
      * AES 解密操作
      *
-     * @param content
-     * @param password
-     * @return
+     * @param content  加密内容
+     * @param password 加密密码
+     * @return 加密字符串
      */
     public static String decrypt(String content, String password) throws Exception {
         //实例化
@@ -43,7 +43,7 @@ public class AESUtils {
     /**
      * 生成加密秘钥
      *
-     * @return
+     * @return 返回SecretKeySpec
      */
     private static SecretKeySpec getSecretKey(final String password) throws Exception {
         //返回生成指定算法密钥生成器的 KeyGenerator 对象

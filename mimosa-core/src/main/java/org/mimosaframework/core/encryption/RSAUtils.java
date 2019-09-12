@@ -66,8 +66,6 @@ public class RSAUtils {
 
         /**
          * 得到公钥
-         *
-         * @throws Exception
          */
         public RSAPublicKey getPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
             //通过X509编码的Key指令获得公钥对象
@@ -79,8 +77,6 @@ public class RSAUtils {
 
         /**
          * 得到私钥
-         *
-         * @throws Exception
          */
         public RSAPrivateKey getPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
             //通过PKCS#8编码的Key指令获得私钥对象
@@ -94,7 +90,7 @@ public class RSAUtils {
          * 公钥加密
          *
          * @param data
-         * @return
+         * @return 公钥字符串
          */
         public String publicEncrypt(String data) {
             try {
@@ -117,8 +113,8 @@ public class RSAUtils {
         /**
          * 私钥解密
          *
-         * @param data
-         * @return
+         * @param data 加密数据
+         * @return 私钥字符串
          */
 
         public String privateDecrypt(String data) {
@@ -141,9 +137,6 @@ public class RSAUtils {
 
         /**
          * 私钥加密
-         *
-         * @param data
-         * @return
          */
 
         public String privateEncrypt(String data) {
@@ -166,9 +159,6 @@ public class RSAUtils {
 
         /**
          * 公钥解密
-         *
-         * @param data
-         * @return
          */
         public String publicDecrypt(String data) {
             try {
