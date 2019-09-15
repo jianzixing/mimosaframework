@@ -8,7 +8,6 @@ public class ApplicationSetting {
     private String applicationName;
     private String applicationDetail;
     private List<? extends IDStrategy> idStrategies;
-    private String info;
 
     public ApplicationSetting(String applicationName, String applicationDetail) {
         this.applicationName = applicationName;
@@ -40,13 +39,5 @@ public class ApplicationSetting {
 
     public void setIdStrategies(List<? extends IDStrategy> idStrategies) {
         this.idStrategies = idStrategies;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
     }
 }

@@ -62,7 +62,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     private List<String> mappers;
     private List<FactoryBuilder> auxFactoryBuilder;
     private List<? extends IDStrategy> strategies;
-    private String info;
 
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
@@ -82,11 +81,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public void setIgnoreEmptySlave(Boolean ignoreEmptySlave) {
         this.ignoreEmptySlave = ignoreEmptySlave;
         this.basicSetting.setIgnoreEmptySlave(ignoreEmptySlave);
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-        this.applicationSetting.setInfo(info);
     }
 
     public void setConvert(MappingNamedConvert convert) {
@@ -276,7 +270,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public CenterConfigSetting getCenterInfo() throws ContextException {
         return this.centerConfigSetting;
     }
-    
+
     @Override
     public MimosaDataSource getDefaultDataSource() {
         return this.defaultDataSource;
