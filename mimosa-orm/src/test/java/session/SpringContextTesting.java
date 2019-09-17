@@ -21,7 +21,7 @@ public class SpringContextTesting {
     SessionTemplate template;
 
     @Test
-    public void test1() {
+    public void test() {
         ModelObject object = new ModelObject(TableUser.class);
         object.put(TableUser.userName, "yangankang2");
         object.put(TableUser.password, "1234562");

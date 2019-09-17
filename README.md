@@ -16,7 +16,7 @@ MimosaFramework是一组框架组合，主要功能是提供数据库读写的�
 里提出，我们会在未来版本中更正或者修改增加功能。**
 
 
-## 开始使用Mimosa框架
+## 开始使用 mimosa-orm 框架
 
 ##### 第一步、创建一个maven项目，并且引用jar包
 
@@ -178,3 +178,85 @@ public class Start {
 ```
 
 结束: 接下来你可以看到数据库中会插入一条记录。以上是mimosa-orm的基本用法，详细用法请到[官方文档](https://mimosaframework.org)查看
+
+
+## 在Spring中使用 mimosa-orm 框架
+
+#### 在Spring的配置文件中配置如下
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-autowire="byName">
+
+    <bean id="ds" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url"
+                  value="jdbc:mysql://localhost:3306/mimosa?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="12345"/>
+        <!--初始化的连接数-->
+        <property name="initialSize" value="5"/>
+        <property name="maxActive" value="10000"/>
+        <property name="maxWait" value="1000"/>
+        <property name="validationQuery" value="select 1"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+        <property name="minEvictableIdleTimeMillis" value="18000000"/>
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+
+    <bean name="factory" class="org.mimosaframework.orm.spring.SpringMimosaSessionFactory">
+        <property name="applicationName" value="mimosa-spring"/>
+        <property name="scanPackage" value="tables"/>
+        <property name="dataSource" ref="ds"/>
+        <property name="convertType" value="H2U"/>
+        <property name="showSQL" value="true"/>
+    </bean>
+    <bean name="template" class="org.mimosaframework.orm.spring.SpringMimosaSessionTemplate">
+        <property name="factory" ref="factory"/>
+    </bean>
+</beans>
+```
+
+Spring代码使用如下:
+
+```java
+package session;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.orm.SessionTemplate;
+import org.mimosaframework.orm.criteria.Criteria;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import tables.TableUser;
+
+import java.util.Date;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:spring/spring-config.xml")
+public class SpringContextTesting {
+
+    @Autowired
+    SessionTemplate template;
+
+    @Test
+    public void test() {
+        ModelObject object = new ModelObject(TableUser.class);
+        object.put(TableUser.userName, "yangankang2");
+        object.put(TableUser.password, "1234562");
+        object.put(TableUser.realName, "北京简子行科技");
+        object.put(TableUser.address, "北京朝阳区");
+        object.put(TableUser.age, 25);
+        object.put(TableUser.level, 10);
+        object.put(TableUser.createdTime, new Date());
+        template.save(object);
+    }
+}
+```
+以上是在单元测试中使用，请根据实际情况使用 SessionTemplate 即可。
