@@ -15,7 +15,7 @@ MimosaFramework是一组框架组合，主要功能是提供数据库读写的�
 [issues](https://github.com/jianzixing/mimosaframework/issues)
 里提出，我们会在未来版本中更正或者修改增加功能。**
 
-_感谢您使用我们的框架，如果有任何商业需求可以[联系我们](https://www.jianzixing.com.cn)我们将竭诚为您服务。_
+_感谢您使用我们的框架，如果有任何商业需求可以[联系我们(北京简子行科技有限公司)](https://www.jianzixing.com.cn)我们将竭诚为您服务。_
 
 ## 二、开始使用 mimosa-orm 框架
 
