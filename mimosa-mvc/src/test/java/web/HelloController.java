@@ -12,9 +12,6 @@ import java.util.List;
 @APIController
 public class HelloController {
 
-    @CURDPrinter(pk = "id")
-    private String curd;
-
     @Printer
     public String getName(String name) {
         return "Hello " + name;

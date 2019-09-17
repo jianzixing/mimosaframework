@@ -1,6 +1,6 @@
 <img src="https://repository-images.githubusercontent.com/207211209/39fc7180-d94f-11e9-8866-d05f91f10f31" width="600" align="center"/>
 
-## MimosaFramework简介
+## 一、MimosaFramework简介
 MimosaFramework是一组框架组合，主要功能是提供数据库读写的工具。
 
 框架分为三部分，第一部分mimosa-core包含一些基本的工具类以及ModelObject的JSON操作库(使用FastJson为基础)，以及cglib和ognl表达式等开源库(方便独立使用)。
@@ -16,7 +16,7 @@ MimosaFramework是一组框架组合，主要功能是提供数据库读写的�
 里提出，我们会在未来版本中更正或者修改增加功能。**
 
 
-## 开始使用 mimosa-orm 框架
+## 二、开始使用 mimosa-orm 框架
 
 ##### 第一步、创建一个maven项目，并且引用jar包
 
@@ -180,7 +180,7 @@ public class Start {
 结束: 接下来你可以看到数据库中会插入一条记录。以上是mimosa-orm的基本用法，详细用法请到[官方文档](https://mimosaframework.org)查看
 
 
-## 在Spring中使用 mimosa-orm 框架
+## 三、在Spring中使用 mimosa-orm 框架
 
 #### 在Spring的配置文件中配置如下
 
@@ -260,3 +260,104 @@ public class SpringContextTesting {
 }
 ```
 以上是在单元测试中使用，请根据实际情况使用 SessionTemplate 即可。
+
+
+## 四、在 spring mvc 中使用 mimosa-mvc
+
+使用时与 spring mvc 差别不大，首先将springmvc的配置文件中的RequestHandlerMapping和RequestHandlerAdapter
+替换成 mimosa-mvc 提供的RequestHandlerMapping和RequestHandlerAdapter。然后配置好要扫描的java包(prefixs参数)
+
+**注意，不能使用mvc:annotation-driven和自定的一起使用否则 spring mvc 自动覆盖自定义的Mapping和Adapter。**
+
+然后在Java类上添加注解@APIController，之后在方法上添加 @Printer 即可。
+
+mimosa-mvc会自动根据配置生成访问的url = /<prefixs配置的value值>/<@APIController修饰的类名去掉Controller关键字>
+/<@Printer修饰的方法名>.<web.xml中配置拦截的后缀>
+
+比如以下控制器：
+```java
+@APIController
+public class HelloController {
+
+    @Printer
+    public String getName(String name) {
+        return "Hello " + name;
+    }
+    
+}
+```
+
+可以访问 /admin/hello/get_name.html 地址即可获取到想要的值。
+
+
+#### 在 spring mvc 中添加配置信息
+```xml
+<!--只能使用自己的处理器且不能使用mvc:annotation-driven注解-->
+<bean class="org.mimosaframework.springmvc.MimosaRequestHandlerMapping">
+    <property name="curdImplementClass" value="com.jianzixing.webapp.modules.CURDService"/>
+    <property name="sessionTemplate" ref="mimosaSessionTemplate"/>
+    <property name="prefixs">
+        <map>
+            <entry key="com.jianzixing.webapp.modules" value="/admin"/>
+            <entry key="com.jianzixing.webapp.app" value="/app"/>
+            <entry key="com.jianzixing.webapp.web" value="/web"/>
+        </map>
+    </property>
+    <property name="replaces">
+        <map>
+            <entry key="com.jianzixing.webapp.app" value="App;"/>
+            <entry key="com.jianzixing.webapp.web" value="Web;"/>
+        </map>
+    </property>
+</bean>
+<!-- 在处理ajax跨域文件上传时,会先请求一个OPTIONS的请求,由于自定义的Adapter并不支持所以主动注册一下自带的Http Adapter -->
+<bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
+<bean class="org.mimosaframework.springmvc.MimosaRequestHandlerAdapter">
+    <property name="beforeArgumentResolvers">
+        <list>
+            <bean class="com.jianzixing.webapp.handler.RequestAdminInstance"/>
+        </list>
+    </property>
+    <property name="beforeReturnValueHandlers">
+        <list>
+            <bean class="com.jianzixing.webapp.handler.ResponseFileObjectInstance"/>
+            <bean class="com.jianzixing.webapp.handler.ResponseFileInstance"/>
+            <bean class="com.jianzixing.webapp.handler.ResponseFileLogoInstance"/>
+        </list>
+    </property>
+    <property name="messageConverters">
+        <list>
+            <ref bean="stringHttpMessageConverter"/>
+        </list>
+    </property>
+</bean>
+```
+
+以上配置中最重要的是
+org.mimosaframework.springmvc.MimosaRequestHandlerMapping
+org.mimosaframework.springmvc.MimosaRequestHandlerAdapter
+这两个自定义映射适配器
+
+curdImplementClass：如果有一样的操作可以统一使用一个天删改查处理方法
+
+sessionTemplate：统一的天删改查处理时需要的SessionTemplate
+
+prefixs：必须配置的，指定扫描那些包并且这些包对应的url前缀
+
+replaces：将url前缀的某些单词替换成想要的单词，比如 Web;w 就是将Web替换成w
+
+
+## 五、mimosa框架的特色功能
+
+* 使用API方式操作数据库，在常用操作上更简单快速方便。
+* 自动通过映射类生成表及表字段，简化频繁操作数据库烦恼
+* 可以使用Mybatis的Mapper配置支持，通过ognl表达式和Mybatis的xml处理来执行SQL语句
+
+## 六、历史版本
+
+版本 v3.3.8
+* 待更新
+
+
+##
+Copyright © 2018-2019 北京简子行科技有限公司
