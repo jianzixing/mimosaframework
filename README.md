@@ -1,4 +1,4 @@
-![alt thanks](https://repository-images.githubusercontent.com/207211209/39fc7180-d94f-11e9-8866-d05f91f10f31)
+<img src="https://repository-images.githubusercontent.com/207211209/39fc7180-d94f-11e9-8866-d05f91f10f31" width="600" align=left/>
 
 ## MimosaFramework简介
 
