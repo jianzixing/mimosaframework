@@ -14,8 +14,8 @@
             <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
             <property name="driverClassName">oracle.jdbc.OracleDriver</property>
             <property name="url">jdbc:oracle:thin:@localhost:1521:orcl</property>
-            <property name="username">scott</property>
-            <property name="password">tiger</property>
+            <property name="username">system</property>
+            <property name="password">oracle</property>
             <!--初始化的连接数-->
             <property name="initialSize" value="5"/>
             <property name="maxActive" value="10000"/>
