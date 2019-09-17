@@ -15,7 +15,6 @@ MimosaFramework是一组框架组合，主要功能是提供数据库读写的�
 [issues](https://github.com/jianzixing/mimosaframework/issues)
 里提出，我们会在未来版本中更正或者修改增加功能。**
 
-<font color="red">gray</font>
 
 ## 开始使用Mimosa框架
 
