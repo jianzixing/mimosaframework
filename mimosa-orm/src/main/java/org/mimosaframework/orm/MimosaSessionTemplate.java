@@ -42,6 +42,11 @@ public class MimosaSessionTemplate implements SessionTemplate {
                 new SessionInterceptor());
     }
 
+    public MimosaSessionTemplate(SessionFactory sessionFactory) {
+        this();
+        this.sessionFactory = sessionFactory;
+    }
+
     @Override
     public ModelObject save(ModelObject obj) {
         return this.sessionAgency.save(obj);
