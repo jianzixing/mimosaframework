@@ -11,9 +11,9 @@ MimosaFramework是一组框架组合，主要功能是提供数据库读写的�
 
 框架的参考文档点击这里 [参考文档](https://mimosaframework.org) 访问查看MimosaFramework详细教程。
 
-###开始使用Mimosa框架
+### 开始使用Mimosa框架
 
-#####第一步、创建一个maven项目，并且引用jar包
+##### 第一步、创建一个maven项目，并且引用jar包
 
 ```xml
 <dependencies>
@@ -56,7 +56,7 @@ MimosaFramework是一组框架组合，主要功能是提供数据库读写的�
 
 以上jar包除了mimosa-core、mimosa-orm必须引入外，其他的依照实际情况引入。
 
-#####第二步、创建映射表包名称 com.study.test.tables 并创建映射类
+##### 第二步、创建映射表包名称 com.study.test.tables 并创建映射类
 
 ```java
 package com.study.test.tables;
@@ -92,7 +92,7 @@ public enum TableUser {
 
 PS:映射类使用枚举类，类上必须使用注解 @Table 作为标识，每个枚举对象使用 @Column 修饰配置表字段信息。
 
-#####第三步、创建框架配置文件 mimosa.xml 
+##### 第三步、创建框架配置文件 mimosa.xml 
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -139,7 +139,7 @@ datasource: 当前使用的数据源束
 
 dslist: 数据源列表，可以配置多个数据源供数据源束使用
 
-#####第四步、初始化并使用Mimosa框架
+##### 第四步、初始化并使用Mimosa框架
 
 ```java
 package com.study.test;
