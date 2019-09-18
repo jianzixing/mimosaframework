@@ -2,3 +2,6 @@ target/
 .idea
 *.iml
 
+mimosa-core/
+mimosa-mvc/
+mimosa-orm/
