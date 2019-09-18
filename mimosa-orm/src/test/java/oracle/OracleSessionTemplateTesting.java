@@ -1,22 +1,18 @@
 package oracle;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
-import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.exception.ContextException;
-import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 import program.service.SessionTemplateServiceTesting;
 import tables.TableMultiKey1;
 import tables.TableMultiKey2;
 import tables.TableOrder;
 import tables.TableUser;
 
-import java.sql.SQLException;
 import java.util.Date;
 
 public class OracleSessionTemplateTesting {

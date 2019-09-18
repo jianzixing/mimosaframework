@@ -14,8 +14,8 @@
             <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
             <property name="driverClassName">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
             <property name="url">jdbc:sqlserver://127.0.0.1:1433;DatabaseName=mimosa</property>
-            <property name="username">sa</property>
-            <property name="password">12345</property>
+            <property name="username">SA</property>
+            <property name="password">MSPWD_12345</property>
             <!--初始化的连接数-->
             <property name="initialSize" value="5"/>
             <property name="maxActive" value="10000"/>

@@ -38,7 +38,6 @@ public class JDBCFetchDatabaseMapping implements FetchDatabaseMapping {
 
     private MappingDatabase getMappingDatabase(MimosaDataSource mds) throws SQLException {
         ResultSet tableResultSet = null;
-        ResultSet columnResultSet = null;
 
         DatabaseSpeciality speciality = PlatformFactory.getLocalSpeciality(mds);
 
@@ -51,10 +50,12 @@ public class JDBCFetchDatabaseMapping implements FetchDatabaseMapping {
             try {
                 tableResultSet = speciality.getTablesByMateData(connection, databaseMetaData);
                 while (tableResultSet.next()) {
-                    String tableName = tableResultSet.getString("TABLE_NAME");
-                    MappingTable mappingTable = new SpecificMappingTable(mappingDatabase);
-                    ((SpecificMappingTable) mappingTable).setDatabaseTableName(tableName.trim());
-                    mappingDatabase.addDatabaseTable(mappingTable);
+                    if (speciality.isUserTable(tableResultSet)) {
+                        String tableName = tableResultSet.getString("TABLE_NAME");
+                        MappingTable mappingTable = new SpecificMappingTable(mappingDatabase);
+                        ((SpecificMappingTable) mappingTable).setDatabaseTableName(tableName.trim());
+                        mappingDatabase.addDatabaseTable(mappingTable);
+                    }
                 }
             } finally {
                 if (tableResultSet != null) {
@@ -65,18 +66,7 @@ public class JDBCFetchDatabaseMapping implements FetchDatabaseMapping {
             Set<MappingTable> mappingTables = mappingDatabase.getDatabaseTables();
             if (mappingTables != null) {
                 for (MappingTable table : mappingTables) {
-                    try {
-                        String tableName = table.getDatabaseTableName();
-                        columnResultSet = databaseMetaData.getColumns(connection.getCatalog(), "%", tableName, "%");
-                        while (columnResultSet.next()) {
-                            MappingField mappingField = speciality.getDatabaseMappingField(table, columnResultSet);
-                            table.addDatabaseColumnField(mappingField);
-                        }
-                    } finally {
-                        if (columnResultSet != null) {
-                            columnResultSet.close();
-                        }
-                    }
+                    speciality.loadMappingColumns(connection, databaseMetaData, table);
                 }
             }
 

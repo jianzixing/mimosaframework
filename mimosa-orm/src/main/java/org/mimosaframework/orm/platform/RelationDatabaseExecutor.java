@@ -231,6 +231,7 @@ public class RelationDatabaseExecutor implements DatabaseExecutor {
         logger(structure);
         Connection connection = null;
         PreparedStatement statement = null;
+
         try {
             connection = this.getConnection();
             SQLBuilder sqlBuilder = structure.getSqlBuilder();
@@ -253,7 +254,6 @@ public class RelationDatabaseExecutor implements DatabaseExecutor {
                 }
             }
             statement.executeBatch();
-            connection.commit();
         } finally {
             this.close(connection, statement);
         }

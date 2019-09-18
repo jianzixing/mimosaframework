@@ -9,9 +9,24 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OracleDatabaseSpeciality implements DatabaseSpeciality {
     private static final String[] TYPE = {"TABLE"};
+    private static final List<String> filterTables = new ArrayList<>();
+
+    static {
+        filterTables.add("HELP");
+        filterTables.add("LOGMNRC_DBNAME_UID_MAP");
+        filterTables.add("LOGMNRC_GSBA");
+        filterTables.add("LOGMNRC_GSII");
+        filterTables.add("LOGMNRC_GTCS");
+        filterTables.add("LOGMNRC_GTLO");
+        filterTables.add("LOGMNRP_CTAS_PART_MAP");
+        filterTables.add("LOGMNR_LOGMNR_BUILDLOG");
+        filterTables.add("SQLPLUS_PRODUCT_PROFILE");
+    }
 
     @Override
     public boolean isSupportGeneratedKeys() {
@@ -54,5 +69,34 @@ public class OracleDatabaseSpeciality implements DatabaseSpeciality {
         ((SpecificMappingField) mappingField).setDatabaseColumnDefaultValue(defaultValue);
         ((SpecificMappingField) mappingField).setDatabaseColumnComment(comment);
         return mappingField;
+    }
+
+    @Override
+    public boolean isUserTable(ResultSet resultSet) throws SQLException {
+        String tableName = resultSet.getString("TABLE_NAME");
+        if (tableName.indexOf("$") >= 0) {
+            return false;
+        }
+        if (filterTables.contains(tableName)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void loadMappingColumns(Connection connection, DatabaseMetaData databaseMetaData, MappingTable table) throws SQLException {
+        ResultSet columnResultSet = null;
+        try {
+            String tableName = table.getDatabaseTableName();
+            columnResultSet = databaseMetaData.getColumns(connection.getCatalog(), "%", tableName, "%");
+            while (columnResultSet.next()) {
+                MappingField mappingField = getDatabaseMappingField(table, columnResultSet);
+                table.addDatabaseColumnField(mappingField);
+            }
+        } finally {
+            if (columnResultSet != null) {
+                columnResultSet.close();
+            }
+        }
     }
 }

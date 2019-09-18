@@ -47,4 +47,26 @@ public class MysqlDatabaseSpeciality implements DatabaseSpeciality {
         ((SpecificMappingField) mappingField).setDatabaseColumnComment(comment);
         return mappingField;
     }
+
+    @Override
+    public boolean isUserTable(ResultSet resultSet) {
+        return true;
+    }
+
+    @Override
+    public void loadMappingColumns(Connection connection, DatabaseMetaData databaseMetaData, MappingTable table) throws SQLException {
+        ResultSet columnResultSet = null;
+        try {
+            String tableName = table.getDatabaseTableName();
+            columnResultSet = databaseMetaData.getColumns(connection.getCatalog(), "%", tableName, "%");
+            while (columnResultSet.next()) {
+                MappingField mappingField = getDatabaseMappingField(table, columnResultSet);
+                table.addDatabaseColumnField(mappingField);
+            }
+        } finally {
+            if (columnResultSet != null) {
+                columnResultSet.close();
+            }
+        }
+    }
 }

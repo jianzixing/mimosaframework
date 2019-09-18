@@ -20,7 +20,7 @@ public enum TableUser {
     age,
     @Column(type = int.class, defaultValue = "2")
     level,
-    @Column(length = 20)
+    @Column(length = 50)
     address,
     @Column(type = Date.class)
     createdTime,

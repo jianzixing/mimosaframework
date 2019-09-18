@@ -19,4 +19,8 @@ public interface DatabaseSpeciality {
     ResultSet getTablesByMateData(Connection connection, DatabaseMetaData databaseMetaData) throws SQLException;
 
     MappingField getDatabaseMappingField(MappingTable table, ResultSet columnResultSet) throws SQLException;
+
+    boolean isUserTable(ResultSet resultSet) throws SQLException;
+
+    void loadMappingColumns(Connection connection, DatabaseMetaData databaseMetaData, MappingTable table) throws SQLException;
 }

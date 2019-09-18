@@ -17,8 +17,8 @@
             <property name="username">postgres</property>
             <property name="password">12345</property>
             <!--初始化的连接数-->
-            <property name="initialSize" value="5"/>
-            <property name="maxActive" value="50"/>
+            <property name="initialSize" value="2"/>
+            <property name="maxActive" value="3"/>
             <property name="maxWait" value="60000"/>
             <property name="validationQuery" value="select version()"/>
             <property name="testWhileIdle" value="true"/>
