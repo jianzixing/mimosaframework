@@ -1,7 +1,7 @@
 <img src="https://repository-images.githubusercontent.com/207211209/39fc7180-d94f-11e9-8866-d05f91f10f31" width="600" align="center"/>
 
 ## 一、MimosaFramework简介
-MimosaFramework是一组框架组合，主要功能是提供数据库读写的工具(3.3.6只支持MySQL)，和mvc扩展工具。
+MimosaFramework是一组框架组合，主要功能是提供数据库读写的工具，和mvc扩展工具。
 
 框架分为三部分，第一部分mimosa-core包含一些基本的工具类以及ModelObject的JSON操作库(使用FastJson为基础)，以及cglib和ognl表达式等开源库(方便独立使用)。
 第二部分mimosa-orm是数据库读写操作的核心库(依赖mimosa-core)，用过API操作数据库，通过注解类自动创建数据库表，并且可以提供类似Mybatis的xml配置SQL的方式执行SQL语句。
