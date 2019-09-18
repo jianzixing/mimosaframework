@@ -19,20 +19,23 @@
 <script src="./axios.min.js"></script>
 <script src="./highlight.min.js"></script>
 <script>
+
+
     axios.get('./home.md?t=' + new Date().getTime())
         .then(function (response) {
             // handle success
-            console.log(response);
-
             var converter = new showdown.Converter(),
                 text = response.data,
                 html = converter.makeHtml(text);
 
+            // hljs.initHighlightingOnLoad();
             document.getElementById("cnt").innerHTML = html;
 
-            hljs.initHighlightingOnLoad();
-            hljs.initHighlightingOnLoad();
+            document.querySelectorAll('pre code').forEach(function (block) {
+                hljs.highlightBlock(block);
+            });
         });
+
 
 </script>
 </body>
