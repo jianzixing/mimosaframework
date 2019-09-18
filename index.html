@@ -2,25 +2,29 @@
 <html>
 <head>
     <title>Hello Strapdown</title>
-    <link href="/bootstrap.min.css" rel="stylesheet">
+    <link href="./bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<xmp theme="united" style="display:none;">
-    # Markdown text goes in here
 
-    ## Chapter 1
+<div id="cnt">
 
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-    et dolore magna aliqua.
+</div>
 
-    ## Chapter 2
+<script src="./showdown.min.js"></script>
+<script src="./axios.min.js"></script>
+<script>
+    axios.get('./home.md?t=' + new Date().getTime())
+        .then(function (response) {
+            // handle success
+            console.log(response);
 
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-    culpa qui officia deserunt mollit anim id est laborum.
-</xmp>
+            var converter = new showdown.Converter(),
+                text = response.data,
+                html = converter.makeHtml(text);
 
-<script src="/showdown.min.js"></script>
+            document.getElementById("cnt").innerHTML = html
+        });
+
+</script>
 </body>
 </html>
