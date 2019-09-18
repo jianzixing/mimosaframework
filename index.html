@@ -2,7 +2,12 @@
 <html>
 <head>
     <title>Hello Strapdown</title>
+    <meta charset="utf-8">
     <link href="./bootstrap.min.css" rel="stylesheet">
+    <!--https://github.com/blinkfox/typora-vue-theme-->
+    <link href="./vue.css" rel="stylesheet">
+    <link href="./styles/default.css" rel="stylesheet">
+    <link href="./styles/mimosa_custom.css" rel="stylesheet">
 </head>
 <body>
 
@@ -12,6 +17,7 @@
 
 <script src="./showdown.min.js"></script>
 <script src="./axios.min.js"></script>
+<script src="./highlight.min.js"></script>
 <script>
     axios.get('./home.md?t=' + new Date().getTime())
         .then(function (response) {
@@ -22,7 +28,10 @@
                 text = response.data,
                 html = converter.makeHtml(text);
 
-            document.getElementById("cnt").innerHTML = html
+            document.getElementById("cnt").innerHTML = html;
+
+            hljs.initHighlightingOnLoad();
+            hljs.initHighlightingOnLoad();
         });
 
 </script>
