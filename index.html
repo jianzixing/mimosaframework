@@ -54,42 +54,45 @@
                         <a href="javascript:void(0)" doc="home.md" class="sidebar-link">开始使用</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">简介</a>
+                        <a href="javascript:void(0)" doc="introduction.md" class="sidebar-link">简介</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">API说明</a>
+                        <a href="javascript:void(0)" doc="illustrate.md" class="sidebar-link">API说明</a>
                         <ul class="menu-sub">
-                            <li><a class="section-link" href="">数据保存(save)</a></li>
-                            <li><a class="section-link" href="javascript:void(0)">数据更新(update)</a></li>
-                            <li><a class="section-link" href="javascript:void(0)">数据删除(delete)</a></li>
-                            <li><a class="section-link" href="javascript:void(0)">数据查询(list)</a></li>
-                            <li><a class="section-link" href="javascript:void(0)">数量查询(count)</a></li>
-                            <li><a class="section-link" href="javascript:void(0)">分页查询(paging)</a></li>
-                            <li><a class="section-link" href="javascript:void(0)">拉链表(getZipperTable)</a></li>
-                            <li><a class="section-link" href="javascript:void(0)">执行函数(calculate)</a></li>
-                            <li><a class="section-link" href="javascript:void(0)">个性化(getAutonomously)</a></li>
+                            <li><a class="section-link" doc="save.md" href="javascript:void(0)">数据保存(save)</a></li>
+                            <li><a class="section-link" doc="update.md" href="javascript:void(0)">数据更新(update)</a></li>
+                            <li><a class="section-link" doc="delete.md" href="javascript:void(0)">数据删除(delete)</a></li>
+                            <li><a class="section-link" doc="list.md" href="javascript:void(0)">数据查询(list)</a></li>
+                            <li><a class="section-link" doc="count.md" href="javascript:void(0)">数量查询(count)</a></li>
+                            <li><a class="section-link" doc="paging.md" href="javascript:void(0)">分页查询(paging)</a></li>
+                            <li><a class="section-link" doc="zipper_table.md" href="javascript:void(0)">拉链表(getZipperTable)</a>
+                            </li>
+                            <li><a class="section-link" doc="calculate.md" href="javascript:void(0)">执行函数(calculate)</a>
+                            </li>
+                            <li><a class="section-link" doc="autonomously.md" href="javascript:void(0)">个性化(getAutonomously)</a>
+                            </li>
                         </ul>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">自定义SQL语句</a>
+                        <a href="javascript:void(0)" doc="custom_sql.md" class="sidebar-link">自定义SQL语句</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">使用Mybatis的Mapper</a>
+                        <a href="javascript:void(0)" doc="mapper.md" class="sidebar-link">使用Mybatis的Mapper</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">自动创建表说明</a>
+                        <a href="javascript:void(0)" doc="auto_table.md" class="sidebar-link">自动创建表说明</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">表字段转换格式</a>
+                        <a href="javascript:void(0)" doc="field_convert.md" class="sidebar-link">表字段转换格式</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">使用主从数据库</a>
+                        <a href="javascript:void(0)" doc="master_slave.md" class="sidebar-link">使用主从数据库</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">多数据库支持</a>
+                        <a href="javascript:void(0)" doc="multi_db.md" class="sidebar-link">多数据库支持</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link">版本更新</a>
+                        <a href="javascript:void(0)" doc="version.md" class="sidebar-link">版本更新</a>
                     </li>
                 </ul>
             </div>
@@ -106,7 +109,7 @@
 <script>
     function loadPage(name) {
         window.location.hash = name;
-        axios.get('./' + name + '?t=' + new Date().getTime())
+        axios.get('./default/' + name + '?t=' + new Date().getTime())
             .then(function (response) {
                 var converter = new showdown.Converter(),
                     text = response.data,
