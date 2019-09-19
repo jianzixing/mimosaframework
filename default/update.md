@@ -33,10 +33,12 @@ template.update(update);
 ```
 
 或者使用链式编程
+
 ```java
 template.update(TableUser.class)
                 .eq(TableUser.id, 20) // 更新条件
-                .value(TableUser.realName, "安康"); // 更新的字段
+                .value(TableUser.realName, "安康") // 更新的字段
+                .update(); // 需要最后调用更新方法
 ```
 
 
