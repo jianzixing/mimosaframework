@@ -316,6 +316,8 @@ input.button.gray {
 }
 #nav .nav-link {
     cursor: pointer;
+    height: 33px;
+    display: inline-block;
 }
 #nav .nav-dropdown-container .nav-link:hover:not(.current) {
     border-bottom: none;
@@ -503,7 +505,7 @@ body.docs #nav {
     padding: 0;
     position: absolute;
     right: 30px;
-    top: 5px;
+    top: 10px;
     height: 40px;
     line-height: 40px;
 }

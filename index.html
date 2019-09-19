@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hello Strapdown</title>
+    <title>MimosaFramework开发文档</title>
     <meta charset="utf-8">
-    <link href="./bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
     <!--https://github.com/blinkfox/typora-vue-theme-->
     <link href="./vue.css" rel="stylesheet">
     <link href="./styles/mimosa_custom.css" rel="stylesheet">
@@ -27,11 +27,11 @@
         </li>
 
         <li class="nav-dropdown-container learn">
-            <a class="nav-link" href="https://www.jianzixing.com.cn">简子行科技</a>
+            <a class="nav-link" href="https://www.jianzixing.com.cn" target="_blank">简子行科技</a>
         </li>
 
         <li class="nav-dropdown-container learn">
-            <a class="nav-link current">文档</a>
+            <a class="nav-link current">开发文档</a>
         </li>
 
         <li>
@@ -51,45 +51,45 @@
                 <ul class="menu-root">
                     <li><h3>基础</h3></li>
                     <li>
-                        <a href="/v2/guide/installation.html" class="sidebar-link">开始使用</a>
+                        <a href="javascript:void(0)" doc="home.md" class="sidebar-link">开始使用</a>
                     </li>
                     <li>
-                        <a href="/v2/guide/installation.html" class="sidebar-link">简介</a>
+                        <a href="javascript:void(0)" class="sidebar-link">简介</a>
                     </li>
                     <li>
-                        <a href="/v2/guide/index.html" class="sidebar-link current">API说明</a>
+                        <a href="javascript:void(0)" class="sidebar-link current">API说明</a>
                         <ul class="menu-sub">
-                            <li><a class="section-link active" data-scroll="" href="">数据保存(save)</a></li>
-                            <li><a class="section-link" data-scroll="" href="">数据更新(update)</a></li>
-                            <li><a class="section-link" data-scroll="" href="">数据删除(delete)</a></li>
-                            <li><a class="section-link" data-scroll="" href="">数据查询(list)</a></li>
-                            <li><a class="section-link" data-scroll="" href="">数量查询(count)</a></li>
-                            <li><a class="section-link" data-scroll="" href="">分页查询(paging)</a></li>
-                            <li><a class="section-link" data-scroll="" href="">拉链表(getZipperTable)</a></li>
-                            <li><a class="section-link" data-scroll="" href="">执行函数(calculate)</a></li>
-                            <li><a class="section-link" data-scroll="" href="">个性化(getAutonomously)</a></li>
+                            <li><a class="section-link active" href="">数据保存(save)</a></li>
+                            <li><a class="section-link" href="javascript:void(0)">数据更新(update)</a></li>
+                            <li><a class="section-link" href="javascript:void(0)">数据删除(delete)</a></li>
+                            <li><a class="section-link" href="javascript:void(0)">数据查询(list)</a></li>
+                            <li><a class="section-link" href="javascript:void(0)">数量查询(count)</a></li>
+                            <li><a class="section-link" href="javascript:void(0)">分页查询(paging)</a></li>
+                            <li><a class="section-link" href="javascript:void(0)">拉链表(getZipperTable)</a></li>
+                            <li><a class="section-link" href="javascript:void(0)">执行函数(calculate)</a></li>
+                            <li><a class="section-link" href="javascript:void(0)">个性化(getAutonomously)</a></li>
                         </ul>
                     </li>
                     <li>
-                        <a href="/v2/guide/instance.html" class="sidebar-link">自定义SQL语句</a>
+                        <a href="javascript:void(0)" class="sidebar-link">自定义SQL语句</a>
                     </li>
                     <li>
-                        <a href="/v2/guide/syntax.html" class="sidebar-link">使用Mybatis的Mapper</a>
+                        <a href="javascript:void(0)" class="sidebar-link">使用Mybatis的Mapper</a>
                     </li>
                     <li>
-                        <a href="/v2/guide/computed.html" class="sidebar-link">自动创建表说明</a>
+                        <a href="javascript:void(0)" class="sidebar-link">自动创建表说明</a>
                     </li>
                     <li>
-                        <a href="/v2/guide/class-and-style.html" class="sidebar-link">表字段转换格式</a>
+                        <a href="javascript:void(0)" class="sidebar-link">表字段转换格式</a>
                     </li>
                     <li>
-                        <a href="/v2/guide/class-and-style.html" class="sidebar-link">使用主从数据库</a>
+                        <a href="javascript:void(0)" class="sidebar-link">使用主从数据库</a>
                     </li>
                     <li>
-                        <a href="/v2/guide/class-and-style.html" class="sidebar-link">多数据库支持</a>
+                        <a href="javascript:void(0)" class="sidebar-link">多数据库支持</a>
                     </li>
                     <li>
-                        <a href="/v2/guide/class-and-style.html" class="sidebar-link">版本更新</a>
+                        <a href="javascript:void(0)" class="sidebar-link">版本更新</a>
                     </li>
                 </ul>
             </div>
@@ -104,21 +104,72 @@
 <script src="./axios.min.js"></script>
 <script src="./highlight.min.js"></script>
 <script>
-    axios.get('./home.md?t=' + new Date().getTime())
-        .then(function (response) {
-            // handle success
-            var converter = new showdown.Converter(),
-                text = response.data,
-                html = converter.makeHtml(text);
+    function loadPage(name) {
+        window.location.hash = name;
+        axios.get('./' + name + '?t=' + new Date().getTime())
+            .then(function (response) {
+                var converter = new showdown.Converter(),
+                    text = response.data,
+                    html = converter.makeHtml(text);
 
-            // hljs.initHighlightingOnLoad();
-            document.getElementById("container").innerHTML = html;
+                document.getElementById("container").innerHTML = html;
 
-            document.querySelectorAll('pre code').forEach(function (block) {
-                hljs.highlightBlock(block);
+                document.querySelectorAll('pre code').forEach(function (block) {
+                    hljs.highlightBlock(block);
+                });
             });
-        });
+    }
 
+    window.onload = function (ev) {
+        var aEls = document.querySelectorAll(".sidebar .list a");
+        if (aEls) {
+            for (var i = 0; i < aEls.length; i++) {
+                var aEl = aEls[i];
+                aEl.onclick = function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    var url = this.getAttribute('doc');
+                    if (url) loadPage(url);
+
+                    var ras = document.querySelectorAll(".sidebar .list a");
+                    if (ras) {
+                        for (var j = 0; j < ras.length; j++) {
+                            if (ras[j].className && (
+                                ras[j].className.indexOf("active") >= 0
+                                || ras[j].className.indexOf("current") >= 0
+                            )) {
+                                ras[j].className = ras[j].className.replace("active", "").trim();
+                                ras[j].className = ras[j].className.replace("current", "").trim();
+                            }
+                        }
+                    }
+
+                    if (this.className.indexOf("section-link") >= 0
+                        && this.className.indexOf("active") < 0) {
+                        this.className = this.className.concat(" active");
+
+                        var pp = this.parentElement.parentElement.parentElement;
+                        var p = pp.querySelector(".sidebar-link");
+                        p.className = p.className.concat(" current");
+                    }
+
+                    if (this.className.indexOf("sidebar-link") >= 0
+                        && this.className.indexOf("current") < 0) {
+                        this.className = this.className.concat(" current");
+                    }
+                }
+            }
+        }
+    };
+
+    var hash = window.location.hash;
+    if (hash.length > 1) {
+        var url = hash.substring(1, hash.length);
+        loadPage(url);
+    } else {
+        loadPage("home.md");
+    }
 
 </script>
 </body>
