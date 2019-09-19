@@ -503,7 +503,7 @@ body.docs #nav {
     padding: 0;
     position: absolute;
     right: 30px;
-    top: 10px;
+    top: 5px;
     height: 40px;
     line-height: 40px;
 }
@@ -540,6 +540,9 @@ body.docs #nav {
     position: absolute;
     top: calc(50% - 1px);
     left: 8px;
+}
+#nav a:hover {
+    color: unset;
 }
 .nav-link {
     padding-bottom: 3px;
@@ -597,7 +600,7 @@ body.docs #nav {
 }
 #logo {
     display: inline-block;
-    font-size: 1.5em;
+    font-size: 1.4em;
     line-height: 40px;
     color: #273849;
     font-family: "Dosis", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
@@ -949,6 +952,7 @@ ul.demo li {
 .sidebar {
     position: absolute;
     z-index: 10;
+    border-right: 1px solid #EEE;
     top: 61px;
     left: 0;
     bottom: 0;
