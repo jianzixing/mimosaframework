@@ -57,9 +57,9 @@
                         <a href="javascript:void(0)" class="sidebar-link">简介</a>
                     </li>
                     <li>
-                        <a href="javascript:void(0)" class="sidebar-link current">API说明</a>
+                        <a href="javascript:void(0)" class="sidebar-link">API说明</a>
                         <ul class="menu-sub">
-                            <li><a class="section-link active" href="">数据保存(save)</a></li>
+                            <li><a class="section-link" href="">数据保存(save)</a></li>
                             <li><a class="section-link" href="javascript:void(0)">数据更新(update)</a></li>
                             <li><a class="section-link" href="javascript:void(0)">数据删除(delete)</a></li>
                             <li><a class="section-link" href="javascript:void(0)">数据查询(list)</a></li>
@@ -120,6 +120,22 @@
             });
     }
 
+    function setElActive(el) {
+        if (el.className.indexOf("section-link") >= 0
+            && el.className.indexOf("active") < 0) {
+            el.className = el.className.concat(" active");
+
+            var pp = el.parentElement.parentElement.parentElement;
+            var p = pp.querySelector(".sidebar-link");
+            p.className = p.className.concat(" current");
+        }
+
+        if (el.className.indexOf("sidebar-link") >= 0
+            && el.className.indexOf("current") < 0) {
+            el.className = el.className.concat(" current");
+        }
+    }
+
     window.onload = function (ev) {
         var aEls = document.querySelectorAll(".sidebar .list a");
         if (aEls) {
@@ -145,19 +161,7 @@
                         }
                     }
 
-                    if (this.className.indexOf("section-link") >= 0
-                        && this.className.indexOf("active") < 0) {
-                        this.className = this.className.concat(" active");
-
-                        var pp = this.parentElement.parentElement.parentElement;
-                        var p = pp.querySelector(".sidebar-link");
-                        p.className = p.className.concat(" current");
-                    }
-
-                    if (this.className.indexOf("sidebar-link") >= 0
-                        && this.className.indexOf("current") < 0) {
-                        this.className = this.className.concat(" current");
-                    }
+                    setElActive(this);
                 }
             }
         }
@@ -167,8 +171,12 @@
     if (hash.length > 1) {
         var url = hash.substring(1, hash.length);
         loadPage(url);
+        var el = document.querySelector(".sidebar .list a[doc='" + url + "']");
+        setElActive(el);
     } else {
         loadPage("home.md");
+        var el = document.querySelector(".sidebar .list a[doc='home.md']");
+        setElActive(el);
     }
 
 </script>
