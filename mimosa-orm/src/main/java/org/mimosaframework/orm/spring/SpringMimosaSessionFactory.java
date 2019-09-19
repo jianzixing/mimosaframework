@@ -44,7 +44,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     private Set<Class> resolvers = null;
     private Map<String, StrategyConfig> strategyConfig = null;
     private ActionDataSourceWrapper defaultDataSourceWrapper = null;
-    private List<SpringDataSource> dataSourceWrapper = null;
+    private List<MimosaDataSource> dataSourceWrapper = null;
 
     private String applicationName;
     private String applicationDetail;
@@ -123,16 +123,17 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         this.basicSetting.setMappingLevel(mappingLevel);
     }
 
-    public void setDefaultDataSource(SpringDataSource defaultDataSource) throws SQLException {
+    public void setDefaultDataSource(MimosaDataSource defaultDataSource) throws SQLException {
         if (defaultDataSource != null) {
-            this.defaultDataSource = defaultDataSource.toMimosaDataSource("default");
+            defaultDataSource.setName(MimosaDataSource.DEFAULT_DS_NAME);
+            this.defaultDataSource = defaultDataSource;
         }
     }
 
     public void setDataSource(DataSource dataSource) throws SQLException {
         this.dataSource = dataSource;
         if (this.defaultDataSource == null) {
-            this.defaultDataSource = new MimosaDataSource(dataSource, "default");
+            this.defaultDataSource = new MimosaDataSource(dataSource, MimosaDataSource.DEFAULT_DS_NAME);
         }
     }
 
@@ -276,7 +277,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         return this.defaultDataSource;
     }
 
-    public void setDataSourceWrapper(List<SpringDataSource> dataSourceWrapper) {
+    public void setDataSourceWrapper(List<MimosaDataSource> dataSourceWrapper) {
         this.dataSourceWrapper = dataSourceWrapper;
     }
 
@@ -284,8 +285,8 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public List<MimosaDataSource> getDataSourceList() throws SQLException {
         if (dataSourceWrapper != null) {
             List<MimosaDataSource> dslist = new ArrayList<>();
-            for (SpringDataSource ds : dataSourceWrapper) {
-                dslist.add(ds.toMimosaDataSource());
+            for (MimosaDataSource ds : dataSourceWrapper) {
+                dslist.add(ds);
             }
             return dslist;
         }

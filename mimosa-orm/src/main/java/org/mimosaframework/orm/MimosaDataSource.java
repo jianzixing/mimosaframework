@@ -3,26 +3,28 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.utils.DataSourceUtils;
 import org.mimosaframework.orm.utils.DatabaseTypeEnum;
 import org.mimosaframework.orm.utils.SQLUtils;
 
 import javax.sql.DataSource;
+import java.io.Closeable;
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
-public class MimosaDataSource {
-    public static final String DEFAULT_DS_NAME = "default";
+public class MimosaDataSource implements Closeable {
     private static final Log logger = LogFactory.getLog(MimosaDataSource.class);
     private static final Map<DataSource, DatabaseTypeEnum> dataSourceInfo = new ConcurrentHashMap<>();
-    private static final Set<DataSource> dataSources = new CopyOnWriteArraySet<>();
     private String name;
     private DataSource master;
     private Map<String, DataSource> slaves;
     private DatabaseTypeEnum databaseTypeEnum;
+    private String destroyMethod; // 连接池关闭方法
+
+    public static final String DEFAULT_DS_NAME = "default";
 
 
     public static int getDataSourceSize() {
@@ -30,27 +32,44 @@ public class MimosaDataSource {
     }
 
     public static Set<DataSource> getAllDataSources() {
-        // return Collections.unmodifiableSet(dataSources);
+        Set<Map.Entry<DataSource, DatabaseTypeEnum>> entries = dataSourceInfo.entrySet();
+        Set<DataSource> dataSources = new LinkedHashSet<>();
+        for (Map.Entry<DataSource, DatabaseTypeEnum> entry : entries) {
+            dataSources.add(entry.getKey());
+        }
         return dataSources;
     }
 
     public MimosaDataSource() {
     }
 
-    private void loadDatabaseType() throws SQLException {
-        DatabaseTypeEnum dte = dataSourceInfo.get(master);
-        if (dte == null) {
-            this.databaseTypeEnum = SQLUtils.getDatabaseType(master);
-            dataSourceInfo.put(master, databaseTypeEnum);
-            dataSources.add(master);
-            if (slaves != null) {
-                Iterator<Map.Entry<String, DataSource>> sls = slaves.entrySet().iterator();
-                while (sls.hasNext()) {
-                    dataSources.add(sls.next().getValue());
+    public static void clearAllDataSources() {
+        if (dataSourceInfo != null) {
+            Iterator<Map.Entry<DataSource, DatabaseTypeEnum>> iterator = dataSourceInfo.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<DataSource, DatabaseTypeEnum> entry = iterator.next();
+                DataSource dataSource = entry.getKey();
+                if (dataSource instanceof Closeable) {
+                    try {
+                        ((Closeable) dataSource).close();
+                    } catch (IOException e) {
+                        logger.error("关闭DataSource数据源出错", e);
+                    }
                 }
             }
-        } else {
-            this.databaseTypeEnum = dte;
+            dataSourceInfo.clear();
+        }
+    }
+
+    private void loadDatabaseType() throws SQLException {
+        if (master != null) {
+            DatabaseTypeEnum dte = dataSourceInfo.get(master);
+            if (dte == null) {
+                this.databaseTypeEnum = SQLUtils.getDatabaseType(master);
+                dataSourceInfo.put(master, databaseTypeEnum);
+            } else {
+                this.databaseTypeEnum = dte;
+            }
         }
     }
 
@@ -77,6 +96,19 @@ public class MimosaDataSource {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMaster(DataSource master) throws SQLException {
+        this.master = master;
+        this.loadDatabaseType();
+    }
+
+    public void setSlaves(Map<String, DataSource> slaves) {
+        this.slaves = slaves;
     }
 
     public Map<String, DataSource> getSlaves() {
@@ -153,10 +185,10 @@ public class MimosaDataSource {
         DataSource ds = null;
         if (isMaster) {
             ds = this.getDataSource(true);
-            return DataSourceUtils.getConnection(ds);
+            return MimosaConnection.getConnection(ds);
         } else {
             ds = this.getSalveDataSource(slaveName, isIgnoreEmptySlave);
-            return DataSourceUtils.getConnection(ds);
+            return MimosaConnection.getConnection(ds);
         }
     }
 
@@ -198,6 +230,14 @@ public class MimosaDataSource {
         return this.master == null ? false : true;
     }
 
+    public String getDestroyMethod() {
+        return destroyMethod;
+    }
+
+    public void setDestroyMethod(String destroyMethod) {
+        this.destroyMethod = destroyMethod;
+    }
+
     @Override
     public Object clone() {
         MimosaDataSource ds = new MimosaDataSource();
@@ -205,5 +245,47 @@ public class MimosaDataSource {
         ds.slaves = slaves;
         ds.databaseTypeEnum = databaseTypeEnum;
         return ds;
+    }
+
+    public void close() throws IOException {
+        if (this.master != null) {
+            if (this.master instanceof Closeable) {
+                ((Closeable) this.master).close();
+            } else if (StringTools.isNotEmpty(this.destroyMethod)) {
+                Method[] methods = this.master.getClass().getMethods();
+                for (Method m : methods) {
+                    if (m.getName().equals(this.destroyMethod)) {
+                        try {
+                            m.invoke(this.master);
+                        } catch (Exception e) {
+                            throw new IOException("执行关闭连接池方法出错", e);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (this.slaves != null) {
+            Set<Map.Entry<String, DataSource>> set = this.slaves.entrySet();
+            for (Map.Entry<String, DataSource> entry : set) {
+                DataSource ds = entry.getValue();
+                if (ds != null) {
+                    if (ds instanceof Closeable) {
+                        ((Closeable) ds).close();
+                    } else if (StringTools.isNotEmpty(this.destroyMethod)) {
+                        Method[] methods = ds.getClass().getMethods();
+                        for (Method m : methods) {
+                            if (m.getName().equals(this.destroyMethod)) {
+                                try {
+                                    m.invoke(ds);
+                                } catch (Exception e) {
+                                    throw new IOException("执行关闭连接池方法出错", e);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
