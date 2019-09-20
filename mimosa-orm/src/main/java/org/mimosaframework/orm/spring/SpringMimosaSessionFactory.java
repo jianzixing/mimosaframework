@@ -43,7 +43,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     private MimosaDataSource defaultDataSource = null;
     private Set<Class> resolvers = null;
     private Map<String, StrategyConfig> strategyConfig = null;
-    private ActionDataSourceWrapper defaultDataSourceWrapper = null;
     private List<MimosaDataSource> dataSourceWrapper = null;
 
     private String applicationName;
@@ -160,8 +159,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
      */
     public void afterPropertiesSet() throws Exception {
         this.resolvers = this.getMappingClass();
-        this.defaultDataSourceWrapper = new ActionDataSourceWrapper();
-        this.defaultDataSourceWrapper.setDataSource(defaultDataSource);
 
         context.setBeanAppContext(this);
         this.sessionFactoryBuilder = context.getSessionFactoryBuilder();
@@ -301,11 +298,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     @Override
     public Map<String, StrategyConfig> getStrategyConfig() {
         return this.strategyConfig;
-    }
-
-    @Override
-    public ActionDataSourceWrapper getDefaultDataSourceWrapper() {
-        return this.defaultDataSourceWrapper;
     }
 
     @Override

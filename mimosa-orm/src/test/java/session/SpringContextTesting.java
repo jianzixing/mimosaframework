@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.SessionTemplate;
-import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.criteria.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

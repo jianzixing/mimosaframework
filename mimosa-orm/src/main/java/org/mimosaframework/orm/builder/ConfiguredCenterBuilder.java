@@ -133,11 +133,6 @@ public class ConfiguredCenterBuilder extends AbstractConfigBuilder {
     }
 
     @Override
-    public ActionDataSourceWrapper getDefaultDataSourceWrapper() {
-        return null;
-    }
-
-    @Override
     public BasicSetting getBasicInfo() {
         return null;
     }

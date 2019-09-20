@@ -335,8 +335,9 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
 
         if (node.getNodeName().equalsIgnoreCase("datasource")) {
             MimosaDataSource mimosaDataSource = null;
-            NamedNodeMap nm = node.getAttributes();
 
+
+            NamedNodeMap nm = node.getAttributes();
             if (nm != null && nm.getNamedItem("wrapper") != null) {
                 String wrapperName = nm.getNamedItem("wrapper").getNodeValue().trim();
                 MimosaDataSource ds = this.wrappers.get(wrapperName);
@@ -451,9 +452,16 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                 }
             }
 
+            // 加入datasource标签以上情况都不存在则直接判断是否本身是数据连接配置
+            if (dataSource == null) {
+                Map<String, String> map = this.getNodeByProperties(node);
+                dataSource = this.getDataSourceFromProperties(map);
+            }
+
             try {
                 mimosaDataSource = new MimosaDataSource(dataSource, slaveList, "default");
                 mimosaDataSource.getMaster();
+                wrappers.put(mimosaDataSource.getName(), mimosaDataSource);
             } catch (SQLException e) {
                 throw new ContextException("获得数据库类型出错", e);
             }
@@ -463,6 +471,15 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         return null;
     }
 
+    /**
+     * 获取某个一个xml节点配置，首先判断属性是否有name值
+     * 如果没有就判断子节点是否是文本节点如果是文本节点就是值
+     * 如果子节点只有value标签那value标签就是值
+     *
+     * @param node
+     * @param name
+     * @return
+     */
     private String getXmlNodeAny(Node node, String name) {
         NamedNodeMap attr = node.getAttributes();
         if (attr != null && attr.getNamedItem(name) != null) {
@@ -609,13 +626,6 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     @Override
     public Map<String, StrategyConfig> getStrategyConfig() {
         return this.strategyConfigMap;
-    }
-
-    @Override
-    public ActionDataSourceWrapper getDefaultDataSourceWrapper() {
-        ActionDataSourceWrapper wrapper = new ActionDataSourceWrapper();
-        wrapper.setDataSource(this.mimosaDataSource);
-        return wrapper;
     }
 
     @Override

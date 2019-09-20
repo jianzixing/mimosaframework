@@ -92,34 +92,4 @@ public class MappingTableWrapper {
         }
         return object;
     }
-
-    public MappingTable getCloneMappingTable(SupposedTables t) {
-        Class tableClass = t.getTableClass();
-        String tableName = t.getTableName();
-        boolean isSplitTable = t.isSplitTable();
-        String splitTableName = t.getSplitName();
-
-        if (mappingTables != null) {
-            for (MappingTable table : mappingTables) {
-                if (table.getMappingClass() == tableClass) {
-                    MappingTable clone = table.clone();
-                    if (isSplitTable) {
-                        clone.setMappingTableName(splitTableName);
-                    }
-                    return clone;
-                }
-            }
-
-            for (MappingTable table : mappingTables) {
-                if (table.getMappingTableName() == tableName) {
-                    MappingTable clone = table.clone();
-                    if (isSplitTable) {
-                        clone.setMappingTableName(splitTableName);
-                    }
-                    return clone;
-                }
-            }
-        }
-        return null;
-    }
 }

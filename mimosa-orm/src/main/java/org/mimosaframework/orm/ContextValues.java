@@ -1,20 +1,24 @@
 package org.mimosaframework.orm;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObjectChecker;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
-import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.strategy.StrategyConfig;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ContextValues {
+    private static final Log logger = LogFactory.getLog(ContextValues.class);
     private ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey(ConvertFactory.getDefaultConvert());
     private Map<String, MimosaDataSource> globalDataSource = new LinkedHashMap<>();
     private List<FactoryBuilder> factoryBuilderList = new CopyOnWriteArrayList<>();
@@ -24,8 +28,10 @@ public class ContextValues {
     private MappingLevel mappingLevel;
 
     private Set<Class> resolvers;
-    private MappingGlobalWrapper mappingGlobalWrapper;
-    private MappingNamedConvert convert;
+    private Set<MappingTable> mappingTables;
+    private MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
+    private MappingNamedConvert convert = ConvertFactory.getDefaultConvert();
+    ;
     private ModelObjectChecker checker;
     private ActionDataSourceWrapper defaultDataSource;
 
@@ -83,6 +89,36 @@ public class ContextValues {
         this.resolvers = resolvers;
     }
 
+    public void setDisassembleResolvers(Set<Class> resolvers) {
+        this.resolvers = resolvers;
+        if (this.resolvers != null) {
+            if (resolvers != null) {
+                Map<String, Class> names = new HashMap<>(resolvers.size());
+                if (mappingTables == null) {
+                    mappingTables = new LinkedHashSet<>();
+                }
+
+                for (Class c : resolvers) {
+                    DisassembleMappingClass disassembleMappingClass = new DefaultDisassembleMappingClass(c, this.convert);
+                    MappingTable mappingTable = disassembleMappingClass.getMappingTable();
+                    mappingTables.add(mappingTable);
+                    if (names.containsKey(mappingTable.getMappingTableName())) {
+                        throw new IllegalArgumentException("已经存在表名称为" + mappingTable.getMappingTableName() + "的映射类,"
+                                + names.get(mappingTable.getMappingTableName()) + " 和 " + mappingTable.getMappingClass() + "冲突");
+                    }
+                    names.put(mappingTable.getMappingTableName(), c);
+                }
+
+                this.mappingGlobalWrapper.setMappingTables(mappingTables);
+            } else {
+                logger.warn("您没有配置映射表类信息,当前不会创建任何表");
+            }
+        } else {
+            this.mappingGlobalWrapper.setMappingTables(new LinkedHashSet<MappingTable>());
+            logger.warn("没有扫描到表映射类");
+        }
+    }
+
     public MappingNamedConvert getConvert() {
         return convert;
     }
@@ -101,19 +137,10 @@ public class ContextValues {
     }
 
     public ActionDataSourceWrapper getDefaultDataSource() {
+        if (defaultDataSource == null) {
+            throw new IllegalArgumentException("请设置一个默认数据源");
+        }
         return defaultDataSource;
-    }
-
-    public void setDefaultDataSource(ActionDataSourceWrapper defaultDataSource) {
-        this.defaultDataSource = defaultDataSource;
-        MimosaDataSource ds = defaultDataSource.getDataSource();
-        if (ds == null) {
-            throw new IllegalArgumentException("必须设置一个默认的数据源");
-        }
-        if (StringTools.isEmpty(ds.getName())) {
-            throw new IllegalArgumentException("默认数据源必须设置一个名称");
-        }
-        this.globalDataSource.put(ds.getName(), ds);
     }
 
     public Map<String, StrategyConfig> getStrategyDataSource() {
@@ -156,15 +183,16 @@ public class ContextValues {
         return mappingGlobalWrapper;
     }
 
-    public void setMappingGlobalWrapper(MappingGlobalWrapper mappingGlobalWrapper) {
-        this.mappingGlobalWrapper = mappingGlobalWrapper;
-    }
-
     public void addMimosaDataSource(MimosaDataSource dataSource) {
         if (StringTools.isEmpty(dataSource.getName())) {
             throw new IllegalArgumentException("数据源必须设置一个名称");
         }
         globalDataSource.put(dataSource.getName(), dataSource);
+
+        if (dataSource.getName().equals(MimosaDataSource.DEFAULT_DS_NAME)) {
+            this.defaultDataSource = new ActionDataSourceWrapper(this);
+            this.defaultDataSource.setDataSource(dataSource);
+        }
     }
 
     public void setMappers(List<String> mappers) {
@@ -218,5 +246,59 @@ public class ContextValues {
 
     public MimosaDataSource getDataSourceByName(String dsName) {
         return globalDataSource.get(dsName);
+    }
+
+    public Set<MappingTable> getMappingTables() {
+        return this.mappingTables;
+    }
+
+    /**
+     * 开始合并所有的MappingDatabase
+     * 从Class获得的MappingTable合并到从数据库获得MappingTable中去
+     *
+     * @return
+     * @throws SQLException
+     */
+    public void matchWholeMappingDatabase() throws SQLException {
+        MimosaDataSource mimosaDataSource = this.getDefaultDataSource().getDataSource();
+        FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(mimosaDataSource);
+        fetchDatabaseMapping.loading();
+
+        MappingDatabase mappingDatabase = fetchDatabaseMapping.getDatabaseMapping();
+        // 加载完所有数据库的信息后，将映射类的MappingTable合并到每一个数据库对应的MappingDatabase中去
+        Set<MappingTable> mappingTables = this.getMappingTables();
+
+        // 开始合并映射类和数据库表信息
+        if (mappingTables != null && mappingDatabase != null) {
+            if (mappingDatabase != null) {
+                Set<MappingTable> tables = mappingDatabase.getDatabaseTables();
+                if (tables != null) {
+                    for (MappingTable mpTable : mappingTables) {
+                        for (MappingTable dbTable : tables) {
+                            if (mpTable.getMappingTableName().equalsIgnoreCase(dbTable.getDatabaseTableName())) {
+                                mpTable.applyFromClassMappingTable(dbTable);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (globalDataSource != null) {
+            Set<Map.Entry<String, MimosaDataSource>> dsset = globalDataSource.entrySet();
+            Map<MimosaDataSource, MappingDatabase> map = new LinkedHashMap<>();
+            map.put(mimosaDataSource, mappingDatabase);
+            for (Map.Entry<String, MimosaDataSource> entry : dsset) {
+                MimosaDataSource ds = entry.getValue();
+                if (ds != mimosaDataSource) {
+                    fetchDatabaseMapping = new JDBCFetchDatabaseMapping(mimosaDataSource);
+                    fetchDatabaseMapping.loading();
+
+                    map.put(ds, fetchDatabaseMapping.getDatabaseMapping());
+                }
+            }
+            this.mappingGlobalWrapper.setDataSourceMappingDatabase(map);
+        }
+
     }
 }

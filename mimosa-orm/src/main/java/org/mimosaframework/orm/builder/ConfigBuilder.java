@@ -24,8 +24,6 @@ public interface ConfigBuilder {
 
     Map<String, StrategyConfig> getStrategyConfig();
 
-    ActionDataSourceWrapper getDefaultDataSourceWrapper();
-
     BasicSetting getBasicInfo() throws ContextException;
 
     List<String> getMappers();

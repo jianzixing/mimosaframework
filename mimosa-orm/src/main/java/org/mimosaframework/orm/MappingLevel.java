@@ -5,9 +5,14 @@ package org.mimosaframework.orm;
  */
 public enum MappingLevel {
     /**
-     * 什么都不做，只有日志输出
+     * 什么都不做
      */
     NOTHING,
+
+    /**
+     * 将不匹配的字段打印到控制台
+     */
+    WARN,
 
     /**
      * 可建立表或者字段，一旦建立则不会修改删除，只能手动删除

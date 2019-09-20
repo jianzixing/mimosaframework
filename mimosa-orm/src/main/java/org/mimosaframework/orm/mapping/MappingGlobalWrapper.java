@@ -4,18 +4,14 @@ import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MappingGlobalWrapper {
     private Map<Class, MappingTable> mappingTables;
     private Map<MimosaDataSource, MappingDatabase> maps;
     private Map<String, List<MappingTable>> dimensions;
-
-    public MappingGlobalWrapper(Map<Class, MappingTable> mappingTables) {
-        this.mappingTables = mappingTables;
-    }
-
-    public MappingGlobalWrapper(Map<Class, MappingTable> mappingTables, Map<MimosaDataSource, MappingDatabase> maps) {
-        this.mappingTables = mappingTables;
+    
+    public void setDataSourceMappingDatabase(Map<MimosaDataSource, MappingDatabase> maps) {
         this.maps = maps;
         if (this.maps != null) {
             Iterator<Map.Entry<MimosaDataSource, MappingDatabase>> iterator = maps.entrySet().iterator();
@@ -160,5 +156,21 @@ public class MappingGlobalWrapper {
             }
         }
         return tableList;
+    }
+
+    public void setMappingTables(Set<MappingTable> mappingTables) {
+        if (this.mappingTables == null) {
+            this.mappingTables = new ConcurrentHashMap<>();
+        } else {
+            this.mappingTables.clear();
+        }
+
+        if (mappingTables != null) {
+            Iterator<MappingTable> iterator = mappingTables.iterator();
+            while (iterator.hasNext()) {
+                MappingTable dbs = iterator.next();
+                this.mappingTables.put(dbs.getMappingClass(), dbs);
+            }
+        }
     }
 }

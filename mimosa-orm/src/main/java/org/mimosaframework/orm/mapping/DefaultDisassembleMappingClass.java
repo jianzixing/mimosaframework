@@ -31,8 +31,17 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             MappingTable mappingTable = new SpecificMappingTable();
 
             String tableName = table.value();
-            if (tableName.equals("") && convert != null) {
-                tableName = convert.convert(mappingClass.getSimpleName());
+            if (tableName.equals("")) {
+                if (convert != null) {
+                    tableName = convert.convert(mappingClass.getSimpleName());
+                } else {
+                    tableName = mappingClass.getSimpleName();
+                    if (tableName.length() > 1) {
+                        tableName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
+                    } else {
+                        tableName = tableName.toLowerCase();
+                    }
+                }
             }
             ((SpecificMappingTable) mappingTable).setMappingClass(mappingClass);
             ((SpecificMappingTable) mappingTable).setMappingClassName(mappingClass.getSimpleName());

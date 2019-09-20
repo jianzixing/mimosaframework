@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.mapping;
 
 import org.mimosaframework.orm.MappingLevel;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 
 import java.util.Set;
@@ -9,17 +8,19 @@ import java.util.Set;
 public class CompareMappingFactory {
 
     public static StartCompareMapping getCompareMapping(MappingLevel level,
-                                                        Set<Class> classes,
                                                         ActionDataSourceWrapper dataSourceWrapper,
-                                                        MappingNamedConvert convert) {
+                                                        Set<MappingTable> mappingTables) {
         if (level == MappingLevel.NOTHING || level == null) {
-            return new NothingCompareMapping(classes, dataSourceWrapper, convert);
+            return new NothingCompareMapping(dataSourceWrapper, mappingTables);
         }
         if (level == MappingLevel.CREATE) {
-            return new AddCompareMapping(classes, dataSourceWrapper, convert);
+            return new AddCompareMapping(dataSourceWrapper, mappingTables);
         }
         if (level == MappingLevel.UPDATE) {
-            return new UpdateCompareMapping(classes, dataSourceWrapper, convert);
+            return new UpdateCompareMapping(dataSourceWrapper, mappingTables);
+        }
+        if (level == MappingLevel.WARN) {
+            return new WarnCompareMapping(dataSourceWrapper, mappingTables);
         }
         throw new IllegalArgumentException("不支持的数据库映射级别");
     }

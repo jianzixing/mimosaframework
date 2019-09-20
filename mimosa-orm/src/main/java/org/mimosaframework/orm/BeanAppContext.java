@@ -105,8 +105,7 @@ public class BeanAppContext implements Context {
         {
             Set<Class> resolvers = this.configBuilder.getResolvers();
             contextValues.setChecker(new ModelMeasureChecker(resolvers));
-            contextValues.setResolvers(resolvers);
-            contextValues.setMappingGlobalWrapper(new MappingGlobalWrapper(this.parseClasses(resolvers)));
+            contextValues.setDisassembleResolvers(resolvers);
         }
 
         {
@@ -125,34 +124,11 @@ public class BeanAppContext implements Context {
         }
 
         {
-            ActionDataSourceWrapper wrapper = this.configBuilder.getDefaultDataSourceWrapper().newDataSourceWrapper(contextValues);
             contextValues.setStrategyDataSource(this.configBuilder.getStrategyConfig());
-            contextValues.setDefaultDataSource(wrapper);
         }
 
         this.checkDBMapping();
         ModelObject.addChecker(new ModelMeasureChecker(this.contextValues.getResolvers()));
-    }
-
-    private Map<Class, MappingTable> parseClasses(Set<Class> mappingClasses) {
-        Map<Class, MappingTable> mappingTables = null;
-        if (mappingClasses != null) {
-            Map<String, Class> names = new HashMap<>(mappingClasses.size());
-            for (Class c : mappingClasses) {
-                if (mappingTables == null) {
-                    mappingTables = new LinkedHashMap<>();
-                }
-                DisassembleMappingClass disassembleMappingClass = new DefaultDisassembleMappingClass(c, this.contextValues.getConvert());
-                MappingTable mappingTable = disassembleMappingClass.getMappingTable();
-                mappingTables.put(c, mappingTable);
-                if (names.containsKey(mappingTable.getMappingTableName())) {
-                    throw new IllegalArgumentException("已经存在表名称为" + mappingTable.getMappingTableName() + "的映射类,"
-                            + names.get(mappingTable.getMappingTableName()) + " 和 " + mappingTable.getMappingClass());
-                }
-                names.put(mappingTable.getMappingTableName(), c);
-            }
-        }
-        return mappingTables;
     }
 
     @Override
@@ -161,21 +137,14 @@ public class BeanAppContext implements Context {
     }
 
     private void checkDBMapping() throws ContextException {
-        MappingLevel mappingLevel = null;
-        if (contextValues != null) {
-            mappingLevel = contextValues.getMappingLevel();
-        }
-
-        ActionDataSourceWrapper wrapper = contextValues.getDefaultDataSource();
-
-        MappingNamedConvert convert = contextValues.getConvert();
-        if (convert == null) convert = ConvertFactory.getDefaultConvert();
-
-        StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(mappingLevel, contextValues.getResolvers(), wrapper, convert);
+        StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
+                contextValues.getMappingLevel(),
+                contextValues.getDefaultDataSource(),
+                contextValues.getMappingTables()
+        );
         try {
             compareMapping.doMapping();
-            MappingGlobalWrapper databaseWrapper = compareMapping.getWholeMappingDatabase();
-            contextValues.setMappingGlobalWrapper(databaseWrapper);
+            contextValues.matchWholeMappingDatabase();
         } catch (SQLException e) {
             throw new ContextException("对比数据库映射出错", e);
         }
