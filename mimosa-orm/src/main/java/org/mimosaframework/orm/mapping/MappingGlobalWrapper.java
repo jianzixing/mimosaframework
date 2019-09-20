@@ -60,21 +60,6 @@ public class MappingGlobalWrapper {
         return null;
     }
 
-    /**
-     * 只获取一个一样的mappingTable即可
-     *
-     * @param c
-     * @param tableName
-     * @return
-     */
-    public MappingTable getDatabaseTable(Class c, String tableName) {
-        List<MappingTable> tables = dimensions.get(c.getName() + "#" + tableName);
-        if (tables != null) {
-            return tables.get(0);
-        }
-        return null;
-    }
-
     public MappingTable getDatabaseTable(MimosaDataSource ds, String tableName) {
         if (ds != null) {
             MappingDatabase mappingDatabase = maps.get(ds);
@@ -110,23 +95,6 @@ public class MappingGlobalWrapper {
             }
         }
         return false;
-    }
-
-    public List<MappingTable> getDatabaseTable(Class c) {
-        Iterator<Map.Entry<MimosaDataSource, MappingDatabase>> dbs = maps.entrySet().iterator();
-        List<MappingTable> tableList = new ArrayList<>();
-        while (dbs.hasNext()) {
-            MappingDatabase mappingDatabase = dbs.next().getValue();
-            if (mappingDatabase != null) {
-                MappingTable[] tables = mappingDatabase.getDatabaseTables(c);
-                if (tables != null && tables.length > 0) {
-                    for (MappingTable m : tables) {
-                        tableList.add(m);
-                    }
-                }
-            }
-        }
-        return tableList;
     }
 
     public void setMappingTables(Set<MappingTable> mappingTables) {

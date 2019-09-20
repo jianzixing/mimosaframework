@@ -118,18 +118,18 @@ public final class SessionUtils {
             if (innerJoins != null) {
                 for (Object join : innerJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    List<MappingTable> joinTable = mappingGlobalWrapper.getDatabaseTable(j.getTable());
-                    if (joinTable != null && joinTable.size() > 0) {
-                        tables.put(join, joinTable.get(0));
+                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
+                    if (joinTable != null) {
+                        tables.put(join, joinTable);
                     } else {
                         throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
                     }
                 }
                 for (Object join : leftJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    List<MappingTable> joinTable = mappingGlobalWrapper.getDatabaseTable(j.getTable());
-                    if (joinTable != null && joinTable.size() > 0) {
-                        tables.put(join, joinTable.get(0));
+                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
+                    if (joinTable != null) {
+                        tables.put(join, joinTable);
                     } else {
                         throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
                     }
@@ -151,25 +151,25 @@ public final class SessionUtils {
         if (innerJoins != null) totalAliasTables += innerJoins.size();
         if (leftJoins != null) totalAliasTables += leftJoins.size();
 
-        List<MappingTable> table = mappingGlobalWrapper.getDatabaseTable(c);
-        if (table != null && table.size() > 0) {
+        MappingTable table = mappingGlobalWrapper.getMappingTable(c);
+        if (table != null) {
             Map<Object, MappingTable> tables = new LinkedHashMap<>(totalAliasTables + 1);
-            tables.put(query, table.get(0));
+            tables.put(query, table);
             if (innerJoins != null) {
                 for (Object join : innerJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    List<MappingTable> joinTable = mappingGlobalWrapper.getDatabaseTable(j.getTable());
-                    if (joinTable != null && joinTable.size() > 0) {
-                        tables.put(join, joinTable.get(0));
+                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
+                    if (joinTable != null) {
+                        tables.put(join, joinTable);
                     } else {
                         throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
                     }
                 }
                 for (Object join : leftJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    List<MappingTable> joinTable = mappingGlobalWrapper.getDatabaseTable(j.getTable());
-                    if (joinTable != null && joinTable.size() > 0) {
-                        tables.put(join, joinTable.get(0));
+                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
+                    if (joinTable != null) {
+                        tables.put(join, joinTable);
                     } else {
                         throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
                     }
