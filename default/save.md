@@ -2,6 +2,10 @@
 
 保存方法有三种，save一个、saveAndUpdate、save多个。
 
+使用save方法保存ModelObject对象后，主键会自动带入写入的ModelObject对象中，我们可以
+直接使用 object.getLongValue(主键字段) 的方式获取保存成功的对象主键值，我们可以根据
+需要获取getLongValue还是getIntValue。
+
 第一种save也是最常用的方法。一般情况下如果设置主键的生成策略为AutoIncrementStrategy
 表示使用数据库自增策略，如果save时数据中包含主键添加时会带上主键信息，这时需要保证主键
 不会和数据库已存在数据重复。
@@ -37,6 +41,13 @@ save一个List的时必须这个List的ModelObject的映射类都是一个，简
 List<ModelObject> objects = new ArrayList<ModelObject>();
 ...
 template.save(objects);
+```
+
+
+保存成功后使用传入的ModelObject对象获取主键值。
+```java
+// 获取主键值
+int id = object.getIntValue(TableUser.id);
 ```
 
 

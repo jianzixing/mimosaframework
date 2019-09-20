@@ -50,7 +50,9 @@ strategies：ID生成策略，如果使用数据库自增ID使用 strategy = Aut
 
 showSQL：是否在控制台打印SQL日志。使用的是commons-logging，请按需配置。
 
-defaultDataSource：配置一个数据源束，数据源束是包一个主数据源和多个从数据源的组合。
+defaultDataSource：配置一个默认数据源束，数据源束是包一个主数据源和多个从数据源的组合。
+
+dataSourceWrapper：配置多个数据源束，必须指定数据源束名称。
 
 
 ## 配置文件
