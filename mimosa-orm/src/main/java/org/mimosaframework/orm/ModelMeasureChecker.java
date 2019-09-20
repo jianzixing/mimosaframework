@@ -19,18 +19,12 @@ import java.util.regex.Pattern;
  */
 public class ModelMeasureChecker implements ModelObjectChecker {
     private Map<Class, MappingTable> tables;
-    private Set<Class> classResolverMap;
 
-    public ModelMeasureChecker(Set<Class> classResolverMap) {
-        this.classResolverMap = classResolverMap;
-        if (classResolverMap != null) {
-            if (tables == null) {
-                tables = new HashMap<>(classResolverMap.size());
-            }
-            for (Class c : classResolverMap) {
-                DisassembleMappingClass disassembleMappingClass = new DefaultDisassembleMappingClass(c, null);
-                MappingTable mappingTable = disassembleMappingClass.getMappingTable();
-                tables.put(c, mappingTable);
+    public ModelMeasureChecker(Set<MappingTable> mappingTables) {
+        if (tables == null) {
+            tables = new HashMap(mappingTables.size());
+            for (MappingTable table : mappingTables) {
+                tables.put(table.getMappingClass(), table);
             }
         }
     }
@@ -38,8 +32,8 @@ public class ModelMeasureChecker implements ModelObjectChecker {
     @Override
     public void checker(ModelObject object, Object[] removed) throws ModelCheckerException {
         object.clearEmpty();
-        if (classResolverMap == null || object.getObjectClass() == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ, "没有找到映射集合检查对象每一个值失败");
+        if (tables == null || object.getObjectClass() == null) {
+            throw new ModelCheckerException(null, Code.NULL_OBJ, "映射类不存在或者ModelObject没有指定映射类");
         }
         Class c = object.getObjectClass();
         MappingTable table = tables.get(c);
@@ -122,8 +116,8 @@ public class ModelMeasureChecker implements ModelObjectChecker {
 
     @Override
     public void checkerUpdate(ModelObject object, Object[] removed) throws ModelCheckerException {
-        if (classResolverMap == null || object.getObjectClass() == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ, "没有找到映射集合检查对象每一个值失败");
+        if (tables == null || object.getObjectClass() == null) {
+            throw new ModelCheckerException(null, Code.NULL_OBJ, "映射类不存在或者ModelObject没有指定映射类");
         }
 
         Class c = object.getObjectClass();

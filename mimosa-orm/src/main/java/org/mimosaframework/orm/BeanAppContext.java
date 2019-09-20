@@ -104,7 +104,6 @@ public class BeanAppContext implements Context {
 
         {
             Set<Class> resolvers = this.configBuilder.getResolvers();
-            contextValues.setChecker(new ModelMeasureChecker(resolvers));
             contextValues.setDisassembleResolvers(resolvers);
         }
 
@@ -128,7 +127,7 @@ public class BeanAppContext implements Context {
         }
 
         this.checkDBMapping();
-        ModelObject.addChecker(new ModelMeasureChecker(this.contextValues.getResolvers()));
+        ModelObject.addChecker(new ModelMeasureChecker(contextValues.getMappingTables()));
     }
 
     @Override

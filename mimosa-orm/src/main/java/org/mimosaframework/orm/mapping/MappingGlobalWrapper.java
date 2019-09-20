@@ -10,7 +10,7 @@ public class MappingGlobalWrapper {
     private Map<Class, MappingTable> mappingTables;
     private Map<MimosaDataSource, MappingDatabase> maps;
     private Map<String, List<MappingTable>> dimensions;
-    
+
     public void setDataSourceMappingDatabase(Map<MimosaDataSource, MappingDatabase> maps) {
         this.maps = maps;
         if (this.maps != null) {
@@ -110,35 +110,6 @@ public class MappingGlobalWrapper {
             }
         }
         return false;
-    }
-
-    /**
-     * 获取单机时的数据库表，如果是单机时数据库表不可能会有一个映射类对应多个表的情况
-     *
-     * @param wrapper
-     * @param c
-     * @return
-     */
-    public MappingTable getSingleDatabaseTable(ActionDataSourceWrapper wrapper, Class c) {
-        if (maps != null && wrapper != null) {
-            MimosaDataSource dataSource = wrapper.getDataSource();
-            return this.getSingleDatabaseTable(dataSource, c);
-        }
-        return null;
-    }
-
-    public MappingTable getSingleDatabaseTable(MimosaDataSource ds, Class c) {
-        if (ds != null) {
-            MappingDatabase mappingDatabase = maps.get(ds);
-            if (mappingDatabase != null) {
-                MappingTable[] tables = mappingDatabase.getDatabaseTables(c);
-                if (tables != null && tables.length > 0) {
-                    return tables[0];
-                }
-                return null;
-            }
-        }
-        return null;
     }
 
     public List<MappingTable> getDatabaseTable(Class c) {

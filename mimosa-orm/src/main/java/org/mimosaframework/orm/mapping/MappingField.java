@@ -26,6 +26,8 @@ public interface MappingField {
 
     void applyFromClassField(MappingField field);
 
+    void applyFromColumnField(MappingField field);
+
     String getDatabaseColumnTypeName();
 
     Class getMappingFieldType();

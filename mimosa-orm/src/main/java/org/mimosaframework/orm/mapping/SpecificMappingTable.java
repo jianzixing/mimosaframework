@@ -37,6 +37,8 @@ public class SpecificMappingTable implements MappingTable {
      */
     private String databaseTableName;
 
+    private String sourceMappingTableName;
+
     public SpecificMappingTable() {
     }
 
@@ -100,6 +102,7 @@ public class SpecificMappingTable implements MappingTable {
         if (this.mappingTableName == null) this.mappingTableName = smt.mappingTableName;
         if (this.engineName == null) this.engineName = smt.engineName;
         if (this.encoding == null) this.encoding = smt.encoding;
+        if (this.databaseTableName == null) this.databaseTableName = smt.databaseTableName;
 
         Map<String, MappingField> mfs = smt.mappingFields;
         if (mfs != null) {
@@ -108,6 +111,25 @@ public class SpecificMappingTable implements MappingTable {
                 Map.Entry<String, MappingField> next = iterator.next();
                 MappingField f = next.getValue();
                 this.applyFromClassField(f);
+            }
+        }
+
+        Set<MappingField> columns = table.getMappingColumns();
+        if (columns != null) {
+            for (MappingField column : columns) {
+                Iterator<Map.Entry<String, MappingField>> iterator = this.mappingFields.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, MappingField> entry = iterator.next();
+                    MappingField field = entry.getValue();
+                    if (field.getMappingColumnName().equalsIgnoreCase(column.getDatabaseColumnName())) {
+                        field.applyFromColumnField(column);
+
+                        if (this.mappingColumns == null) {
+                            this.mappingColumns = new LinkedHashMap<>();
+                        }
+                        this.mappingColumns.put(column.getDatabaseColumnName(), field);
+                    }
+                }
             }
         }
     }
@@ -147,6 +169,11 @@ public class SpecificMappingTable implements MappingTable {
         return mappingClassName;
     }
 
+    @Override
+    public String getSourceMappingTableName() {
+        return this.sourceMappingTableName;
+    }
+
     public void setMappingClassName(String mappingClassName) {
         this.mappingClassName = mappingClassName;
     }
@@ -168,6 +195,7 @@ public class SpecificMappingTable implements MappingTable {
         table.engineName = this.engineName;
         table.encoding = this.encoding;
         table.databaseTableName = this.databaseTableName;
+        table.sourceMappingTableName = this.sourceMappingTableName;
         return table;
     }
 
@@ -215,6 +243,15 @@ public class SpecificMappingTable implements MappingTable {
         return field;
     }
 
+    @Override
+    public MappingField getMappingFieldByDBName(String fieldName) {
+        MappingField field = null;
+        if (field == null && this.mappingColumns != null) {
+            field = this.mappingColumns.get(fieldName);
+        }
+        return field;
+    }
+
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
@@ -225,5 +262,9 @@ public class SpecificMappingTable implements MappingTable {
 
     public void setDatabaseTableName(String databaseTableName) {
         this.databaseTableName = databaseTableName;
+    }
+
+    public void setSourceMappingTableName(String sourceMappingTableName) {
+        this.sourceMappingTableName = sourceMappingTableName;
     }
 }

@@ -325,6 +325,22 @@ public class SpecificMappingField implements MappingField {
         if (this.mappingFieldDefaultValue == null) this.mappingFieldDefaultValue = smf.mappingFieldDefaultValue;
     }
 
+    @Override
+    public void applyFromColumnField(MappingField field) {
+        SpecificMappingField smf = (SpecificMappingField) field;
+        if (smf.databaseColumnName != null) databaseColumnName = smf.databaseColumnName;
+        if (smf.databaseColumnTypeName != null) databaseColumnTypeName = smf.databaseColumnTypeName;
+        if (smf.databaseColumnDataType != 0) databaseColumnDataType = smf.databaseColumnDataType;
+        if (smf.databaseColumnLength != 0) databaseColumnLength = smf.databaseColumnLength;
+        if (smf.databaseColumnDecimalDigits != 0) databaseColumnDecimalDigits = smf.databaseColumnDecimalDigits;
+        if (smf.databaseColumnNullable != null) databaseColumnNullable = smf.databaseColumnNullable;
+        if (smf.databaseColumnPrimaryKey != 0) databaseColumnPrimaryKey = smf.databaseColumnPrimaryKey;
+        if (smf.databaseColumnUnique != 0) databaseColumnUnique = smf.databaseColumnUnique;
+        if (smf.databaseColumnComment != null) databaseColumnComment = smf.databaseColumnComment;
+        if (smf.databaseColumnAutoIncrement != null) databaseColumnAutoIncrement = smf.databaseColumnAutoIncrement;
+        if (smf.databaseColumnDefaultValue != null) databaseColumnDefaultValue = smf.databaseColumnDefaultValue;
+    }
+
     public void setDatabaseColumnName(String databaseColumnName) {
         this.databaseColumnName = databaseColumnName;
     }

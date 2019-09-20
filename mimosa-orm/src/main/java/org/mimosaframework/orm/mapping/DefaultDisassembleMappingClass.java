@@ -43,6 +43,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                     }
                 }
             }
+
             ((SpecificMappingTable) mappingTable).setMappingClass(mappingClass);
             ((SpecificMappingTable) mappingTable).setMappingClassName(mappingClass.getSimpleName());
             ((SpecificMappingTable) mappingTable).setMappingTableName(tableName);
@@ -150,8 +151,12 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         ((SpecificMappingField) mappingField).setMappingFieldAnnotation(column);
         ((SpecificMappingField) mappingField).setMappingFieldName(fieldName);
         String columnName = column.name();
-        if (StringTools.isEmpty(columnName) && convert != null) {
-            columnName = convert.convert(fieldName);
+        if (StringTools.isEmpty(columnName)) {
+            if (convert != null) {
+                columnName = convert.convert(fieldName);
+            } else {
+                columnName = fieldName;
+            }
         }
         ((SpecificMappingField) mappingField).setMappingColumnName(columnName);
         ((SpecificMappingField) mappingField).setMappingFieldType(column.type());

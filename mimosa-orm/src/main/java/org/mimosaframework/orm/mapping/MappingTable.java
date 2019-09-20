@@ -52,4 +52,21 @@ public interface MappingTable {
      * @return
      */
     MappingField getMappingFieldByName(String fieldName);
+
+    /**
+     * 通过数据库字段获取完整的信息
+     *
+     * @param fieldName
+     * @return
+     */
+    MappingField getMappingFieldByDBName(String fieldName);
+
+    String getMappingClassName();
+
+    /**
+     * 获取映射类转成表的名称
+     *
+     * @return
+     */
+    String getSourceMappingTableName();
 }

@@ -48,7 +48,7 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException("请先使用setObjectClass设置对象映射类");
         }
         SessionUtils.clearModelObject(this.mappingDatabaseWrapper, c, obj);
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
 
         // 开始类型矫正
         TypeCorrectUtils.correct(obj, mappingTable);
@@ -146,7 +146,7 @@ public class DefaultSession implements Session {
             tableClass = c;
 
             if (mappingTable == null) {
-                mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+                mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
             }
             try {
                 StrategyFactory.applyStrategy(this.context, mappingTable, object, this, false);
@@ -180,7 +180,7 @@ public class DefaultSession implements Session {
         }
         obj = Clone.cloneModelObject(obj);
         Class c = obj.getObjectClass();
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
 
         updateSkipReset.skip(obj, mappingTable);
         SessionUtils.clearModelObject(this.mappingDatabaseWrapper, obj.getObjectClass(), obj);
@@ -220,7 +220,7 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException("使用条件更新数据,过滤条件和要设置的值都不能为空");
         }
         Class c = u.getTableClass();
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
         int count = 0;
         try {
@@ -236,7 +236,7 @@ public class DefaultSession implements Session {
     public void delete(ModelObject objSource) {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
         if (!SessionUtils.checkPrimaryKey(mappingTable.getMappingPrimaryKeyFields(), obj)) {
             throw new IllegalArgumentException("删除一个对象必须设置主键的值");
         }
@@ -266,7 +266,7 @@ public class DefaultSession implements Session {
         }
 
         Class c = d.getTableClass();
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
         try {
             return platformWrapper.delete(mappingTable, d);
@@ -277,7 +277,7 @@ public class DefaultSession implements Session {
 
     @Override
     public void delete(Class c, Serializable id) {
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
 
         if (pks.size() != 1) {
@@ -292,7 +292,7 @@ public class DefaultSession implements Session {
 
     @Override
     public ModelObject get(Class c, Serializable id) {
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         if (pks.size() != 1) {
             throw new IllegalArgumentException("当前方法只允许查询主键存在且唯一的对象," +
@@ -376,7 +376,7 @@ public class DefaultSession implements Session {
 
     @Override
     public ZipperTable<ModelObject> getZipperTable(Class c) {
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
         MimosaDataSource ds = this.wrapper.getDataSource();
         return new SingleZipperTable<ModelObject>(context, ds, mappingTable.getDatabaseTableName());
     }
@@ -391,7 +391,7 @@ public class DefaultSession implements Session {
         if (f.getFuns() == null || f.getFuns().size() == 0) {
             throw new IllegalArgumentException("没有找到查询条件");
         }
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, f.getTableClass());
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(f.getTableClass());
         if (mappingTable == null) {
             throw new IllegalArgumentException("没有找到该类的映射表");
         }
@@ -503,7 +503,7 @@ public class DefaultSession implements Session {
 
         List<DataSourceTableName> names = new ArrayList<>();
 
-        MappingTable mappingTable = this.mappingDatabaseWrapper.getSingleDatabaseTable(wrapper, c);
+        MappingTable mappingTable = this.mappingDatabaseWrapper.getMappingTable(c);
         DataSourceTableName dataSourceTableName = new DataSourceTableName(mimosaDataSource.getName(), mappingTable.getDatabaseTableName());
         if (mimosaDataSource.getSlaves() != null) {
             List<String> slaves = new ArrayList<>();

@@ -30,9 +30,8 @@ public class ContextValues {
     private Set<Class> resolvers;
     private Set<MappingTable> mappingTables;
     private MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
-    private MappingNamedConvert convert = ConvertFactory.getDefaultConvert();
-    ;
-    private ModelObjectChecker checker;
+    private MappingNamedConvert convert;
+
     private ActionDataSourceWrapper defaultDataSource;
 
     /**
@@ -126,14 +125,6 @@ public class ContextValues {
     public void setConvert(MappingNamedConvert convert) {
         this.convert = convert;
         modelObjectConvertKey.setMappingNamedConvert(convert);
-    }
-
-    public ModelObjectChecker getChecker() {
-        return checker;
-    }
-
-    public void setChecker(ModelObjectChecker checker) {
-        this.checker = checker;
     }
 
     public ActionDataSourceWrapper getDefaultDataSource() {
