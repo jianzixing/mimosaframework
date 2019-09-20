@@ -3,26 +3,22 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.*;
-import org.mimosaframework.orm.convert.ConvertFactory;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.mapping.*;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 
 import java.sql.SQLException;
 import java.util.*;
 
 public class BeanAppContext implements Context {
     private static final Log logger = LogFactory.getLog("init");
-    private final ContextValues contextValues;
+    private final NormalContextContainer contextValues;
     private SessionFactoryBuilder sessionFactoryBuilder = null;
     private ConfigBuilder configBuilder = null;
 
     public BeanAppContext() {
-        this.contextValues = new ContextValues();
+        this.contextValues = new NormalContextContainer();
     }
 
     public BeanAppContext(ConfigBuilder configBuilder) throws ContextException {

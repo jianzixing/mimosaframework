@@ -15,10 +15,10 @@ import org.mimosaframework.orm.transaction.TransactionPropagationType;
 import java.util.List;
 
 public class MimosaSessionFactory implements SessionFactory {
-    private ContextValues context;
+    private NormalContextContainer context;
     private Session currentSession;
 
-    public MimosaSessionFactory(ContextValues context) {
+    public MimosaSessionFactory(NormalContextContainer context) {
         this.context = context;
     }
 

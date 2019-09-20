@@ -2,10 +2,8 @@ package org.mimosaframework.orm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.core.json.ModelObjectChecker;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
-import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
@@ -17,9 +15,9 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ContextValues {
-    private static final Log logger = LogFactory.getLog(ContextValues.class);
-    private ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey(ConvertFactory.getDefaultConvert());
+public class NormalContextContainer {
+    private static final Log logger = LogFactory.getLog(NormalContextContainer.class);
+    private ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
     private Map<String, MimosaDataSource> globalDataSource = new LinkedHashMap<>();
     private List<FactoryBuilder> factoryBuilderList = new CopyOnWriteArrayList<>();
 
@@ -124,7 +122,6 @@ public class ContextValues {
 
     public void setConvert(MappingNamedConvert convert) {
         this.convert = convert;
-        modelObjectConvertKey.setMappingNamedConvert(convert);
     }
 
     public ActionDataSourceWrapper getDefaultDataSource() {

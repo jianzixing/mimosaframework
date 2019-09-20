@@ -2,7 +2,7 @@ package org.mimosaframework.orm.transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.orm.ContextValues;
+import org.mimosaframework.orm.NormalContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
 
@@ -14,26 +14,26 @@ import java.util.Set;
 
 public class TransactionManager implements Transaction {
     private static final Log logger = LogFactory.getLog(TransactionManager.class);
-    private static final ThreadLocal<Map<ContextValues, TransactionManager>> CURRENT_TRANS = new ThreadLocal<>();
+    private static final ThreadLocal<Map<NormalContextContainer, TransactionManager>> CURRENT_TRANS = new ThreadLocal<>();
     private TransactionPropagationType pt;
     private TransactionIsolationType it;
     private Map<MimosaDataSource, TransactionPropagation> props;
-    private ContextValues context;
+    private NormalContextContainer context;
     private TransactionManager previousTransaction;
 
     private boolean isRollback = false;
     private boolean isCommit = false;
 
-    public TransactionManager(TransactionPropagationType pt, TransactionIsolationType it, ContextValues context) {
+    public TransactionManager(TransactionPropagationType pt, TransactionIsolationType it, NormalContextContainer context) {
         this.pt = pt;
         this.it = it;
         this.context = context;
         if (CURRENT_TRANS.get() == null) {
-            CURRENT_TRANS.set(new LinkedHashMap<ContextValues, TransactionManager>());
+            CURRENT_TRANS.set(new LinkedHashMap<NormalContextContainer, TransactionManager>());
         }
     }
 
-    public static Transaction getLastTransaction(ContextValues contextValues) {
+    public static Transaction getLastTransaction(NormalContextContainer contextValues) {
         if (CURRENT_TRANS.get() != null) {
             return CURRENT_TRANS.get().get(contextValues);
         }

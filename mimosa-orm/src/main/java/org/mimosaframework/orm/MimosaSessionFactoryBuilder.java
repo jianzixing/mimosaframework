@@ -2,12 +2,10 @@ package org.mimosaframework.orm;
 
 import org.mimosaframework.orm.exception.ContextException;
 
-import java.io.InputStream;
-
 public class MimosaSessionFactoryBuilder implements SessionFactoryBuilder {
-    private ContextValues contextValues;
+    private NormalContextContainer contextValues;
 
-    public MimosaSessionFactoryBuilder(ContextValues contextValues) {
+    public MimosaSessionFactoryBuilder(NormalContextContainer contextValues) {
         this.contextValues = contextValues;
     }
 

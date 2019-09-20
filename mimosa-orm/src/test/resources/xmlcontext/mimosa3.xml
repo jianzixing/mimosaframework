@@ -5,6 +5,8 @@
         <value>xmlcontext.TableAddition</value>
     </mapping>
 
+    <convert class="org.mimosaframework.core.asm.AnnotationVisitor"/>
+
     <datasource>
         <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
         <property name="driverClassName">com.mysql.jdbc.Driver</property>

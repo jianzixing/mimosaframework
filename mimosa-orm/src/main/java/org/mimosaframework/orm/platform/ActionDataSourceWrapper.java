@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.platform;
 
-import org.mimosaframework.orm.ContextValues;
+import org.mimosaframework.orm.NormalContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionManager;
@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ActionDataSourceWrapper {
-    private ContextValues contextValues;
+    private NormalContextContainer contextValues;
     private MimosaDataSource dataSource;
     private boolean isMaster = true;
     private String slaveName;
@@ -20,7 +20,7 @@ public class ActionDataSourceWrapper {
     public ActionDataSourceWrapper() {
     }
 
-    public ActionDataSourceWrapper(ContextValues contextValues) {
+    public ActionDataSourceWrapper(NormalContextContainer contextValues) {
         this.contextValues = contextValues;
     }
 
@@ -109,7 +109,7 @@ public class ActionDataSourceWrapper {
         return dataSourceWrapper;
     }
 
-    public ActionDataSourceWrapper newDataSourceWrapper(ContextValues contextValues) {
+    public ActionDataSourceWrapper newDataSourceWrapper(NormalContextContainer contextValues) {
         ActionDataSourceWrapper dataSourceWrapper = new ActionDataSourceWrapper();
         dataSourceWrapper.contextValues = contextValues;
         dataSourceWrapper.dataSource = dataSource;

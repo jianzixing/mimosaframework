@@ -10,8 +10,34 @@ import tables.TableUser;
 public class XmlAppContextTesting {
 
     @Test
-    public void init() throws ContextException {
+    public void mimosa1() throws ContextException {
         XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/xmlcontext/mimosa1.xml"));
+        SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
+        SessionTemplate template = new MimosaSessionTemplate(sessionFactory);
+
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+
+        MimosaDataSource.clearAllDataSources();
+    }
+
+    @Test
+    public void mimosa2() throws ContextException {
+        XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/xmlcontext/mimosa2.xml"));
+        SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
+        SessionTemplate template = new MimosaSessionTemplate(sessionFactory);
+
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+
+        MimosaDataSource.clearAllDataSources();
+    }
+
+    @Test
+    public void mimosa3() throws ContextException {
+        XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/xmlcontext/mimosa3.xml"));
         SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
         SessionTemplate template = new MimosaSessionTemplate(sessionFactory);
 

@@ -11,15 +11,15 @@ import java.io.Serializable;
 import java.util.List;
 
 public class SessionAgency implements Session {
-    private ContextValues context;
+    private NormalContextContainer context;
     private Session session;
 
-    public SessionAgency(ContextValues context) {
+    public SessionAgency(NormalContextContainer context) {
         this.context = context;
         this.session = this.buildRealSession(this.context);
     }
 
-    private Session buildRealSession(ContextValues context) {
+    private Session buildRealSession(NormalContextContainer context) {
         return new DefaultSession(context);
     }
 

@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.strategy;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.ContextValues;
+import org.mimosaframework.orm.NormalContextContainer;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.Session;
 import org.mimosaframework.orm.annotation.Column;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StrategyFactory {
     private static final Map<Class, IDStrategy> strategys = new ConcurrentHashMap<>();
 
-    public static Map<MappingField, IDStrategy> getStrategy(ContextValues values, MappingTable table) {
+    public static Map<MappingField, IDStrategy> getStrategy(NormalContextContainer values, MappingTable table) {
         Set<MappingField> fields = table.getMappingFields();
         Map<MappingField, IDStrategy> map = new HashMap<>();
         for (MappingField f : fields) {
@@ -38,7 +38,7 @@ public class StrategyFactory {
      * @param table
      * @param object
      */
-    public static void applyStrategy(ContextValues values, MappingTable table, ModelObject object, Session session, boolean isUsedDistributedStrategy) throws StrategyException {
+    public static void applyStrategy(NormalContextContainer values, MappingTable table, ModelObject object, Session session, boolean isUsedDistributedStrategy) throws StrategyException {
         Set<MappingField> fields = table.getMappingFields();
         for (MappingField f : fields) {
             Column column = f.getMappingFieldAnnotation();

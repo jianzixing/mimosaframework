@@ -23,9 +23,6 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
             throw new ContextException("需要先初始化BasicDisposition拿到Convert实例");
         }
 
-        MappingNamedConvert mappingNamedConvert = basicDisposition.getConvert();
-        if (mappingNamedConvert == null) mappingNamedConvert = ConvertFactory.getDefaultConvert();
-
         FilterPackageClass filterPackageClass = new DefaultFilterPackageClass();
         filterPackageClass.setPackagePath(Arrays.asList(new String[]{mappingClassPackage}));
         Set<Class> classes = filterPackageClass.getScanClass(Table.class);

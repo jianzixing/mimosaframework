@@ -20,7 +20,7 @@ public class DistributedAutoIncrementStrategy implements IDStrategy {
 
     @Override
     public Serializable get(StrategyWrapper sw, Session session) throws StrategyException {
-        ContextValues values = sw.getValues();
+        NormalContextContainer values = sw.getValues();
         Map<String, StrategyConfig> map = values.getStrategyDataSource();
         if (map != null) {
             String tableName = sw.getDbTableName();

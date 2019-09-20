@@ -1,13 +1,11 @@
 package org.mimosaframework.orm.builder;
 
-import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.auxiliary.FactoryBuilderConfig;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.exception.ContextException;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.strategy.StrategyConfig;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
@@ -666,8 +664,12 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
 
         this.isShowSQL = basicInfo.isShowSQL();
         if (StringTools.isNotEmpty(mappingLevel)) {
-            MappingLevel ml = MappingLevel.valueOf(mappingLevel);
-            basicInfo.setMappingLevel(ml);
+            try {
+                MappingLevel ml = MappingLevel.valueOf(mappingLevel);
+                basicInfo.setMappingLevel(ml);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("映射级别枚举MappingLevel不包含的级别" + mappingLevel, e);
+            }
         }
         basicInfo.setIgnoreEmptySlave(ignoreEmptySlave);
         return this.basicInfo;
