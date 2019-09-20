@@ -27,3 +27,9 @@ public class AdminController {
 ```
 
 如果使用@RequestMapping注解则需要自己编写url这是spring mvc的功能，具体参考spring mvc。
+
+Ajax的自动生成的url请参考[MVC扩展工具说明](./index.html#mvc_intro.md)
+
+
+## 
+Copyright © 2018-2019 [北京简子行科技有限公司](https://www.jianzixing.com.cn)

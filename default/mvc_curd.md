@@ -142,3 +142,12 @@ public class PageSeoController {
 定义一个APIController类然后定义一个方法，注解@CURDPrinter(pk = "id")表示这个表的主键字段是id。
 
 返回的类型是映射类，返回值没有任何意义。
+
+
+Ajax的自动生成的url请参考[MVC扩展工具说明](./index.html#mvc_intro.md)，
+这里url的最后参数是根据CurdImplement的方法组成的。
+
+
+
+## 
+Copyright © 2018-2019 [北京简子行科技有限公司](https://www.jianzixing.com.cn)

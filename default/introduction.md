@@ -1,4 +1,5 @@
 ## MimosaFramework简介
+
 MimosaFramework是一组框架组合，主要功能是提供数据库读写的工具，和mvc扩展工具。
 
 框架分为三部分，第一部分mimosa-core包含一些基本的工具类以及ModelObject的JSON操作库(使用FastJson为基础)，以及cglib和ognl表达式等开源库(方便独立使用)。
