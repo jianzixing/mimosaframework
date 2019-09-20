@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.strategy;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.NormalContextContainer;
+import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.Session;
 import org.mimosaframework.orm.annotation.Column;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StrategyFactory {
     private static final Map<Class, IDStrategy> strategys = new ConcurrentHashMap<>();
 
-    public static Map<MappingField, IDStrategy> getStrategy(NormalContextContainer values, MappingTable table) {
+    public static Map<MappingField, IDStrategy> getStrategy(ContextContainer values, MappingTable table) {
         Set<MappingField> fields = table.getMappingFields();
         Map<MappingField, IDStrategy> map = new HashMap<>();
         for (MappingField f : fields) {
@@ -38,19 +38,14 @@ public class StrategyFactory {
      * @param table
      * @param object
      */
-    public static void applyStrategy(NormalContextContainer values, MappingTable table, ModelObject object, Session session, boolean isUsedDistributedStrategy) throws StrategyException {
+    public static void applyStrategy(ContextContainer values, MappingTable table, ModelObject object, Session session) throws StrategyException {
         Set<MappingField> fields = table.getMappingFields();
         for (MappingField f : fields) {
             Column column = f.getMappingFieldAnnotation();
             if (column != null) {
                 // 如果表没有分表则使用数据库默认规则
                 Class<? extends IDStrategy> c = column.strategy();
-                // 如果表已经分表则使用默认的数据库ID自增策略
-                if (c == AutoIncrementStrategy.class
-                        && isUsedDistributedStrategy) {
-                    c = DistributedAutoIncrementStrategy.class;
-                }
-
+          
                 if (c != AutoIncrementStrategy.class && c != IDStrategy.class) {
                     if (strategys.get(c) == null) {
                         // 假如有已经实例好的ID生成策略对象，就用已经生成好的对象

@@ -2,38 +2,35 @@ package org.mimosaframework.orm.transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.orm.NormalContextContainer;
+import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
 
 import java.sql.Connection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TransactionManager implements Transaction {
     private static final Log logger = LogFactory.getLog(TransactionManager.class);
-    private static final ThreadLocal<Map<NormalContextContainer, TransactionManager>> CURRENT_TRANS = new ThreadLocal<>();
+    private static final ThreadLocal<Map<ContextContainer, TransactionManager>> CURRENT_TRANS = new ThreadLocal<>();
     private TransactionPropagationType pt;
     private TransactionIsolationType it;
     private Map<MimosaDataSource, TransactionPropagation> props;
-    private NormalContextContainer context;
+    private ContextContainer context;
     private TransactionManager previousTransaction;
 
     private boolean isRollback = false;
     private boolean isCommit = false;
 
-    public TransactionManager(TransactionPropagationType pt, TransactionIsolationType it, NormalContextContainer context) {
+    public TransactionManager(TransactionPropagationType pt, TransactionIsolationType it, ContextContainer context) {
         this.pt = pt;
         this.it = it;
         this.context = context;
         if (CURRENT_TRANS.get() == null) {
-            CURRENT_TRANS.set(new LinkedHashMap<NormalContextContainer, TransactionManager>());
+            CURRENT_TRANS.set(new LinkedHashMap<ContextContainer, TransactionManager>());
         }
     }
 
-    public static Transaction getLastTransaction(NormalContextContainer contextValues) {
+    public static Transaction getLastTransaction(ContextContainer contextValues) {
         if (CURRENT_TRANS.get() != null) {
             return CURRENT_TRANS.get().get(contextValues);
         }
@@ -66,7 +63,7 @@ public class TransactionManager implements Transaction {
         }
         CURRENT_TRANS.get().put(context, this);
 
-        Set<MimosaDataSource> ds = this.context.getCurrentDataSources();
+        List<MimosaDataSource> ds = this.context.getGlobalDataSource();
         if (logger.isDebugEnabled()) {
             logger.debug("检测到数据库链接个数(" + ds.size() + ")个");
         }

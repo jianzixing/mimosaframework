@@ -24,14 +24,14 @@ import java.util.*;
 
 public class DefaultSession implements Session {
     private UpdateSkipReset updateSkipReset = new UpdateSkiptResetEmpty();
-    private NormalContextContainer context;
+    private ContextContainer context;
     private ActionDataSourceWrapper wrapper;
     private MappingGlobalWrapper mappingGlobalWrapper;
     private ModelObjectConvertKey convert;
 
-    public DefaultSession(NormalContextContainer context) {
+    public DefaultSession(ContextContainer context) {
         this.context = context;
-        this.wrapper = this.context.getDefaultDataSource().newDataSourceWrapper();
+        this.wrapper = this.context.getDefaultDataSourceWrapper(true);
         this.mappingGlobalWrapper = this.context.getMappingGlobalWrapper();
         this.convert = this.context.getModelObjectConvertKey();
         convert.setMappingGlobalWrapper(mappingGlobalWrapper);
@@ -56,7 +56,7 @@ public class DefaultSession implements Session {
 
         if (mappingTable != null) {
             try {
-                StrategyFactory.applyStrategy(this.context, mappingTable, obj, this, false);
+                StrategyFactory.applyStrategy(this.context, mappingTable, obj, this);
             } catch (StrategyException e) {
                 throw new IllegalArgumentException("使用ID生成策略出错", e.getCause());
             }
@@ -150,7 +150,7 @@ public class DefaultSession implements Session {
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
             }
             try {
-                StrategyFactory.applyStrategy(this.context, mappingTable, object, this, false);
+                StrategyFactory.applyStrategy(this.context, mappingTable, object, this);
             } catch (StrategyException e) {
                 throw new IllegalArgumentException("使用ID生成策略出错", e.getCause());
             }
@@ -494,7 +494,7 @@ public class DefaultSession implements Session {
 
     @Override
     public List<DataSourceTableName> getDataSourceNames(Class c) {
-        ActionDataSourceWrapper wrapper = this.context.getDefaultDataSource();
+        ActionDataSourceWrapper wrapper = this.context.getDefaultDataSourceWrapper(false);
         MimosaDataSource mimosaDataSource = wrapper.getDataSource();
 
         List<DataSourceTableName> names = new ArrayList<>();

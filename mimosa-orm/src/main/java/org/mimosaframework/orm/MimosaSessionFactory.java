@@ -15,10 +15,10 @@ import org.mimosaframework.orm.transaction.TransactionPropagationType;
 import java.util.List;
 
 public class MimosaSessionFactory implements SessionFactory {
-    private NormalContextContainer context;
+    private ContextContainer context;
     private Session currentSession;
 
-    public MimosaSessionFactory(NormalContextContainer context) {
+    public MimosaSessionFactory(ContextContainer context) {
         this.context = context;
     }
 
@@ -109,7 +109,7 @@ public class MimosaSessionFactory implements SessionFactory {
 
     @Override
     public SimpleTemplate getSimpleTemplate(String dsname) {
-        ActionDataSourceWrapper wrapper = context.getDefaultDataSource().newDataSourceWrapper();
+        ActionDataSourceWrapper wrapper = context.getDefaultDataSourceWrapper(true);
         wrapper.setAutoCloseConnection(true);
         if (StringTools.isNotEmpty(dsname)) {
             MimosaDataSource ds = context.getDataSourceByName(dsname);

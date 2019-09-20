@@ -15,10 +15,10 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class NormalContextContainer {
+public class NormalContextContainer implements ContextContainer {
     private static final Log logger = LogFactory.getLog(NormalContextContainer.class);
     private ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
-    private Map<String, MimosaDataSource> globalDataSource = new LinkedHashMap<>();
+    private List<MimosaDataSource> globalDataSource = new CopyOnWriteArrayList<>();
     private List<FactoryBuilder> factoryBuilderList = new CopyOnWriteArrayList<>();
 
     private String applicationName;
@@ -82,6 +82,35 @@ public class NormalContextContainer {
         return resolvers;
     }
 
+    @Override
+    public MappingTable getMappingTableByClass(Class tableClass) {
+        if (this.mappingTables != null) {
+            for (MappingTable mappingTable : this.mappingTables) {
+                if (mappingTable.getMappingClass().equals(tableClass)) {
+                    return mappingTable;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public MappingTable getMappingTableByClassName(String tableClassName) {
+        if (this.mappingTables != null) {
+            for (MappingTable mappingTable : this.mappingTables) {
+                if (mappingTable.getMappingClass().getName().equals(tableClassName)) {
+                    return mappingTable;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<MimosaDataSource> getGlobalDataSource() {
+        return this.globalDataSource;
+    }
+
     public void setResolvers(Set<Class> resolvers) {
         this.resolvers = resolvers;
     }
@@ -124,11 +153,15 @@ public class NormalContextContainer {
         this.convert = convert;
     }
 
-    public ActionDataSourceWrapper getDefaultDataSource() {
+    public ActionDataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew) {
         if (defaultDataSource == null) {
             throw new IllegalArgumentException("请设置一个默认数据源");
         }
-        return defaultDataSource;
+        if (isCreateNew) {
+            return this.defaultDataSource.newDataSourceWrapper();
+        } else {
+            return defaultDataSource;
+        }
     }
 
     public Map<String, StrategyConfig> getStrategyDataSource() {
@@ -175,7 +208,7 @@ public class NormalContextContainer {
         if (StringTools.isEmpty(dataSource.getName())) {
             throw new IllegalArgumentException("数据源必须设置一个名称");
         }
-        globalDataSource.put(dataSource.getName(), dataSource);
+        globalDataSource.add(dataSource);
 
         if (dataSource.getName().equals(MimosaDataSource.DEFAULT_DS_NAME)) {
             this.defaultDataSource = new ActionDataSourceWrapper(this);
@@ -214,6 +247,28 @@ public class NormalContextContainer {
         return definedLoader;
     }
 
+    @Override
+    public MimosaDataSource getDefaultDataSource() {
+        for (MimosaDataSource mimosaDataSource : globalDataSource) {
+            if (mimosaDataSource.getName() != null
+                    && mimosaDataSource.getName().equals(MimosaDataSource.DEFAULT_DS_NAME)) {
+                return mimosaDataSource;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public MimosaDataSource getAnyDataSource() {
+        if (this.getDefaultDataSource() != null) {
+            return this.getDefaultDataSource();
+        }
+        if (this.globalDataSource != null) {
+            return this.globalDataSource.get(0);
+        }
+        return null;
+    }
+
     public ActionDataSourceWrapper getNewDataSourceWrapper() {
         return new ActionDataSourceWrapper(this);
     }
@@ -233,7 +288,12 @@ public class NormalContextContainer {
     }
 
     public MimosaDataSource getDataSourceByName(String dsName) {
-        return globalDataSource.get(dsName);
+        for (MimosaDataSource mimosaDataSource : this.globalDataSource) {
+            if (mimosaDataSource.getName() != null && mimosaDataSource.getName().equals(dsName)) {
+                return mimosaDataSource;
+            }
+        }
+        return null;
     }
 
     public Set<MappingTable> getMappingTables() {
@@ -248,7 +308,7 @@ public class NormalContextContainer {
      * @throws SQLException
      */
     public void matchWholeMappingDatabase() throws SQLException {
-        MimosaDataSource mimosaDataSource = this.getDefaultDataSource().getDataSource();
+        MimosaDataSource mimosaDataSource = this.getDefaultDataSourceWrapper(false).getDataSource();
         FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(mimosaDataSource);
         fetchDatabaseMapping.loading();
 
@@ -273,11 +333,9 @@ public class NormalContextContainer {
         }
 
         if (globalDataSource != null) {
-            Set<Map.Entry<String, MimosaDataSource>> dsset = globalDataSource.entrySet();
             Map<MimosaDataSource, MappingDatabase> map = new LinkedHashMap<>();
             map.put(mimosaDataSource, mappingDatabase);
-            for (Map.Entry<String, MimosaDataSource> entry : dsset) {
-                MimosaDataSource ds = entry.getValue();
+            for (MimosaDataSource ds : this.globalDataSource) {
                 if (ds != mimosaDataSource) {
                     fetchDatabaseMapping = new JDBCFetchDatabaseMapping(mimosaDataSource);
                     fetchDatabaseMapping.loading();

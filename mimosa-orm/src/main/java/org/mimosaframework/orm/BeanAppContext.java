@@ -136,7 +136,7 @@ public class BeanAppContext implements Context {
         try {
             MappingTableWrapper tableWrapper = new MappingTableWrapper(this.contextValues.getMappingTables());
 
-            MimosaDataSource dataSource = this.contextValues.getDefaultDataSource().getDataSource();
+            MimosaDataSource dataSource = this.contextValues.getDefaultDataSourceWrapper(false).getDataSource();
             FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(dataSource);
             fetchDatabaseMapping.loading();
 
@@ -146,7 +146,7 @@ public class BeanAppContext implements Context {
 
                 StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
                         contextValues.getMappingLevel(),
-                        contextValues.getDefaultDataSource(),
+                        contextValues.getDefaultDataSourceWrapper(false),
                         notMatchObject
                 );
                 compareMapping.doMapping();
