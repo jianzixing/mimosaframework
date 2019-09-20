@@ -1,9 +1,16 @@
 package org.mimosaframework.orm.mapping;
 
+import org.mimosaframework.orm.MimosaDataSource;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class NotMatchObject {
+    private MimosaDataSource mimosaDataSource;
+    private MappingDatabase mappingDatabase;
+    private Set<MappingTable> matchMappingTables;
+
     private List<MappingTable> missingTables;
     private List<MappingField> missingFields;
     private List<MappingField> changeFields;
@@ -39,5 +46,29 @@ public class NotMatchObject {
 
     public List<MappingField> getChangeFields() {
         return changeFields;
+    }
+
+    public MimosaDataSource getMimosaDataSource() {
+        return mimosaDataSource;
+    }
+
+    public void setMimosaDataSource(MimosaDataSource mimosaDataSource) {
+        this.mimosaDataSource = mimosaDataSource;
+    }
+
+    public MappingDatabase getMappingDatabase() {
+        return mappingDatabase;
+    }
+
+    public void setMappingDatabase(MappingDatabase mappingDatabase) {
+        this.mappingDatabase = mappingDatabase;
+    }
+
+    public Set<MappingTable> getMatchMappingTables() {
+        return matchMappingTables;
+    }
+
+    public void setMatchMappingTables(Set<MappingTable> matchMappingTables) {
+        this.matchMappingTables = matchMappingTables;
     }
 }

@@ -2,26 +2,21 @@ package org.mimosaframework.orm.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.orm.MimosaDataSource;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class WarnCompareMapping extends NothingCompareMapping {
     private static final Log logger = LogFactory.getLog(WarnCompareMapping.class);
 
-    public WarnCompareMapping(ActionDataSourceWrapper dataSourceWrapper, Set<MappingTable> mappingTables) {
-        super(dataSourceWrapper, mappingTables);
+    public WarnCompareMapping(ActionDataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
+        super(dataSourceWrapper, notMatchObject);
     }
 
     @Override
-    public NotMatchObject doMapping() throws SQLException {
-        NotMatchObject notMatchObject = super.doMapping();
+    public void doMapping() throws SQLException {
+        super.doMapping();
 
         List<MappingTable> missingTables = notMatchObject.getMissingTables();
         List<MappingField> missingFields = notMatchObject.getMissingFields();
@@ -54,7 +49,5 @@ public class WarnCompareMapping extends NothingCompareMapping {
                 }
             }
         }
-
-        return notMatchObject;
     }
 }

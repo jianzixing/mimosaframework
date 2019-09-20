@@ -137,13 +137,25 @@ public class BeanAppContext implements Context {
     }
 
     private void checkDBMapping() throws ContextException {
-        StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
-                contextValues.getMappingLevel(),
-                contextValues.getDefaultDataSource(),
-                contextValues.getMappingTables()
-        );
+
         try {
-            compareMapping.doMapping();
+            MappingTableWrapper tableWrapper = new MappingTableWrapper(this.contextValues.getMappingTables());
+
+            MimosaDataSource dataSource = this.contextValues.getDefaultDataSource().getDataSource();
+            FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(dataSource);
+            fetchDatabaseMapping.loading();
+
+            MappingDatabase mappingDatabase = fetchDatabaseMapping.getDatabaseMapping();
+            if (mappingDatabase != null) {
+                NotMatchObject notMatchObject = tableWrapper.getMissingObject(dataSource, mappingDatabase);
+
+                StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
+                        contextValues.getMappingLevel(),
+                        contextValues.getDefaultDataSource(),
+                        notMatchObject
+                );
+                compareMapping.doMapping();
+            }
             contextValues.matchWholeMappingDatabase();
         } catch (SQLException e) {
             throw new ContextException("对比数据库映射出错", e);

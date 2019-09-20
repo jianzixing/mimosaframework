@@ -4,17 +4,16 @@ import org.mimosaframework.orm.platform.*;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
 public class UpdateCompareMapping extends AddCompareMapping {
 
-    public UpdateCompareMapping(ActionDataSourceWrapper dataSourceWrapper, Set<MappingTable> mappingTables) {
-        super(dataSourceWrapper, mappingTables);
+    public UpdateCompareMapping(ActionDataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
+        super(dataSourceWrapper, notMatchObject);
     }
 
     @Override
-    public NotMatchObject doMapping() throws SQLException {
-        NotMatchObject notMatchObject = super.doMapping();
+    public void doMapping() throws SQLException {
+        super.doMapping();
 
         ActionDataSourceWrapper wrapper = dataSourceWrapper.newDataSourceWrapper();
         wrapper.setAutoCloseConnection(true);
@@ -33,6 +32,5 @@ public class UpdateCompareMapping extends AddCompareMapping {
                 }
             }
         }
-        return notMatchObject;
     }
 }

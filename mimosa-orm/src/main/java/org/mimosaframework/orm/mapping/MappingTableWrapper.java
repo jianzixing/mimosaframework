@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.mapping;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.platform.DifferentColumn;
 import org.mimosaframework.orm.platform.PlatformFactory;
@@ -16,12 +17,19 @@ public class MappingTableWrapper {
     public NotMatchObject getMissingObject(MimosaDataSource dataSource, MappingDatabase database) {
         Set<MappingTable> mappingTables = database.getDatabaseTables();
         NotMatchObject object = new NotMatchObject();
+        object.setMatchMappingTables(mappingTables);
+        object.setMimosaDataSource(dataSource);
+        object.setMappingDatabase(database);
+
         if (this.mappingTables != null) {
             for (MappingTable classTable : this.mappingTables) {
                 boolean isContains = false;
                 Set<MappingField> dbFields = null;
                 if (mappingTables != null) {
                     for (MappingTable table : mappingTables) {
+                        if (StringTools.isEmpty(classTable.getMappingTableName())) {
+                            throw new IllegalArgumentException("映射信息MappingTable中缺少对应的映射表名称");
+                        }
                         if (classTable.getMappingTableName().equalsIgnoreCase(table.getDatabaseTableName())) {
                             isContains = true;
                             // 获取数据库的所有列，如果或得到了就跳出

@@ -1,35 +1,20 @@
 package org.mimosaframework.orm.mapping;
 
-import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 
 import java.sql.SQLException;
-import java.util.*;
 
 public class NothingCompareMapping implements StartCompareMapping {
     protected ActionDataSourceWrapper dataSourceWrapper;
-    protected Set<MappingTable> mappingTables;
+    protected NotMatchObject notMatchObject;
 
-    public NothingCompareMapping(ActionDataSourceWrapper dataSourceWrapper, Set<MappingTable> mappingTables) {
+    public NothingCompareMapping(ActionDataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
         this.dataSourceWrapper = dataSourceWrapper;
-        this.mappingTables = mappingTables;
+        this.notMatchObject = notMatchObject;
     }
 
     @Override
-    public NotMatchObject doMapping() throws SQLException {
-        MappingTableWrapper tableWrapper = new MappingTableWrapper(mappingTables);
+    public void doMapping() throws SQLException {
 
-        MimosaDataSource dataSource = this.dataSourceWrapper.getDataSource();
-        FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(dataSource);
-        fetchDatabaseMapping.loading();
-
-        // 检查全部表映射
-        MappingDatabase mappingDatabase = fetchDatabaseMapping.getDatabaseMapping();
-        if (mappingDatabase != null) {
-            NotMatchObject missing = tableWrapper.getMissingObject(dataSource, mappingDatabase);
-            return missing;
-        }
-
-        return null;
     }
 }
