@@ -4,11 +4,12 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.Query;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class AutoResult {
+    private ModelObjectConvertKey convert;
     private Object value;
+    private Set<Class> tableClasses;
 
     public static AutoResult getAutoResult(String name, SessionTemplate template, ModelObject search, int start, int limit) {
         if (template != null) {
@@ -106,12 +107,56 @@ public class AutoResult {
         return 0;
     }
 
-    public AutoResult(Object value) {
+    public AutoResult(ModelObjectConvertKey convert, Object value) {
+        this.convert = convert;
         this.value = value;
     }
 
     public Object getValue() {
         return value;
+    }
+
+    /**
+     * 由于字段的转换都是单向的，所以这里可以设置返回的结果
+     * 中包含的映射表，然后遍历映射表改变返回值的字段为映射表字段
+     *
+     * @param tables
+     */
+    public void setTableClass(Class... tables) {
+        if (tableClasses == null) {
+            tableClasses = new LinkedHashSet<>();
+        } else {
+            tableClasses.clear();
+        }
+        for (Class c : tables) {
+            tableClasses.add(c);
+        }
+
+        if (this.tableClasses != null && convert != null) {
+            if (value instanceof ModelObject) {
+                for (Class c : this.tableClasses) {
+                    convert.reconvert(c, (ModelObject) value);
+                }
+            }
+
+            if (value instanceof List) {
+                for (Class c : this.tableClasses) {
+                    convert.reconvert(c, (List<ModelObject>) value);
+                }
+            }
+
+            if (value instanceof Map) {
+                Set<Map.Entry> set = ((Map) value).entrySet();
+                for (Map.Entry entry : set) {
+                    if (entry.getValue() instanceof List) {
+                        List<ModelObject> entryValue = (List<ModelObject>) entry.getValue();
+                        for (Class c : this.tableClasses) {
+                            convert.reconvert(c, entryValue);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public boolean isEmptyValue() {
@@ -198,9 +243,9 @@ public class AutoResult {
     }
 
     public ModelObject getSingle() {
-        Object obj = getSingleByList();
-        if (obj != null) {
-            return (ModelObject) obj;
+        if (value instanceof List && ((List) value).size() == 1) {
+            ModelObject obj = (ModelObject) ((List) value).get(0);
+            return obj;
         }
         return null;
     }

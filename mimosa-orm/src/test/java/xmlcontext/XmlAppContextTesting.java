@@ -5,6 +5,7 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
+import tables.TableContacts;
 import tables.TableUser;
 
 public class XmlAppContextTesting {
@@ -65,6 +66,25 @@ public class XmlAppContextTesting {
         user = template.get(TableUser.class, user.getIntValue(TableUser.id));
 
         System.out.println(user);
+
+        MimosaDataSource.clearAllDataSources();
+    }
+
+    @Test
+    public void mimosa5() throws Exception {
+        XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/xmlcontext/mimosa5.xml"));
+        SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
+        SessionTemplate template = new MimosaSessionTemplate(sessionFactory);
+
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+
+        ModelObject param = new ModelObject();
+        param.put(TableUser.id, user.getIntValue(TableUser.id));
+        AutoResult result = template.getAutonomously(TAutonomously.newInstance("user_mapper.getUserById", param));
+        result.setTableClass(TableUser.class, TableContacts.class);
+        System.out.println(result.getSingle());
 
         MimosaDataSource.clearAllDataSources();
     }

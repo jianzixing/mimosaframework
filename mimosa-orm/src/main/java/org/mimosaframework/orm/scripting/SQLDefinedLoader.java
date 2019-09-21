@@ -31,7 +31,7 @@ public class SQLDefinedLoader {
                 mappers = new ArrayList<>();
             }
 
-            URL url = this.getClass().getResource(path.replace(".", "/"));
+            URL url = this.getClass().getResource("/" + path.replace(".", "/"));
             if (url == null) {
                 throw new IllegalArgumentException("找不到资源" + path);
             }
@@ -82,7 +82,7 @@ public class SQLDefinedLoader {
     private void findClassLocal(final String packName) {
         URI url = null;
         try {
-            url = SQLDefinedLoader.class.getResource(packName.replace(".", "/")).toURI();
+            url = SQLDefinedLoader.class.getResource("/" + packName.replace(".", "/")).toURI();
         } catch (URISyntaxException e1) {
             throw new RuntimeException("未找到策略资源");
         }

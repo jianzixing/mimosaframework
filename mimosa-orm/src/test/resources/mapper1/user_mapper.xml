@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//localhost//DTD Config 3.0//EN" "/mimosa-mapper.dtd">
+<mapper>
+    <select id="getUserById">
+        select * from t_user where id=#{id}
+    </select>
+</mapper>

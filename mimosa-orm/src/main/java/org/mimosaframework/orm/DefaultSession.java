@@ -447,7 +447,7 @@ public class DefaultSession implements Session {
 
             Map<String, List<ModelObject>> result = new LinkedHashMap<>(1);
             result.put(MimosaDataSource.DEFAULT_DS_NAME, objects);
-            return new AutoResult(result);
+            return new AutoResult(convert, result);
         }
         return null;
     }
@@ -483,7 +483,7 @@ public class DefaultSession implements Session {
                 PorterStructure[] structures = new PorterStructure[]{structure};
                 Object object = carryHandler.doHandler(structures);
                 // 这里返回的原生的字段，不会逆向转换
-                return new AutoResult(object);
+                return new AutoResult(convert, object);
             } else {
                 throw new IllegalArgumentException("不支持的动作标签,当前仅支持select,update,delete,insert");
             }
