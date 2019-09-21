@@ -17,7 +17,7 @@ public class AddCompareMapping extends NothingCompareMapping {
             ActionDataSourceWrapper wrapper = dataSourceWrapper.newDataSourceWrapper();
             wrapper.setAutoCloseConnection(true);
 
-            DatabasePorter porter = PlatformFactory.getDatabasePorter(wrapper.getDataSource());
+            DatabasePorter porter = PlatformFactory.getDatabasePorter(wrapper);
             CarryHandler carryHandler = PlatformFactory.getCarryHandler(wrapper);
 
             List<MappingTable> missingTables = notMatchObject.getMissingTables();
@@ -27,18 +27,15 @@ public class AddCompareMapping extends NothingCompareMapping {
                 for (MappingTable table : missingTables) {
                     String tableName = table.getDatabaseTableName();
                     String tableClassName = table.getMappingClass().getSimpleName();
-                    PorterStructure[] structures = porter.createTable(table);
                     // 使用SQL语句添加表
-                    if (structures != null) {
-                        try {
-                            carryHandler.doHandler(structures);
-                        } catch (SQLException e) {
-                            throw new SQLException(
-                                    "向数据库添加新表" +
-                                            "[" + tableName + "]出错," +
-                                            "请检查映射类[" + tableClassName + "]" +
-                                            ",如果出现不支持情况请手动建表", e);
-                        }
+                    try {
+                        porter.createTable(table);
+                    } catch (SQLException e) {
+                        throw new SQLException(
+                                "向数据库添加新表" +
+                                        "[" + tableName + "]出错," +
+                                        "请检查映射类[" + tableClassName + "]" +
+                                        ",如果出现不支持情况请手动建表", e);
                     }
                 }
             }
@@ -50,17 +47,14 @@ public class AddCompareMapping extends NothingCompareMapping {
                     String tableName = table.getDatabaseTableName();
                     String tableClassName = table.getMappingClass().getSimpleName();
                     String fieldName = field.getMappingFieldName();
-                    PorterStructure[] structures = porter.createField(field);
                     // 使用SQL语句添加字段
-                    if (structures != null) {
-                        try {
-                            carryHandler.doHandler(structures);
-                        } catch (SQLException e) {
-                            throw new SQLException(
-                                    "向数据库表[" + tableName + "]" +
-                                            "添加新字段[" + fieldName + "]出错,请检查映射类[" + tableClassName + "]," +
-                                            "请手动修改数据库表字段信息", e);
-                        }
+                    try {
+                        porter.createField(field);
+                    } catch (SQLException e) {
+                        throw new SQLException(
+                                "向数据库表[" + tableName + "]" +
+                                        "添加新字段[" + fieldName + "]出错,请检查映射类[" + tableClassName + "]," +
+                                        "请手动修改数据库表字段信息", e);
                     }
                 }
             }

@@ -6,5 +6,6 @@ public interface DatabasePorter extends
         UpdateDatabasePorter,
         DeleteDatabasePorter,
         SelectDatabasePorter {
-
+    
+    void setCarryHandler(CarryHandler carryHandler);
 }

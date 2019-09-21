@@ -25,21 +25,26 @@ public class PlatformFactory {
         return null;
     }
 
-    public static DatabasePorter getDatabasePorter(MimosaDataSource dataSource) {
+    public static DatabasePorter getDatabasePorter(ActionDataSourceWrapper dswrapper) {
+        MimosaDataSource dataSource = dswrapper.getDataSource();
         DatabaseTypeEnum typeEnum = dataSource.getDatabaseTypeEnum();
+        DatabasePorter databasePorter = null;
         if (typeEnum.equals(DatabaseTypeEnum.MYSQL)) {
-            return new MysqlDatabasePorter();
+            databasePorter = new MysqlDatabasePorter();
         }
         if (typeEnum.equals(DatabaseTypeEnum.ORACLE)) {
-            return new OracleDatabasePorter();
+            databasePorter = new OracleDatabasePorter();
         }
         if (typeEnum.equals(DatabaseTypeEnum.SQL_SERVER)) {
-            return new SQLServerDatabasePorter();
+            databasePorter = new SQLServerDatabasePorter();
         }
         if (typeEnum.equals(DatabaseTypeEnum.POSTGRESQL)) {
-            return new PostgreSQLDatabasePorter();
+            databasePorter = new PostgreSQLDatabasePorter();
         }
-        return null;
+        if (databasePorter != null) {
+            databasePorter.setCarryHandler(getCarryHandler(dswrapper));
+        }
+        return databasePorter;
     }
 
     public static CarryHandler getCarryHandler(ActionDataSourceWrapper dswrapper) {
@@ -61,10 +66,8 @@ public class PlatformFactory {
     }
 
     public static PlatformWrapper getPlatformWrapper(ActionDataSourceWrapper dswrapper) {
-        MimosaDataSource dataSource = dswrapper.getDataSource();
-
         CarryHandler carryHandler = getCarryHandler(dswrapper);
-        DatabasePorter databasePorter = getDatabasePorter(dataSource);
+        DatabasePorter databasePorter = getDatabasePorter(dswrapper);
 
         if (carryHandler == null || databasePorter == null) {
             throw new IllegalArgumentException("不支持的数据库平台");
@@ -73,7 +76,7 @@ public class PlatformFactory {
         return new PlatformWrapperImpl(databasePorter, carryHandler);
     }
 
-    public static ObjectSymbolContrast getPlatformSymbolContrast(MimosaDataSource dataSource) {
+    public static ObjectSymbolContrast getSymbolContrast(MimosaDataSource dataSource) {
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.MYSQL)) {
             return new MysqlObjectSymbolContrast();
         }
@@ -86,14 +89,12 @@ public class PlatformFactory {
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.POSTGRESQL)) {
             return new PostgreSQLObjectSymbolContrast();
         }
-        return new MysqlObjectSymbolContrast();
+        return null;
     }
 
     public static SimpleTemplate getPlatformSimpleSession(ActionDataSourceWrapper dswrapper) {
-        MimosaDataSource dataSource = dswrapper.getDataSource();
-
         CarryHandler carryHandler = getCarryHandler(dswrapper);
-        DatabasePorter databasePorter = getDatabasePorter(dataSource);
+        DatabasePorter databasePorter = getDatabasePorter(dswrapper);
 
         if (carryHandler == null || databasePorter == null) {
             throw new IllegalArgumentException("不支持的数据库平台");

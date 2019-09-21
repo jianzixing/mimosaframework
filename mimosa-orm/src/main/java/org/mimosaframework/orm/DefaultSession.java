@@ -397,9 +397,9 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException("没有找到该类的映射表");
         }
         Set<MappingField> fields = mappingTable.getMappingFields();
-        Iterator<DefaultFunction.FunctionField> iterator = f.getFuns().iterator();
+        Iterator<FunctionField> iterator = f.getFuns().iterator();
         while (iterator.hasNext()) {
-            DefaultFunction.FunctionField entry = iterator.next();
+            FunctionField entry = iterator.next();
             Object key = entry.getField();
             String fieldName = String.valueOf(key);
             boolean isContains = false;
@@ -480,8 +480,7 @@ public class DefaultSession implements Session {
             }
 
             if (structure != null) {
-                PorterStructure[] structures = new PorterStructure[]{structure};
-                Object object = carryHandler.doHandler(structures);
+                Object object = carryHandler.doHandler(structure);
                 // 这里返回的原生的字段，不会逆向转换
                 return new AutoResult(convert, object);
             } else {

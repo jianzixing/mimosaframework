@@ -4,10 +4,12 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.criteria.DefaultUpdate;
 import org.mimosaframework.orm.mapping.MappingTable;
 
+import java.sql.SQLException;
+
 public interface UpdateDatabasePorter {
-    PorterStructure[] update(MappingTable table, ModelObject object);
+    Integer update(MappingTable table, ModelObject object) throws SQLException;
 
-    PorterStructure[] update(MappingTable table, DefaultUpdate update);
+    Integer update(MappingTable table, DefaultUpdate update) throws SQLException;
 
-    PorterStructure[] simpleUpdate(String table, ModelObject object, ModelObject where);
+    Integer simpleUpdate(String table, ModelObject object, ModelObject where) throws SQLException;
 }

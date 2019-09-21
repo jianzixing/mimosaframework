@@ -43,15 +43,12 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     @Override
     public void createTable(MappingTable table) throws SQLException {
         this.checkMappingTableInDatabase(table);
-
-        PorterStructure[] structures = databasePorter.createTable(table);
-        carryHandler.doHandler(structures);
+        databasePorter.createTable(table);
     }
 
     @Override
     public void dropTable(String tableName) throws SQLException {
-        PorterStructure[] structures = databasePorter.dropTable(tableName);
-        carryHandler.doHandler(structures);
+        databasePorter.dropTable(tableName);
     }
 
     @Override
@@ -59,72 +56,55 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         SpecificMappingTable mytable = new SpecificMappingTable();
         mytable.setDatabaseTableName(table);
         field.setMappingTable(mytable);
-        PorterStructure[] structures = databasePorter.createField(field);
-        carryHandler.doHandler(structures);
+        databasePorter.createField(field);
     }
 
     @Override
     public void dropField(String table, MappingField field) throws SQLException {
-        PorterStructure[] structures = databasePorter.dropField(table, field);
-        carryHandler.doHandler(structures);
+        databasePorter.dropField(table, field);
     }
 
     @Override
     public Long insert(MappingTable table, ModelObject object) throws SQLException {
         this.checkMappingTableInDatabase(table);
-
-        PorterStructure[] structures = this.databasePorter.insert(table, object);
-        Long id = (Long) carryHandler.doHandler(structures);
-        return id;
+        return this.databasePorter.insert(table, object);
     }
 
     @Override
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
         this.checkMappingTableInDatabase(table);
-
-        PorterStructure[] structures = this.databasePorter.inserts(table, objects);
-        List<Long> ids = (List<Long>) carryHandler.doHandler(structures);
-        return ids;
+        return this.databasePorter.inserts(table, objects);
     }
 
     @Override
     public Integer update(MappingTable table, ModelObject object) throws SQLException {
         this.checkMappingTableInDatabase(table);
-
-        PorterStructure[] structures = this.databasePorter.update(table, object);
-        return (Integer) carryHandler.doHandler(structures);
+        return this.databasePorter.update(table, object);
     }
 
     @Override
     public Integer update(MappingTable table, DefaultUpdate update) throws SQLException {
         this.checkMappingTableInDatabase(table);
-
-        PorterStructure[] structures = this.databasePorter.update(table, update);
-        return (Integer) carryHandler.doHandler(structures);
+        return this.databasePorter.update(table, update);
     }
 
     @Override
     public Integer update(String sql) throws SQLException {
         SQLBuilder builder = SQLBuilderFactory.createSQLBuilder();
         builder.addSQLString(sql);
-        PorterStructure[] structures = new PorterStructure[]{new PorterStructure(ChangerClassify.UPDATE, builder)};
-        return (Integer) carryHandler.doHandler(structures);
+        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, builder));
     }
 
     @Override
-    public int delete(MappingTable table, ModelObject object) throws SQLException {
+    public Integer delete(MappingTable table, ModelObject object) throws SQLException {
         this.checkMappingTableInDatabase(table);
-
-        PorterStructure[] structures = this.databasePorter.delete(table, object);
-        return (Integer) carryHandler.doHandler(structures);
+        return this.databasePorter.delete(table, object);
     }
 
     @Override
-    public int delete(MappingTable table, DefaultDelete delete) throws SQLException {
+    public Integer delete(MappingTable table, DefaultDelete delete) throws SQLException {
         this.checkMappingTableInDatabase(table);
-
-        PorterStructure[] structures = this.databasePorter.delete(table, delete);
-        return (Integer) carryHandler.doHandler(structures);
+        return this.databasePorter.delete(table, delete);
     }
 
     @Override
@@ -137,9 +117,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         }
 
         if (query.hasInnerJoin() || query.hasLeftJoin()) {
-            PorterStructure[] structures = this.databasePorter.selectPrimaryKey(tables, query);
-
-            List<ModelObject> ids = (List<ModelObject>) carryHandler.doHandler(structures);
+            List<ModelObject> ids = this.databasePorter.selectPrimaryKey(tables, query);
             if (ids != null && ids.size() > 0) {
                 DefaultQuery newQuery = (DefaultQuery) query.clone();
                 // 清楚分页信息inner join信息和where条件
@@ -175,16 +153,14 @@ public class PlatformWrapperImpl implements PlatformWrapper {
                 tables = new LinkedHashMap<>(tables);
                 tables.put(newQuery, tables.get(query));
                 tables.remove(query);
-                PorterStructure[] newStructure = this.databasePorter.select(tables, newQuery);
-                List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(newStructure);
-                return buildMergeObjects(newStructure[0].getReferences(), newQuery, convert, objects);
+                SelectResult selectResult = this.databasePorter.select(tables, newQuery);
+                return buildMergeObjects(selectResult.getStructure().getReferences(), newQuery, convert, selectResult.getObjects());
             }
             return null;
         } else {
-            PorterStructure[] structures = this.databasePorter.select(tables, query);
-            List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
-            if (objects != null) {
-                return buildMergeObjects(structures[0].getReferences(), query, convert, objects);
+            SelectResult selectResult = this.databasePorter.select(tables, query);
+            if (selectResult != null) {
+                return buildMergeObjects(selectResult.getStructure().getReferences(), query, convert, selectResult.getObjects());
             }
             return null;
         }
@@ -200,8 +176,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         }
 
         query.clearLeftJoin();
-        PorterStructure[] structures = this.databasePorter.selectPrimaryKey(tables, query);
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
+        List<ModelObject> objects = this.databasePorter.selectPrimaryKey(tables, query);
         return objects;
     }
 
@@ -209,8 +184,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     public ModelObject select(MappingTable table, DefaultFunction function) throws SQLException {
         this.checkMappingTableInDatabase(table);
 
-        PorterStructure[] structures = this.databasePorter.select(table, function);
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
+        List<ModelObject> objects = this.databasePorter.select(table, function);
         if (objects != null && objects.size() > 0) {
             return objects.get(0);
         }
@@ -221,8 +195,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     public List<ModelObject> select(String sql) throws SQLException {
         SQLBuilder builder = SQLBuilderFactory.createSQLBuilder();
         builder.addSQLString(sql);
-        PorterStructure[] structures = new PorterStructure[]{new PorterStructure(ChangerClassify.SELECT, builder)};
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, builder));
         return objects;
     }
 
@@ -235,8 +208,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
             }
         }
 
-        PorterStructure[] structures = this.databasePorter.count(tables, query);
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
+        List<ModelObject> objects = this.databasePorter.count(tables, query);
         if (objects != null && objects.size() > 0) {
             return objects.get(0).getLongValue("count");
         }
@@ -245,34 +217,27 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     @Override
     public Long simpleInsert(String table, ModelObject object) throws SQLException {
-        PorterStructure[] structures = this.databasePorter.simpleInsert(table, object);
-        Long id = (Long) carryHandler.doHandler(structures);
-        return id;
+        return this.databasePorter.simpleInsert(table, object);
     }
 
     @Override
     public int simpleDelete(String table, ModelObject where) throws SQLException {
-        PorterStructure[] structures = this.databasePorter.simpleDelete(table, where);
-        return (Integer) carryHandler.doHandler(structures);
+        return this.databasePorter.simpleDelete(table, where);
     }
 
     @Override
     public int simpleUpdate(String table, ModelObject object, ModelObject where) throws SQLException {
-        PorterStructure[] structures = this.databasePorter.simpleUpdate(table, object, where);
-        return (Integer) carryHandler.doHandler(structures);
+        return this.databasePorter.simpleUpdate(table, object, where);
     }
 
     @Override
     public List<ModelObject> simpleSelect(String table, ModelObject where) throws SQLException {
-        PorterStructure[] structures = this.databasePorter.simpleSelect(table, where);
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
-        return objects;
+        return this.databasePorter.simpleSelect(table, where);
     }
 
     @Override
     public long simpleCount(String table, ModelObject where) throws SQLException {
-        PorterStructure[] structures = this.databasePorter.simpleCount(table, where);
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
+        List<ModelObject> objects = this.databasePorter.simpleCount(table, where);
         if (objects != null && objects.size() > 0) {
             objects.get(0).getLongValue("count");
         }

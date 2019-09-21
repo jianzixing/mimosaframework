@@ -9,5 +9,5 @@ public abstract class CarryHandler {
         this.dswrapper = dswrapper;
     }
 
-    public abstract Object doHandler(PorterStructure[] structures) throws SQLException;
+    public abstract Object doHandler(PorterStructure structure) throws SQLException;
 }

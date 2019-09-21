@@ -9,7 +9,7 @@ public interface Function extends OpFilter<Function> {
 
     Function addFunction(BasicFunction function, Object field, String alias);
 
-    Function addFunction(DefaultFunction.FunctionField function);
+    Function addFunction(FunctionField function);
 
     Function master();
 

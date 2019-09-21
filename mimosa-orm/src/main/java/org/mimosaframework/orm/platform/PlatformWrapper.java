@@ -32,9 +32,9 @@ public interface PlatformWrapper {
 
     Integer update(String sql) throws SQLException;
 
-    int delete(MappingTable table, ModelObject object) throws SQLException;
+    Integer delete(MappingTable table, ModelObject object) throws SQLException;
 
-    int delete(MappingTable table, DefaultDelete delete) throws SQLException;
+    Integer delete(MappingTable table, DefaultDelete delete) throws SQLException;
 
     List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query, ModelObjectConvertKey convert) throws SQLException;
 

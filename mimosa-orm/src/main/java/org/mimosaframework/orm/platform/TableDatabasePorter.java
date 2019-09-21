@@ -3,14 +3,16 @@ package org.mimosaframework.orm.platform;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
+import java.sql.SQLException;
+
 public interface TableDatabasePorter {
-    PorterStructure[] createTable(MappingTable table);
+    void createTable(MappingTable table) throws SQLException;
 
-    PorterStructure[] createField(MappingField field);
+    void createField(MappingField field) throws SQLException;
 
-    PorterStructure[] updateField(MappingField field);
+    void updateField(MappingField field) throws SQLException;
 
-    PorterStructure[] dropField(String table, MappingField field);
+    void dropField(String table, MappingField field) throws SQLException;
 
-    PorterStructure[] dropTable(String tableName);
+    void dropTable(String tableName) throws SQLException;
 }

@@ -7,9 +7,17 @@ import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public abstract class AbstractDatabasePorter implements DatabasePorter {
+    protected CarryHandler carryHandler;
+
+    @Override
+    public void setCarryHandler(CarryHandler carryHandler) {
+        this.carryHandler = carryHandler;
+    }
+
     protected void buildTableField(MappingField field,
                                    SQLBuilder builder,
                                    boolean isAddPrimaryKey,
@@ -132,7 +140,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public PorterStructure[] createTable(MappingTable table) {
+    public void createTable(MappingTable table) throws SQLException {
         SQLBuilder fieldBuilder = this.createTableFields(table);
         this.createTablePrimaryKeys(fieldBuilder, table);
 
@@ -151,10 +159,11 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         this.createTableDefaultCharset(tableBuilder, encoding);
 
         PorterStructure tableStructure = new PorterStructure(ChangerClassify.CREATE_TABLE, tableBuilder);
-        return new PorterStructure[]{tableStructure};
+
+        carryHandler.doHandler(tableStructure);
     }
 
-    protected PorterStructure[] changeTableField(MappingField field, boolean isModify) {
+    protected void changeTableField(MappingField field, boolean isModify) throws SQLException {
         MappingTable table = field.getMappingTable();
         if (table == null) {
             throw new IllegalArgumentException("添加表字段必须有表MappingTable信息");
@@ -181,31 +190,32 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
         PorterStructure fieldStructure = new PorterStructure(
                 isModify ? ChangerClassify.UPDATE_FIELD : ChangerClassify.CREATE_FIELD, sqlBuilder);
-        return new PorterStructure[]{fieldStructure};
+
+        carryHandler.doHandler(fieldStructure);
     }
 
     @Override
-    public PorterStructure[] createField(MappingField field) {
-        return this.changeTableField(field, false);
+    public void createField(MappingField field) throws SQLException {
+        this.changeTableField(field, false);
     }
 
     @Override
-    public PorterStructure[] updateField(MappingField field) {
-        return this.changeTableField(field, true);
+    public void updateField(MappingField field) throws SQLException {
+        this.changeTableField(field, true);
     }
 
     @Override
-    public PorterStructure[] dropField(String table, MappingField field) {
+    public void dropField(String table, MappingField field) throws SQLException {
         SQLBuilder dropFieldBuilder = this.createSQLBuilder();
         dropFieldBuilder.ALTER().TABLE(table).DROP().addWrapString(field.getDatabaseColumnName());
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.DROP_FIELD, dropFieldBuilder)};
+        carryHandler.doHandler(new PorterStructure(ChangerClassify.DROP_FIELD, dropFieldBuilder));
     }
 
     @Override
-    public PorterStructure[] dropTable(String tableName) {
+    public void dropTable(String tableName) throws SQLException {
         SQLBuilder dropBuilder = this.createSQLBuilder();
         dropBuilder.DROP().TABLE(tableName);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.DROP_TABLE, dropBuilder)};
+        carryHandler.doHandler(new PorterStructure(ChangerClassify.DROP_TABLE, dropBuilder));
     }
 
     protected void insertAddValue(SQLBuilder insertBuilder, MappingTable table, ModelObject object) {
@@ -243,15 +253,16 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public PorterStructure[] insert(MappingTable table, ModelObject object) {
+    public Long insert(MappingTable table, ModelObject object) throws SQLException {
         String tableName = table.getDatabaseTableName();
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
         this.insertAddValue(insertBuilder, table, object);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder)};
+        Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder));
+        return id;
     }
 
     @Override
-    public PorterStructure[] inserts(MappingTable table, List<ModelObject> objects) {
+    public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
         String tableName = table.getDatabaseTableName();
 
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
@@ -278,7 +289,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         return fields;
     }
 
-    protected PorterStructure[] insertBuildValues(List<ModelObject> objects, SQLBuilder insertBuilder, List<String> fields) {
+    protected List<Long> insertBuildValues(List<ModelObject> objects, SQLBuilder insertBuilder, List<String> fields) throws SQLException {
         insertBuilder.addParenthesisWrapString(fields.toArray(new String[]{}));
         insertBuilder.VALUES();
 
@@ -307,11 +318,12 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
         }
 
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder)};
+        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
+        return ids;
     }
 
     @Override
-    public PorterStructure[] simpleInsert(String table, ModelObject object) {
+    public Long simpleInsert(String table, ModelObject object) throws SQLException {
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.INSERT().INTO().addWrapString(table);
 
@@ -341,11 +353,12 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         sqlBuilder.addSQLBuilder(valueBuilder);
         sqlBuilder.addParenthesisEnd();
 
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.ADD_OBJECT, sqlBuilder)};
+        Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, sqlBuilder));
+        return id;
     }
 
     @Override
-    public PorterStructure[] update(MappingTable table, ModelObject object) {
+    public Integer update(MappingTable table, ModelObject object) throws SQLException {
         String tableName = table.getDatabaseTableName();
         List<MappingField> primaryKeyFields = table.getMappingPrimaryKeyFields();
         SQLBuilder updateBuilder = this.createSQLBuilder();
@@ -388,12 +401,11 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
 
         updateBuilder.WHERE().addSQLBuilder(updateWhereBuilder);
-
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.UPDATE_OBJECT, updateBuilder)};
+        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE_OBJECT, updateBuilder));
     }
 
     @Override
-    public PorterStructure[] update(MappingTable table, DefaultUpdate update) {
+    public Integer update(MappingTable table, DefaultUpdate update) throws SQLException {
         String tableName = table.getDatabaseTableName();
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.UPDATE().addString(tableName).SET();
@@ -437,7 +449,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
 
             this.selectBuildWhere(table, sqlBuilder, update.getLogicWraps());
-            return new PorterStructure[]{new PorterStructure(ChangerClassify.UPDATE, sqlBuilder)};
+            return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, sqlBuilder));
         }
         return null;
     }
@@ -452,7 +464,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public PorterStructure[] simpleUpdate(String table, ModelObject object, ModelObject where) {
+    public Integer simpleUpdate(String table, ModelObject object, ModelObject where) throws SQLException {
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.UPDATE().addWrapString(table).SET();
 
@@ -467,11 +479,11 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         sqlBuilder.WHERE();
 
         this.simpleSelectCountBuilder(sqlBuilder, where);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.UPDATE, sqlBuilder)};
+        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, sqlBuilder));
     }
 
     @Override
-    public PorterStructure[] delete(MappingTable table, ModelObject object) {
+    public Integer delete(MappingTable table, ModelObject object) throws SQLException {
         String tableName = table.getDatabaseTableName();
         List<MappingField> primaryKeyFields = table.getMappingPrimaryKeyFields();
         SQLBuilder deleteBuilder = this.createSQLBuilder();
@@ -501,30 +513,29 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
 
         deleteBuilder.WHERE().addSQLBuilder(deleteWhereBuilder);
-
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.DELETE_OBJECT, deleteBuilder)};
+        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.DELETE_OBJECT, deleteBuilder));
     }
 
     @Override
-    public PorterStructure[] delete(MappingTable table, DefaultDelete delete) {
+    public Integer delete(MappingTable table, DefaultDelete delete) throws SQLException {
         String tableName = table.getDatabaseTableName();
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.DELETE().FROM().addString(tableName);
 
         selectBuildWhere(table, sqlBuilder, delete.getLogicWraps());
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.DELETE, sqlBuilder)};
+        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.DELETE, sqlBuilder));
     }
 
     @Override
-    public PorterStructure[] simpleDelete(String table, ModelObject where) {
+    public Integer simpleDelete(String table, ModelObject where) throws SQLException {
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.DELETE().FROM().TABLE(table).WHERE();
         this.simpleSelectCountBuilder(sqlBuilder, where);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.DELETE, sqlBuilder)};
+        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.DELETE, sqlBuilder));
     }
 
     @Override
-    public PorterStructure[] select(Map<Object, MappingTable> tables, DefaultQuery query) {
+    public SelectResult select(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
         List innerJoins = query.getInnerJoin();
         List leftJoins = query.getLeftJoin();
 
@@ -558,7 +569,10 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
          * 需要先查询主键后再使用当前查询
          */
         SQLBuilder builder = this.buildSelect(tables, query, aliasMap, references);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.SELECT, builder, references)};
+
+        PorterStructure structure = new PorterStructure(ChangerClassify.SELECT, builder, references);
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structure);
+        return new SelectResult(objects, structure);
     }
 
     protected Map<Object, MappingTable> clearNotExistMappingTable(Map<Object, MappingTable> tables, DefaultQuery query) {
@@ -580,7 +594,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public PorterStructure[] select(MappingTable table, DefaultFunction function) {
+    public List<ModelObject> select(MappingTable table, DefaultFunction function) throws SQLException {
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.SELECT();
         List groupBys = function.getGroupBy();
@@ -590,10 +604,10 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         SQLBuilder funPSQLBuilder = this.createSQLBuilder();
         SQLBuilder funCSQLBuilder = this.createSQLBuilder();
 
-        List<DefaultFunction.FunctionField> funs = function.getFuns();
-        Iterator<DefaultFunction.FunctionField> iterator = funs.iterator();
+        List<FunctionField> funs = function.getFuns();
+        Iterator<FunctionField> iterator = funs.iterator();
         while (iterator.hasNext()) {
-            DefaultFunction.FunctionField field = iterator.next();
+            FunctionField field = iterator.next();
             BasicFunction fun = field.getFunction();
             Object f = field.getField();
             String alias = field.getAlias();
@@ -702,7 +716,9 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 }
             }
         }
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.SELECT, sqlBuilder)};
+
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, sqlBuilder));
+        return objects;
     }
 
     protected void countTableAsBuilder(SQLBuilder countBuilder) {
@@ -710,7 +726,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public PorterStructure[] count(Map<Object, MappingTable> tables, DefaultQuery query) {
+    public List<ModelObject> count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
         SQLBuilder countBuilder = this.createSQLBuilder();
         countBuilder.SELECT().addFun("COUNT", 1, "count")
                 .FROM();
@@ -745,11 +761,13 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 countBuilder.addSQLBuilder(whereBuilder);
             }
         }
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.COUNT, countBuilder)};
+
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.COUNT, countBuilder));
+        return objects;
     }
 
     @Override
-    public PorterStructure[] selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) {
+    public List<ModelObject> selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
         int startAliasNumber = 0;
         Map<Object, String> aliasMap = new LinkedHashMap<>(tables.size());
         Iterator<Map.Entry<Object, MappingTable>> iterator = tables.entrySet().iterator();
@@ -758,7 +776,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             aliasMap.put(next.getKey(), "t" + (++startAliasNumber));
         }
         SQLBuilder builder = this.buildSelectInnerJoin(tables, query, aliasMap, true, false);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.SELECT_PRIMARY_KEY, builder)};
+        return (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT_PRIMARY_KEY, builder));
     }
 
     protected void simpleBuildValue(SQLBuilder sqlBuilder, Iterator<Map.Entry<Object, Object>> iterator) {
@@ -787,19 +805,22 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public PorterStructure[] simpleSelect(String table, ModelObject where) {
+    public List<ModelObject> simpleSelect(String table, ModelObject where) throws SQLException {
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.SELECT().addString("*").FROM().TABLE(table).WHERE();
         this.simpleSelectCountBuilder(sqlBuilder, where);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.SELECT, sqlBuilder)};
+
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, sqlBuilder));
+        return objects;
     }
 
     @Override
-    public PorterStructure[] simpleCount(String table, ModelObject where) {
+    public List<ModelObject> simpleCount(String table, ModelObject where) throws SQLException {
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.SELECT().addString("COUNT(1)").FROM().TABLE(table).WHERE();
         this.simpleSelectCountBuilder(sqlBuilder, where);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.COUNT, sqlBuilder)};
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.COUNT, sqlBuilder));
+        return objects;
     }
 
     protected Map<Object, List<SelectFieldAliasReference>> getFieldAliasReference(

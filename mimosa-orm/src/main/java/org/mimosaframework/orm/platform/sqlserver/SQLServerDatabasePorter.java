@@ -7,6 +7,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class SQLServerDatabasePorter extends AbstractDatabasePorter {
@@ -272,7 +273,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
     }
 
     @Override
-    public PorterStructure[] createTable(MappingTable table) {
+    public void createTable(MappingTable table) throws SQLException {
         SQLBuilder fieldBuilder = this.createTableFields(table);
         super.createTablePrimaryKeys(fieldBuilder, table);
 
@@ -286,11 +287,11 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
         }
 
         PorterStructure tableStructure = new PorterStructure(ChangerClassify.CREATE_TABLE, tableBuilder);
-        return new PorterStructure[]{tableStructure};
+        carryHandler.doHandler(tableStructure);
     }
 
     @Override
-    public PorterStructure[] insert(MappingTable table, ModelObject object) {
+    public Long insert(MappingTable table, ModelObject object) throws SQLException {
         String tableName = table.getDatabaseTableName();
 
         // 如果自增主键保存时有值
@@ -321,11 +322,12 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             insertBuilder.SET().addString("IDENTITY_INSERT").addWrapString(tableName).OFF().addEndMark();
         }
 
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder)};
+        Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder));
+        return id;
     }
 
     @Override
-    public PorterStructure[] inserts(MappingTable table, List<ModelObject> objects) {
+    public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
         String tableName = table.getDatabaseTableName();
 
         SQLBuilder insertBuilder = SQLBuilderFactory.createBraceSQLBuilder().INSERT().INTO().addString(tableName);
@@ -334,7 +336,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
     }
 
     @Override
-    public PorterStructure[] select(Map<Object, MappingTable> tables, DefaultQuery query) {
+    public SelectResult select(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
         List innerJoins = query.getInnerJoin();
         List leftJoins = query.getLeftJoin();
 
@@ -358,14 +360,17 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             references = this.getFieldAliasReference(tables, aliasMap, query.getFields());
         }
         SQLBuilder builder = this.buildSelectLeftJoins(tables, query, aliasMap, references);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.SELECT, builder, references)};
+
+        PorterStructure structure = new PorterStructure(ChangerClassify.SELECT, builder, references);
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structure);
+        return new SelectResult(objects, structure);
     }
 
     @Override
-    public PorterStructure[] selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) {
+    public List<ModelObject> selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
         MappingTable table = tables.get(query);
         SQLBuilder sqlBuilder = this.buildSingleSelect(query, table, true);
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.SELECT_PRIMARY_KEY, sqlBuilder)};
+        return (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT_PRIMARY_KEY, sqlBuilder));
     }
 
     @Override

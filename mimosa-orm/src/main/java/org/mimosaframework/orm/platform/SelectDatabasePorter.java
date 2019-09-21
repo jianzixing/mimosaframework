@@ -5,6 +5,8 @@ import org.mimosaframework.orm.criteria.DefaultFunction;
 import org.mimosaframework.orm.criteria.DefaultQuery;
 import org.mimosaframework.orm.mapping.MappingTable;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 public interface SelectDatabasePorter {
@@ -15,11 +17,11 @@ public interface SelectDatabasePorter {
      * @param query
      * @return
      */
-    PorterStructure[] select(Map<Object, MappingTable> tables, DefaultQuery query);
+    SelectResult select(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
 
-    PorterStructure[] select(MappingTable table, DefaultFunction function);
+    List<ModelObject> select(MappingTable table, DefaultFunction function) throws SQLException;
 
-    PorterStructure[] count(Map<Object, MappingTable> tables, DefaultQuery query);
+    List<ModelObject> count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
 
     /**
      * 查询出所需要的主表的主键值
@@ -29,9 +31,9 @@ public interface SelectDatabasePorter {
      * @param query
      * @return
      */
-    PorterStructure[] selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query);
+    List<ModelObject> selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
 
-    PorterStructure[] simpleSelect(String table, ModelObject where);
+    List<ModelObject> simpleSelect(String table, ModelObject where) throws SQLException;
 
-    PorterStructure[] simpleCount(String table, ModelObject where);
+    List<ModelObject> simpleCount(String table, ModelObject where) throws SQLException;
 }

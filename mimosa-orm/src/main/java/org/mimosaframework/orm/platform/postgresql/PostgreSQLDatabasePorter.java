@@ -7,6 +7,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
@@ -84,7 +85,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
     }
 
     @Override
-    public PorterStructure[] createTable(MappingTable table) {
+    public void createTable(MappingTable table) throws SQLException {
         SQLBuilder fieldBuilder = this.createTableFields(table);
         this.createTablePrimaryKeys(fieldBuilder, table);
 
@@ -97,11 +98,11 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
         this.createTableDefaultCharset(tableBuilder, encoding);
 
         PorterStructure tableStructure = new PorterStructure(ChangerClassify.CREATE_TABLE, tableBuilder);
-        return new PorterStructure[]{tableStructure};
+        carryHandler.doHandler(tableStructure);
     }
 
     @Override
-    public PorterStructure[] inserts(MappingTable table, List<ModelObject> objects) {
+    public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
         String tableName = table.getDatabaseTableName();
 
         SQLBuilder insertBuilder = SQLBuilderFactory.createQMSQLBuilder().INSERT().INTO().addString(tableName);
@@ -140,7 +141,8 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
             }
         }
 
-        return new PorterStructure[]{new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder)};
+        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
+        return ids;
     }
 
     @Override

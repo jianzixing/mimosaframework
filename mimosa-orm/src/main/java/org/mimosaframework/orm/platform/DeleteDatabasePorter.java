@@ -4,10 +4,12 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.criteria.DefaultDelete;
 import org.mimosaframework.orm.mapping.MappingTable;
 
+import java.sql.SQLException;
+
 public interface DeleteDatabasePorter {
-    PorterStructure[] delete(MappingTable table, ModelObject object);
+    Integer delete(MappingTable table, ModelObject object) throws SQLException;
 
-    PorterStructure[] delete(MappingTable table, DefaultDelete delete);
+    Integer delete(MappingTable table, DefaultDelete delete) throws SQLException;
 
-    PorterStructure[] simpleDelete(String table, ModelObject where);
+    Integer simpleDelete(String table, ModelObject where) throws SQLException;
 }
