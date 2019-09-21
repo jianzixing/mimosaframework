@@ -7,7 +7,12 @@
     <!--使用内置转换器-->
     <convert name="H2U"/>
 
+    <!--这里是要扫描的包，只支持单层扫描-->
     <mapper value="mapper1"/>
+    <!--这里需要是资源的全路径-->
+    <mappers>
+        <value>/mapper2/user2_mapper.xml</value>
+    </mappers>
 
     <datasource>
         <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>

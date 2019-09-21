@@ -86,6 +86,15 @@ public class XmlAppContextTesting {
         result.setTableClass(TableUser.class, TableContacts.class);
         System.out.println(result.getSingle());
 
+        user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+
+        param = new ModelObject();
+        param.put(TableUser.id, user.getIntValue(TableUser.id));
+        AutoResult result2 = template.getAutonomously(TAutonomously.newInstance("user2_mapper.getUserById", param));
+        System.out.println(result2.getSingle());
+
         MimosaDataSource.clearAllDataSources();
     }
 }

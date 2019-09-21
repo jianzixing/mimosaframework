@@ -31,9 +31,18 @@ public class SQLDefinedLoader {
                 mappers = new ArrayList<>();
             }
 
-            URL url = this.getClass().getResource("/" + path.replace(".", "/"));
-            if (url == null) {
-                throw new IllegalArgumentException("找不到资源" + path);
+
+            URL url = null;
+            if (path.endsWith(".xml")) {
+                url = this.getClass().getResource(path);
+                if (url == null) {
+                    throw new IllegalArgumentException("找不到资源" + path);
+                }
+            } else {
+                url = this.getClass().getResource("/" + path.replace(".", "/"));
+                if (url == null) {
+                    throw new IllegalArgumentException("找不到资源" + path);
+                }
             }
             String protocol = url.getProtocol();
             if ("file".equals(protocol)) {
@@ -82,45 +91,71 @@ public class SQLDefinedLoader {
     private void findClassLocal(final String packName) {
         URI url = null;
         try {
-            url = SQLDefinedLoader.class.getResource("/" + packName.replace(".", "/")).toURI();
-        } catch (URISyntaxException e1) {
-            throw new RuntimeException("未找到策略资源");
+            if (packName.endsWith(".xml")) {
+                url = this.getClass().getResource(packName).toURI();
+            } else {
+                url = SQLDefinedLoader.class.getResource("/" + packName.replace(".", "/")).toURI();
+            }
+        } catch (Exception e1) {
+            throw new RuntimeException("找不到资源" + packName);
         }
 
         final File file = new File(url);
-        file.listFiles(new FileFilter() {
-
-            public boolean accept(File filterFile) {
-                if (filterFile.isDirectory()) {
-                    findClassLocal(packName + "." + filterFile.getName());
-                }
-                if (filterFile.getName().endsWith(".xml")) {
-                    InputStream is = null;
+        if (file.isFile()) {
+            InputStream is = null;
+            try {
+                is = new FileInputStream(file);
+                XMapper mapper = sqlDefiner.getDefiner(is, file.getName());
+                addMapper(mapper);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } finally {
+                if (is != null) {
                     try {
-                        is = new FileInputStream(filterFile);
-                        XMapper mapper = sqlDefiner.getDefiner(is, filterFile.getName());
-                        addMapper(mapper);
-                    } catch (ParserConfigurationException e) {
-                        e.printStackTrace();
+                        is.close();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } catch (SAXException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (is != null) {
-                            try {
-                                is.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            file.listFiles(new FileFilter() {
+
+                public boolean accept(File filterFile) {
+                    if (filterFile.isDirectory()) {
+                        findClassLocal(packName + "." + filterFile.getName());
+                    }
+                    if (filterFile.getName().endsWith(".xml")) {
+                        InputStream is = null;
+                        try {
+                            is = new FileInputStream(filterFile);
+                            XMapper mapper = sqlDefiner.getDefiner(is, filterFile.getName());
+                            addMapper(mapper);
+                        } catch (ParserConfigurationException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (SAXException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (is != null) {
+                                try {
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
-                return false;
-            }
-        });
-
+            });
+        }
     }
 
     private void findClassJar(final String packName) {

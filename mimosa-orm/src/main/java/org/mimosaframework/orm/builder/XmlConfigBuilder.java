@@ -696,6 +696,15 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                     if (node != null && node.getNodeName().equalsIgnoreCase("mapper")) {
                         mps.add(this.getXmlNodeAny(node, "value"));
                     }
+                    if (node != null && node.getNodeName().equalsIgnoreCase("mappers")) {
+                        NodeList mappers = node.getChildNodes();
+                        for (int k = 0; k < mappers.getLength(); k++) {
+                            Node mapperItem = mappers.item(k);
+                            if (mapperItem != null && mapperItem.getNodeName().equalsIgnoreCase("value")) {
+                                mps.add(this.getXmlNodeAny(mapperItem, "value"));
+                            }
+                        }
+                    }
                 }
             }
         }
