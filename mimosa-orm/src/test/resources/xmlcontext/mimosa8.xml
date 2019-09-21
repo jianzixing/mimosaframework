@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mimosa name="mimosa_test" description="测试用的配置">
+    <mapping level="CREATE">
+        <value>tables.TableUser</value>
+    </mapping>
+
+    <!--使用内置转换器-->
+    <convert name="H2U"/>
+    <format showSql="true"/>
+
+    <datasource master="master" slaves="slaveName1:slave1,slaveName2:slave2"/>
+
+    <dslist>
+        <ds name="master">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3306/mimosa?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true</property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="5"/>
+            <property name="maxActive" value="100"/>
+            <property name="maxWait" value="1000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+        <ds name="slave1">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3306/mimosa?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true</property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="5"/>
+            <property name="maxActive" value="100"/>
+            <property name="maxWait" value="1000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+        <ds name="slave2">
+            <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>
+            <property name="driverClassName">com.mysql.jdbc.Driver</property>
+            <property name="url">jdbc:mysql://localhost:3306/mimosa?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true</property>
+            <property name="username">root</property>
+            <property name="password">12345</property>
+            <!--初始化的连接数-->
+            <property name="initialSize" value="5"/>
+            <property name="maxActive" value="100"/>
+            <property name="maxWait" value="1000"/>
+            <property name="validationQuery" value="select 1"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+            <property name="minEvictableIdleTimeMillis" value="18000000"/>
+            <property name="testOnBorrow" value="true"/>
+        </ds>
+    </dslist>
+</mimosa>

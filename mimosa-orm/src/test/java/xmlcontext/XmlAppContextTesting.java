@@ -114,4 +114,55 @@ public class XmlAppContextTesting {
 
         MimosaDataSource.clearAllDataSources();
     }
+
+    @Test
+    public void mimosa7() throws ContextException {
+        XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/xmlcontext/mimosa7.xml"));
+        SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
+        SessionTemplate template = new MimosaSessionTemplate(sessionFactory);
+
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+
+        user = template.get(TableUser.class, user.getIntValue(TableUser.id));
+
+        System.out.println(user);
+
+        MimosaDataSource.clearAllDataSources();
+    }
+
+    @Test
+    public void mimosa8() throws ContextException {
+        XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/xmlcontext/mimosa8.xml"));
+        SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
+        SessionTemplate template = new MimosaSessionTemplate(sessionFactory);
+
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+
+        user = template.get(TableUser.class, user.getIntValue(TableUser.id));
+
+        System.out.println(user);
+
+        MimosaDataSource.clearAllDataSources();
+    }
+
+    @Test
+    public void mimosa9() throws ContextException {
+        XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/xmlcontext/mimosa9.xml"));
+        SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
+        SessionTemplate template = new MimosaSessionTemplate(sessionFactory);
+
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+
+        user = template.get(TableUser.class, user.getIntValue(TableUser.id));
+
+        System.out.println(user);
+
+        MimosaDataSource.clearAllDataSources();
+    }
 }

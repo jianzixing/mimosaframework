@@ -571,9 +571,6 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
 
     @Override
     public Set<Class> getResolvers() throws ContextException {
-        if (this.mimosaDataSource == null) {
-            throw new ContextException("获取类解析之前必须先设置默认数据源");
-        }
         if (this.resolvers != null) {
             return this.resolvers;
         }
