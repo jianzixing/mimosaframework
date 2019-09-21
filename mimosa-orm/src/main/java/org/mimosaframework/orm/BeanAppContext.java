@@ -89,7 +89,7 @@ public class BeanAppContext implements Context {
         {
             List<MimosaDataSource> dslist = null;
             try {
-                dslist = this.configBuilder.getDataSourceList();
+                dslist = this.configBuilder.getDataSources();
             } catch (SQLException e) {
                 throw new ContextException("获得数据源列表出错", e);
             }

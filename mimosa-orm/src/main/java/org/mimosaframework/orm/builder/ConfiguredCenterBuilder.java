@@ -112,12 +112,7 @@ public class ConfiguredCenterBuilder extends AbstractConfigBuilder {
     }
 
     @Override
-    public MimosaDataSource getDefaultDataSource() {
-        return null;
-    }
-
-    @Override
-    public List<MimosaDataSource> getDataSourceList() {
+    public List<MimosaDataSource> getDataSources() {
         return null;
     }
 

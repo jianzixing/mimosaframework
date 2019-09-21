@@ -39,7 +39,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     private CenterConfigSetting centerConfigSetting = null;
     private MimosaDataSource defaultDataSource = null;
     private Set<Class> resolvers = null;
-    private List<MimosaDataSource> dataSourceWrapper = null;
+    private List<MimosaDataSource> dataSources = new ArrayList<>();
 
     private String applicationName;
     private String applicationDetail;
@@ -119,8 +119,9 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     public void setDefaultDataSource(MimosaDataSource defaultDataSource) throws SQLException {
         if (defaultDataSource != null) {
-            defaultDataSource.setName(MimosaDataSource.DEFAULT_DS_NAME);
             this.defaultDataSource = defaultDataSource;
+            this.defaultDataSource.setName(MimosaDataSource.DEFAULT_DS_NAME);
+            this.dataSources.add(this.defaultDataSource);
         }
     }
 
@@ -128,6 +129,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         this.dataSource = dataSource;
         if (this.defaultDataSource == null) {
             this.defaultDataSource = new MimosaDataSource(dataSource, MimosaDataSource.DEFAULT_DS_NAME);
+            this.dataSources.add(this.defaultDataSource);
         }
     }
 
@@ -260,20 +262,29 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         return this.centerConfigSetting;
     }
 
-    @Override
-    public MimosaDataSource getDefaultDataSource() {
-        return this.defaultDataSource;
+    public void setDataSources(List<MimosaDataSource> dataSources) {
+        if (dataSources != null) {
+            this.dataSources.addAll(dataSources);
+        }
+        if (this.dataSources == null || this.dataSources.size() == 0) {
+            throw new IllegalArgumentException("缺少数据源配置");
+        }
+        boolean is = false;
+        for (MimosaDataSource mimosaDataSource : this.dataSources) {
+            if (MimosaDataSource.DEFAULT_DS_NAME.equals(mimosaDataSource.getName())) {
+                is = true;
+            }
+        }
+        if (!is) {
+            throw new IllegalArgumentException("缺少默认数据源配置(名称为default的数据源束)");
+        }
     }
 
-    public void setDataSourceWrapper(List<MimosaDataSource> dataSourceWrapper) {
-        this.dataSourceWrapper = dataSourceWrapper;
-    }
-
     @Override
-    public List<MimosaDataSource> getDataSourceList() throws SQLException {
-        if (dataSourceWrapper != null) {
+    public List<MimosaDataSource> getDataSources() throws SQLException {
+        if (dataSources != null) {
             List<MimosaDataSource> dslist = new ArrayList<>();
-            for (MimosaDataSource ds : dataSourceWrapper) {
+            for (MimosaDataSource ds : dataSources) {
                 dslist.add(ds);
             }
             return dslist;

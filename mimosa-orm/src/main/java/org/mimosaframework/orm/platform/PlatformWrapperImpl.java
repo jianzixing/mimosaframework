@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.mapping.MappingField;
@@ -30,8 +31,19 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         return carryHandler;
     }
 
+    private void checkMappingTableInDatabase(MappingTable table) {
+        if (table != null) {
+            if (StringTools.isEmpty(table.getDatabaseTableName())) {
+                throw new IllegalArgumentException("映射类" + table.getMappingClassName() + "没有找到对应的数据库表"
+                        + ",如果是NOTHING级别请手动创建表" + table.getMappingTableName());
+            }
+        }
+    }
+
     @Override
     public void createTable(MappingTable table) throws SQLException {
+        this.checkMappingTableInDatabase(table);
+
         PorterStructure[] structures = databasePorter.createTable(table);
         carryHandler.doHandler(structures);
     }
@@ -59,6 +71,8 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     @Override
     public Long insert(MappingTable table, ModelObject object) throws SQLException {
+        this.checkMappingTableInDatabase(table);
+
         PorterStructure[] structures = this.databasePorter.insert(table, object);
         Long id = (Long) carryHandler.doHandler(structures);
         return id;
@@ -66,6 +80,8 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     @Override
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
+        this.checkMappingTableInDatabase(table);
+
         PorterStructure[] structures = this.databasePorter.inserts(table, objects);
         List<Long> ids = (List<Long>) carryHandler.doHandler(structures);
         return ids;
@@ -73,12 +89,16 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     @Override
     public Integer update(MappingTable table, ModelObject object) throws SQLException {
+        this.checkMappingTableInDatabase(table);
+
         PorterStructure[] structures = this.databasePorter.update(table, object);
         return (Integer) carryHandler.doHandler(structures);
     }
 
     @Override
     public Integer update(MappingTable table, DefaultUpdate update) throws SQLException {
+        this.checkMappingTableInDatabase(table);
+
         PorterStructure[] structures = this.databasePorter.update(table, update);
         return (Integer) carryHandler.doHandler(structures);
     }
@@ -93,18 +113,29 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     @Override
     public int delete(MappingTable table, ModelObject object) throws SQLException {
+        this.checkMappingTableInDatabase(table);
+
         PorterStructure[] structures = this.databasePorter.delete(table, object);
         return (Integer) carryHandler.doHandler(structures);
     }
 
     @Override
     public int delete(MappingTable table, DefaultDelete delete) throws SQLException {
+        this.checkMappingTableInDatabase(table);
+
         PorterStructure[] structures = this.databasePorter.delete(table, delete);
         return (Integer) carryHandler.doHandler(structures);
     }
 
     @Override
     public List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
+        if (tables != null) {
+            Set<Map.Entry<Object, MappingTable>> entries = tables.entrySet();
+            for (Map.Entry<Object, MappingTable> entry : entries) {
+                this.checkMappingTableInDatabase(entry.getValue());
+            }
+        }
+
         if (query.hasInnerJoin() || query.hasLeftJoin()) {
             PorterStructure[] structures = this.databasePorter.selectPrimaryKey(tables, query);
 
@@ -123,6 +154,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
                 }
 
                 MappingTable table = tables.get(query);
+
                 List<MappingField> fields = table.getMappingPrimaryKeyFields();
                 if (fields.size() == 1) {
                     Set idvalues = new LinkedHashSet();
@@ -160,6 +192,13 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     @Override
     public List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
+        if (tables != null) {
+            Set<Map.Entry<Object, MappingTable>> entries = tables.entrySet();
+            for (Map.Entry<Object, MappingTable> entry : entries) {
+                this.checkMappingTableInDatabase(entry.getValue());
+            }
+        }
+
         query.clearLeftJoin();
         PorterStructure[] structures = this.databasePorter.selectPrimaryKey(tables, query);
         List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
@@ -168,6 +207,8 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     @Override
     public ModelObject select(MappingTable table, DefaultFunction function) throws SQLException {
+        this.checkMappingTableInDatabase(table);
+
         PorterStructure[] structures = this.databasePorter.select(table, function);
         List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
         if (objects != null && objects.size() > 0) {
@@ -187,6 +228,13 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     @Override
     public long count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
+        if (tables != null) {
+            Set<Map.Entry<Object, MappingTable>> entries = tables.entrySet();
+            for (Map.Entry<Object, MappingTable> entry : entries) {
+                this.checkMappingTableInDatabase(entry.getValue());
+            }
+        }
+
         PorterStructure[] structures = this.databasePorter.count(tables, query);
         List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structures);
         if (objects != null && objects.size() > 0) {

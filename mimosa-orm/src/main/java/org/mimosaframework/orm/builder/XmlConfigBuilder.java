@@ -553,14 +553,9 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         }
         return configCenterInfo;
     }
-
+    
     @Override
-    public MimosaDataSource getDefaultDataSource() {
-        return this.mimosaDataSource;
-    }
-
-    @Override
-    public List<MimosaDataSource> getDataSourceList() {
+    public List<MimosaDataSource> getDataSources() {
         List<MimosaDataSource> dataSources = new ArrayList<>();
         Iterator<Map.Entry<String, MimosaDataSource>> iterator = this.wrappers.entrySet().iterator();
         while (iterator.hasNext()) {

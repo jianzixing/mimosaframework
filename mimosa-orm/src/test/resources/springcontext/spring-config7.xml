@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-autowire="byName">
+
+    <bean id="ds" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url"
+                  value="jdbc:mysql://localhost:3306/mimosa?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC&amp;nullNamePatternMatchesAll=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="12345"/>
+        <!--初始化的连接数-->
+        <property name="initialSize" value="5"/>
+        <property name="maxActive" value="10000"/>
+        <property name="maxWait" value="1000"/>
+        <property name="validationQuery" value="select 1"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+        <property name="minEvictableIdleTimeMillis" value="18000000"/>
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+
+    <bean name="factory" class="org.mimosaframework.orm.spring.SpringMimosaSessionFactory">
+        <property name="dataSource" ref="ds"/>
+        <property name="mappingLevel" value="CREATE"/>
+        <property name="mappingClasses">
+            <set>
+                <value>tables.TableUser</value>
+                <value>xmlcontext.TableAddition</value>
+            </set>
+        </property>
+
+        <property name="showSQL" value="true"/>
+    </bean>
+    <bean name="template" class="org.mimosaframework.orm.spring.SpringMimosaSessionTemplate">
+        <property name="factory" ref="factory"/>
+    </bean>
+</beans>

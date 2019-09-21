@@ -14,9 +14,7 @@ public interface ConfigBuilder {
 
     CenterConfigSetting getCenterInfo() throws ContextException;
 
-    MimosaDataSource getDefaultDataSource();
-
-    List<MimosaDataSource> getDataSourceList() throws SQLException;
+    List<MimosaDataSource> getDataSources() throws SQLException;
 
     Set<Class> getResolvers() throws ContextException;
 
