@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.merge;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.platform.SelectFieldAliasReference;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 
@@ -34,9 +35,9 @@ public interface ModelMerge {
      * 设置字段的转换方式
      * 从数据库查询后的结果可能和映射类字段不一致，比如从驼峰命名到底横线的命名方式
      *
-     * @param mappingNamedConvert 转换类
+     * @param modelObjectConvertKey 转换类
      */
-    void setMappingNamedConvert(MappingNamedConvert mappingNamedConvert);
+    void setMappingNamedConvert(ModelObjectConvertKey modelObjectConvertKey);
 
     /**
      * 设置所有的select后面的字段集合

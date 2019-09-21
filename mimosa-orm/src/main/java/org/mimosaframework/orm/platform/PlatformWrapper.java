@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.DefaultDelete;
 import org.mimosaframework.orm.criteria.DefaultFunction;
 import org.mimosaframework.orm.criteria.DefaultQuery;
@@ -36,7 +36,7 @@ public interface PlatformWrapper {
 
     int delete(MappingTable table, DefaultDelete delete) throws SQLException;
 
-    List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query, MappingNamedConvert convert) throws SQLException;
+    List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query, ModelObjectConvertKey convert) throws SQLException;
 
     /**
      * 这个查询中没有left join参与

@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.merge;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.platform.SelectFieldAliasReference;
 import org.mimosaframework.orm.criteria.Query;
@@ -33,7 +34,7 @@ public class DefaultModelMerge implements ModelMerge {
     /**
      * 映射表和映射类的名称转换方法
      */
-    private MappingNamedConvert mappingNamedConvert;
+    private ModelObjectConvertKey modelObjectConvertKey;
 
     /**
      * 一次查询时所有的select的字段集合
@@ -66,9 +67,10 @@ public class DefaultModelMerge implements ModelMerge {
                 for (Map.Entry<Object, Object> entry : o.entrySet()) {
                     String key = String.valueOf(entry.getKey());
                     Object value = entry.getValue();
-                    on.put(mappingNamedConvert.reverse(key), value);
+                    on.put(key, value);
                 }
                 on.setObjectClass(queryTableClass);
+                on = this.modelObjectConvertKey.reconvert(queryTableClass, on);
                 ol.add(on);
             }
 
@@ -317,11 +319,11 @@ public class DefaultModelMerge implements ModelMerge {
     /**
      * 设置映射类和映射表的字段转换类
      *
-     * @param mappingNamedConvert 转换类
+     * @param modelObjectConvertKey 转换类
      */
     @Override
-    public void setMappingNamedConvert(MappingNamedConvert mappingNamedConvert) {
-        this.mappingNamedConvert = mappingNamedConvert;
+    public void setMappingNamedConvert(ModelObjectConvertKey modelObjectConvertKey) {
+        this.modelObjectConvertKey = modelObjectConvertKey;
     }
 
     /**

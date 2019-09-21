@@ -1,11 +1,7 @@
 package org.mimosaframework.orm.convert;
 
 public class H2UMappingNamedConvert implements MappingNamedConvert {
-
-    private static char[] a_z = "abcdefghijklmnopqrstwvuxyz".toCharArray();
-    private static char[] A_Z = "abcdefghijklmnopqrstwvuxyz".toUpperCase().toCharArray();
-
-    public String convert(String name) {
+    public String convert(String name, ConvertType type) {
         if (name == null || name.equals("")) {
             return "";
         }
@@ -32,44 +28,4 @@ public class H2UMappingNamedConvert implements MappingNamedConvert {
 
         return tableName;
     }
-
-    public String reverse(String name) {
-        if (name == null || name.equals("")) {
-            return "";
-        }
-
-        if (name.startsWith("t_")) {
-            name = name.replaceFirst("t_", "table_");
-        }
-
-        StringBuilder sb = new StringBuilder(name.length());
-        // 当前的下标
-        int i = 0;
-        int length = name.length();
-        for (int j = 0; j < length; j++) {
-            if (name.charAt(j) == '_') {
-                // 判断后面是否还有_
-                while (name.charAt(++j) == '_') {
-                }
-                i = j;// i所对应的字符需要转换为大写字符
-                char c = name.charAt(i);
-                if (sb.length() == 0) {
-                } else {
-                    for (int k = 0; k < a_z.length; k++) {
-
-                        if (a_z[k] == c) {
-                            c = A_Z[k];
-                            break;
-                        }
-                    }
-                }
-                sb.append(c);
-            } else {
-                sb.append(name.charAt(j));
-            }
-        }
-
-        return sb.toString();
-    }
-
 }

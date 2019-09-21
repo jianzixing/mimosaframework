@@ -5,7 +5,7 @@
         <value>xmlcontext.TableAddition</value>
     </mapping>
 
-    <convert class="org.mimosaframework.core.asm.AnnotationVisitor"/>
+    <convert class="xmlcontext.TestConvert"/>
 
     <datasource>
         <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>

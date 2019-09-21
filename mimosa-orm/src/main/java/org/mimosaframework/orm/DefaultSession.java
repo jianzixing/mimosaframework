@@ -338,7 +338,7 @@ public class DefaultSession implements Session {
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
         List<ModelObject> objects = null;
         try {
-            objects = platformWrapper.select(tables, dq, this.context.getConvert());
+            objects = platformWrapper.select(tables, dq, convert);
         } catch (SQLException e) {
             throw new IllegalStateException("获取数据失败", e);
         }

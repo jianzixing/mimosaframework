@@ -5,6 +5,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.annotation.Table;
+import org.mimosaframework.orm.convert.ConvertType;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 
@@ -31,17 +32,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             MappingTable mappingTable = new SpecificMappingTable();
 
             String tableName = table.value();
-            if (tableName.equals("")) {
-                if (convert != null) {
-                    tableName = convert.convert(mappingClass.getSimpleName());
-                } else {
-                    tableName = mappingClass.getSimpleName();
-                    if (tableName.length() > 1) {
-                        tableName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
-                    } else {
-                        tableName = tableName.toLowerCase();
-                    }
-                }
+            if (tableName.equals("") && convert != null) {
+                tableName = convert.convert(mappingClass.getSimpleName(), ConvertType.TABLE_NAME);
             }
 
             ((SpecificMappingTable) mappingTable).setMappingClass(mappingClass);
@@ -151,12 +143,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         ((SpecificMappingField) mappingField).setMappingFieldAnnotation(column);
         ((SpecificMappingField) mappingField).setMappingFieldName(fieldName);
         String columnName = column.name();
-        if (StringTools.isEmpty(columnName)) {
-            if (convert != null) {
-                columnName = convert.convert(fieldName);
-            } else {
-                columnName = fieldName;
-            }
+        if (StringTools.isEmpty(columnName) && convert != null) {
+            columnName = convert.convert(fieldName, ConvertType.FIELD_NAME);
         }
         ((SpecificMappingField) mappingField).setMappingColumnName(columnName);
         ((SpecificMappingField) mappingField).setMappingFieldType(column.type());

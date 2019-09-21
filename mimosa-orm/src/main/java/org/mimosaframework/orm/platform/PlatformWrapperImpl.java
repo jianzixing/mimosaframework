@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -104,7 +104,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     }
 
     @Override
-    public List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query, MappingNamedConvert convert) throws SQLException {
+    public List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
         if (query.hasInnerJoin() || query.hasLeftJoin()) {
             PorterStructure[] structures = this.databasePorter.selectPrimaryKey(tables, query);
 
@@ -233,7 +233,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     private List<ModelObject> buildMergeObjects(Map<Object, List<SelectFieldAliasReference>> references,
                                                 DefaultQuery query,
-                                                MappingNamedConvert convert,
+                                                ModelObjectConvertKey convert,
                                                 List<ModelObject> os) {
         List<SelectFieldAliasReference> selectFields = null;
         if (references != null) {

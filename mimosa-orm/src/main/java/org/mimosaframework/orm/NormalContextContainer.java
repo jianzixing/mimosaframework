@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
+import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
@@ -125,7 +126,7 @@ public class NormalContextContainer implements ContextContainer {
                 }
 
                 for (Class c : resolvers) {
-                    DisassembleMappingClass disassembleMappingClass = new DefaultDisassembleMappingClass(c, this.convert);
+                    DisassembleMappingClass disassembleMappingClass = new DefaultDisassembleMappingClass(c, this.getConvert());
                     MappingTable mappingTable = disassembleMappingClass.getMappingTable();
                     mappingTables.add(mappingTable);
                     if (names.containsKey(mappingTable.getMappingTableName())) {
@@ -146,6 +147,9 @@ public class NormalContextContainer implements ContextContainer {
     }
 
     public MappingNamedConvert getConvert() {
+        if (convert == null) {
+            convert = ConvertFactory.getDefaultConvert();
+        }
         return convert;
     }
 
