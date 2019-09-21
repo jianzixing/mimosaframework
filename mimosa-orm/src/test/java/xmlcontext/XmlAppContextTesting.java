@@ -45,6 +45,10 @@ public class XmlAppContextTesting {
         user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
         template.save(user);
 
+        user = template.get(TableUser.class, user.getIntValue(TableUser.id));
+
+        System.out.println(user);
+
         MimosaDataSource.clearAllDataSources();
     }
 }

@@ -42,7 +42,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     private Set<String> additionMappingClass;
     private MimosaDataSource mimosaDataSource;
     private boolean isShowSQL = false;
-    private boolean isCluster = false;
+    private boolean isInitBasic = false;
     private String mappingLevel;
 
     public XmlConfigBuilder(InputStream inputStream) throws ContextException {
@@ -258,12 +258,15 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
             Node pitem = properties.item(p);
             NamedNodeMap nm = pitem.getAttributes();
             if (nm != null) {
-                String name = nm.getNamedItem("name") != null ? nm.getNamedItem("name").getNodeValue() : null;
-                String value = nm.getNamedItem("value") != null ? nm.getNamedItem("value").getNodeValue() : null;
-                if (StringTools.isEmpty(value)) {
-                    value = pitem.getTextContent();
+                String nodeName = pitem.getNodeName();
+                if ("property".equals(nodeName)) {
+                    String name = nm.getNamedItem("name") != null ? nm.getNamedItem("name").getNodeValue() : null;
+                    String value = nm.getNamedItem("value") != null ? nm.getNamedItem("value").getNodeValue() : null;
+                    if (StringTools.isEmpty(value)) {
+                        value = pitem.getTextContent();
+                    }
+                    map.put(name.trim(), value.trim());
                 }
-                map.put(name.trim(), value.trim());
             }
         }
         return map;
@@ -629,49 +632,55 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     @Override
     public BasicSetting getBasicInfo() throws ContextException {
         Boolean ignoreEmptySlave = true;
-        for (int i = 0; i < root.getLength(); i++) {
-            Node mimosaNode = root.item(i);
-            NodeList levelOneList = mimosaNode.getChildNodes();
-            for (int j = 0; j < levelOneList.getLength(); j++) {
-                Node node = levelOneList.item(j);
-                if (node.getNodeName().equalsIgnoreCase("convert")) {
-                    NamedNodeMap attributes = node.getAttributes();
-                    Node name = attributes.getNamedItem("name");
-                    Node className = attributes.getNamedItem("class");
-                    MappingNamedConvert convert = this.getConvert(className != null ? className.getNodeValue() : null,
-                            name != null ? name.getNodeValue() : null);
-                    basicInfo.setConvert(convert);
-                }
+        if (!isInitBasic) {
+            for (int i = 0; i < root.getLength(); i++) {
+                Node mimosaNode = root.item(i);
+                NodeList levelOneList = mimosaNode.getChildNodes();
+                for (int j = 0; j < levelOneList.getLength(); j++) {
+                    Node node = levelOneList.item(j);
+                    if (node.getNodeName().equalsIgnoreCase("convert")) {
+                        NamedNodeMap attributes = node.getAttributes();
+                        Node name = attributes.getNamedItem("name");
+                        Node className = attributes.getNamedItem("class");
 
-                if (node.getNodeName().equalsIgnoreCase("mapping")) {
-                    NamedNodeMap attributes = node.getAttributes();
-                    Node attrScan = attributes.getNamedItem("scan");
-                    Node levelNode = attributes.getNamedItem("level");
-                    if (levelNode != null) {
-                        mappingLevel = levelNode.getNodeValue();
+                        Map<String, String> properties = this.getNodeByProperties(node);
+
+                        MappingNamedConvert convert = this.getConvert(className != null ? className.getNodeValue() : null,
+                                name != null ? name.getNodeValue() : null, properties);
+                        basicInfo.setConvert(convert);
                     }
-                }
 
-                if (node.getNodeName().equalsIgnoreCase("datasource")) {
-                    NamedNodeMap attributes = node.getAttributes();
-                    Node ies = attributes.getNamedItem("ignoreEmptySlave");
-                    if (ies != null) {
-                        ignoreEmptySlave = super.isStringTrue(ies.getNodeValue());
+                    if (node.getNodeName().equalsIgnoreCase("mapping")) {
+                        NamedNodeMap attributes = node.getAttributes();
+                        Node attrScan = attributes.getNamedItem("scan");
+                        Node levelNode = attributes.getNamedItem("level");
+                        if (levelNode != null) {
+                            mappingLevel = levelNode.getNodeValue();
+                        }
+                    }
+
+                    if (node.getNodeName().equalsIgnoreCase("datasource")) {
+                        NamedNodeMap attributes = node.getAttributes();
+                        Node ies = attributes.getNamedItem("ignoreEmptySlave");
+                        if (ies != null) {
+                            ignoreEmptySlave = super.isStringTrue(ies.getNodeValue());
+                        }
                     }
                 }
             }
-        }
 
-        this.isShowSQL = basicInfo.isShowSQL();
-        if (StringTools.isNotEmpty(mappingLevel)) {
-            try {
-                MappingLevel ml = MappingLevel.valueOf(mappingLevel);
-                basicInfo.setMappingLevel(ml);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("映射级别枚举MappingLevel不包含的级别" + mappingLevel, e);
+            this.isShowSQL = basicInfo.isShowSQL();
+            if (StringTools.isNotEmpty(mappingLevel)) {
+                try {
+                    MappingLevel ml = MappingLevel.valueOf(mappingLevel);
+                    basicInfo.setMappingLevel(ml);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("映射级别枚举MappingLevel不包含的级别" + mappingLevel, e);
+                }
             }
+            basicInfo.setIgnoreEmptySlave(ignoreEmptySlave);
+            isInitBasic = true;
         }
-        basicInfo.setIgnoreEmptySlave(ignoreEmptySlave);
         return this.basicInfo;
     }
 

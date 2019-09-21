@@ -53,14 +53,18 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
         return null;
     }
 
-    protected MappingNamedConvert getConvert(String convertClass, String convertName) throws ContextException {
+    protected MappingNamedConvert getConvert(String convertClass, String convertName, Map properties) throws ContextException {
         if (convertClass != null) convertClass = convertClass.trim();
         if (convertName != null) convertName = convertName.trim();
         // 类名和数据库字段名称的转换
         if (StringTools.isNotEmpty(convertClass)) {
             try {
                 Class<? extends MappingNamedConvert> c = (Class<? extends MappingNamedConvert>) Class.forName(convertClass);
-                return c.newInstance();
+                if (properties != null && properties.size() > 0) {
+                    return ModelObject.toJavaObject(new ModelObject(properties), c);
+                } else {
+                    return c.newInstance();
+                }
             } catch (Exception e) {
                 throw new ContextException("实例化 ConvertClass 出错", e);
             }

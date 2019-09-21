@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mimosa name="mimosa_test" description="测试用的配置">
-    <mapping scan="tables" level="CREATE">
+    <mapping level="CREATE">
         <value>tables.TableUser</value>
-        <value>xmlcontext.TableAddition</value>
     </mapping>
 
-    <convert class="xmlcontext.TestConvert"/>
+    <!--不带参数实例化-->
+    <!--<convert class="xmlcontext.TestConvert"/>-->
+
+    <!--带参数实例化-->
+    <convert class="xmlcontext.TestConvert">
+        <property name="pm">abc</property>
+    </convert>
 
     <datasource>
         <property name="dataSourceClass">com.alibaba.druid.pool.DruidDataSource</property>

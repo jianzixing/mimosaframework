@@ -89,7 +89,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     public void setConvertType(String convertType) throws ContextException {
         this.convertType = convertType;
-        this.basicSetting.setConvert(super.getConvert(null, convertType));
+        this.basicSetting.setConvert(super.getConvert(null, convertType, null));
     }
 
     public void setCenterConfigSetting(CenterConfigSetting centerConfigSetting) throws ContextException {
