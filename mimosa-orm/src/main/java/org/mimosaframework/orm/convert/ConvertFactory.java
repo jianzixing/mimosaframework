@@ -8,6 +8,7 @@ public final class ConvertFactory {
 
     static {
         convert.put("H2U", H2UMappingNamedConvert.class);
+        convert.put("DEFAULT", DefaultMappingNamedConvert.class);
     }
 
     public static MappingNamedConvert getDefaultConvert() {
