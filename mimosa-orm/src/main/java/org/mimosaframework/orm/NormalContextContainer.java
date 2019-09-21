@@ -10,7 +10,6 @@ import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
-import org.mimosaframework.orm.strategy.StrategyConfig;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -33,12 +32,6 @@ public class NormalContextContainer implements ContextContainer {
 
     private ActionDataSourceWrapper defaultDataSource;
 
-    /**
-     * 如果使用了分表策略是数据库自增ID则配置会存在当前里面
-     * key的配置是表的类名+字段名如果没有配置字段名称则表示当前类所有的
-     * 字段都可以使用
-     */
-    private Map<String, StrategyConfig> strategyDataSource;
     private List<? extends IDStrategy> idStrategies;
     private boolean isShowSQL = false;
     private List<String> mappers;
@@ -166,14 +159,6 @@ public class NormalContextContainer implements ContextContainer {
         } else {
             return defaultDataSource;
         }
-    }
-
-    public Map<String, StrategyConfig> getStrategyDataSource() {
-        return strategyDataSource;
-    }
-
-    public void setStrategyDataSource(Map<String, StrategyConfig> strategyDataSource) {
-        this.strategyDataSource = strategyDataSource;
     }
 
     public ModelObjectConvertKey getModelObjectConvertKey() {

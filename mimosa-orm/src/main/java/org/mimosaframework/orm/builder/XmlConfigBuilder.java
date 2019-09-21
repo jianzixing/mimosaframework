@@ -1,12 +1,12 @@
 package org.mimosaframework.orm.builder;
 
+import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.auxiliary.FactoryBuilderConfig;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.exception.ContextException;
-import org.mimosaframework.orm.strategy.StrategyConfig;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -32,7 +32,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     private CenterConfigSetting configCenterInfo = null;
 
     private Set<Class> resolvers;
-    private Map<String, StrategyConfig> strategyConfigMap;
+    private List<IDStrategy> strategies;
 
     private Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
     private Map<String, MimosaDataSource> wrappers = new HashMap<String, MimosaDataSource>();
@@ -206,46 +206,39 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
 
     private void parseXmlStrategy(Node nodeOne) throws ContextException {
         NodeList list = nodeOne.getChildNodes();
-        strategyConfigMap = new HashMap<>();
         for (int i = 0; i < list.getLength(); i++) {
             Node node = list.item(i);
             if (node.getNodeName().equalsIgnoreCase("strategy")) {
                 NamedNodeMap map = node.getAttributes();
                 Node clazz = map.getNamedItem("class");
-                Node table = map.getNamedItem("table");
-                Node field = map.getNamedItem("field");
-                Node wrapper = map.getNamedItem("wrapper");
 
                 if (clazz == null) {
                     throw new IllegalArgumentException("strategy的tableClass属性必须存在");
                 }
-                if (wrapper == null) {
-                    throw new IllegalArgumentException("strategy的wrapper属性必须存在");
-                }
 
-                StrategyConfig config = new StrategyConfig();
                 try {
-                    Class tableClass = Class.forName(clazz.getNodeValue().trim());
-                    config.setTableClass(tableClass);
+                    if (strategies == null) {
+                        strategies = new ArrayList<>();
+                    }
+                    Class c = Class.forName(clazz.getNodeValue().trim());
+
+                    if (IDStrategy.class.isAssignableFrom(c)) {
+                        Class<IDStrategy> idStrategy = c;
+                        Map properties = this.getNodeByProperties(node);
+                        if (properties != null && properties.size() > 0) {
+                            strategies.add(ModelObject.toJavaObject(new ModelObject(properties), idStrategy));
+                        } else {
+                            strategies.add(idStrategy.newInstance());
+                        }
+                    } else {
+                        throw new IllegalArgumentException("strategy的策略实现继承自IDStrategy");
+                    }
                 } catch (ClassNotFoundException e) {
-                    throw new IllegalArgumentException("strategy的tableClass属性必须存在", e);
-                }
-
-                String fieldString = null;
-                if (table != null) config.setTableName(table.getNodeValue().trim());
-                if (field != null) {
-                    fieldString = field.getNodeValue().trim();
-                    config.setField(fieldString);
-                }
-
-                if (wrapper != null) {
-                    config.setDataSource(wrappers.get(wrapper.getNodeValue().trim()));
-                }
-
-                if (fieldString != null) {
-                    strategyConfigMap.put(config.getTableClass().getName() + "#" + fieldString, config);
-                } else {
-                    strategyConfigMap.put(config.getTableClass().getName(), config);
+                    throw new IllegalArgumentException("strategy的策略实现必须存在", e);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -625,8 +618,8 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     }
 
     @Override
-    public Map<String, StrategyConfig> getStrategyConfig() {
-        return this.strategyConfigMap;
+    public List<? extends IDStrategy> getStrategies() {
+        return strategies;
     }
 
     @Override

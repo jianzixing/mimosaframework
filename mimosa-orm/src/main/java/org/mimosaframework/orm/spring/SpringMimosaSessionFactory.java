@@ -7,9 +7,7 @@ import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.platform.SimpleTemplate;
-import org.mimosaframework.orm.strategy.StrategyConfig;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionPropagationType;
@@ -22,7 +20,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,7 +39,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     private CenterConfigSetting centerConfigSetting = null;
     private MimosaDataSource defaultDataSource = null;
     private Set<Class> resolvers = null;
-    private Map<String, StrategyConfig> strategyConfig = null;
     private List<MimosaDataSource> dataSourceWrapper = null;
 
     private String applicationName;
@@ -113,7 +109,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     public void setStrategies(List<? extends IDStrategy> strategies) {
         this.strategies = strategies;
-        this.applicationSetting.setIdStrategies(strategies);
     }
 
 
@@ -142,10 +137,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     public void setMappingClasses(Set<String> mappingClasses) {
         this.mappingClasses = mappingClasses;
-    }
-
-    public void setStrategyConfig(Map<String, StrategyConfig> strategyConfig) {
-        this.strategyConfig = strategyConfig;
     }
 
     public SpringMimosaSessionFactory() {
@@ -296,8 +287,8 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     }
 
     @Override
-    public Map<String, StrategyConfig> getStrategyConfig() {
-        return this.strategyConfig;
+    public List<? extends IDStrategy> getStrategies() {
+        return this.strategies;
     }
 
     @Override

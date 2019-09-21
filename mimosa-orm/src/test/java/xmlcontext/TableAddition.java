@@ -9,5 +9,7 @@ public enum TableAddition {
     @Column(pk = true, type = long.class, strategy = AutoIncrementStrategy.class)
     id,
     @Column(length = 64)
-    userName
+    userName,
+    @Column(length = 64, strategy = TestStrategy.class)
+    uuid
 }

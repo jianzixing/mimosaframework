@@ -7,7 +7,6 @@ import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.external.ConfiguredCenterInterface;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
-import org.mimosaframework.orm.strategy.StrategyConfig;
 
 import javax.sql.DataSource;
 import java.net.MalformedURLException;
@@ -128,7 +127,7 @@ public class ConfiguredCenterBuilder extends AbstractConfigBuilder {
     }
 
     @Override
-    public Map<String, StrategyConfig> getStrategyConfig() {
+    public List<? extends IDStrategy> getStrategies() {
         return null;
     }
 

@@ -97,4 +97,21 @@ public class XmlAppContextTesting {
 
         MimosaDataSource.clearAllDataSources();
     }
+
+    @Test
+    public void mimosa6() throws ContextException {
+        XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/xmlcontext/mimosa6.xml"));
+        SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
+        SessionTemplate template = new MimosaSessionTemplate(sessionFactory);
+
+        ModelObject user = new ModelObject(TableAddition.class);
+        user.put(TableAddition.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+
+        user = template.get(TableAddition.class, user.getIntValue(TableAddition.id));
+
+        System.out.println(user);
+
+        MimosaDataSource.clearAllDataSources();
+    }
 }

@@ -47,7 +47,9 @@ public class BeanAppContext implements Context {
             ApplicationSetting applicationInfo = this.configBuilder.getApplication();
             contextValues.setApplicationName(applicationInfo.getApplicationName());
             contextValues.setApplicationDetail(applicationInfo.getApplicationDetail());
-            contextValues.setIdStrategies(applicationInfo.getIdStrategies());
+
+            List<? extends IDStrategy> strategies = this.configBuilder.getStrategies();
+            contextValues.setIdStrategies(strategies);
 
             System.out.println("" +
                     "------------------------------------------------------------------------------------------------------------\n" +
@@ -116,10 +118,6 @@ public class BeanAppContext implements Context {
                 throw new ContextException("初始化辅助工具配置类出错", e);
             }
             contextValues.setFactoryBuilderList(factoryBuilder);
-        }
-
-        {
-            contextValues.setStrategyDataSource(this.configBuilder.getStrategyConfig());
         }
 
         this.checkDBMapping();

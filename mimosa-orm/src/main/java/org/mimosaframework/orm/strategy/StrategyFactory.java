@@ -10,7 +10,6 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,18 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class StrategyFactory {
     private static final Map<Class, IDStrategy> strategys = new ConcurrentHashMap<>();
-
-    public static Map<MappingField, IDStrategy> getStrategy(ContextContainer values, MappingTable table) {
-        Set<MappingField> fields = table.getMappingFields();
-        Map<MappingField, IDStrategy> map = new HashMap<>();
-        for (MappingField f : fields) {
-            Column column = f.getMappingFieldAnnotation();
-            if (column != null && strategys.get(column.strategy()) != null) {
-                map.put(f, strategys.get(column.strategy()));
-            }
-        }
-        return map;
-    }
 
     /**
      * MappingTable 是Class的映射类，不包含数据库字段
@@ -45,7 +32,7 @@ public class StrategyFactory {
             if (column != null) {
                 // 如果表没有分表则使用数据库默认规则
                 Class<? extends IDStrategy> c = column.strategy();
-          
+
                 if (c != AutoIncrementStrategy.class && c != IDStrategy.class) {
                     if (strategys.get(c) == null) {
                         // 假如有已经实例好的ID生成策略对象，就用已经生成好的对象
