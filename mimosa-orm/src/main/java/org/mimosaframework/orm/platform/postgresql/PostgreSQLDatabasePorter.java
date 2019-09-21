@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.platform.postgresql;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
@@ -11,6 +13,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
+    private static final Log logger = LogFactory.getLog(PostgreSQLDatabasePorter.class);
     private static DifferentColumn differentColumn = new PostgreSQLDifferentColumn();
 
     protected void buildTableField(MappingField field,
@@ -102,6 +105,53 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
     }
 
     @Override
+    public Long insert(MappingTable table, ModelObject object) throws SQLException {
+        String tableName = table.getDatabaseTableName();
+        SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
+        this.insertAddValue(insertBuilder, table, object);
+        Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder));
+
+        this.resetSeqValue(table, tableName, object);
+        return id;
+    }
+
+    private void resetSeqValue(MappingTable table, String tableName, ModelObject object) {
+        // 如果插入新数据带有主键值，这个时候就无法确认当前的自增序列和数据库
+        // 中的主键知否重复，所以需要重置序列值。
+        try {
+            Set<MappingField> fields = table.getMappingFields();
+            if (fields != null) {
+                for (MappingField field : fields) {
+                    if (field.isMappingAutoIncrement()) {
+                        Object v = object.get(field.getMappingColumnName());
+                        if (v != null && !"".equals(v)) {
+                            // select max(id) from table
+                            SQLBuilder max = this.createSQLBuilder().SELECT().addFun("max", field.getMappingColumnName(), "max")
+                                    .FROM().addString(tableName);
+                            List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, max));
+                            if (objects != null && objects.size() > 0) {
+                                ModelObject o = objects.get(0);
+                                Long maxValue = o.getLong("max");
+                                if (maxValue != null) {
+                                    maxValue = maxValue + 1;
+                                    logger.warn("由于插入数据时带有主键信息，所以开始重置数据库自增初始值");
+
+                                    SQLBuilder resetSeq = this.createSQLBuilder().ALTER().addString("sequence")
+                                            .addString(tableName + "_" + field.getMappingColumnName() + "_seq")
+                                            .addString("restart").addString("with").addString("" + maxValue);
+                                    carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, resetSeq));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("保存数据时由于包含主键值需要重置主键自增序列时出错", e);
+        }
+    }
+
+    @Override
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
         String tableName = table.getDatabaseTableName();
 
@@ -138,6 +188,12 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
             insertBuilder.addParenthesisEnd();
             if (listIterator.hasNext()) {
                 insertBuilder.addSplit();
+            }
+        }
+
+        if (objects != null) {
+            for (ModelObject object : objects) {
+                this.resetSeqValue(table, tableName, object);
             }
         }
 

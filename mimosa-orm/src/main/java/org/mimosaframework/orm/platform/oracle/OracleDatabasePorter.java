@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.platform.oracle;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
@@ -12,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 public class OracleDatabasePorter extends AbstractDatabasePorter {
+    private static final Log logger = LogFactory.getLog(OracleDatabasePorter.class);
     private static DifferentColumn differentColumn = new OracleDifferentColumn();
 
     protected void buildTableField(MappingField field,
@@ -486,6 +489,8 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
         insertBuilder.addSQLBuilder(valueBuilder);
         insertBuilder.addParenthesisEnd();
 
+        this.resetSeqValue(table, tableName, object);
+
         Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder));
         return id;
     }
@@ -528,8 +533,51 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
         structure.setSql(autoIncrementValue);
         structure.setField(autoIncrementField);
 
+        if (objects != null) {
+            for (ModelObject object : objects) {
+                this.resetSeqValue(table, tableName, object);
+            }
+        }
+
         List<Long> ids = (List<Long>) carryHandler.doHandler(structure);
         return ids;
+    }
+
+    private void resetSeqValue(MappingTable table, String tableName, ModelObject object) {
+        // 如果插入新数据带有主键值，这个时候就无法确认当前的自增序列和数据库
+        // 中的主键知否重复，所以需要重置序列值。
+        try {
+            Set<MappingField> fields = table.getMappingFields();
+            if (fields != null) {
+                for (MappingField field : fields) {
+                    if (field.isMappingAutoIncrement()) {
+                        Object v = object.get(field.getMappingColumnName());
+                        if (v != null && !"".equals(v)) {
+                            // select max(id) from table
+                            SQLBuilder max = this.createSQLBuilder().SELECT().addFun("max", field.getMappingColumnName(), "max")
+                                    .FROM().addString(tableName);
+                            List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, max));
+                            if (objects != null && objects.size() > 0) {
+                                ModelObject o = objects.get(0);
+                                Long maxValue = o.getLong("max");
+                                if (maxValue != null) {
+                                    maxValue = maxValue + 1;
+                                    logger.warn("由于插入数据时带有主键信息，所以开始重置数据库自增初始值");
+
+                                    // alter sequence seq_name increment by 1
+                                    SQLBuilder resetSeq = this.createSQLBuilder().ALTER().addString("sequence")
+                                            .addString(tableName.trim().toUpperCase() + "_SEQ")
+                                            .addString("increment").addString("by").addString("" + maxValue);
+                                    carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, resetSeq));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("保存数据时由于包含主键值需要重置主键自增序列时出错", e);
+        }
     }
 
     @Override
