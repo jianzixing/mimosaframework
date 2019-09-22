@@ -1,5 +1,11 @@
 # 自定义SQL语句
 
+mimosa-orm支持自定义SQL执行，执行后悔返回AutoResult对象。执行自定义SQL返回的字段都是数据库
+原始字段，默认不会转换字段结构(比如下划线转驼峰)。如果需要转换则设置AutoResult#setTableClass
+需要转换的映射类即可，最好设置查询SQL相关的映射类，多余的映射类会遍历导致效率不高。
+
+如果结果中包含映射类中不存在的字段则无法通过AutoResult#setTableClass转换。
+
 执行自定义SQL语句需要调用以下方法：
 
 ```java

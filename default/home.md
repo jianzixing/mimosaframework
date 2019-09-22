@@ -13,14 +13,14 @@ _感谢您使用我们的框架，如果有任何商业需求可以[联系我们
     <dependency>
         <groupId>org.mimosaframework.core</groupId>
         <artifactId>mimosa-core</artifactId>
-        <version>3.3.7</version>
+        <version>3.3.8</version>
     </dependency>
 
     <!--必须引入的核心包-->
     <dependency>
         <groupId>org.mimosaframework.orm</groupId>
         <artifactId>mimosa-orm</artifactId>
-        <version>3.3.7</version>
+        <version>3.3.8</version>
     </dependency>
 
     <!--额外依赖的日志包-->
@@ -168,6 +168,15 @@ public class Start {
 
 
 ## 二、在Spring中使用 mimosa-orm 框架
+
+添加引用依赖
+```java
+<dependency>
+    <groupId>org.mimosaframework.mvc</groupId>
+    <artifactId>mimosa-mvc</artifactId>
+    <version>3.3.8</version>
+</dependency>
+```
 
 #### 在Spring的配置文件中配置如下
 
