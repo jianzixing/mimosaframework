@@ -33,6 +33,13 @@ public class StrategyFactory {
                 // 如果表没有分表则使用数据库默认规则
                 Class<? extends IDStrategy> c = column.strategy();
 
+                /**
+                 * 自增主键不允许写入自定义主键值，这里排除掉自增主键的值
+                 */
+                if (c == AutoIncrementStrategy.class) {
+                    object.remove(f.getMappingFieldName());
+                }
+
                 if (c != AutoIncrementStrategy.class && c != IDStrategy.class) {
                     if (strategys.get(c) == null) {
                         // 假如有已经实例好的ID生成策略对象，就用已经生成好的对象
