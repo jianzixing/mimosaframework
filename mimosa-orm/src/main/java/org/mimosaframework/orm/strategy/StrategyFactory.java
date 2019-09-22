@@ -37,7 +37,9 @@ public class StrategyFactory {
                  * 自增主键不允许写入自定义主键值，这里排除掉自增主键的值
                  */
                 if (c == AutoIncrementStrategy.class) {
-                    object.remove(f.getMappingFieldName());
+                    if (object.containsKey(f.getMappingFieldName())) {
+                        object.remove(f.getMappingFieldName());
+                    }
                 }
 
                 if (c != AutoIncrementStrategy.class && c != IDStrategy.class) {
