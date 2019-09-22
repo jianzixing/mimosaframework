@@ -5,6 +5,8 @@ import org.mimosaframework.orm.annotation.Column;
 public interface MappingField {
     void setMappingTable(MappingTable mappingTable);
 
+    Object getMappingField();
+
     MappingField getPrevious();
 
     void setPrevious(MappingField field);
