@@ -157,6 +157,8 @@
                 document.querySelectorAll('pre code').forEach(function (block) {
                     hljs.highlightBlock(block);
                 });
+
+                document.documentElement.scrollTop = 0;
             });
     }
 
