@@ -69,7 +69,7 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
         public SingleZipperTableIterator(Connection connection) throws SQLException {
             this.connection = connection;
             sql.addString(dbTableName);
-            this.statement = this.connection.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            this.statement = this.connection.prepareStatement(sql.toSQLString().getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             this.statement.setFetchSize(fetchSize);
             this.statement.setFetchDirection(ResultSet.FETCH_REVERSE);
             this.resultSet = this.statement.executeQuery();
