@@ -54,7 +54,7 @@ public class StrategyFactory {
                         }
                     }
                     IDStrategy strategy = strategys.get(c);
-                    StrategyWrapper wrapper = new StrategyWrapper(values);
+                    StrategyWrapper wrapper = new StrategyWrapper(new ContextWrapper(values));
                     wrapper.setTableName(table.getMappingTableName());
                     wrapper.setDbTableName(table.getMappingTableName());
                     wrapper.setField(f.getMappingFieldName());

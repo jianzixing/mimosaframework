@@ -1,18 +1,17 @@
 package org.mimosaframework.orm.strategy;
 
-import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 
 public class StrategyWrapper {
-    private ContextContainer values;
+    private ContextWrapper context;
     private Class tableClass;
     private String tableName;
     private String dbTableName;
     private String field;
     private String dbField;
 
-    public StrategyWrapper(ContextContainer values) {
-        this.values = values;
+    public StrategyWrapper(ContextWrapper context) {
+        this.context = context;
     }
 
     public Class getTableClass() {
@@ -56,10 +55,10 @@ public class StrategyWrapper {
     }
 
     public ActionDataSourceWrapper getNewDataSourceWrapper() {
-        return this.values.getDefaultDataSourceWrapper(true);
+        return this.context.getDefaultDataSourceWrapper(true);
     }
 
-    public ContextContainer getValues() {
-        return values;
+    public ContextWrapper getContext() {
+        return this.context;
     }
 }
