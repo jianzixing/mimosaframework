@@ -55,7 +55,7 @@ public class SessionTemplateTesting {
             template.saveAndUpdate(object);
         }
         List<ModelObject> objectList = template.list(Criteria.query(TableUser.class).eq(TableUser.userName, "yangankang_test_save_n_2"));
-        if (objectList.size() != 1) {
+        if (objectList.size() <= 0) {
             AssistUtils.error("---------------------------------");
         }
     }
