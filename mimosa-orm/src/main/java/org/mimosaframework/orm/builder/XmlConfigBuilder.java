@@ -46,19 +46,22 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     private String mappingLevel;
 
     public XmlConfigBuilder(InputStream inputStream) throws ContextException {
-        this(new InputSource(inputStream));
+        this(inputStream != null ? new InputSource(inputStream) : null);
     }
 
     public XmlConfigBuilder(String uri) throws ContextException {
-        this(new InputSource(uri));
+        this(StringTools.isEmpty(uri) ? null : new InputSource(uri));
     }
 
     public XmlConfigBuilder(File file) throws ContextException {
-        this(new InputSource(file.toURI().toASCIIString()));
+        this(file != null ? new InputSource(file.toURI().toASCIIString()) : null);
     }
 
     private XmlConfigBuilder(InputSource inputSource) throws ContextException {
         this.inputSource = inputSource;
+        if (inputSource == null) {
+            throw new ContextException("找不到配置文件");
+        }
         try {
             this.parseXml();
         } catch (ParserConfigurationException e) {
@@ -72,9 +75,6 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
 
     private void parseXml() throws ParserConfigurationException, IOException, SAXException, ContextException {
         db = documentBuilderFactory.newDocumentBuilder();
-        if (inputSource == null) {
-            throw new ContextException("找不到配置文件");
-        }
         document = db.parse(inputSource);
         root = document.getElementsByTagName(DEFAULT_ROOT);
         for (int i = 0; i < root.getLength(); i++) {
@@ -556,7 +556,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         }
         return configCenterInfo;
     }
-    
+
     @Override
     public List<MimosaDataSource> getDataSources() {
         List<MimosaDataSource> dataSources = new ArrayList<>();
