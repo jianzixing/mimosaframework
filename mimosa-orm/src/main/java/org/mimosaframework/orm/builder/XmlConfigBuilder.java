@@ -72,6 +72,9 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
 
     private void parseXml() throws ParserConfigurationException, IOException, SAXException, ContextException {
         db = documentBuilderFactory.newDocumentBuilder();
+        if (inputSource == null) {
+            throw new ContextException("找不到配置文件");
+        }
         document = db.parse(inputSource);
         root = document.getElementsByTagName(DEFAULT_ROOT);
         for (int i = 0; i < root.getLength(); i++) {
