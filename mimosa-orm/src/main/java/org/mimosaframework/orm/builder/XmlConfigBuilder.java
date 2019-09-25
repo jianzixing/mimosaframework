@@ -168,7 +168,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                                         for (String sl : strings) {
                                             String[] nv = sl.split(":");
                                             if (nv.length == 1) {
-                                                slaveList.put("default", dataSources.get(nv[1]));
+                                                slaveList.put("default", dataSources.get(nv[0]));
                                             } else {
                                                 slaveList.put(nv[0], dataSources.get(nv[1]));
                                             }
