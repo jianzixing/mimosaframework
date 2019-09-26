@@ -252,7 +252,7 @@ public class NormalContextContainer implements ContextContainer {
         if (this.getDefaultDataSource() != null) {
             return this.getDefaultDataSource();
         }
-        if (this.globalDataSource != null) {
+        if (this.globalDataSource != null && this.globalDataSource.size() > 0) {
             return this.globalDataSource.get(0);
         }
         return null;
