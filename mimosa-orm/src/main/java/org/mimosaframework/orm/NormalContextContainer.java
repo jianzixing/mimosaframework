@@ -10,6 +10,7 @@ import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
+import org.mimosaframework.orm.utils.DatabaseTypeEnum;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -335,5 +336,14 @@ public class NormalContextContainer implements ContextContainer {
             this.mappingGlobalWrapper.setDataSourceMappingDatabase(map);
         }
 
+    }
+
+    @Override
+    public DatabaseTypeEnum getDatabaseType() {
+        MimosaDataSource mimosaDataSource = this.getAnyDataSource();
+        if (mimosaDataSource != null) {
+            return mimosaDataSource.getDatabaseTypeEnum();
+        }
+        return null;
     }
 }
