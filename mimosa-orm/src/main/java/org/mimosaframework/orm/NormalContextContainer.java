@@ -12,6 +12,7 @@ import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.utils.DatabaseTypeEnum;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -345,5 +346,18 @@ public class NormalContextContainer implements ContextContainer {
             return mimosaDataSource.getDatabaseTypeEnum();
         }
         return null;
+    }
+
+    @Override
+    public void clearMimosaDataSources() {
+        if (this.globalDataSource != null) {
+            for (MimosaDataSource mimosaDataSource : this.globalDataSource) {
+                try {
+                    mimosaDataSource.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

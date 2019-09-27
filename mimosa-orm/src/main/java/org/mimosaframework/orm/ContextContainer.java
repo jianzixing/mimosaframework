@@ -52,4 +52,6 @@ public interface ContextContainer {
     void matchWholeMappingDatabase() throws SQLException;
 
     DatabaseTypeEnum getDatabaseType();
+
+    void clearMimosaDataSources();
 }
