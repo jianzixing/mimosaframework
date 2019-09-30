@@ -5,5 +5,5 @@ package org.mimosaframework.orm.utils;
  */
 public enum DatabaseTypeEnum {
     MYSQL, SQL_SERVER, ORACLE, POSTGRESQL,
-    DB2
+    DB2, SQLITE
 }

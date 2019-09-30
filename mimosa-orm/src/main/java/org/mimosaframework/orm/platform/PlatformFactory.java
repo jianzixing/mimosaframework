@@ -5,6 +5,7 @@ import org.mimosaframework.orm.platform.db2.*;
 import org.mimosaframework.orm.platform.mysql.*;
 import org.mimosaframework.orm.platform.oracle.*;
 import org.mimosaframework.orm.platform.postgresql.*;
+import org.mimosaframework.orm.platform.sqlite.*;
 import org.mimosaframework.orm.platform.sqlserver.*;
 import org.mimosaframework.orm.utils.DatabaseTypeEnum;
 
@@ -25,6 +26,9 @@ public class PlatformFactory {
         }
         if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
             return new DB2DifferentColumn();
+        }
+        if (typeEnum.equals(DatabaseTypeEnum.SQLITE)) {
+            return new SqliteDifferentColumn();
         }
         return null;
     }
@@ -47,6 +51,9 @@ public class PlatformFactory {
         }
         if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
             databasePorter = new DB2DatabasePorter();
+        }
+        if (typeEnum.equals(DatabaseTypeEnum.SQLITE)) {
+            databasePorter = new SqliteDatabasePorter();
         }
         if (databasePorter != null) {
             databasePorter.setCarryHandler(getCarryHandler(dswrapper));
@@ -71,6 +78,9 @@ public class PlatformFactory {
         }
         if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
             return new DB2CarryHandler(dswrapper);
+        }
+        if (typeEnum.equals(DatabaseTypeEnum.SQLITE)) {
+            return new SqliteCarryHandler(dswrapper);
         }
         return null;
     }
@@ -102,6 +112,9 @@ public class PlatformFactory {
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.DB2)) {
             return new DB2ObjectSymbolContrast();
         }
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.SQLITE)) {
+            return new SqliteObjectSymbolContrast();
+        }
         return null;
     }
 
@@ -131,6 +144,9 @@ public class PlatformFactory {
         }
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.DB2)) {
             return new DB2DatabaseSpeciality();
+        }
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.SQLITE)) {
+            return new SqliteDatabaseSpeciality();
         }
         return null;
     }

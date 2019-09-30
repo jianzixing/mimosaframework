@@ -26,6 +26,8 @@ public class SQLUtils {
             } else if (metaData.getDriverName().toUpperCase().indexOf("IBM") != -1
                     && metaData.getDriverName().toUpperCase().indexOf("SQLJ") != -1) {
                 return DatabaseTypeEnum.DB2;
+            } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypeEnum.SQLITE.name()) != -1) {
+                return DatabaseTypeEnum.SQLITE;
             }
             throw new SQLException("不支持的数据库 " + metaData.getDriverName() + " ");
         } else {
