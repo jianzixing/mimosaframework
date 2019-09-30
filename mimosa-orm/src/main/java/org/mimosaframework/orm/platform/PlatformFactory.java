@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.orm.MimosaDataSource;
+import org.mimosaframework.orm.platform.db2.*;
 import org.mimosaframework.orm.platform.mysql.*;
 import org.mimosaframework.orm.platform.oracle.*;
 import org.mimosaframework.orm.platform.postgresql.*;
@@ -22,6 +23,9 @@ public class PlatformFactory {
         if (typeEnum.equals(DatabaseTypeEnum.POSTGRESQL)) {
             return new PostgreSQLDifferentColumn();
         }
+        if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
+            return new DB2DifferentColumn();
+        }
         return null;
     }
 
@@ -40,6 +44,9 @@ public class PlatformFactory {
         }
         if (typeEnum.equals(DatabaseTypeEnum.POSTGRESQL)) {
             databasePorter = new PostgreSQLDatabasePorter();
+        }
+        if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
+            databasePorter = new DB2DatabasePorter();
         }
         if (databasePorter != null) {
             databasePorter.setCarryHandler(getCarryHandler(dswrapper));
@@ -61,6 +68,9 @@ public class PlatformFactory {
         }
         if (typeEnum.equals(DatabaseTypeEnum.POSTGRESQL)) {
             return new PostgreSQLCarryHandler(dswrapper);
+        }
+        if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
+            return new DB2CarryHandler(dswrapper);
         }
         return null;
     }
@@ -89,6 +99,9 @@ public class PlatformFactory {
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.POSTGRESQL)) {
             return new PostgreSQLObjectSymbolContrast();
         }
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.DB2)) {
+            return new DB2ObjectSymbolContrast();
+        }
         return null;
     }
 
@@ -115,6 +128,9 @@ public class PlatformFactory {
         }
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.POSTGRESQL)) {
             return new PostgreSQLDatabaseSpeciality();
+        }
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.DB2)) {
+            return new DB2DatabaseSpeciality();
         }
         return null;
     }

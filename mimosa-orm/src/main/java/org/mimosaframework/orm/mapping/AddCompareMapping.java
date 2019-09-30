@@ -25,7 +25,7 @@ public class AddCompareMapping extends NothingCompareMapping {
 
             if (missingTables != null) {
                 for (MappingTable table : missingTables) {
-                    String tableName = table.getDatabaseTableName();
+                    String tableName = table.getMappingTableName();
                     String tableClassName = table.getMappingClass().getSimpleName();
                     // 使用SQL语句添加表
                     try {

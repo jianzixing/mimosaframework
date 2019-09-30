@@ -79,6 +79,14 @@
             <systemPath>${project.basedir}/src/test/libs/sqljdbc4.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>com.ibm.db2</groupId>
+            <artifactId>db4jcc4</artifactId>
+            <version>4.26.14</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/test/libs/db2jcc4.jar</systemPath>
+        </dependency>
+
         <!--<dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>

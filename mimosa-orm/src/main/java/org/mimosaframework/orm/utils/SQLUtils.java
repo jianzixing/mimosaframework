@@ -23,6 +23,9 @@ public class SQLUtils {
                 return DatabaseTypeEnum.ORACLE;
             } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypeEnum.POSTGRESQL.name()) != -1) {
                 return DatabaseTypeEnum.POSTGRESQL;
+            } else if (metaData.getDriverName().toUpperCase().indexOf("IBM") != -1
+                    && metaData.getDriverName().toUpperCase().indexOf("SQLJ") != -1) {
+                return DatabaseTypeEnum.DB2;
             }
             throw new SQLException("不支持的数据库 " + metaData.getDriverName() + " ");
         } else {
