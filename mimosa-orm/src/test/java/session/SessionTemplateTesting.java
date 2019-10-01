@@ -14,6 +14,7 @@ import tables.TableMultiKey2;
 import tables.TableOrder;
 import tables.TableUser;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -301,5 +302,10 @@ public class SessionTemplateTesting {
                 .childGroupBy(TableUser.userName)
                 .gt(TableUser.id, 10));
         System.out.println(object);
+    }
+
+    @Test
+    public void testJavaTypes() {
+         SessionTemplateServiceTesting.addJavaTypes(template);
     }
 }

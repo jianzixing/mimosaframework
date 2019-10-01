@@ -238,4 +238,9 @@ public class DB2SessionTemplateTesting {
                 .gt(TableUser.id, 10));
         System.out.println(object);
     }
+
+    @Test
+    public void testJavaTypes() {
+        SessionTemplateServiceTesting.addJavaTypes(template);
+    }
 }

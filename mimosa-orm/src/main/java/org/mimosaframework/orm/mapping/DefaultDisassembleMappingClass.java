@@ -11,6 +11,7 @@ import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Set;
 
@@ -164,6 +165,12 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             ((SpecificMappingField) mappingField).setMappingFieldAutoIncrement(true);
         }
         mappingTable.addMappingField(mappingField);
+
+        if (mappingField.getMappingFieldType().equals(BigDecimal.class)
+                && mappingField.getMappingFieldLength() == 255) {
+            throw new IllegalArgumentException("BigDecimal类型必须设置精度值,默认255长度过大");
+        }
+
         return mappingField;
     }
 }

@@ -30,7 +30,7 @@ public class MysqlDifferentColumn implements DifferentColumn {
         TYPES_MAPPING.put(java.sql.Date.class, "DATETIME");
         TYPES_MAPPING.put(java.sql.Timestamp.class, "TIMESTAMP");
         TYPES_MAPPING.put(java.sql.Blob.class, "BLOB");
-        TYPES_MAPPING.put(java.sql.Clob.class, "CLOB");
+        TYPES_MAPPING.put(java.sql.Clob.class, "BLOB");
         TYPES_MAPPING.put(Short.class, "SMALLINT");
         TYPES_MAPPING.put(short.class, "SMALLINT");
         TYPES_MAPPING.put(Byte.class, "TINYINT");

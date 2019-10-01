@@ -7,7 +7,9 @@ import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public abstract class AbstractDatabasePorter implements DatabasePorter {
@@ -232,11 +234,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 throw new IllegalArgumentException("没有找到字段" + fieldName + "映射字段");
             }
 
-            if (value == Keyword.NULL) {
-                valueBuilder.addString("NULL");
-            } else {
-                valueBuilder.addDataPlaceholder(fieldName, value);
-            }
+            this.addDataPlaceholder(valueBuilder, fieldName, value, mappingField);
 
             if (iterator.hasNext()) {
                 valueBuilder.addSplit();
@@ -250,6 +248,41 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         insertBuilder.addParenthesisStart();
         insertBuilder.addSQLBuilder(valueBuilder);
         insertBuilder.addParenthesisEnd();
+    }
+
+    protected void addDataPlaceholder(SQLBuilder valueBuilder, String fieldName, Object value, MappingField mappingField) {
+        if (value == Keyword.NULL) {
+            valueBuilder.addString("NULL");
+        } else {
+            /**如果浮点数小数点多长需要转换成字符串，避免出现科学计数法**/
+            if (mappingField.getMappingFieldType() == double.class
+                    || mappingField.getMappingFieldType() == Double.class
+                    || mappingField.getMappingFieldType() == float.class
+                    || mappingField.getMappingFieldType() == Float.class
+                    || mappingField.getMappingFieldType() == long.class
+                    || mappingField.getMappingFieldType() == Long.class) {
+                String scientificNotationStr = "" + value;
+                if (scientificNotationStr.indexOf("E") > -1) {
+                    String[] s = scientificNotationStr.split("E");
+                    String lenStr = s[1];
+                    if (lenStr.charAt(0) < 48 || lenStr.charAt(0) > 57) {
+                        lenStr = lenStr.substring(1);
+                    }
+                    int len = Integer.parseInt(lenStr);
+                    if (len > 32) {
+                        valueBuilder.addDataPlaceholder(fieldName, value);
+                    } else {
+                        DecimalFormat df = new DecimalFormat("#");
+                        df.setMaximumFractionDigits(len);
+                        valueBuilder.addDataPlaceholder(fieldName, df.format(value));
+                    }
+                } else {
+                    valueBuilder.addDataPlaceholder(fieldName, new BigDecimal("" + value).toString());
+                }
+            } else {
+                valueBuilder.addDataPlaceholder(fieldName, value);
+            }
+        }
     }
 
     @Override

@@ -7,10 +7,7 @@ import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.BasicFunction;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.criteria.Criteria;
-import tables.TableOrder;
-import tables.TablePay;
-import tables.TableProduct;
-import tables.TableUser;
+import tables.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -573,4 +570,23 @@ public class SessionTemplateServiceTesting {
 
     }
 
+    public static void addJavaTypes(final SessionTemplate template) {
+        ModelObject object = new ModelObject(TableJavaTypes.class);
+        object.put(TableJavaTypes.text, RandomUtils.randomChineseCharacters(10));
+        object.put(TableJavaTypes.mediumText, RandomUtils.randomChineseCharacters(20));
+        object.put(TableJavaTypes.doubleType, 10.123123);
+        object.put(TableJavaTypes.decimal, 20.678901);
+        object.put(TableJavaTypes.stringType, RandomUtils.randomAlphanumericLetter(5));
+        object.put(TableJavaTypes.charType, "m");
+        object.put(TableJavaTypes.date, new Date());
+        object.put(TableJavaTypes.timestamp, new Date());
+        object.put(TableJavaTypes.blob, RandomUtils.randomChineseCharacters(10));
+        object.put(TableJavaTypes.clob, RandomUtils.randomChineseCharacters(10));
+        object.put(TableJavaTypes.shortType, 120);
+        object.put(TableJavaTypes.byteType, 30);
+        object.put(TableJavaTypes.longType, 100000000000L);
+        object.put(TableJavaTypes.floatType, 989898998234F);
+        object.put(TableJavaTypes.booleanType, true);
+        template.save(object);
+    }
 }

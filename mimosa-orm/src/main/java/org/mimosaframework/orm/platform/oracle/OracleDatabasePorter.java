@@ -454,11 +454,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
                 isAutoIncrement = true;
             }
 
-            if (value == Keyword.NULL) {
-                valueBuilder.addString("NULL");
-            } else {
-                valueBuilder.addDataPlaceholder(fieldName, value);
-            }
+            this.addDataPlaceholder(valueBuilder, fieldName, value, field);
 
             if (iterator.hasNext()) {
                 valueBuilder.addSplit();
