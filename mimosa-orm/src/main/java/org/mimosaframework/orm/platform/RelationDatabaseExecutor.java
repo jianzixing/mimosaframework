@@ -15,11 +15,17 @@ public class RelationDatabaseExecutor implements DatabaseExecutor {
     private ActionDataSourceWrapper actionDataSourceWrapper;
     private boolean isIgnoreEmptySlave = true;
     private boolean isShowSql = false;
+    private DatabaseExecutorCallback callback;
 
     public RelationDatabaseExecutor(ActionDataSourceWrapper wrapper) {
         this.isShowSql = wrapper.isShowSql();
         this.isIgnoreEmptySlave = wrapper.isIgnoreEmptySlave();
         this.actionDataSourceWrapper = wrapper;
+    }
+
+    @Override
+    public void setDatabaseExecutorCallback(DatabaseExecutorCallback callback) {
+        this.callback = callback;
     }
 
     private void close(Connection connection, Statement statement) {
@@ -279,6 +285,7 @@ public class RelationDatabaseExecutor implements DatabaseExecutor {
                     String fieldName = rsmd.getColumnLabel(i);
                     SQLUtils.recordMappingToMap(fieldClassName, fieldName, rs, object);
                 }
+                if (callback != null) callback.select(connection, statement, rs, object);
                 result.add(object);
             }
             return result;

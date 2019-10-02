@@ -588,5 +588,8 @@ public class SessionTemplateServiceTesting {
         object.put(TableJavaTypes.booleanType, true);
         object.put(TableJavaTypes.timestamp, new Date());
         template.save(object);
+
+        ModelObject r = template.get(TableJavaTypes.class, object.getIntValue(TableJavaTypes.id));
+        System.out.println(r);
     }
 }

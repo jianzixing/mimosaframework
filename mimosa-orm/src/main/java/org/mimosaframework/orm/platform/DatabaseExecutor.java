@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface DatabaseExecutor {
+    void setDatabaseExecutorCallback(DatabaseExecutorCallback callback);
+
     boolean execute(PorterStructure structure) throws SQLException;
 
     int delete(PorterStructure structure) throws SQLException;

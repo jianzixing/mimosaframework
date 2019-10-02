@@ -2,10 +2,16 @@ package org.mimosaframework.orm.platform.db2;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mimosaframework.core.json.ModelException;
+import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.platform.*;
 
-import java.sql.SQLException;
+import java.io.Reader;
+import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DB2CarryHandler extends CarryHandler {
     private static final Log logger = LogFactory.getLog(DB2CarryHandler.class);
@@ -59,7 +65,16 @@ public class DB2CarryHandler extends CarryHandler {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());
                 }
-                return dbSession.select(structure);
+
+                dbSession.setDatabaseExecutorCallback(new DatabaseExecutorCallback() {
+                    @Override
+                    public void select(Connection connection, PreparedStatement statement, ResultSet resultSet, ModelObject object) throws SQLException {
+                        processClobType(object);
+                    }
+                });
+
+                List<ModelObject> objects = dbSession.select(structure);
+                return objects;
             }
         } finally {
             if (dswrapper != null && dswrapper.isAutoCloseConnection()) {
