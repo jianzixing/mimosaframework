@@ -305,7 +305,7 @@ public class SessionTemplateTesting {
     }
 
     @Test
-    public void testJavaTypes() {
+    public void testJavaTypes() throws SQLException {
          SessionTemplateServiceTesting.addJavaTypes(template);
     }
 }

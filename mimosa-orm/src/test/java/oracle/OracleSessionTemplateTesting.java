@@ -13,6 +13,7 @@ import tables.TableMultiKey2;
 import tables.TableOrder;
 import tables.TableUser;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 public class OracleSessionTemplateTesting {
@@ -239,7 +240,7 @@ public class OracleSessionTemplateTesting {
     }
 
     @Test
-    public void testJavaTypes() {
+    public void testJavaTypes() throws SQLException {
         SessionTemplateServiceTesting.addJavaTypes(template);
     }
 }

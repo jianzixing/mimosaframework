@@ -1,5 +1,6 @@
 package program.service;
 
+import oracle.jdbc.rowset.OracleSerialClob;
 import org.mimosaframework.core.json.ModelArray;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
@@ -9,6 +10,7 @@ import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.criteria.Criteria;
 import tables.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -570,7 +572,7 @@ public class SessionTemplateServiceTesting {
 
     }
 
-    public static void addJavaTypes(final SessionTemplate template) {
+    public static void addJavaTypes(final SessionTemplate template) throws SQLException {
         ModelObject object = new ModelObject(TableJavaTypes.class);
         object.put(TableJavaTypes.text, RandomUtils.randomChineseCharacters(10));
         object.put(TableJavaTypes.mediumText, RandomUtils.randomChineseCharacters(20));
@@ -579,7 +581,7 @@ public class SessionTemplateServiceTesting {
         object.put(TableJavaTypes.stringType, RandomUtils.randomAlphanumericLetter(5));
         object.put(TableJavaTypes.charType, "m");
         object.put(TableJavaTypes.date, new Date());
-        // object.put(TableJavaTypes.blob, RandomUtils.randomChineseCharacters(10));
+        // object.put(TableJavaTypes.blob, new OracleSerialClob(RandomUtils.randomChineseCharacters(10).toCharArray()));
         object.put(TableJavaTypes.clob, RandomUtils.randomChineseCharacters(10));
         object.put(TableJavaTypes.shortType, 120);
         object.put(TableJavaTypes.byteType, 30);
