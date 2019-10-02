@@ -112,6 +112,9 @@
                     <li>
                         <a href="javascript:void(0)" doc="multi_db.md" class="sidebar-link">多数据库支持</a>
                     </li>
+                    <li>
+                        <a href="javascript:void(0)" doc="java_types.md" class="sidebar-link">字段类型列表</a>
+                    </li>
 
                     <li><h3>MVC扩展工具</h3></li>
                     <li>
@@ -142,13 +145,14 @@
 </div>
 
 <script src="./showdown.min.js"></script>
+<script src="./showdown-table.min.js"></script>
 <script src="./axios.min.js"></script>
 <script src="./highlight.min.js"></script>
 <script>
     function loadPage(name) {
         axios.get('./default/' + name + '?t=' + new Date().getTime())
             .then(function (response) {
-                var converter = new showdown.Converter(),
+                var converter = new showdown.Converter({extensions: ['table']}),
                     text = response.data,
                     html = converter.makeHtml(text);
 
