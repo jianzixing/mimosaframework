@@ -25,7 +25,7 @@ public class SqliteDifferentColumn implements DifferentColumn {
         TYPES_MAPPING.put(Integer.class, "INTEGER");
         TYPES_MAPPING.put(int.class, "INTEGER");
         TYPES_MAPPING.put(Date.class, "DATE");
-        TYPES_MAPPING.put(java.sql.Date.class, "DATE");
+        TYPES_MAPPING.put(java.sql.Date.class, "DATETIME");
         TYPES_MAPPING.put(java.sql.Timestamp.class, "TIMESTAMP");
         TYPES_MAPPING.put(java.sql.Blob.class, "BLOB");
         TYPES_MAPPING.put(java.sql.Clob.class, "CLOB");

@@ -175,11 +175,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                     throw new IllegalArgumentException("没有找到字段" + fieldName + "映射字段");
                 }
 
-                if (value == null || value == Keyword.NULL) {
-                    insertBuilder.addString("NULL");
-                } else {
-                    insertBuilder.addDataPlaceholder(key, value);
-                }
+                this.addDataPlaceholder(insertBuilder, fieldName, value, mappingField);
 
                 if (iterator.hasNext()) {
                     insertBuilder.addSplit();

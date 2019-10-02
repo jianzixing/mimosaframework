@@ -8,6 +8,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -234,12 +235,18 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 throw new IllegalArgumentException("没有找到字段" + fieldName + "映射字段");
             }
 
-            this.addDataPlaceholder(valueBuilder, fieldName, value, mappingField);
+            boolean isInset = this.addDataPlaceholder(valueBuilder, fieldName, value, mappingField);
 
-            if (iterator.hasNext()) {
-                valueBuilder.addSplit();
+            if (isInset) {
+                if (iterator.hasNext()) {
+                    valueBuilder.addSplit();
+                }
+                inObjectFields.add(mappingField.getDatabaseColumnName());
+            } else {
+                if (!iterator.hasNext()) {
+                    valueBuilder.removeLast();
+                }
             }
-            inObjectFields.add(mappingField.getDatabaseColumnName());
         }
 
         insertBuilder.addParenthesisWrapString(inObjectFields.toArray(new String[]{}));
@@ -250,12 +257,12 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         insertBuilder.addParenthesisEnd();
     }
 
-    protected void addDataPlaceholder(SQLBuilder valueBuilder, String fieldName, Object value, MappingField mappingField) {
-        if (value == Keyword.NULL) {
+    protected boolean addDataPlaceholder(SQLBuilder valueBuilder, String fieldName, Object value, MappingField mappingField) {
+        if (value == Keyword.NULL || value == null) {
             valueBuilder.addString("NULL");
         } else {
             /**如果浮点数小数点多长需要转换成字符串，避免出现科学计数法**/
-            if (mappingField.getMappingFieldType() == double.class
+            /*if (mappingField.getMappingFieldType() == double.class
                     || mappingField.getMappingFieldType() == Double.class
                     || mappingField.getMappingFieldType() == float.class
                     || mappingField.getMappingFieldType() == Float.class
@@ -281,8 +288,20 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 }
             } else {
                 valueBuilder.addDataPlaceholder(fieldName, value);
+            }*/
+
+            // 将字符串转换成二进制
+            if (mappingField.getMappingFieldType() == Blob.class) {
+                if (value instanceof byte[]) {
+                    valueBuilder.addDataPlaceholder(fieldName, value);
+                } else {
+                    valueBuilder.addDataPlaceholder(fieldName, String.valueOf(value).getBytes());
+                }
+            } else {
+                valueBuilder.addDataPlaceholder(fieldName, value);
             }
         }
+        return true;
     }
 
     @Override
@@ -920,12 +939,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
     protected void buildHasLengthTableField(boolean hasLength, MappingField field, SQLBuilder builder) {
         if (hasLength && !field.isMappingAutoIncrement()) {
-            if (field.getMappingFieldDecimalDigits() == 0) {
-                builder.addParenthesisString("" + field.getMappingFieldLength());
-            } else {
-                builder.addParenthesisString("" + field.getMappingFieldLength() +
-                        "," + field.getMappingFieldDecimalDigits());
-            }
+            String len = this.getDifferentColumn().getTypeLength(field);
+            builder.addParenthesisString(len);
         }
     }
 

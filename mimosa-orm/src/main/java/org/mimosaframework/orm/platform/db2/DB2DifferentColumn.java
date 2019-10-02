@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.platform.db2;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.platform.DifferentColumn;
@@ -12,11 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DB2DifferentColumn implements DifferentColumn {
+    private static final Log logger = LogFactory.getLog(DB2DifferentColumn.class);
     protected static final Map<Class, String> TYPES_MAPPING = new HashMap<Class, String>();
 
     static {
-        TYPES_MAPPING.put(Text.class, "TEXT");
-        TYPES_MAPPING.put(MediumText.class, "TEXT");
+        TYPES_MAPPING.put(Text.class, "CLOB");
+        TYPES_MAPPING.put(MediumText.class, "CLOB");
         TYPES_MAPPING.put(Double.class, "DOUBLE");
         TYPES_MAPPING.put(double.class, "DOUBLE");
         TYPES_MAPPING.put(BigDecimal.class, "DECIMAL");
@@ -144,16 +147,31 @@ public class DB2DifferentColumn implements DifferentColumn {
         if (typeClass.equals(BigDecimal.class)) return true;
         if (typeClass.equals(String.class)) return true;
         if (typeClass.equals(char.class)) return true;
+        if (typeClass.equals(Text.class)) return true;
+        if (typeClass.equals(MediumText.class)) return true;
         return false;
     }
 
     @Override
     public String getTypeLength(MappingField field) {
         if (this.typeHasLength(field.getMappingFieldType())) {
-            if (field.getMappingFieldDecimalDigits() == 0) {
-                return "" + field.getMappingFieldLength();
+            if (field.getMappingFieldType() == BigDecimal.class) {
+                if (field.getMappingFieldDecimalDigits() == 0) {
+                    return "" + field.getMappingFieldLength();
+                } else {
+                    int maxLength = field.getMappingFieldLength();
+                    if (maxLength > 31) {
+                        maxLength = 31;
+                        logger.warn("DB2的Decimal类型整数位最大只支持31位");
+                    }
+                    return "" + maxLength + "," + field.getMappingFieldDecimalDigits();
+                }
+            } else if (field.getMappingFieldType() == Text.class) {
+                return "64K";
+            } else if (field.getMappingFieldType() == MediumText.class) {
+                return "16M";
             } else {
-                return "" + field.getMappingFieldLength() + "," + field.getMappingFieldDecimalDigits();
+                return "" + field.getMappingFieldLength();
             }
         }
         return null;

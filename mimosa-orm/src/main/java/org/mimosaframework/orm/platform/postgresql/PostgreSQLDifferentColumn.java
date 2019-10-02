@@ -15,6 +15,7 @@ public class PostgreSQLDifferentColumn implements DifferentColumn {
     protected static final Map<Class, String> TYPES_MAPPING = new HashMap<Class, String>();
 
     static {
+        // postgre text 无长度限制
         TYPES_MAPPING.put(Text.class, "TEXT");
         TYPES_MAPPING.put(MediumText.class, "TEXT");
         TYPES_MAPPING.put(Boolean.class, "BOOLEAN");
@@ -30,7 +31,7 @@ public class PostgreSQLDifferentColumn implements DifferentColumn {
         TYPES_MAPPING.put(java.sql.Date.class, "TIMESTAMP");
         TYPES_MAPPING.put(java.sql.Timestamp.class, "TIMESTAMP");
         TYPES_MAPPING.put(java.sql.Blob.class, "BYTEA");
-        TYPES_MAPPING.put(java.sql.Clob.class, "BYTEA");
+        TYPES_MAPPING.put(java.sql.Clob.class, "TEXT");
         TYPES_MAPPING.put(Short.class, "SMALLINT");
         TYPES_MAPPING.put(short.class, "SMALLINT");
         TYPES_MAPPING.put(Byte.class, "SMALLINT");

@@ -7,7 +7,9 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
 
+import java.sql.Blob;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class SQLServerDatabasePorter extends AbstractDatabasePorter {
@@ -333,6 +335,29 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
         SQLBuilder insertBuilder = SQLBuilderFactory.createBraceSQLBuilder().INSERT().INTO().addString(tableName);
         List<String> fields = this.clearAutoIncrement(table);
         return insertBuildValues(objects, insertBuilder, fields);
+    }
+
+    protected boolean addDataPlaceholder(SQLBuilder valueBuilder, String fieldName, Object value, MappingField mappingField) {
+        // SQL Server不能直接插入Timestamp的值
+        if (mappingField.getMappingFieldType() == Timestamp.class) {
+            return false;
+        } else {
+            if (value == Keyword.NULL || value == null) {
+                valueBuilder.addString("NULL");
+            } else {
+                // 将字符串转换成二进制
+                if (mappingField.getMappingFieldType() == Blob.class) {
+                    if (value instanceof byte[]) {
+                        valueBuilder.addDataPlaceholder(fieldName, value);
+                    } else {
+                        valueBuilder.addDataPlaceholder(fieldName, String.valueOf(value).getBytes());
+                    }
+                } else {
+                    valueBuilder.addDataPlaceholder(fieldName, value);
+                }
+            }
+        }
+        return true;
     }
 
     @Override

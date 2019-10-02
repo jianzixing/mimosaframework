@@ -36,6 +36,8 @@ public interface SQLBuilder {
 
     SQLBuilder COLUMN();
 
+    void removeLast();
+
     enum Command {
         CREATE, TABLE, IF, NOT, EXISTS, PRIMARY, KEY, AUTO_INCREMENT, NULL, DEFAULT,
         INDEX, ALTER, ADD, INSERT, INTO, VALUES, UPDATE, SET, WHERE, AND, OR, ENGINE,

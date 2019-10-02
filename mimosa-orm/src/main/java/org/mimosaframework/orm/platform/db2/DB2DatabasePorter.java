@@ -71,16 +71,8 @@ public class DB2DatabasePorter extends AbstractDatabasePorter {
 
     protected void buildHasLengthTableField(boolean hasLength, MappingField field, SQLBuilder builder) {
         if (hasLength && !field.isMappingAutoIncrement()) {
-            if (field.getMappingFieldDecimalDigits() == 0) {
-                builder.addParenthesisString("" + field.getMappingFieldLength());
-            } else {
-                int maxLength = field.getMappingFieldLength();
-                if (maxLength > 31) {
-                    maxLength = 31;
-                    logger.warn("DB2的Decimal类型整数位最大只支持31位");
-                }
-                builder.addParenthesisString("" + maxLength + "," + field.getMappingFieldDecimalDigits());
-            }
+            String len = this.getDifferentColumn().getTypeLength(field);
+            builder.addParenthesisString(len);
         }
     }
 
@@ -161,7 +153,7 @@ public class DB2DatabasePorter extends AbstractDatabasePorter {
                 insertBuilder.addSplit();
             }
         }
-        
+
         List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
         return ids;
     }
