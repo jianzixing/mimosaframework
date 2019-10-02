@@ -28,7 +28,8 @@ public class PostgreSQLDifferentColumn implements DifferentColumn {
         TYPES_MAPPING.put(Integer.class, "INTEGER");
         TYPES_MAPPING.put(int.class, "INTEGER");
         TYPES_MAPPING.put(Date.class, "TIMESTAMP");
-        TYPES_MAPPING.put(java.sql.Date.class, "TIMESTAMP");
+        TYPES_MAPPING.put(java.sql.Date.class, "DATE");
+        TYPES_MAPPING.put(java.sql.Time.class, "TIME");
         TYPES_MAPPING.put(java.sql.Timestamp.class, "TIMESTAMP");
         TYPES_MAPPING.put(java.sql.Blob.class, "BYTEA");
         TYPES_MAPPING.put(java.sql.Clob.class, "TEXT");

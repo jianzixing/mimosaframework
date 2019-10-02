@@ -25,7 +25,8 @@ public class SQLServerDifferentColumn implements DifferentColumn {
         TYPES_MAPPING.put(Integer.class, "INT");
         TYPES_MAPPING.put(int.class, "INT");
         TYPES_MAPPING.put(Date.class, "DATETIME");
-        TYPES_MAPPING.put(java.sql.Date.class, "DATETIME");
+        TYPES_MAPPING.put(java.sql.Date.class, "DATE");
+        TYPES_MAPPING.put(java.sql.Time.class, "TIME");
         TYPES_MAPPING.put(java.sql.Timestamp.class, "TIMESTAMP");
         TYPES_MAPPING.put(java.sql.Blob.class, "IMAGE");
         TYPES_MAPPING.put(java.sql.Clob.class, "NTEXT");

@@ -11,6 +11,7 @@ import org.mimosaframework.orm.criteria.Criteria;
 import tables.*;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -593,5 +594,6 @@ public class SessionTemplateServiceTesting {
 
         ModelObject r = template.get(TableJavaTypes.class, object.getIntValue(TableJavaTypes.id));
         System.out.println(r);
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(r.getDate(TableJavaTypes.date)));
     }
 }

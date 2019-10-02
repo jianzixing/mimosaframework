@@ -28,6 +28,7 @@ public class OracleDifferentColumn implements DifferentColumn {
         TYPES_MAPPING.put(int.class, "NUMBER");
         TYPES_MAPPING.put(Date.class, "DATE");
         TYPES_MAPPING.put(java.sql.Date.class, "DATE");
+        TYPES_MAPPING.put(java.sql.Time.class, "DATE");
         TYPES_MAPPING.put(java.sql.Timestamp.class, "TIMESTAMP");
         TYPES_MAPPING.put(java.sql.Blob.class, "BLOB");
         TYPES_MAPPING.put(java.sql.Clob.class, "CLOB");
