@@ -30,8 +30,6 @@ public enum TableJavaTypes {
     charType,
     @Column(type = Date.class)
     date,
-    @Column(type = Timestamp.class)
-    timestamp,
     @Column(type = Blob.class)
     blob,
     @Column(type = Clob.class)
@@ -45,5 +43,7 @@ public enum TableJavaTypes {
     @Column(type = float.class)
     floatType,
     @Column(type = boolean.class)
-    booleanType
+    booleanType,
+    @Column(type = Timestamp.class)
+    timestamp
 }

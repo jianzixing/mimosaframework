@@ -290,12 +290,14 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 valueBuilder.addDataPlaceholder(fieldName, value);
             }*/
 
-            // 将字符串转换成二进制
+            // 将字符串转换成二进制，如果是对象则不改变
             if (mappingField.getMappingFieldType() == Blob.class) {
                 if (value instanceof byte[]) {
                     valueBuilder.addDataPlaceholder(fieldName, value);
-                } else {
+                } else if (value instanceof String) {
                     valueBuilder.addDataPlaceholder(fieldName, String.valueOf(value).getBytes());
+                } else {
+                    valueBuilder.addDataPlaceholder(fieldName, value);
                 }
             } else {
                 valueBuilder.addDataPlaceholder(fieldName, value);

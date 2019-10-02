@@ -579,14 +579,14 @@ public class SessionTemplateServiceTesting {
         object.put(TableJavaTypes.stringType, RandomUtils.randomAlphanumericLetter(5));
         object.put(TableJavaTypes.charType, "m");
         object.put(TableJavaTypes.date, new Date());
-        object.put(TableJavaTypes.timestamp, new Date());
-        object.put(TableJavaTypes.blob, RandomUtils.randomChineseCharacters(10));
+        // object.put(TableJavaTypes.blob, RandomUtils.randomChineseCharacters(10));
         object.put(TableJavaTypes.clob, RandomUtils.randomChineseCharacters(10));
         object.put(TableJavaTypes.shortType, 120);
         object.put(TableJavaTypes.byteType, 30);
         object.put(TableJavaTypes.longType, 100000000000L);
         object.put(TableJavaTypes.floatType, 989898998234F);
         object.put(TableJavaTypes.booleanType, true);
+        object.put(TableJavaTypes.timestamp, new Date());
         template.save(object);
     }
 }

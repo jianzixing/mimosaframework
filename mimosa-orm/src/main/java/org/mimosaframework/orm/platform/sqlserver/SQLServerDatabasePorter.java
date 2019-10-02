@@ -342,22 +342,8 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
         if (mappingField.getMappingFieldType() == Timestamp.class) {
             return false;
         } else {
-            if (value == Keyword.NULL || value == null) {
-                valueBuilder.addString("NULL");
-            } else {
-                // 将字符串转换成二进制
-                if (mappingField.getMappingFieldType() == Blob.class) {
-                    if (value instanceof byte[]) {
-                        valueBuilder.addDataPlaceholder(fieldName, value);
-                    } else {
-                        valueBuilder.addDataPlaceholder(fieldName, String.valueOf(value).getBytes());
-                    }
-                } else {
-                    valueBuilder.addDataPlaceholder(fieldName, value);
-                }
-            }
+            return super.addDataPlaceholder(valueBuilder, fieldName, value, mappingField);
         }
-        return true;
     }
 
     @Override
