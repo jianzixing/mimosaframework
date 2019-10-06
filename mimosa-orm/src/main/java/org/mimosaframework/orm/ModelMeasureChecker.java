@@ -32,6 +32,61 @@ public class ModelMeasureChecker implements ModelObjectChecker {
     @Override
     public void checker(ModelObject object, Object[] removed) throws ModelCheckerException {
         object.clearEmpty();
+        this.checkerValid(object, removed);
+    }
+
+    @Override
+    public void checkerUpdate(ModelObject object, Object[] removed) throws ModelCheckerException {
+        if (tables == null || object.getObjectClass() == null) {
+            throw new ModelCheckerException(null, Code.NULL_OBJ, "映射类不存在或者ModelObject没有指定映射类");
+        }
+
+        Class c = object.getObjectClass();
+        MappingTable table = tables.get(c);
+        if (table == null) {
+            throw new ModelCheckerException(null, Code.NULL_OBJ, "当前类" + c.getSimpleName() + "没有在映射类列表中");
+        }
+
+        Set<MappingField> fields = table.getMappingFields();
+        List<Object> removedList = null;
+
+        for (MappingField field : fields) {
+            if (field.isMappingFieldPrimaryKey()) {
+                if (object.containsKey(field.getMappingFieldName())) {
+                    String value = object.getString(field.getMappingFieldName());
+                    if (value == null && "".equals(value)) {
+                        throw new ModelCheckerException(field.getMappingFieldName(),
+                                Code.PK_NULL, "主键 " + field.getMappingFieldName() + " 更新时必须存在");
+                    }
+                } else {
+                    throw new ModelCheckerException(field.getMappingFieldName(),
+                            Code.PK_NULL, "主键 " + field.getMappingFieldName() + " 更新时必须存在");
+                }
+            }
+
+            if (removed != null) {
+                if (removedList == null) {
+                    removedList = new ArrayList<>();
+                }
+                for (Object o : removed) {
+                    removedList.add(o);
+                }
+            }
+            if (!object.containsKey(field.getMappingFieldName())) {
+                if (removedList == null) {
+                    removedList = new ArrayList<>();
+                }
+                removedList.add(field.getMappingFieldName());
+            }
+        }
+
+        if (removedList != null) {
+            removed = removedList.toArray();
+        }
+        this.checkerValid(object, removed);
+    }
+
+    private void checkerValid(ModelObject object, Object[] removed) throws ModelCheckerException {
         if (tables == null || object.getObjectClass() == null) {
             throw new ModelCheckerException(null, Code.NULL_OBJ, "映射类不存在或者ModelObject没有指定映射类");
         }
@@ -112,57 +167,6 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                 }
             }
         }
-    }
-
-    @Override
-    public void checkerUpdate(ModelObject object, Object[] removed) throws ModelCheckerException {
-        if (tables == null || object.getObjectClass() == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ, "映射类不存在或者ModelObject没有指定映射类");
-        }
-
-        Class c = object.getObjectClass();
-        MappingTable table = tables.get(c);
-        if (table == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ, "当前类" + c.getSimpleName() + "没有在映射类列表中");
-        }
-
-        Set<MappingField> fields = table.getMappingFields();
-        List<Object> removedList = null;
-
-        for (MappingField field : fields) {
-            if (field.isMappingFieldPrimaryKey()) {
-                if (object.containsKey(field.getMappingFieldName())) {
-                    String value = object.getString(field.getMappingFieldName());
-                    if (value == null && "".equals(value)) {
-                        throw new ModelCheckerException(field.getMappingFieldName(),
-                                Code.PK_NULL, "主键 " + field.getMappingFieldName() + " 更新时必须存在");
-                    }
-                } else {
-                    throw new ModelCheckerException(field.getMappingFieldName(),
-                            Code.PK_NULL, "主键 " + field.getMappingFieldName() + " 更新时必须存在");
-                }
-            }
-
-            if (removed != null) {
-                if (removedList == null) {
-                    removedList = new ArrayList<>();
-                }
-                for (Object o : removed) {
-                    removedList.add(o);
-                }
-            }
-            if (!object.containsKey(field.getMappingFieldName())) {
-                if (removedList == null) {
-                    removedList = new ArrayList<>();
-                }
-                removedList.add(field.getMappingFieldName());
-            }
-        }
-
-        if (removedList != null) {
-            removed = removedList.toArray();
-        }
-        this.checker(object, removed);
     }
 
     public enum Code {

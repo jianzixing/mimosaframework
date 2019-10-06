@@ -361,6 +361,7 @@ replaces：将url前缀的某些单词替换成想要的单词，比如 Web;w �
 * 增加对数据sqlite3的支持
 * 增加修改数据库字段类型支持，扩展统一部分字段类型
 * 3.3.8保存时会移除自增ID主键数据，这个版本后允许保存自定义主键(自增ID主键)数据。
+* checkAndThrowable自动清空空值，checkUpdateThrowable不再清空空值。
 
 版本 v3.3.8
 * 已更新
