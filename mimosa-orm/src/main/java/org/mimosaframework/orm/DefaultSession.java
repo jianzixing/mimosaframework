@@ -1,6 +1,7 @@
 package org.mimosaframework.orm;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.StrategyException;
@@ -51,6 +52,8 @@ public class DefaultSession implements Session {
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, obj);
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
 
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
         // 开始类型矫正
         TypeCorrectUtils.correct(obj, mappingTable);
 
@@ -90,6 +93,8 @@ public class DefaultSession implements Session {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         Query query = Criteria.query(c);
@@ -149,6 +154,9 @@ public class DefaultSession implements Session {
             if (mappingTable == null) {
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
             }
+
+            AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
             try {
                 StrategyFactory.applyStrategy(this.context, mappingTable, object, this);
             } catch (StrategyException e) {
@@ -182,6 +190,8 @@ public class DefaultSession implements Session {
         obj = Clone.cloneModelObject(obj);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         updateSkipReset.skip(obj, mappingTable);
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, obj.getObjectClass(), obj);
@@ -222,6 +232,9 @@ public class DefaultSession implements Session {
         }
         Class c = u.getTableClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
         int count = 0;
         try {
@@ -238,6 +251,9 @@ public class DefaultSession implements Session {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
         if (!SessionUtils.checkPrimaryKey(mappingTable.getMappingPrimaryKeyFields(), obj)) {
             throw new IllegalArgumentException("删除一个对象必须设置主键的值");
         }
@@ -268,6 +284,9 @@ public class DefaultSession implements Session {
 
         Class c = d.getTableClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
         try {
             return platformWrapper.delete(mappingTable, d);
@@ -279,6 +298,9 @@ public class DefaultSession implements Session {
     @Override
     public void delete(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
 
         if (pks.size() != 1) {
@@ -294,6 +316,9 @@ public class DefaultSession implements Session {
     @Override
     public ModelObject get(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         if (pks.size() != 1) {
             throw new IllegalArgumentException("当前方法只允许查询主键存在且唯一的对象," +
@@ -378,6 +403,9 @@ public class DefaultSession implements Session {
     @Override
     public ZipperTable<ModelObject> getZipperTable(Class c) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
         MimosaDataSource ds = this.wrapper.getDataSource();
         return new SingleZipperTable<ModelObject>(context, c, ds, mappingTable.getDatabaseTableName());
     }
@@ -393,9 +421,9 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException("没有找到查询条件");
         }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(f.getTableClass());
-        if (mappingTable == null) {
-            throw new IllegalArgumentException("没有找到该类的映射表");
-        }
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + f.getTableClass().getName() + "的映射表");
+
         Set<MappingField> fields = mappingTable.getMappingFields();
         Iterator<FunctionField> iterator = f.getFuns().iterator();
         while (iterator.hasNext()) {
@@ -499,6 +527,9 @@ public class DefaultSession implements Session {
         List<DataSourceTableName> names = new ArrayList<>();
 
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
+
+        AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
+
         DataSourceTableName dataSourceTableName = new DataSourceTableName(mimosaDataSource.getName(), mappingTable.getDatabaseTableName());
         if (mimosaDataSource.getSlaves() != null) {
             List<String> slaves = new ArrayList<>();
