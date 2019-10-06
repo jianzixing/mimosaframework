@@ -51,7 +51,6 @@ public class DefaultSession implements Session {
         }
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, obj);
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         // 开始类型矫正
@@ -93,7 +92,6 @@ public class DefaultSession implements Session {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
@@ -154,7 +152,6 @@ public class DefaultSession implements Session {
             if (mappingTable == null) {
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
             }
-
             AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
             try {
@@ -190,7 +187,6 @@ public class DefaultSession implements Session {
         obj = Clone.cloneModelObject(obj);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         updateSkipReset.skip(obj, mappingTable);
@@ -232,7 +228,6 @@ public class DefaultSession implements Session {
         }
         Class c = u.getTableClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
@@ -251,7 +246,6 @@ public class DefaultSession implements Session {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         if (!SessionUtils.checkPrimaryKey(mappingTable.getMappingPrimaryKeyFields(), obj)) {
@@ -284,7 +278,6 @@ public class DefaultSession implements Session {
 
         Class c = d.getTableClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
@@ -298,7 +291,6 @@ public class DefaultSession implements Session {
     @Override
     public void delete(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
@@ -316,7 +308,6 @@ public class DefaultSession implements Session {
     @Override
     public ModelObject get(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
@@ -403,7 +394,6 @@ public class DefaultSession implements Session {
     @Override
     public ZipperTable<ModelObject> getZipperTable(Class c) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         MimosaDataSource ds = this.wrapper.getDataSource();
@@ -421,7 +411,6 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException("没有找到查询条件");
         }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(f.getTableClass());
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + f.getTableClass().getName() + "的映射表");
 
         Set<MappingField> fields = mappingTable.getMappingFields();
@@ -527,7 +516,6 @@ public class DefaultSession implements Session {
         List<DataSourceTableName> names = new ArrayList<>();
 
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-
         AssistUtils.notNull(mappingTable, "找不到映射类" + c.getName() + "的映射表");
 
         DataSourceTableName dataSourceTableName = new DataSourceTableName(mimosaDataSource.getName(), mappingTable.getDatabaseTableName());
