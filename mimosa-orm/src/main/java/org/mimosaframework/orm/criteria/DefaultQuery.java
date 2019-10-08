@@ -14,6 +14,11 @@ import java.util.*;
 public class DefaultQuery<T> implements Query<T> {
 
     private LogicWraps<Filter> logicWraps;
+
+    /**
+     * 包含所有的join查询，每个join查询拥有独立的父子结构，
+     * 用于查询时数据包装。
+     */
     private List<Join> leftJoin = new LinkedList<Join>();
     private List<Join> innerJoin = new LinkedList<Join>();
     private List<Order> orders = new LinkedList<Order>();
@@ -575,6 +580,11 @@ public class DefaultQuery<T> implements Query<T> {
             this.excludes.put(tableClass, nf);
         }
         return this;
+    }
+
+    @Override
+    public List<Join> getSubjoins() {
+        return new ArrayList<>(this.leftJoin);
     }
 
     public Map<Class, List<String>> getFields() {

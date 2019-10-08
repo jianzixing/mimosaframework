@@ -75,15 +75,17 @@ public class BeanAppContext implements Context {
         }
 
         {
-            BasicSetting disposition = this.configBuilder.getBasicInfo();
-            if (disposition.getConvert() != null) {
-                contextValues.setConvert(disposition.getConvert());
+            BasicSetting basicInfo = this.configBuilder.getBasicInfo();
+            if (basicInfo.getConvert() != null) {
+                contextValues.setConvert(basicInfo.getConvert());
             }
-            contextValues.setShowSQL(disposition.isShowSQL());
-            contextValues.setMappingLevel(disposition.getMappingLevel());
-            if (disposition.isIgnoreEmptySlave() != null) {
-                contextValues.setIgnoreEmptySlave(disposition.isIgnoreEmptySlave());
+            contextValues.setShowSQL(basicInfo.isShowSQL());
+            contextValues.setMappingLevel(basicInfo.getMappingLevel());
+            if (basicInfo.isIgnoreEmptySlave() != null) {
+                contextValues.setIgnoreEmptySlave(basicInfo.isIgnoreEmptySlave());
             }
+
+            contextValues.setInterceptSession(basicInfo.getInterceptSession());
         }
 
         {

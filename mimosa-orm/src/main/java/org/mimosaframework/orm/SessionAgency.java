@@ -27,6 +27,11 @@ public class SessionAgency implements Session {
     public ModelObject save(ModelObject obj) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.save(obj);
+            }
             return session.save(obj);
         } finally {
             SessionBrevityBuilder.release();
@@ -37,6 +42,11 @@ public class SessionAgency implements Session {
     public ModelObject saveAndUpdate(ModelObject obj) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.saveAndUpdate(obj);
+            }
             return session.saveAndUpdate(obj);
         } finally {
             SessionBrevityBuilder.release();
@@ -47,7 +57,13 @@ public class SessionAgency implements Session {
     public void save(List<ModelObject> objects) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
-            session.save(objects);
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                session.save(objects);
+            } else {
+                session.save(objects);
+            }
         } finally {
             SessionBrevityBuilder.release();
         }
@@ -57,7 +73,13 @@ public class SessionAgency implements Session {
     public void update(ModelObject obj) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
-            session.update(obj);
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                session.update(obj);
+            } else {
+                session.update(obj);
+            }
         } finally {
             SessionBrevityBuilder.release();
         }
@@ -67,7 +89,13 @@ public class SessionAgency implements Session {
     public void update(List<ModelObject> objects) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
-            session.update(objects);
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                session.update(objects);
+            } else {
+                session.update(objects);
+            }
         } finally {
             SessionBrevityBuilder.release();
         }
@@ -77,6 +105,11 @@ public class SessionAgency implements Session {
     public long update(Update update) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.update(update);
+            }
             return session.update(update);
         } finally {
             SessionBrevityBuilder.release();
@@ -87,7 +120,13 @@ public class SessionAgency implements Session {
     public void delete(ModelObject obj) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
-            session.delete(obj);
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                session.delete(obj);
+            } else {
+                session.delete(obj);
+            }
         } finally {
             SessionBrevityBuilder.release();
         }
@@ -97,7 +136,13 @@ public class SessionAgency implements Session {
     public void delete(List<ModelObject> objects) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
-            session.delete(objects);
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                session.delete(objects);
+            } else {
+                session.delete(objects);
+            }
         } finally {
             SessionBrevityBuilder.release();
         }
@@ -107,6 +152,11 @@ public class SessionAgency implements Session {
     public long delete(Delete delete) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.delete(delete);
+            }
             return session.delete(delete);
         } finally {
             SessionBrevityBuilder.release();
@@ -117,7 +167,13 @@ public class SessionAgency implements Session {
     public void delete(Class c, Serializable id) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
-            session.delete(c, id);
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                session.delete(c, id);
+            } else {
+                session.delete(c, id);
+            }
         } finally {
             SessionBrevityBuilder.release();
         }
@@ -127,6 +183,11 @@ public class SessionAgency implements Session {
     public ModelObject get(Class c, Serializable id) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.get(c, id);
+            }
             return session.get(c, id);
         } finally {
             SessionBrevityBuilder.release();
@@ -137,6 +198,11 @@ public class SessionAgency implements Session {
     public ModelObject get(Query query) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.get(query);
+            }
             return session.get(query);
         } finally {
             SessionBrevityBuilder.release();
@@ -147,6 +213,11 @@ public class SessionAgency implements Session {
     public List<ModelObject> list(Query query) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.list(query);
+            }
             return session.list(query);
         } finally {
             SessionBrevityBuilder.release();
@@ -157,6 +228,11 @@ public class SessionAgency implements Session {
     public long count(Query query) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.count(query);
+            }
             return session.count(query);
         } finally {
             SessionBrevityBuilder.release();
@@ -167,6 +243,11 @@ public class SessionAgency implements Session {
     public Paging<ModelObject> paging(Query query) {
         SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
         try {
+            if (this.context.getInterceptSession() != null) {
+                AbstractInterceptSession session = this.context.getInterceptSession();
+                session.setSession(this.session);
+                return session.paging(query);
+            }
             return session.paging(query);
         } finally {
             SessionBrevityBuilder.release();
@@ -175,26 +256,51 @@ public class SessionAgency implements Session {
 
     @Override
     public ZipperTable<ModelObject> getZipperTable(Class c) {
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            return session.getZipperTable(c);
+        }
         return session.getZipperTable(c);
     }
 
     @Override
     public ModelObject calculate(Function function) {
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            return session.calculate(function);
+        }
         return session.calculate(function);
     }
 
     @Override
     public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            return session.getAutonomously(autonomously);
+        }
         return session.getAutonomously(autonomously);
     }
 
     @Override
     public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            return session.getAutonomously(autonomously);
+        }
         return session.getAutonomously(autonomously);
     }
 
     @Override
     public List<DataSourceTableName> getDataSourceNames(Class c) {
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            return session.getDataSourceNames(c);
+        }
         return session.getDataSourceNames(c);
     }
 

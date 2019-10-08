@@ -33,6 +33,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     private ApplicationContext applicationContext;
     private SessionFactoryBuilder sessionFactoryBuilder;
     private SessionFactory sessionFactory = null;
+    private AbstractInterceptSession interceptSession;
 
     private ApplicationSetting applicationSetting = new ApplicationSetting();
     private BasicSetting basicSetting = new BasicSetting();
@@ -93,6 +94,10 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         if (!this.centerConfigSetting.valid()) {
             throw new ContextException("配置中心配置不完整");
         }
+    }
+
+    public void setInterceptSession(AbstractInterceptSession interceptSession) {
+        this.interceptSession = interceptSession;
     }
 
     public void setMapper(String mapper) {
@@ -304,6 +309,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     @Override
     public BasicSetting getBasicInfo() throws ContextException {
+        this.basicSetting.setInterceptSession(interceptSession);
         return this.basicSetting;
     }
 

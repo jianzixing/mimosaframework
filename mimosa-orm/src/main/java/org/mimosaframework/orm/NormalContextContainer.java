@@ -22,6 +22,7 @@ public class NormalContextContainer implements ContextContainer {
     private ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
     private List<MimosaDataSource> globalDataSource = new CopyOnWriteArrayList<>();
     private List<FactoryBuilder> factoryBuilderList = new CopyOnWriteArrayList<>();
+    private AbstractInterceptSession interceptSession;
 
     private String applicationName;
     private String applicationDetail;
@@ -359,5 +360,14 @@ public class NormalContextContainer implements ContextContainer {
                 }
             }
         }
+    }
+
+    @Override
+    public AbstractInterceptSession getInterceptSession() {
+        return this.interceptSession;
+    }
+
+    public void setInterceptSession(AbstractInterceptSession interceptSession) {
+        this.interceptSession = interceptSession;
     }
 }

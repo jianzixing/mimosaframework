@@ -654,6 +654,17 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                             ignoreEmptySlave = super.isStringTrue(ies.getNodeValue());
                         }
                     }
+
+                    if (node.getNodeName().equalsIgnoreCase("interceptSession")) {
+                        String sessionClass = this.getXmlNodeAny(node, "value");
+                        try {
+                            Class c = Class.forName(sessionClass);
+                            AbstractInterceptSession session = (AbstractInterceptSession) c.newInstance();
+                            this.basicInfo.setInterceptSession(session);
+                        } catch (Exception e) {
+                            throw new ContextException("初始化interceptSession出错", e);
+                        }
+                    }
                 }
             }
 

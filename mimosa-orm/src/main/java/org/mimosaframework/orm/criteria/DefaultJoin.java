@@ -277,6 +277,16 @@ public class DefaultJoin implements Join {
         return this;
     }
 
+    @Override
+    public Class getTableClass() {
+        return this.table;
+    }
+
+    @Override
+    public Class getMainClass() {
+        return this.mainTable;
+    }
+
     public void createSetChildJoin(Join join) {
         if (childJoin == null) {
             childJoin = new LinkedHashSet<>();

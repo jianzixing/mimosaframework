@@ -54,4 +54,6 @@ public interface ContextContainer {
     DatabaseTypeEnum getDatabaseType();
 
     void clearMimosaDataSources();
+
+    AbstractInterceptSession getInterceptSession();
 }

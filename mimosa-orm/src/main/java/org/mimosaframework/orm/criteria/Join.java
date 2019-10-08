@@ -49,4 +49,8 @@ public interface Join {
     Join single();
 
     Join setMulti(boolean is);
+
+    Class getTableClass();
+
+    Class getMainClass();
 }

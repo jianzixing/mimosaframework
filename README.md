@@ -356,7 +356,12 @@ replaces：将url前缀的某些单词替换成想要的单词，比如 Web;w �
 
 ## 六、历史版本
 
-版本 v3.3.9 (待更新)
+版本 v3.4.0 (待更新)
+* 增加Session拦截器AbstractInterceptSession类，可以自主控制Session执行。
+Spring可以使用属性setInterceptSession，xml可以使用标签interceptSession。
+* Query接口增加了getSubjoins方法，方便增加查询条件。(返回List增删无效)
+
+版本 v3.3.9
 * 增加对数据库db2的支持
 * 增加对数据sqlite3的支持
 * 增加修改数据库字段类型支持，扩展统一部分字段类型

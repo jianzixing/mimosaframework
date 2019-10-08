@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.builder;
 
+import org.mimosaframework.orm.AbstractInterceptSession;
 import org.mimosaframework.orm.MappingLevel;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 
@@ -8,6 +9,7 @@ public class BasicSetting {
     private MappingNamedConvert convert;
     private MappingLevel mappingLevel;
     private Boolean isIgnoreEmptySlave = true;
+    private AbstractInterceptSession interceptSession;
 
     public boolean isShowSQL() {
         return isShowSQL;
@@ -39,5 +41,13 @@ public class BasicSetting {
 
     public void setIgnoreEmptySlave(Boolean ignoreEmptySlave) {
         isIgnoreEmptySlave = ignoreEmptySlave;
+    }
+
+    public AbstractInterceptSession getInterceptSession() {
+        return interceptSession;
+    }
+
+    public void setInterceptSession(AbstractInterceptSession interceptSession) {
+        this.interceptSession = interceptSession;
     }
 }

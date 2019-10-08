@@ -131,4 +131,8 @@ public interface Query<T> extends OpFilter<Query>, OpLimit {
     Query excludes(List fields);
 
     Query excludes(Class tableClass, List fields);
+
+    List<Join> getSubjoins();
+
+    Class getTableClass();
 }
