@@ -72,4 +72,6 @@ public interface Function extends OpFilter<Function> {
 
     @Override
     Function isNotNull(Object key);
+
+    Class getTableClass();
 }
