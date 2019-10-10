@@ -97,22 +97,26 @@ public class PlatformFactory {
     }
 
     public static ObjectSymbolContrast getSymbolContrast(MimosaDataSource dataSource) {
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.MYSQL)) {
+        return getSymbolContrast(dataSource.getDatabaseTypeEnum());
+    }
+
+    public static ObjectSymbolContrast getSymbolContrast(DatabaseTypeEnum type) {
+        if (type.equals(DatabaseTypeEnum.MYSQL)) {
             return new MysqlObjectSymbolContrast();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.ORACLE)) {
+        if (type.equals(DatabaseTypeEnum.ORACLE)) {
             return new OracleObjectSymbolContrast();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.SQL_SERVER)) {
+        if (type.equals(DatabaseTypeEnum.SQL_SERVER)) {
             return new SQLServerObjectSymbolContrast();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.POSTGRESQL)) {
+        if (type.equals(DatabaseTypeEnum.POSTGRESQL)) {
             return new PostgreSQLObjectSymbolContrast();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.DB2)) {
+        if (type.equals(DatabaseTypeEnum.DB2)) {
             return new DB2ObjectSymbolContrast();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.SQLITE)) {
+        if (type.equals(DatabaseTypeEnum.SQLITE)) {
             return new SqliteObjectSymbolContrast();
         }
         return null;
