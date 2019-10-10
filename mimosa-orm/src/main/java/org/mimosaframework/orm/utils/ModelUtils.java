@@ -4,6 +4,7 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.AutoResult;
 import org.mimosaframework.orm.Paging;
 import org.mimosaframework.orm.SessionTemplate;
+import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.criteria.Query;
 
 import java.io.UnsupportedEncodingException;
@@ -247,5 +248,29 @@ public abstract class ModelUtils {
         if (search != null && search.containsKey(key) && !search.isEmpty(key)) {
             search.put(key, Integer.parseInt(search.getString(key)));
         }
+    }
+
+    public static ModelObject queryModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Object keyQuery) {
+        return sessionTemplate.get(Criteria.query(c).eq(keyQuery, object.get(keyFrom)));
+    }
+
+    public static ModelObject queryPKModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c) {
+        return sessionTemplate.get(c, object.getString(keyFrom));
+    }
+
+    public static boolean hasModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Object keyQuery) {
+        ModelObject o = queryModelObject(sessionTemplate, object, keyFrom, c, keyQuery);
+        if (o == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean hasPKModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c) {
+        ModelObject o = queryPKModelObject(sessionTemplate, object, keyFrom, c);
+        if (o == null) {
+            return false;
+        }
+        return true;
     }
 }
