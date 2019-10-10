@@ -46,6 +46,10 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                 builder.NOT().NULL();
             }
 
+            if (field.isMappingFieldUnique()) {
+                builder.UNIQUE();
+            }
+
             if (StringTools.isNotEmpty(field.getMappingFieldDefaultValue())) {
                 builder.DEFAULT().addQuotesString(field.getMappingFieldDefaultValue());
             }

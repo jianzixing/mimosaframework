@@ -69,6 +69,16 @@ public class DB2DatabasePorter extends AbstractDatabasePorter {
         carryHandler.doHandler(fieldStructure);
     }
 
+    protected void buildTableFieldUnique(SQLBuilder builder, MappingField field) {
+        if (field.isMappingFieldUnique()) {
+            // db2 not allow unique field as nullable
+            if (field.isMappingFieldNullable()) {
+                builder.NOT().NULL();
+            }
+            builder.UNIQUE();
+        }
+    }
+
     protected void buildHasLengthTableField(boolean hasLength, MappingField field, SQLBuilder builder) {
         if (hasLength && !field.isMappingAutoIncrement()) {
             String len = this.getDifferentColumn().getTypeLength(field);

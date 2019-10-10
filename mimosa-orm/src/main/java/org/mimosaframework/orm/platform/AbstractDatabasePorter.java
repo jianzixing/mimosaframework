@@ -33,6 +33,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             this.buildTableFieldPrimaryKey(builder, field, isAddPrimaryKey);
             this.buildTableFieldNotNull(builder, field);
             this.buildTableFieldAuthIncrement(builder, field, isAutoIncrement);
+            this.buildTableFieldUnique(builder, field);
             this.buildTableFieldDefaultValue(builder, field);
             this.buildTableFieldComment(builder, field);
         }
@@ -59,6 +60,12 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     protected void buildTableFieldAuthIncrement(SQLBuilder builder, MappingField field, boolean isAutoIncrement) {
         if (field.isMappingFieldAutoIncrement() && isAutoIncrement) {
             builder.AUTO_INCREMENT();
+        }
+    }
+
+    protected void buildTableFieldUnique(SQLBuilder builder, MappingField field) {
+        if (field.isMappingFieldUnique()) {
+            builder.UNIQUE();
         }
     }
 
@@ -136,6 +143,10 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
     }
 
+    protected void createTableUniqueKeys(SQLBuilder fieldBuilder, MappingTable table) {
+
+    }
+
     protected void createTableDefaultCharset(SQLBuilder tableBuilder, String encoding) {
         if (StringTools.isNotEmpty(encoding)) {
             tableBuilder.DEFAULT().CHARSET().addEqualMark().addString(encoding);
@@ -146,6 +157,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     public void createTable(MappingTable table) throws SQLException {
         SQLBuilder fieldBuilder = this.createTableFields(table);
         this.createTablePrimaryKeys(fieldBuilder, table);
+        this.createTableUniqueKeys(fieldBuilder, table);
 
         SQLBuilder tableBuilder = this.createSQLBuilder();
         tableBuilder.CREATE().TABLE(null).IF().NOT().EXISTS()

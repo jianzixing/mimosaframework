@@ -10,7 +10,7 @@ import java.util.Date;
 public enum TableUser {
     @Column(pk = true, type = long.class, strategy = AutoIncrementStrategy.class)
     id,
-    @Column(length = 64)
+    @Column(length = 64, unique = true)
     userName,
     @Column(length = 64)
     password,

@@ -52,6 +52,11 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
         if (!field.isMappingFieldNullable()) {
             builder.NOT().NULL();
         }
+
+        if (field.isMappingFieldUnique()) {
+            builder.UNIQUE();
+        }
+
         if (StringTools.isNotEmpty(field.getMappingFieldDefaultValue())) {
             builder.DEFAULT().addParenthesisStart()
                     .addQuotesString(field.getMappingFieldDefaultValue())
