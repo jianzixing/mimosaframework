@@ -94,8 +94,25 @@ public class ResponseMessage {
             ((Exception) data).printStackTrace();
         } else if (data instanceof TransactionException) {
             this.code = -9998;
-            this.msg = "执行事务失败," + ((Exception) data).getClass().getSimpleName() +
-                    ":" + ((TransactionException) data).getCause().getMessage();
+
+            int c = 0;
+            Throwable throwable = ((TransactionException) data).getCause();
+            while (true) {
+                if (c > 2) {
+                    break;
+                }
+                throwable = throwable.getCause();
+                if (throwable.getCause() == null) {
+                    break;
+                }
+                c++;
+            }
+            String msg = throwable.getMessage();
+            if (msg.indexOf("Duplicate entry") >= 0) {
+                this.msg = "唯一字段重复: " + msg;
+            } else {
+                this.msg = "执行事务失败," + throwable.getClass().getSimpleName() + ":" + msg;
+            }
             ((Exception) data).printStackTrace();
         } else if (data instanceof Exception) {
             this.code = -9999;
