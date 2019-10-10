@@ -251,11 +251,17 @@ public abstract class ModelUtils {
     }
 
     public static ModelObject queryModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Object keyQuery) {
-        return sessionTemplate.get(Criteria.query(c).eq(keyQuery, object.get(keyFrom)));
+        if (sessionTemplate != null && object != null && keyFrom != null && c != null && keyQuery != null) {
+            return sessionTemplate.get(Criteria.query(c).eq(keyQuery, object.get(keyFrom)));
+        }
+        return null;
     }
 
     public static ModelObject queryPKModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c) {
-        return sessionTemplate.get(c, object.getString(keyFrom));
+        if (sessionTemplate != null && object != null && keyFrom != null && c != null) {
+            return sessionTemplate.get(c, object.getString(keyFrom));
+        }
+        return null;
     }
 
     public static boolean hasModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Object keyQuery) {
