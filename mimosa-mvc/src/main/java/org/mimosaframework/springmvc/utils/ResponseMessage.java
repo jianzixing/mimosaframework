@@ -129,7 +129,7 @@ public class ResponseMessage {
     private boolean setMatchMessage(Throwable throwable) {
         if (throwable != null) {
             if (throwable.getMessage().indexOf("Duplicate entry") >= 0) {
-                this.msg = "唯一字段重复: " + msg;
+                this.msg = "唯一字段重复: " + throwable.getMessage();
                 return true;
             }
         }
