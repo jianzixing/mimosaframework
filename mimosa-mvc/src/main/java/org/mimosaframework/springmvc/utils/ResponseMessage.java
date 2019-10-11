@@ -89,8 +89,10 @@ public class ResponseMessage {
                 if (StringTools.isNotEmpty(msg)) break;
                 if (causedBy == null) break;
             }
-            this.msg = "访问失败," + causedBy.getClass().getSimpleName() +
-                    ":" + causedBy.getMessage();
+            if (!this.setMatchMessage(causedBy)) {
+                this.msg = "访问失败," + causedBy.getClass().getSimpleName() +
+                        ":" + causedBy.getMessage();
+            }
             ((Exception) data).printStackTrace();
         } else if (data instanceof TransactionException) {
             this.code = -9998;
@@ -108,20 +110,30 @@ public class ResponseMessage {
                 c++;
             }
             String msg = throwable.getMessage();
-            if (msg.indexOf("Duplicate entry") >= 0) {
-                this.msg = "唯一字段重复: " + msg;
-            } else {
+            if (!this.setMatchMessage(throwable)) {
                 this.msg = "执行事务失败," + throwable.getClass().getSimpleName() + ":" + msg;
             }
             ((Exception) data).printStackTrace();
         } else if (data instanceof Exception) {
             this.code = -9999;
-            this.msg = ((Exception) data).getClass().getSimpleName() + ": " + ((Exception) data).getMessage();
+            if (!this.setMatchMessage(((Exception) data))) {
+                this.msg = ((Exception) data).getClass().getSimpleName() + ": " + ((Exception) data).getMessage();
+            }
             ((Exception) data).printStackTrace();
         } else {
             this.code = 100;
             this.data = data;
         }
+    }
+
+    private boolean setMatchMessage(Throwable throwable) {
+        if (throwable != null) {
+            if (throwable.getMessage().indexOf("Duplicate entry") >= 0) {
+                this.msg = "唯一字段重复: " + msg;
+                return true;
+            }
+        }
+        return false;
     }
 
 
