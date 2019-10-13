@@ -98,7 +98,7 @@ public class AbstractInterceptSession implements Session {
     }
 
     @Override
-    public ModelObject calculate(Function function) {
+    public AutoResult calculate(Function function) {
         return session.calculate(function);
     }
 

@@ -340,7 +340,11 @@ public class AutoResult {
                 Object v = name == null ? obj.get(obj.keySet().iterator().next()) : obj.get(name);
 
                 if (v instanceof Number) {
-                    values.add((long) v);
+                    if (v instanceof Long) {
+                        values.add((Long) v);
+                    } else {
+                        values.add(Long.parseLong("" + v));
+                    }
                 } else if (v instanceof String && StringTools.isNumber((String) v)) {
                     values.add(Long.parseLong((String) v));
                 } else {

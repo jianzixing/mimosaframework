@@ -229,7 +229,7 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public ModelObject calculate(Function function) {
+    public AutoResult calculate(Function function) {
         return sessionTemplate.calculate(function);
     }
 

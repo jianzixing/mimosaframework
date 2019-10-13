@@ -45,7 +45,7 @@ public interface Session extends Closeable {
 
     ZipperTable<ModelObject> getZipperTable(Class c);
 
-    ModelObject calculate(Function function);
+    AutoResult calculate(Function function);
 
     /**
      * 指定在哪些数据源上执行SQL

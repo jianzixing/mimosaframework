@@ -361,6 +361,7 @@ replaces：将url前缀的某些单词替换成想要的单词，比如 Web;w �
 Spring可以使用属性setInterceptSession，xml可以使用标签interceptSession。
 * Query接口增加了getSubjoins方法，方便增加查询条件。(返回List增删无效)
 * 唯一索引unique设置无效问题
+* calculate方法查询，增加distinct函数支持
 
 版本 v3.3.9
 * 增加对数据库db2的支持

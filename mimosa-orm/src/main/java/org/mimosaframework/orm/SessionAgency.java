@@ -265,7 +265,7 @@ public class SessionAgency implements Session {
     }
 
     @Override
-    public ModelObject calculate(Function function) {
+    public AutoResult calculate(Function function) {
         if (this.context.getInterceptSession() != null) {
             AbstractInterceptSession session = this.context.getInterceptSession();
             session.setSession(this.session);

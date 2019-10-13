@@ -74,8 +74,8 @@ public class RedisStrategyTesting {
     @Test
     public void testIdRepeat() throws IOException, InterruptedException {
         for (int i = 0; i < 1; i++) {
-            ModelObject d = template.calculate(Criteria.fun(TableContacts.class).addFunction(BasicFunction.MAX, TableContacts.id, "max"));
-            long max = d.getLongValue("max");
+            AutoResult d = template.calculate(Criteria.fun(TableContacts.class).addFunction(BasicFunction.MAX, TableContacts.id, "max"));
+            long max = d.getSingle().getLongValue("max");
             ModelObject object = ModelObject.builder(TableContacts.class)
                     .chainPut(TableContacts.id, max)
                     .chainPut(TableContacts.name, "yak_" + RandomUtils.randomIgnoreCaseLetter(6))

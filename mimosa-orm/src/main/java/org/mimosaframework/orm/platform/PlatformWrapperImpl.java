@@ -181,14 +181,11 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     }
 
     @Override
-    public ModelObject select(MappingTable table, DefaultFunction function) throws SQLException {
+    public List<ModelObject> select(MappingTable table, DefaultFunction function) throws SQLException {
         this.checkMappingTableInDatabase(table);
 
         List<ModelObject> objects = this.databasePorter.select(table, function);
-        if (objects != null && objects.size() > 0) {
-            return objects.get(0);
-        }
-        return null;
+        return objects;
     }
 
     @Override

@@ -401,7 +401,7 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public ModelObject calculate(Function function) {
+    public AutoResult calculate(Function function) {
         DefaultFunction f = (DefaultFunction) function;
         if (f.getTableClass() == null) {
             throw new IllegalArgumentException("没有找到查询映射类");
@@ -434,7 +434,11 @@ public class DefaultSession implements Session {
         wrapper.setSlaveName(f.getSlaveName());
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
         try {
-            return platformWrapper.select(mappingTable, f);
+            List<ModelObject> objects = platformWrapper.select(mappingTable, f);
+            if (objects != null) {
+                return new AutoResult(this.convert, objects);
+            }
+            return null;
         } catch (SQLException e) {
             throw new IllegalStateException("查询数据失败", e);
         }

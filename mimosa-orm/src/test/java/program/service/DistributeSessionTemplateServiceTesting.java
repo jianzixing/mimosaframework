@@ -3,6 +3,7 @@ package program.service;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.RandomUtils;
+import org.mimosaframework.orm.AutoResult;
 import org.mimosaframework.orm.BasicFunction;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.criteria.Criteria;
@@ -262,7 +263,7 @@ public class DistributeSessionTemplateServiceTesting {
         object.put(TablePay.createdTime, new Date());
         template.save(object);
 
-        ModelObject avg = template.calculate(
+        AutoResult avg = template.calculate(
                 Criteria.fun(TablePay.class)
                         .addFunction(BasicFunction.AVG, TablePay.payMoney, "avg")
                         .addFunction(BasicFunction.SUM, TablePay.payMoney, "sum")
@@ -270,7 +271,7 @@ public class DistributeSessionTemplateServiceTesting {
                         .addFunction(BasicFunction.MAX, TablePay.payMoney, "max")
                         .addFunction(BasicFunction.MIN, TablePay.payMoney, "min")
         );
-        double r = avg.getDoubleValue("avg");
+        double r = avg.getSingle().getDoubleValue("avg");
         if (r <= 0) {
             AssistUtils.error("计算平均值出错");
         }

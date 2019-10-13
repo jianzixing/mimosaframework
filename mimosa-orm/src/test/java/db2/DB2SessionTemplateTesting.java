@@ -233,11 +233,16 @@ public class DB2SessionTemplateTesting {
 
     @Test
     public void testCalculate() {
-        ModelObject object = template.calculate(Criteria.fun(TableUser.class)
+        AutoResult object = template.calculate(Criteria.fun(TableUser.class)
                 .addFunction(BasicFunction.COUNT, TableUser.age)
                 .childGroupBy(TableUser.userName)
                 .gt(TableUser.id, 10));
-        System.out.println(object);
+        System.out.println(object.getSingle());
+    }
+
+    @Test
+    public void testCalculateDistinct() {
+        SessionTemplateServiceTesting.testCalcDistinct(template);
     }
 
     @Test

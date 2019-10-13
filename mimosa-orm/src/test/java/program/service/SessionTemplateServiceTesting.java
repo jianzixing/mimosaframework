@@ -5,6 +5,7 @@ import org.mimosaframework.core.json.ModelArray;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.RandomUtils;
+import org.mimosaframework.orm.AutoResult;
 import org.mimosaframework.orm.BasicFunction;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.criteria.Criteria;
@@ -539,7 +540,7 @@ public class SessionTemplateServiceTesting {
         object1.put(TableUser.createdTime, new Date());
         template.save(object1);
 
-        ModelObject avg = template.calculate(
+        AutoResult avg = template.calculate(
                 Criteria.fun(TableUser.class)
                         .addFunction(BasicFunction.AVG, TableUser.age)
                         .addFunction(BasicFunction.SUM, TableUser.level)
@@ -547,7 +548,7 @@ public class SessionTemplateServiceTesting {
                         .addFunction(BasicFunction.MAX, TableUser.age, "maxAge")
                         .addFunction(BasicFunction.MIN, TableUser.age, "minAge")
         );
-        double r = avg.getDoubleValue(TableUser.age);
+        double r = avg.getSingle().getDoubleValue(TableUser.age);
         if (r <= 0) {
             AssistUtils.error("计算平均值出错");
         }
@@ -595,5 +596,26 @@ public class SessionTemplateServiceTesting {
         ModelObject r = template.get(TableJavaTypes.class, object.getIntValue(TableJavaTypes.id));
         System.out.println(r);
         System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(r.getDate(TableJavaTypes.date)));
+    }
+
+    public static void testCalcDistinct(final SessionTemplate template) {
+        ModelObject object = new ModelObject(TableUser.class);
+        String userName1 = RandomUtils.randomChineseCharacters(3, 6);
+        String pwd = RandomUtils.uuid();
+        object.put(TableUser.userName, userName1);
+        object.put(TableUser.password, pwd);
+        object.put(TableUser.realName, "杨安康");
+        object.put(TableUser.address, "北京朝阳区");
+        object.put(TableUser.age, RandomUtils.randomNumber(5, 30));
+        object.put(TableUser.level, 10);
+        object.put(TableUser.createdTime, new Date());
+        template.save(object);
+
+        AutoResult result = template.calculate(Criteria.fun(TableUser.class)
+                .addFunction(BasicFunction.DISTINCT, TableUser.age, "ages")
+                .orderBy(TableUser.age, true));
+
+        List list = result.getNumbers();
+        System.out.println("DISTINCT: " + list);
     }
 }

@@ -47,7 +47,7 @@ public interface PlatformWrapper {
      */
     List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
 
-    ModelObject select(MappingTable table, DefaultFunction function) throws SQLException;
+    List<ModelObject> select(MappingTable table, DefaultFunction function) throws SQLException;
 
     List<ModelObject> select(String sql) throws SQLException;
 
