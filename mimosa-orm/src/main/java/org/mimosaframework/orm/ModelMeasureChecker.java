@@ -21,7 +21,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
     private Map<Class, MappingTable> tables;
 
     public ModelMeasureChecker(Set<MappingTable> mappingTables) {
-        if (tables == null) {
+        if (tables == null && mappingTables != null) {
             tables = new HashMap(mappingTables.size());
             for (MappingTable table : mappingTables) {
                 tables.put(table.getMappingClass(), table);
