@@ -4,28 +4,28 @@ package org.mimosaframework.core.exception;
  * @author yangankang
  */
 public class ModelCheckerException extends Exception {
-    private Enum code;
+    private String code;
     private String field;
 
-    public ModelCheckerException(String field,Enum code) {
+    public ModelCheckerException(String field, String code) {
         super();
         this.field = field;
         this.code = code;
     }
 
-    public ModelCheckerException(String field,Enum code, String message) {
+    public ModelCheckerException(String field, String code, String message) {
         super(message);
         this.field = field;
         this.code = code;
     }
 
-    public ModelCheckerException(String field,Enum code, String message, Throwable throwable) {
+    public ModelCheckerException(String field, String code, String message, Throwable throwable) {
         super(message, throwable);
         this.field = field;
         this.code = code;
     }
 
-    public Enum getCode() {
+    public String getCode() {
         return code;
     }
 
