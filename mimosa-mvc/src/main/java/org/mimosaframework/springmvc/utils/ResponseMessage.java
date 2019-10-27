@@ -2,6 +2,7 @@ package org.mimosaframework.springmvc.utils;
 
 import org.mimosaframework.core.exception.ModelCheckerException;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.springmvc.exception.ModuleException;
@@ -56,7 +57,7 @@ public class ResponseMessage {
 
     public ResponseMessage() {
         this.code = 100;
-        this.msg = "处理成功";
+        this.msg = Messages.get("mimosa_mvc.response_message.success");
     }
 
     public ResponseMessage(int code) {
@@ -90,7 +91,7 @@ public class ResponseMessage {
                 if (causedBy == null) break;
             }
             if (!this.setMatchMessage(causedBy)) {
-                this.msg = "访问失败," + causedBy.getClass().getSimpleName() +
+                this.msg = Messages.get("mimosa_mvc.response_message.access_fail") + "," + causedBy.getClass().getSimpleName() +
                         ":" + causedBy.getMessage();
             }
             ((Exception) data).printStackTrace();
@@ -111,7 +112,7 @@ public class ResponseMessage {
             }
             String msg = throwable.getMessage();
             if (!this.setMatchMessage(throwable)) {
-                this.msg = "执行事务失败," + throwable.getClass().getSimpleName() + ":" + msg;
+                this.msg = Messages.get("mimosa_mvc.response_message.trans_fail") + "," + throwable.getClass().getSimpleName() + ":" + msg;
             }
             ((Exception) data).printStackTrace();
         } else if (data instanceof Exception) {
@@ -129,7 +130,7 @@ public class ResponseMessage {
     private boolean setMatchMessage(Throwable throwable) {
         if (throwable != null) {
             if (throwable.getMessage().indexOf("Duplicate entry") >= 0) {
-                this.msg = "唯一字段重复: " + throwable.getMessage();
+                this.msg = Messages.get("mimosa_mvc.response_message.duplicate_unique_field") + ": " + throwable.getMessage();
                 return true;
             }
         }

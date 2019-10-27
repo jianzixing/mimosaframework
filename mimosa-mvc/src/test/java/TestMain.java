@@ -1,22 +1,16 @@
 import org.junit.Test;
 import org.mimosaframework.core.json.ModelArray;
-import org.mimosaframework.core.utils.filetype.NetHelpUtils;
-import org.mimosaframework.springmvc.MemberConsoleInfo;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class TestMain {
 
     public void test(String h, @RequestParam("") int a) {
 
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        NetHelpUtils.setRun();
-        Thread.currentThread().join();
     }
 
     public static void main2(String[] args) throws NoSuchMethodException, IllegalAccessException, InstantiationException {
@@ -43,8 +37,7 @@ public class TestMain {
 
     @Test
     public void t1() throws InterruptedException {
-//        MemberConsoleInfo.setDomain("http://abc.abc");
-//        NetHelpUtils.setRun();
-//        Thread.sleep(100000);
+        Locale locale = Locale.getDefault();
+        System.out.println(locale.getLanguage());
     }
 }

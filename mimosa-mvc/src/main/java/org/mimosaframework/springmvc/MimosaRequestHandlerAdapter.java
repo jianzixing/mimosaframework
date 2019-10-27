@@ -1,5 +1,6 @@
 package org.mimosaframework.springmvc;
 
+import org.mimosaframework.springmvc.i18n.LanguageMessageFactory;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.mvc.method.annotation.*;
@@ -11,6 +12,10 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
     private List<HandlerMethodArgumentResolver> beforeArgumentResolvers;
     private List<HandlerMethodReturnValueHandler> beforeReturnValueHandlers;
     private String defaultContentType = null;
+
+    static {
+        LanguageMessageFactory.register();
+    }
 
     public void setDefaultContentType(String defaultContentType) {
         this.defaultContentType = defaultContentType;

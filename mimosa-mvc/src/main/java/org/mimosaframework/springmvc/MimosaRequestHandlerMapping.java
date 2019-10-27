@@ -3,6 +3,7 @@ package org.mimosaframework.springmvc;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.SessionTemplate;
+import org.mimosaframework.springmvc.i18n.LanguageMessageFactory;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -43,6 +44,10 @@ public class MimosaRequestHandlerMapping extends RequestMappingInfoHandlerMappin
     private Map<String, String> replaces = null;
     private Class<? extends CurdImplement> curdImplementClass;
     private SessionTemplate sessionTemplate;
+
+    static {
+        LanguageMessageFactory.register();
+    }
 
     public void setCurdImplementClass(Class<? extends CurdImplement> curdImplementClass) {
         this.curdImplementClass = curdImplementClass;
