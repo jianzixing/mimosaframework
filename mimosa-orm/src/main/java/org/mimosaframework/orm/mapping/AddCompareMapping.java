@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.mapping;
 
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.*;
 
 import java.sql.SQLException;
@@ -31,11 +33,9 @@ public class AddCompareMapping extends NothingCompareMapping {
                     try {
                         porter.createTable(table);
                     } catch (SQLException e) {
-                        throw new SQLException(
-                                "向数据库添加新表" +
-                                        "[" + tableName + "]出错," +
-                                        "请检查映射类[" + tableClassName + "]" +
-                                        ",如果出现不支持情况请手动建表", e);
+                        throw new SQLException(Messages.get(LanguageMessageFactory.PROJECT, AddCompareMapping.class,
+                                "add_new_table_error",
+                                tableName, tableClassName), e);
                     }
                 }
             }
@@ -51,10 +51,9 @@ public class AddCompareMapping extends NothingCompareMapping {
                     try {
                         porter.createField(field);
                     } catch (SQLException e) {
-                        throw new SQLException(
-                                "向数据库表[" + tableName + "]" +
-                                        "添加新字段[" + fieldName + "]出错,请检查映射类[" + tableClassName + "]," +
-                                        "请手动修改数据库表字段信息", e);
+                        throw new SQLException(Messages.get(LanguageMessageFactory.PROJECT, AddCompareMapping.class,
+                                "add_new_field_error",
+                                tableName, fieldName, tableClassName), e);
                     }
                 }
             }

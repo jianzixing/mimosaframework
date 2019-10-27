@@ -1,9 +1,11 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.*;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.mapping.SpecificMappingTable;
@@ -34,8 +36,9 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     private void checkMappingTableInDatabase(MappingTable table) {
         if (table != null) {
             if (StringTools.isEmpty(table.getDatabaseTableName())) {
-                throw new IllegalArgumentException("映射类" + table.getMappingClassName() + "没有找到对应的数据库表"
-                        + ",如果是NOTHING级别请手动创建表" + table.getMappingTableName());
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                        PlatformWrapperImpl.class, "not_fount_db_table",
+                        table.getMappingClassName(), table.getMappingTableName()));
             }
         }
     }

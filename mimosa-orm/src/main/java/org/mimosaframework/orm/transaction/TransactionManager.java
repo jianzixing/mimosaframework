@@ -2,9 +2,11 @@ package org.mimosaframework.orm.transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import java.sql.Connection;
 import java.util.*;
@@ -65,11 +67,11 @@ public class TransactionManager implements Transaction {
 
         List<MimosaDataSource> ds = this.context.getGlobalDataSource();
         if (logger.isDebugEnabled()) {
-            logger.debug("检测到数据库链接个数(" + ds.size() + ")个");
+            logger.debug(Messages.get(LanguageMessageFactory.PROJECT, this.getClass(), "check_db_size", "" + ds.size()));
         }
 
         if (ds == null) {
-            throw new TransactionException("创建事物失败,原因没找到配置的DataSource连接");
+            throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT, this.getClass(), "create_trans_fail"));
         }
 
         for (MimosaDataSource dataSource : ds) {

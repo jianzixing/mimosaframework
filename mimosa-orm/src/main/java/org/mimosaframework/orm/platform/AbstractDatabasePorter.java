@@ -1,16 +1,16 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.BasicFunction;
 import org.mimosaframework.orm.criteria.*;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
-import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.*;
 
 public abstract class AbstractDatabasePorter implements DatabasePorter {
@@ -181,7 +181,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     protected void changeTableField(MappingField field, boolean isModify) throws SQLException {
         MappingTable table = field.getMappingTable();
         if (table == null) {
-            throw new IllegalArgumentException("添加表字段必须有表MappingTable信息");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    AbstractDatabasePorter.class, "lack_mapping_table"));
         }
         String tableName = table.getMappingTableName();
         String fieldName = field.getMappingColumnName();
@@ -244,7 +245,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             String fieldName = String.valueOf(key);
             MappingField mappingField = table.getMappingFieldByName(fieldName);
             if (mappingField == null) {
-                throw new IllegalArgumentException("没有找到字段" + fieldName + "映射字段");
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                        AbstractDatabasePorter.class, "not_found_field", fieldName));
             }
 
             boolean isInset = this.addDataPlaceholder(valueBuilder, fieldName, value, mappingField);
@@ -333,13 +335,17 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
         List<String> fields = this.getFieldByTable(table);
-        if (fields.size() == 0) throw new IllegalArgumentException("添加数据库的表或者数据是空的");
+        if (fields.size() == 0)
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    AbstractDatabasePorter.class, "empty_data"));
         return insertBuildValues(objects, insertBuilder, fields);
     }
 
     protected List<String> clearAutoIncrement(MappingTable table) {
         List<String> fields = this.getFieldByTable(table);
-        if (fields.size() == 0) throw new IllegalArgumentException("添加数据库的表或者数据是空的");
+        if (fields.size() == 0)
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    AbstractDatabasePorter.class, "empty_data"));
         // 去除自增主键列，条件是有自增列
         List<MappingField> pkfields = table.getMappingPrimaryKeyFields();
         if (pkfields != null && pkfields.size() > 0) {
@@ -691,7 +697,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     funPSQLBuilder.addFun(fun.name(), funField.getMappingColumnName(), alias);
                     funCSQLBuilder.addFun(fun.name(), funField.getMappingColumnName(), funField.getMappingColumnName());
                 } else {
-                    throw new IllegalArgumentException("没有找到映射字段" + String.valueOf(f));
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                            AbstractDatabasePorter.class, "not_found_field", String.valueOf(f)));
                 }
             }
 
@@ -1060,14 +1067,14 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             MappingField onMainField = mainTable.getMappingFieldByName(String.valueOf(value));
 
             if (onSelfField == null) {
-                throw new IllegalArgumentException("没有在表"
-                        + joinTable.getMappingClass().getSimpleName()
-                        + "中找到字段" + key);
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                        AbstractDatabasePorter.class, "not_found_table_field",
+                        joinTable.getMappingClass().getSimpleName(), "" + key));
             }
             if (onMainField == null) {
-                throw new IllegalArgumentException("没有在表"
-                        + mainTable.getMappingClass().getSimpleName()
-                        + "中找到字段" + value);
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                        AbstractDatabasePorter.class, "not_found_table_field",
+                        joinTable.getMappingClass().getSimpleName(), "" + value));
             }
 
             builder.addTableWrapField(selfAliasName, onSelfField.getDatabaseColumnName());
@@ -1294,7 +1301,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 String fieldName = String.valueOf(order.getField());
                 MappingField field = table.getMappingFieldByName(fieldName);
                 if (field == null) {
-                    throw new IllegalArgumentException("排序字段" + fieldName + "不在当前表中");
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                            AbstractDatabasePorter.class, "order_not_in_table", fieldName));
                 }
                 String columnName = field.getDatabaseColumnName();
 

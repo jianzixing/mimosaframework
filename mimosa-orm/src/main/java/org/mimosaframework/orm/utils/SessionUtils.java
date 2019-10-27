@@ -1,9 +1,12 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.criteria.DefaultJoin;
 import org.mimosaframework.orm.criteria.DefaultQuery;
+import org.mimosaframework.orm.i18n.LanguageMessageDefault;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -14,11 +17,13 @@ public final class SessionUtils {
 
     public static void clearModelObject(MappingGlobalWrapper mappingDatabaseWrapper, Class c, ModelObject object) {
         if (c == null) {
-            throw new IllegalArgumentException("没有设置要操作的映射类");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SessionUtils.class, "not_set_mapping_table"));
         }
         MappingTable tableFromClass = mappingDatabaseWrapper.getMappingTable(c);
         if (tableFromClass == null) {
-            throw new IllegalArgumentException("没有找到对应的关系映射[" + c.getName() + "]");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SessionUtils.class, "not_found_mapping_table", c.getName()));
         }
 
         // 不能清空，需要NULL和空字符串更新和添加
@@ -122,7 +127,8 @@ public final class SessionUtils {
                     if (joinTable != null) {
                         tables.put(join, joinTable);
                     } else {
-                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                SessionUtils.class, "not_found_db_table", j.getTable().getSimpleName()));
                     }
                 }
                 for (Object join : leftJoins) {
@@ -131,14 +137,16 @@ public final class SessionUtils {
                     if (joinTable != null) {
                         tables.put(join, joinTable);
                     } else {
-                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                SessionUtils.class, "not_found_db_table", j.getTable().getSimpleName()));
                     }
                 }
             }
 
             return tables;
         } else {
-            throw new IllegalArgumentException("没有找到和" + c.getSimpleName() + "对应的数据库映射表");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SessionUtils.class, "not_found_db_table", c.getSimpleName()));
         }
     }
 
@@ -162,7 +170,8 @@ public final class SessionUtils {
                     if (joinTable != null) {
                         tables.put(join, joinTable);
                     } else {
-                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                SessionUtils.class, "not_found_db_table", j.getTable().getSimpleName()));
                     }
                 }
                 for (Object join : leftJoins) {
@@ -171,14 +180,16 @@ public final class SessionUtils {
                     if (joinTable != null) {
                         tables.put(join, joinTable);
                     } else {
-                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                SessionUtils.class, "not_found_db_table", j.getTable().getSimpleName()));
                     }
                 }
             }
 
             return tables;
         } else {
-            throw new IllegalArgumentException("没有找到和" + c.getSimpleName() + "对应的数据库映射表");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SessionUtils.class, "not_found_db_table", c.getSimpleName()));
         }
     }
 

@@ -3,6 +3,8 @@ package org.mimosaframework.orm.platform.oracle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.platform.*;
 
@@ -57,7 +59,8 @@ public class OracleCarryHandler extends CarryHandler {
                                 }
                                 placeholder.setValue(autoIncrementId);
                             } else {
-                                throw new IllegalArgumentException("获取Oracle自增序列值为空");
+                                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                        OracleCarryHandler.class, "oracle_auto_incr_empty"));
                             }
                         }
                     }
@@ -88,13 +91,15 @@ public class OracleCarryHandler extends CarryHandler {
                             datas.get(i).put(field.getMappingColumnName(), autoIncrementId);
                             autoIncrementIds.add((Long) autoIncrementId);
                         } else {
-                            throw new IllegalArgumentException("获取Oracle自增序列值为空");
+                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                    OracleCarryHandler.class, "oracle_auto_incr_empty"));
                         }
                     }
 
                     dbSession.inserts(batchPorterStructure);
                 } else {
-                    throw new IllegalArgumentException("传入执行类型不是批量执行");
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                            OracleCarryHandler.class, "type_not_batch"));
                 }
                 if (logger.isDebugEnabled()) {
                     logger.debug("do oracle carry handler action " + changerClassify.name());

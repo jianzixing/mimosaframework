@@ -1,6 +1,8 @@
 package org.mimosaframework.orm;
 
 import org.mimosaframework.core.utils.AssistUtils;
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,19 +59,22 @@ public class SQLAutonomously implements Serializable {
     }
 
     public void add(String dataSourceName, String sql) {
-        AssistUtils.notNull(dataSourceName, "要执行的数据源不能为空(多级可以用.表示分层,比如 app.default)");
+        AssistUtils.notNull(dataSourceName, Messages.get(LanguageMessageFactory.PROJECT,
+                SQLAutonomously.class, "not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql));
     }
 
     public void add(String dataSourceName, String sql, boolean isMaster) {
-        AssistUtils.notNull(dataSourceName, "要执行的数据源不能为空(多级可以用.表示分层,比如 app.default)");
+        AssistUtils.notNull(dataSourceName, Messages.get(LanguageMessageFactory.PROJECT,
+                SQLAutonomously.class, "not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql, isMaster));
     }
 
     public void add(String dataSourceName, String sql, String slaveName) {
-        AssistUtils.notNull(dataSourceName, "要执行的数据源不能为空(多级可以用.表示分层,比如 app.default)");
+        AssistUtils.notNull(dataSourceName, Messages.get(LanguageMessageFactory.PROJECT,
+                SQLAutonomously.class, "not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql, slaveName));
     }

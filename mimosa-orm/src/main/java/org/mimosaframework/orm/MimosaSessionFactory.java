@@ -1,9 +1,11 @@
 package org.mimosaframework.orm;
 
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.platform.PlatformFactory;
 import org.mimosaframework.orm.platform.SimpleTemplate;
@@ -114,7 +116,8 @@ public class MimosaSessionFactory implements SessionFactory {
         if (StringTools.isNotEmpty(dsname)) {
             MimosaDataSource ds = context.getDataSourceByName(dsname);
             if (ds == null) {
-                throw new IllegalArgumentException("没有找到名称为" + dsname + "的数据源,如果使用默认数据源传入null或者default字符串即可");
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                        MimosaSessionFactory.class, "not_found_ds", dsname));
             }
             wrapper.setDataSource(ds);
         }

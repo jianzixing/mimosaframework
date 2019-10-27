@@ -3,6 +3,8 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.utils.DatabaseTypeEnum;
 import org.mimosaframework.orm.utils.SQLUtils;
 
@@ -53,7 +55,8 @@ public class MimosaDataSource implements Closeable {
                     try {
                         ((Closeable) dataSource).close();
                     } catch (IOException e) {
-                        logger.error("关闭DataSource数据源出错", e);
+                        logger.error(Messages.get(LanguageMessageFactory.PROJECT,
+                                MimosaDataSource.class, "close_ds_error"), e);
                     }
                 }
             }
@@ -89,7 +92,8 @@ public class MimosaDataSource implements Closeable {
 
     public DataSource getMaster() {
         if (master == null) {
-            throw new IllegalArgumentException("没有找到 master 数据库 DataSource");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaDataSource.class, "not_found_master"));
         }
         return master;
     }
@@ -127,11 +131,13 @@ public class MimosaDataSource implements Closeable {
         } else {
             if (isIgnoreEmptySlave) {
                 if (logger.isWarnEnabled()) {
-                    logger.warn("没有找到从数据库配置,切换到主库链接!");
+                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                            MimosaDataSource.class, "not_found_slave"));
                 }
                 return master;
             } else {
-                throw new IllegalArgumentException("没有找到从数据库配置,请先配置从数据库!");
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                        MimosaDataSource.class, "not_found_slave_please"));
             }
         }
     }
@@ -155,7 +161,8 @@ public class MimosaDataSource implements Closeable {
                         return this.randomSlave(true);
                     } else {
                         if (!isIgnoreEmptySlave) {
-                            throw new IllegalArgumentException("没有找到从数据库 " + name + " ,请先配置名称为 " + name + " 的从数据库!");
+                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                    MimosaDataSource.class, "not_found_slave_config", name, name));
                         } else {
                             return this.getMaster();
                         }
@@ -165,7 +172,8 @@ public class MimosaDataSource implements Closeable {
                 }
             } else {
                 if (!isIgnoreEmptySlave) {
-                    throw new IllegalArgumentException("没有找到从数据库 " + name + " ,请先配置名称为 " + name + " 的从数据库!");
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                            MimosaDataSource.class, "not_found_slave_config", name, name));
                 } else {
                     return this.getMaster();
                 }
@@ -258,7 +266,8 @@ public class MimosaDataSource implements Closeable {
                         try {
                             m.invoke(this.master);
                         } catch (Exception e) {
-                            throw new IOException("执行关闭连接池方法出错", e);
+                            throw new IOException(Messages.get(LanguageMessageFactory.PROJECT,
+                                    MimosaDataSource.class, "run_close_db_error"), e);
                         }
                     }
                 }
@@ -279,7 +288,8 @@ public class MimosaDataSource implements Closeable {
                                 try {
                                     m.invoke(ds);
                                 } catch (Exception e) {
-                                    throw new IOException("执行关闭连接池方法出错", e);
+                                    throw new IOException(Messages.get(LanguageMessageFactory.PROJECT,
+                                            MimosaDataSource.class, "run_close_db_error"), e);
                                 }
                             }
                         }

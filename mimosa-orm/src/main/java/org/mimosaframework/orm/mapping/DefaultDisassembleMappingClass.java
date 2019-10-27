@@ -1,12 +1,14 @@
 package org.mimosaframework.orm.mapping;
 
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.convert.ConvertType;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 
 import java.lang.annotation.Annotation;
@@ -60,7 +62,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                     }
                 }
                 if (c > 1) {
-                    throw new IllegalArgumentException("表 " + tableName + " 自增长字段只允许有一个");
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                            DefaultDisassembleMappingClass.class, "incr_field_one", tableName));
                 }
             }
             return mappingTable;
@@ -88,19 +91,24 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
 
                 if (column.type().equals(Timestamp.class)) {
                     if (timestamp != null && timestamp.equals(Timestamp.class)) {
-                        throw new IllegalArgumentException("时间戳类型列只允许有一个");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                DefaultDisassembleMappingClass.class, "timestamp_one"));
                     }
                     timestamp = Timestamp.class;
                 }
 
                 if (column.strategy().equals(AutoIncrementStrategy.class)) {
                     if (strategy != null && strategy.equals(AutoIncrementStrategy.class)) {
-                        throw new IllegalArgumentException("自增列只允许有一个");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                DefaultDisassembleMappingClass.class, "incr_field_one",
+                                mappingTable.getMappingTableName()));
                     }
                     strategy = AutoIncrementStrategy.class;
 
                     if (!column.pk()) {
-                        throw new IllegalArgumentException("自增策略只能使用在主键列上 " + mappingClass.getSimpleName() + "." + fieldName);
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                DefaultDisassembleMappingClass.class, "auto_strategy_pk",
+                                mappingClass.getSimpleName() + "." + fieldName));
                     }
                 }
 
@@ -120,7 +128,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
 
                 if (column.strategy().equals(AutoIncrementStrategy.class)) {
                     if (strategy != null && strategy.equals(AutoIncrementStrategy.class)) {
-                        throw new IllegalArgumentException("自增列只允许有一个");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                DefaultDisassembleMappingClass.class, "incr_field_one", mappingTable.getMappingTableName()));
                     }
                     strategy = AutoIncrementStrategy.class;
                 }
@@ -168,7 +177,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
 
         if (mappingField.getMappingFieldType().equals(BigDecimal.class)
                 && mappingField.getMappingFieldLength() == 255) {
-            throw new IllegalArgumentException("BigDecimal类型必须设置精度值,默认255长度过大");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    DefaultDisassembleMappingClass.class, "must_set_decimal"));
         }
 
         return mappingField;

@@ -3,8 +3,10 @@ package org.mimosaframework.orm.platform.oracle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
@@ -563,7 +565,8 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
                                 Long maxValue = o.getLong("max");
                                 if (maxValue != null) {
                                     maxValue = maxValue + 1;
-                                    logger.warn("由于插入数据时带有主键信息，所以开始重置数据库自增初始值");
+                                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                                            OracleDatabasePorter.class, "reset_incr_field"));
 
                                     // alter sequence seq_name increment by 1
                                     SQLBuilder resetSeq = this.createSQLBuilder().ALTER().addString("sequence")
@@ -577,7 +580,8 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("保存数据时由于包含主键值需要重置主键自增序列时出错", e);
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    OracleDatabasePorter.class, "reset_incr_field_error"), e);
         }
     }
 

@@ -3,6 +3,8 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.SQLBuilder;
 import org.mimosaframework.orm.platform.SQLBuilderFactory;
 import org.mimosaframework.orm.utils.SQLUtils;
@@ -36,7 +38,8 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
             connections.add(c);
             return new SingleZipperTableIterator(c);
         } catch (SQLException e) {
-            throw new IllegalStateException("获得数据量连接失败", e);
+            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SingleZipperTable.class, "get_ds_fail"), e);
         }
     }
 
@@ -53,8 +56,8 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
 
     @Override
     public void setFetchSize(int size) {
-        logger.warn("假如你使用MySQL数据库及驱动,请注意数据库和驱动版本大于5," +
-                "并且如果你没有在URL上设置参数useCursorFetch=true则设置本参数属于无效行为");
+        logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                SingleZipperTable.class, "mysql_version"));
         this.fetchSize = size;
     }
 
@@ -86,7 +89,8 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
                 }
                 return hasNext;
             } catch (SQLException e) {
-                throw new IllegalStateException("拉链表判断是否有下一条失败", e);
+                throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
+                        SingleZipperTable.class, "next_fail"), e);
             }
         }
 
@@ -109,7 +113,8 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
 
         @Override
         public void remove() {
-            throw new IllegalStateException("拉链表时不允许删除数据");
+            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SingleZipperTable.class, "zipper_not_allow_del"));
         }
     }
 }

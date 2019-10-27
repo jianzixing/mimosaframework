@@ -1,7 +1,9 @@
 package org.mimosaframework.orm.mapping;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.MimosaDataSource;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.DifferentColumn;
 import org.mimosaframework.orm.platform.PlatformFactory;
 
@@ -28,7 +30,8 @@ public class MappingTableWrapper {
                 if (mappingTables != null) {
                     for (MappingTable table : mappingTables) {
                         if (StringTools.isEmpty(classTable.getMappingTableName())) {
-                            throw new IllegalArgumentException("映射信息MappingTable中缺少对应的映射表名称");
+                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                    MappingTableWrapper.class, "mapping_defect_name"));
                         }
                         if (classTable.getMappingTableName().equalsIgnoreCase(table.getDatabaseTableName())) {
                             isContains = true;
@@ -59,7 +62,8 @@ public class MappingTableWrapper {
                                 } else {
                                     DifferentColumn differentColumn = PlatformFactory.getDifferentColumn(dataSource);
                                     if (differentColumn == null) {
-                                        throw new IllegalArgumentException("没有找到数据库和映射字段对比类实现");
+                                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                                MappingTableWrapper.class, "not_fount_different_column"));
                                     }
                                     if (!differentColumn.isLikeColumnName(f.getMappingColumnName(), containsField.getDatabaseColumnName())) {
                                         object.addChangeField(f);

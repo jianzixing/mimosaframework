@@ -3,11 +3,13 @@ package org.mimosaframework.orm.builder;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.DefaultFilterPackageClass;
 import org.mimosaframework.core.utils.FilterPackageClass;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -20,7 +22,7 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
 
         BasicSetting basicDisposition = this.getBasicInfo();
         if (basicDisposition == null) {
-            throw new ContextException("需要先初始化BasicDisposition拿到Convert实例");
+            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, AbstractConfigBuilder.class, "need_basic"));
         }
 
         FilterPackageClass filterPackageClass = new DefaultFilterPackageClass();
@@ -44,7 +46,7 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
                     try {
                         classes.add(Class.forName(s));
                     } catch (ClassNotFoundException e) {
-                        throw new ContextException("没有找到映射类 " + s, e);
+                        throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, AbstractConfigBuilder.class, "not_found_mapping_class") + " " + s, e);
                     }
                 }
             }
@@ -66,13 +68,13 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
                     return c.newInstance();
                 }
             } catch (Exception e) {
-                throw new ContextException("实例化 ConvertClass 出错", e);
+                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, AbstractConfigBuilder.class, "instance_convert_error"), e);
             }
         }
         if (StringTools.isEmpty(convertClass) && StringTools.isNotEmpty(convertName)) {
             MappingNamedConvert convert = ConvertFactory.getConvert(convertName);
             if (convert == null) {
-                throw new ContextException("字段名称转换器 " + convertName + " 不存在");
+                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, AbstractConfigBuilder.class, "convert_name_null", convertName));
             }
             return convert;
         }
@@ -91,7 +93,7 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
             try {
                 dsClass = (Class<? extends DataSource>) Class.forName(clazz);
             } catch (Exception e) {
-                throw new ContextException("加载DataSourceClass类失败", e);
+                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, AbstractConfigBuilder.class, "data_source_fail"), e);
             }
             DataSource ds = ModelObject.toJavaObject(new ModelObject(map), dsClass);
             return ds;

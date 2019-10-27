@@ -2,6 +2,8 @@ package org.mimosaframework.orm.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 
 import java.sql.SQLException;
@@ -24,7 +26,9 @@ public class WarnCompareMapping extends NothingCompareMapping {
 
         if (missingTables != null) {
             for (MappingTable table : missingTables) {
-                logger.warn("对比数据库发现缺失映射表 " + table.getMappingTableName() + " 映射类 " + table.getMappingClass().getSimpleName());
+                logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                        WarnCompareMapping.class, "defect_class",
+                        table.getMappingTableName(), table.getMappingClass().getSimpleName()));
             }
         }
 
@@ -32,9 +36,12 @@ public class WarnCompareMapping extends NothingCompareMapping {
             for (MappingField field : missingFields) {
                 MappingTable table = field.getMappingTable();
                 if (table == null) {
-                    logger.warn("对比数据库发现缺失字段 " + field.getMappingColumnName());
+                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                            WarnCompareMapping.class, "defect_field", field.getMappingColumnName()));
                 } else {
-                    logger.warn("对比数据库发现缺失字段 " + field.getMappingColumnName() + " 在表 " + table.getMappingTableName() + " 中");
+                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                            WarnCompareMapping.class, "defect_field_table",
+                            field.getMappingColumnName(), table.getMappingTableName()));
                 }
             }
         }
@@ -43,9 +50,12 @@ public class WarnCompareMapping extends NothingCompareMapping {
             for (MappingField field : changeFields) {
                 MappingTable table = field.getMappingTable();
                 if (table == null) {
-                    logger.warn("对比数据库发现字段 " + field.getMappingColumnName() + " 已经被修改");
+                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                            WarnCompareMapping.class, "update_field", field.getMappingColumnName()));
                 } else {
-                    logger.warn("对比数据库发现缺失字段 " + field.getMappingColumnName() + " 已经被修改," + "在表 " + table.getMappingTableName() + " 中");
+                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                            WarnCompareMapping.class, "update_field_table",
+                            field.getMappingColumnName(), table.getMappingTableName()));
                 }
             }
         }

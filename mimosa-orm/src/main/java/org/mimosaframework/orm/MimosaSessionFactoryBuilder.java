@@ -1,6 +1,8 @@
 package org.mimosaframework.orm;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 public class MimosaSessionFactoryBuilder implements SessionFactoryBuilder {
     private ContextContainer contextValues;
@@ -12,7 +14,8 @@ public class MimosaSessionFactoryBuilder implements SessionFactoryBuilder {
     @Override
     public SessionFactory build() throws ContextException {
         if (this.contextValues == null) {
-            throw new ContextException("没有初始化上下文");
+            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionFactoryBuilder.class, "init_context"));
         }
         return new MimosaSessionFactory(this.contextValues);
     }

@@ -3,8 +3,10 @@ package org.mimosaframework.orm.platform.postgresql;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
@@ -138,7 +140,8 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                                 Long maxValue = o.getLong("max");
                                 if (maxValue != null) {
                                     maxValue = maxValue + 1;
-                                    logger.warn("由于插入数据时带有主键信息，所以开始重置数据库自增初始值");
+                                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                                            PostgreSQLDatabasePorter.class, "reset_incr_field"));
 
                                     SQLBuilder resetSeq = this.createSQLBuilder().ALTER().addString("sequence")
                                             .addString(tableName + "_" + field.getMappingColumnName() + "_seq")
@@ -151,7 +154,8 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("保存数据时由于包含主键值需要重置主键自增序列时出错", e);
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    PostgreSQLDatabasePorter.class, "reset_incr_field_error"), e);
         }
     }
 
@@ -176,7 +180,8 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                 String fieldName = String.valueOf(key);
                 MappingField mappingField = table.getMappingFieldByName(fieldName);
                 if (mappingField == null) {
-                    throw new IllegalArgumentException("没有找到字段" + fieldName + "映射字段");
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                            PostgreSQLDatabasePorter.class, "not_fount_field", fieldName));
                 }
 
                 this.addDataPlaceholder(insertBuilder, fieldName, value, mappingField);

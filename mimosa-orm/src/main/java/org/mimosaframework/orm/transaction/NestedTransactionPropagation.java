@@ -1,7 +1,9 @@
 package org.mimosaframework.orm.transaction;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,7 +43,8 @@ public class NestedTransactionPropagation implements TransactionPropagation {
                     connection.setTransactionIsolation(it.getCode());
                 }
             } catch (SQLException e) {
-                throw new TransactionException("创建事务失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        NestedTransactionPropagation.class, "create_trans_fail"), e);
             }
             isNewCreate = true;
         } else {
@@ -49,7 +52,8 @@ public class NestedTransactionPropagation implements TransactionPropagation {
                 try {
                     this.savepoint = connection.setSavepoint(UUID.randomUUID().toString().replaceAll("-", ""));
                 } catch (SQLException e) {
-                    throw new TransactionException("创建事务保存点失败", e);
+                    throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                            NestedTransactionPropagation.class, "create_trans_point_fail"), e);
                 }
                 isNewCreate = false;
             }
@@ -64,7 +68,8 @@ public class NestedTransactionPropagation implements TransactionPropagation {
                 connection.commit();
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                throw new TransactionException("提交新的事物失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        NestedTransactionPropagation.class, "submit_trans_fail"), e);
             }
         }
     }
@@ -75,7 +80,8 @@ public class NestedTransactionPropagation implements TransactionPropagation {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                throw new TransactionException("回滚新的事物失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        NestedTransactionPropagation.class, "rollback_trans_fail"), e);
             }
         } else {
             try {
@@ -83,7 +89,8 @@ public class NestedTransactionPropagation implements TransactionPropagation {
                     connection.rollback(savepoint);
                 }
             } catch (SQLException e) {
-                throw new TransactionException("回滚到保存点失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        NestedTransactionPropagation.class, "rollback_trans_point_fail"), e);
             }
         }
     }
@@ -94,7 +101,8 @@ public class NestedTransactionPropagation implements TransactionPropagation {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new TransactionException("关闭数据库连接失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        NestedTransactionPropagation.class, "close_db_fail"), e);
             }
         }
     }

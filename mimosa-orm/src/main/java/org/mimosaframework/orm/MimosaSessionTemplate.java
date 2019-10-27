@@ -3,9 +3,11 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.*;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionCallback;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
@@ -198,7 +200,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
             if (e instanceof TransactionException) {
                 throw (TransactionException) e;
             } else {
-                throw new TransactionException("执行事物失败并回滚", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        MimosaSessionTemplate.class, "fail_rollback"), e);
             }
         }
     }
@@ -242,7 +245,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("创建辅助工具工厂类失败", e);
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "create_factory_error"), e);
         }
     }
 
@@ -298,7 +302,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<CacheFactory> factoryBuilder = this.factoryBuilderMap.get(name);
             if (factoryBuilder == null) {
-                throw new IllegalArgumentException("没有找到缓存实例实现");
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                        MimosaSessionTemplate.class, "not_found_cache"));
             }
             CacheFactory cacheFactory = factoryBuilder.getFactory();
 
@@ -317,7 +322,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<MQFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException("没有找到MQ实例实现");
+            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "not_found_mq"));
             MQFactory mqFactory = factoryBuilder.getFactory();
 
             return mqFactory.buildProducer(group);
@@ -335,7 +341,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<MQFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException("没有找到MQ实例实现");
+            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "not_found_mq"));
             MQFactory mqFactory = factoryBuilder.getFactory();
             mqFactory.registerConsumer(consumer);
         }
@@ -351,7 +358,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<SearchEngineFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException("没有找到搜索引擎实例实现");
+            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "not_found_search"));
             SearchEngineFactory searchEngineFactory = factoryBuilder.getFactory();
             return searchEngineFactory.build(group);
         }
@@ -368,7 +376,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<RPCFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException("没有找到RPC实例实现");
+            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "not_found_rpc"));
             RPCFactory rpcFactory = factoryBuilder.getFactory();
             return rpcFactory.getObject(tClass);
         }
@@ -385,7 +394,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<RPCFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException("没有找到RPC实例实现");
+            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "not_found_rpc"));
             RPCFactory rpcFactory = factoryBuilder.getFactory();
             rpcFactory.register(o);
         }
@@ -401,7 +411,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<MonitoringFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException("没有找到监控实例实现");
+            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "not_found_monitor"));
             MonitoringFactory monitoringFactory = factoryBuilder.getFactory();
             monitoringFactory.build(group);
         }
@@ -418,7 +429,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<SwitchFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException("没有找到配置中心实例实现");
+            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "not_found_center"));
             SwitchFactory switchFactory = factoryBuilder.getFactory();
             return switchFactory.build(group);
         }
@@ -435,7 +447,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<SwitchFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException("没有找到配置中心实例实现");
+            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "not_found_center"));
             SwitchFactory switchFactory = factoryBuilder.getFactory();
             switchFactory.registerNotify(listener);
         }
@@ -444,7 +457,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
     private class SessionInterceptor implements InvocationHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            AssistUtils.notNull(sessionFactory, "必须先设置SessionFactory");
+            AssistUtils.notNull(sessionFactory, Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaSessionTemplate.class, "must_set_factory"));
             Session session = sessionFactory.openSession();
             Object object = null;
             try {

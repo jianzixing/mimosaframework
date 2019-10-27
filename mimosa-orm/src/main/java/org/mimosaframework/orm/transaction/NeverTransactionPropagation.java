@@ -1,7 +1,9 @@
 package org.mimosaframework.orm.transaction;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,13 +27,15 @@ public class NeverTransactionPropagation implements TransactionPropagation {
     @Override
     public Connection getConnection() throws TransactionException {
         if (this.previousTransaction != null && this.previousTransaction.isAutoCommit(dataSource)) {
-            throw new TransactionException("以非事物运行但是发现已有事物开启");
+            throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                    NeverTransactionPropagation.class, "found_trans"));
         }
         if (connection == null) {
             try {
                 connection = dataSource.getConnection(true, null, true);
             } catch (SQLException e) {
-                throw new TransactionException("创建事物失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        NeverTransactionPropagation.class, "create_trans_fail"), e);
             }
         }
         return connection;
@@ -53,7 +57,8 @@ public class NeverTransactionPropagation implements TransactionPropagation {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new TransactionException("关闭事物失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        NeverTransactionPropagation.class, "close_trans_fail"), e);
             }
         }
     }

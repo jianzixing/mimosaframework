@@ -1,11 +1,13 @@
 package org.mimosaframework.orm.strategy;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.Session;
 import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.exception.StrategyException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
@@ -49,7 +51,8 @@ public class StrategyFactory {
                             try {
                                 strategys.put(c, c.newInstance());
                             } catch (Exception e) {
-                                throw new StrategyException("创建ID策略出错", e);
+                                throw new StrategyException(Messages.get(LanguageMessageFactory.PROJECT,
+                                        StrategyFactory.class, "create_strategy_error"), e);
                             }
                         }
                     }

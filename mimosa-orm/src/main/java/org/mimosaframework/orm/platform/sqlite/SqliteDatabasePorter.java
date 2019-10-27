@@ -3,8 +3,10 @@ package org.mimosaframework.orm.platform.sqlite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.Keyword;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
@@ -142,7 +144,8 @@ public class SqliteDatabasePorter extends AbstractDatabasePorter {
                 String fieldName = String.valueOf(key);
                 MappingField mappingField = table.getMappingFieldByName(fieldName);
                 if (mappingField == null) {
-                    throw new IllegalArgumentException("没有找到字段" + fieldName + "映射字段");
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                            SqliteDatabasePorter.class, "not_fount_field"));
                 }
 
                 if (value == null || value == Keyword.NULL) {

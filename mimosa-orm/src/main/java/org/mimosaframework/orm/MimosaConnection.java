@@ -1,5 +1,8 @@
 package org.mimosaframework.orm;
 
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -29,7 +32,8 @@ public class MimosaConnection implements InvocationHandler {
                     new MimosaConnection(dataSource)
             );
         } else {
-            throw new IllegalArgumentException("必须传入DataSource实例");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MimosaConnection.class, "must_ds"));
         }
     }
 

@@ -3,7 +3,9 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.exception.ModelCheckerException;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.json.ModelObjectChecker;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.annotation.Column;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.DefaultDisassembleMappingClass;
 import org.mimosaframework.orm.mapping.DisassembleMappingClass;
 import org.mimosaframework.orm.mapping.MappingField;
@@ -38,13 +40,15 @@ public class ModelMeasureChecker implements ModelObjectChecker {
     @Override
     public void checkerUpdate(ModelObject object, Object[] removed) throws ModelCheckerException {
         if (tables == null || object.getObjectClass() == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), "映射类不存在或者ModelObject没有指定映射类");
+            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                    ModelMeasureChecker.class, "not_found_mapping_class"));
         }
 
         Class c = object.getObjectClass();
         MappingTable table = tables.get(c);
         if (table == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), "当前类" + c.getSimpleName() + "没有在映射类列表中");
+            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                    ModelMeasureChecker.class, "not_in_table", c.getSimpleName()));
         }
 
         Set<MappingField> fields = table.getMappingFields();
@@ -56,11 +60,13 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                     String value = object.getString(field.getMappingFieldName());
                     if (value == null && "".equals(value)) {
                         throw new ModelCheckerException(field.getMappingFieldName(),
-                                Code.PK_NULL.toString(), "主键 " + field.getMappingFieldName() + " 更新时必须存在");
+                                Code.PK_NULL.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                                ModelMeasureChecker.class, "pk_must", field.getMappingFieldName()));
                     }
                 } else {
                     throw new ModelCheckerException(field.getMappingFieldName(),
-                            Code.PK_NULL.toString(), "主键 " + field.getMappingFieldName() + " 更新时必须存在");
+                            Code.PK_NULL.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                            ModelMeasureChecker.class, "pk_must", field.getMappingFieldName()));
                 }
             }
 
@@ -88,12 +94,14 @@ public class ModelMeasureChecker implements ModelObjectChecker {
 
     private void checkerValid(ModelObject object, Object[] removed) throws ModelCheckerException {
         if (tables == null || object.getObjectClass() == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), "映射类不存在或者ModelObject没有指定映射类");
+            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                    ModelMeasureChecker.class, "not_found_mapping_class"));
         }
         Class c = object.getObjectClass();
         MappingTable table = tables.get(c);
         if (table == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), "当前类" + c.getSimpleName() + "没有在映射类列表中");
+            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                    ModelMeasureChecker.class, "not_in_table", c.getSimpleName()));
         }
 
         Set<MappingField> fields = table.getMappingFields();
@@ -124,16 +132,19 @@ public class ModelMeasureChecker implements ModelObjectChecker {
             if (String.class.isAssignableFrom(type)) {
                 Object o = object.get(javaName);
                 if (o != null && String.valueOf(o).length() > length) {
-                    throw new ModelCheckerException(javaName, Code.MAX_LENGTH.toString(), "字段 " + javaName + " 太长无法校验通过");
+                    throw new ModelCheckerException(javaName, Code.MAX_LENGTH.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                            ModelMeasureChecker.class, "field_max_len", javaName));
                 }
 
                 if (extMinLength > -1 && o != null && String.valueOf(o).length() < extMinLength) {
-                    throw new ModelCheckerException(javaName, Code.MIN_LENGTH.toString(), "字段 " + javaName + " 太短无法校验通过");
+                    throw new ModelCheckerException(javaName, Code.MIN_LENGTH.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                            ModelMeasureChecker.class, "field_min_len", javaName));
                 }
             }
 
             if (!isNullable && defaultValue == null && object.get(javaName) == null) {
-                throw new ModelCheckerException(javaName, Code.NULL_VALUE.toString(), "字段 " + javaName + " 不能为空无法校验通过");
+                throw new ModelCheckerException(javaName, Code.NULL_VALUE.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                        ModelMeasureChecker.class, "field_empty", javaName));
             }
 
             /*如果更新的时候这个就不能给加入了*/
@@ -151,7 +162,8 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                         object.put(javaName, Double.parseDouble(s));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        throw new ModelCheckerException(javaName, Code.PARSE_NUMBER.toString(), "字段 " + javaName + " " + o + "转化数字格式出错");
+                        throw new ModelCheckerException(javaName, Code.PARSE_NUMBER.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                                ModelMeasureChecker.class, "field_format", javaName));
                     }
                 }
             }
@@ -162,7 +174,8 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                     Pattern regex = Pattern.compile(extRegExp);
                     Matcher matcher = regex.matcher(s);
                     if (!matcher.matches()) {
-                        throw new ModelCheckerException(javaName, Code.REG_EXP_MATCH.toString(), "字段 " + javaName + " " + s + " 匹配正则表达式 " + extRegExp + " 失败");
+                        throw new ModelCheckerException(javaName, Code.REG_EXP_MATCH.toString(), Messages.get(LanguageMessageFactory.PROJECT,
+                                ModelMeasureChecker.class, "field_regx", javaName, s, extRegExp));
                     }
                 }
             }

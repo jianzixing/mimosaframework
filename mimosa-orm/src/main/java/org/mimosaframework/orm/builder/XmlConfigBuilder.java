@@ -1,12 +1,14 @@
 package org.mimosaframework.orm.builder;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.auxiliary.FactoryBuilderConfig;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -60,16 +62,16 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     private XmlConfigBuilder(InputSource inputSource) throws ContextException {
         this.inputSource = inputSource;
         if (inputSource == null) {
-            throw new ContextException("找不到配置文件");
+            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_found_xml"));
         }
         try {
             this.parseXml();
         } catch (ParserConfigurationException e) {
-            throw new ContextException("解析Mimosa配置文件出错", e);
+            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "parse_xml_error"), e);
         } catch (IOException e) {
-            throw new ContextException("解析Mimosa配置文件出错", e);
+            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "parse_xml_error"), e);
         } catch (SAXException e) {
-            throw new ContextException("解析Mimosa配置文件出错", e);
+            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "parse_xml_error"), e);
         }
     }
 
@@ -84,12 +86,12 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
             // 获得当前应用名称
             NamedNodeMap namedNodeMap = mimosaNode.getAttributes();
             if (namedNodeMap == null) {
-                throw new ContextException("跟标签" + DEFAULT_ROOT + "必须设置应用名称属性name作为全局唯一标识(相同应用部署多台机器应用名称也相同)");
+                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "must_app_name", DEFAULT_ROOT));
             }
             String appName = namedNodeMap.getNamedItem("name").getNodeValue();
             String appDesc = namedNodeMap.getNamedItem("description").getNodeValue();
             if (StringTools.isEmpty(appName)) {
-                throw new ContextException("跟标签" + DEFAULT_ROOT + "必须设置应用名称属性name作为全局唯一标识(相同应用部署多台机器应用名称也相同)");
+                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "must_app_name", DEFAULT_ROOT));
             }
             applicationInfo = new ApplicationSetting(appName, appDesc);
 
@@ -119,7 +121,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                         NamedNodeMap nm = ds.getAttributes();
                         if (nm != null) {
                             if (nm.getNamedItem("name") == null) {
-                                throw new ContextException("XML配置中的ds标签必须起一个name名称");
+                                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "ds_must_name"));
                             }
                             Map<String, String> map = this.getNodeByProperties(ds);
                             if (map.size() > 0) {
@@ -153,13 +155,13 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                                 String master = nm.getNamedItem("master") != null ? nm.getNamedItem("master").getNodeValue().trim() : null;
                                 String slaves = nm.getNamedItem("slaves") != null ? nm.getNamedItem("slaves").getNodeValue().trim() : null;
                                 if (name == null) {
-                                    throw new ContextException("wrapper配置必须有一个name属性");
+                                    throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "wrapper_must_name"));
                                 }
                                 if (StringTools.isNotEmpty(master)) {
 
                                     DataSource ds = dataSources.get(master);
                                     if (ds == null) {
-                                        throw new ContextException("没有找到名称为 " + master + " 主数据库");
+                                        throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_fount_master", master));
                                     }
 
                                     Map<String, DataSource> slaveList = new LinkedHashMap<>();
@@ -178,7 +180,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                                         MimosaDataSource selfMDS = new MimosaDataSource(ds, slaveList, name);
                                         wrappers.put(name, selfMDS);
                                     } catch (SQLException e) {
-                                        throw new ContextException("获得数据库类型出错", e);
+                                        throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "ds_type_fail"), e);
                                     }
                                 }
                             }
@@ -216,7 +218,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                 Node clazz = map.getNamedItem("class");
 
                 if (clazz == null) {
-                    throw new IllegalArgumentException("strategy的tableClass属性必须存在");
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "strategy_class_must_be"));
                 }
 
                 try {
@@ -234,10 +236,10 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                             strategies.add(idStrategy.newInstance());
                         }
                     } else {
-                        throw new IllegalArgumentException("strategy的策略实现继承自IDStrategy");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "strategy_must_ext_id"));
                     }
                 } catch (ClassNotFoundException e) {
-                    throw new IllegalArgumentException("strategy的策略实现必须存在", e);
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "strategy_impl_must"), e);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InstantiationException e) {
@@ -339,7 +341,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                 String wrapperName = nm.getNamedItem("wrapper").getNodeValue().trim();
                 MimosaDataSource ds = this.wrappers.get(wrapperName);
                 if (ds == null) {
-                    throw new ContextException("没有找到wrapper名称为 " + wrapperName + " 的包装");
+                    throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_fount_wrapper_name"));
                 }
                 return ds;
             }
@@ -351,7 +353,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                 if (StringTools.isNotEmpty(master)) {
                     DataSource ds = this.dataSources.get(master);
                     if (ds == null) {
-                        throw new ContextException("没有找到名称为 " + master + " 的数据库配置");
+                        throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_fount_data_source", master));
                     }
                     dataSource = ds;
                 }
@@ -365,13 +367,13 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                             String master = masterNodeMap.getNamedItem("ds").getNodeValue().trim();
                             DataSource ds = this.dataSources.get(master);
                             if (ds == null) {
-                                throw new ContextException("没有找到名称为 " + master + " 的数据库配置");
+                                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_fount_data_source", master));
                             }
                             dataSource = ds;
                         } else {
                             DataSource ds = this.getDataSourceFromProperties(child.item(i), null);
                             if (ds == null) {
-                                throw new ContextException("初始化master数据库链接失败");
+                                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "init_data_source_fail"));
                             } else {
                                 dataSource = ds;
                             }
@@ -392,13 +394,13 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                             if (nv.length == 1) {
                                 DataSource ds = this.dataSources.get(nv[0]);
                                 if (ds == null) {
-                                    throw new ContextException("没有找到名称为 " + s + " 的(从)数据库配置");
+                                    throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_fount_slave", s));
                                 }
                                 slaveList.put("default", ds);
                             } else {
                                 DataSource ds = this.dataSources.get(nv[1]);
                                 if (ds == null) {
-                                    throw new ContextException("没有找到名称为 " + s + " 的(从)数据库配置");
+                                    throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_fount_slave", s));
                                 }
                                 slaveList.put(nv[0], ds);
                             }
@@ -420,13 +422,13 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                                     if (nv.length == 1) {
                                         DataSource ds = this.dataSources.get(nv[0]);
                                         if (ds == null) {
-                                            throw new ContextException("没有找到名称为 " + s + " 的(从)数据库配置");
+                                            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_fount_slave", s));
                                         }
                                         slaveList.put("default", ds);
                                     } else {
                                         DataSource ds = this.dataSources.get(nv[1]);
                                         if (ds == null) {
-                                            throw new ContextException("没有找到名称为 " + s + " 的(从)数据库配置");
+                                            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "not_fount_slave", s));
                                         }
                                         slaveList.put(nv[0], ds);
                                     }
@@ -436,7 +438,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                             StringHolder holder = new StringHolder();
                             DataSource ds = this.getDataSourceFromProperties(child.item(i), holder);
                             if (ds == null) {
-                                throw new ContextException("初始化master数据库链接失败");
+                                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "init_data_source_fail"));
                             } else {
                                 if (StringTools.isNotEmpty(holder.getName())) {
                                     slaveList.put(holder.getName(), ds);
@@ -460,7 +462,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                 mimosaDataSource.getMaster();
                 wrappers.put(mimosaDataSource.getName(), mimosaDataSource);
             } catch (SQLException e) {
-                throw new ContextException("获得数据库类型出错", e);
+                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "ds_type_fail"), e);
             }
 
             return mimosaDataSource;
@@ -540,11 +542,11 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                     if (StringTools.isEmpty(centerHost)
                             || StringTools.isEmpty(centerPort)
                             || StringTools.isEmpty(centerClientName)) {
-                        throw new ContextException("配置中心必须填写server、port和clientName");
+                        throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "must_center_info"));
                     }
 
                     if (!StringTools.isNumber(centerPort)) {
-                        throw new ContextException("配置中心端口必须填写数字");
+                        throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "must_center_info_port"));
                     }
 
                     configCenterInfo.setCenterHost(centerHost);
@@ -662,7 +664,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                             AbstractInterceptSession session = (AbstractInterceptSession) c.newInstance();
                             this.basicInfo.setInterceptSession(session);
                         } catch (Exception e) {
-                            throw new ContextException("初始化interceptSession出错", e);
+                            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "init_intercept_session_error"), e);
                         }
                     }
                 }
@@ -674,7 +676,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                     MappingLevel ml = MappingLevel.valueOf(mappingLevel);
                     basicInfo.setMappingLevel(ml);
                 } catch (Exception e) {
-                    throw new IllegalArgumentException("映射级别枚举MappingLevel不包含的级别" + mappingLevel, e);
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, XmlConfigBuilder.class, "mapping_level_not_found", mappingLevel), e);
                 }
             }
             basicInfo.setIgnoreEmptySlave(ignoreEmptySlave);

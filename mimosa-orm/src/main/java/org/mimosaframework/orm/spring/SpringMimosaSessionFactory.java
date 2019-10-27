@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.spring;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.*;
@@ -7,6 +8,7 @@ import org.mimosaframework.orm.convert.MappingNamedConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.SimpleTemplate;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
@@ -92,7 +94,8 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public void setCenterConfigSetting(CenterConfigSetting centerConfigSetting) throws ContextException {
         this.centerConfigSetting = centerConfigSetting;
         if (!this.centerConfigSetting.valid()) {
-            throw new ContextException("配置中心配置不完整");
+            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SpringMimosaSessionFactory.class, "center_config_fail"));
         }
     }
 
@@ -272,7 +275,8 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
             this.dataSources.addAll(dataSources);
         }
         if (this.dataSources == null || this.dataSources.size() == 0) {
-            throw new IllegalArgumentException("缺少数据源配置");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SpringMimosaSessionFactory.class, "ds_miss"));
         }
         boolean is = false;
         for (MimosaDataSource mimosaDataSource : this.dataSources) {
@@ -281,7 +285,8 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
             }
         }
         if (!is) {
-            throw new IllegalArgumentException("缺少默认数据源配置(名称为default的数据源束)");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SpringMimosaSessionFactory.class, "ds_default_miss"));
         }
     }
 

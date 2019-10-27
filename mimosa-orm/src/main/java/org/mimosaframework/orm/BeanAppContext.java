@@ -3,6 +3,7 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.*;
 import org.mimosaframework.orm.exception.ContextException;
@@ -98,7 +99,8 @@ public class BeanAppContext implements Context {
             try {
                 dslist = this.configBuilder.getDataSources();
             } catch (SQLException e) {
-                throw new ContextException("获得数据源列表出错", e);
+                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
+                        BeanAppContext.class, "get_ds_list_fail"), e);
             }
             if (dslist != null) {
                 for (MimosaDataSource ds : dslist) {
@@ -122,7 +124,8 @@ public class BeanAppContext implements Context {
             try {
                 factoryBuilder = this.configBuilder.getAuxFactoryBuilder();
             } catch (Exception e) {
-                throw new ContextException("初始化辅助工具配置类出错", e);
+                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
+                        BeanAppContext.class, "init_tool_error"), e);
             }
             contextValues.setFactoryBuilderList(factoryBuilder);
         }
@@ -158,7 +161,8 @@ public class BeanAppContext implements Context {
             }
             contextValues.matchWholeMappingDatabase();
         } catch (SQLException e) {
-            throw new ContextException("对比数据库映射出错", e);
+            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
+                    BeanAppContext.class, "compare_db_error"), e);
         }
     }
 }

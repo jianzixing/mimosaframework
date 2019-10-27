@@ -1,6 +1,8 @@
 package org.mimosaframework.orm.platform;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.db2.*;
 import org.mimosaframework.orm.platform.mysql.*;
 import org.mimosaframework.orm.platform.oracle.*;
@@ -90,7 +92,8 @@ public class PlatformFactory {
         DatabasePorter databasePorter = getDatabasePorter(dswrapper);
 
         if (carryHandler == null || databasePorter == null) {
-            throw new IllegalArgumentException("不支持的数据库平台");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    PlatformFactory.class, "not_support_platform"));
         }
 
         return new PlatformWrapperImpl(databasePorter, carryHandler);
@@ -127,7 +130,8 @@ public class PlatformFactory {
         DatabasePorter databasePorter = getDatabasePorter(dswrapper);
 
         if (carryHandler == null || databasePorter == null) {
-            throw new IllegalArgumentException("不支持的数据库平台");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    PlatformFactory.class, "not_support_platform"));
         }
 
         return new SimpleTemplateImpl(databasePorter, carryHandler);

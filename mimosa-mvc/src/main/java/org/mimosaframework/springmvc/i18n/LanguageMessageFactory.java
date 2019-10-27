@@ -1,6 +1,6 @@
 package org.mimosaframework.springmvc.i18n;
 
-import org.mimosaframework.core.utils.Messages;
+import org.mimosaframework.core.utils.i18n.Messages;
 
 public class LanguageMessageFactory {
     private static boolean isRegister = false;

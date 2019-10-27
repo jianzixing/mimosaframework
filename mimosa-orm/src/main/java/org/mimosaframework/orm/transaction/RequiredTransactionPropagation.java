@@ -1,7 +1,9 @@
 package org.mimosaframework.orm.transaction;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -39,7 +41,8 @@ public class RequiredTransactionPropagation implements TransactionPropagation {
                         connection.setTransactionIsolation(it.getCode());
                     }
                 } catch (SQLException e) {
-                    throw new TransactionException("创建事物失败", e);
+                    throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                            RequiredTransactionPropagation.class, "create_trans_fail"), e);
                 }
             }
             return connection;
@@ -53,7 +56,8 @@ public class RequiredTransactionPropagation implements TransactionPropagation {
                 connection.commit();
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                throw new TransactionException("提交事物失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        RequiredTransactionPropagation.class, "submit_trans_fail"), e);
             }
         }
     }
@@ -64,7 +68,8 @@ public class RequiredTransactionPropagation implements TransactionPropagation {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                throw new TransactionException("回滚事物失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        RequiredTransactionPropagation.class, "rollback_trans_fail"), e);
             }
         }
     }
@@ -75,7 +80,8 @@ public class RequiredTransactionPropagation implements TransactionPropagation {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new TransactionException("关闭数据库连接失败", e);
+                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                        RequiredTransactionPropagation.class, "close_db_fail"), e);
             }
         }
     }

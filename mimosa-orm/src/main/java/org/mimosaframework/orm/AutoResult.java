@@ -2,7 +2,9 @@ package org.mimosaframework.orm;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.criteria.Query;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import java.util.*;
 
@@ -27,7 +29,7 @@ public class AutoResult {
                     return template.getAutonomously(TAutonomously.newInstance(name));
                 }
             } catch (Exception e) {
-                throw new IllegalArgumentException("调用自定义SQL语句出错", e);
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, AutoResult.class, "call_custom_sql_error"), e);
             }
         }
         return null;
@@ -54,7 +56,7 @@ public class AutoResult {
                     result = template.getAutonomously(TAutonomously.newInstance(name, search));
                 }
             } catch (Exception e) {
-                throw new IllegalArgumentException("调用自定义SQL语句出错", e);
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, AutoResult.class, "call_custom_sql_error"), e);
             }
         }
         if (result != null && !result.isEmptyValue()) {
@@ -98,7 +100,7 @@ public class AutoResult {
                     result = template.getAutonomously(TAutonomously.newInstance(name, search));
                 }
             } catch (Exception e) {
-                throw new IllegalArgumentException("调用自定义SQL语句出错", e);
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, AutoResult.class, "call_custom_sql_error"), e);
             }
         }
         if (result != null) {
@@ -380,7 +382,7 @@ public class AutoResult {
                 } else if (v instanceof String && StringTools.isNumber((String) v)) {
                     values.add(Long.parseLong((String) v));
                 } else {
-                    throw new IllegalArgumentException("值" + v + "不是一个数字");
+                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, AutoResult.class, "value_not_number", "" + v));
                 }
             }
             return values;

@@ -1,6 +1,8 @@
 package org.mimosaframework.orm.mapping;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MappingLevel;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 
 public class CompareMappingFactory {
@@ -22,6 +24,7 @@ public class CompareMappingFactory {
         if (level == MappingLevel.WARN) {
             return new WarnCompareMapping(dataSourceWrapper, notMatchObject);
         }
-        throw new IllegalArgumentException("不支持的数据库映射级别");
+        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                CompareMappingFactory.class, "not_support_level"));
     }
 }

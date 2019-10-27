@@ -1,6 +1,9 @@
 package org.mimosaframework.orm.criteria;
 
 
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -115,13 +118,13 @@ public class DefaultJoin implements Join {
         DefaultJoin dj = ((DefaultJoin) join);
         if (dj.getMainTable() == null) {
             if (this.table == null) {
-                throw new IllegalArgumentException("JOIN的子表没有设置映射类");
+                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultJoin.class, "join_must_table"));
             }
             dj.setMainTable(this.table);
         }
         if (dj.getMainTable() != this.table) {
-            throw new IllegalArgumentException("子JOIN映射类" + dj.getMainTable().getSimpleName() +
-                    "的主表和当前表" + this.table.getSimpleName() + "不一致");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultJoin.class, "join_table_diff",
+                    dj.getMainTable().getSimpleName(), this.table.getSimpleName()));
         }
 
         this.createSetChildJoin(join);
@@ -159,7 +162,7 @@ public class DefaultJoin implements Join {
         if (filter instanceof DefaultFilter) {
             this.valueFilters.add(filter);
         } else {
-            throw new IllegalArgumentException("仅支持DefaultFilter类型");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultJoin.class, "just_filter"));
         }
         return this;
     }
@@ -174,7 +177,7 @@ public class DefaultJoin implements Join {
     private void checkFieldClass(Object self, Object mainField) {
         if (self.getClass().equals(mainTable)
                 && mainField.getClass().equals(table) && mainTable != table) {
-            throw new IllegalArgumentException("当前字段对应关系相反");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultJoin.class, "rel_reversal"));
         }
     }
 

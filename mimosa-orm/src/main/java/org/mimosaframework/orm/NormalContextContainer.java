@@ -3,9 +3,11 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
@@ -126,19 +128,21 @@ public class NormalContextContainer implements ContextContainer {
                     MappingTable mappingTable = disassembleMappingClass.getMappingTable();
                     mappingTables.add(mappingTable);
                     if (names.containsKey(mappingTable.getMappingTableName())) {
-                        throw new IllegalArgumentException("已经存在表名称为" + mappingTable.getMappingTableName() + "的映射类,"
-                                + names.get(mappingTable.getMappingTableName()) + " 和 " + mappingTable.getMappingClass() + "冲突");
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                NormalContextContainer.class, "conflict_name",
+                                mappingTable.getMappingTableName(), names.get(mappingTable.getMappingTableName()).getName(),
+                                mappingTable.getMappingClass().getName()));
                     }
                     names.put(mappingTable.getMappingTableName(), c);
                 }
 
                 this.mappingGlobalWrapper.setMappingTables(mappingTables);
             } else {
-                logger.warn("您没有配置映射表类信息,当前不会创建任何表");
+                logger.warn(Messages.get(LanguageMessageFactory.PROJECT, NormalContextContainer.class, "empty_mapping_class"));
             }
         } else {
             this.mappingGlobalWrapper.setMappingTables(new LinkedHashSet<MappingTable>());
-            logger.warn("没有扫描到表映射类");
+            logger.warn(Messages.get(LanguageMessageFactory.PROJECT, NormalContextContainer.class, "not_scan_class"));
         }
     }
 
@@ -155,7 +159,7 @@ public class NormalContextContainer implements ContextContainer {
 
     public ActionDataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew) {
         if (defaultDataSource == null) {
-            throw new IllegalArgumentException("请设置一个默认数据源");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, NormalContextContainer.class, "please_set_ds"));
         }
         if (isCreateNew) {
             return this.defaultDataSource.newDataSourceWrapper();
@@ -198,7 +202,8 @@ public class NormalContextContainer implements ContextContainer {
 
     public void addMimosaDataSource(MimosaDataSource dataSource) {
         if (StringTools.isEmpty(dataSource.getName())) {
-            throw new IllegalArgumentException("数据源必须设置一个名称");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    NormalContextContainer.class, "must_ds_name"));
         }
         globalDataSource.add(dataSource);
 

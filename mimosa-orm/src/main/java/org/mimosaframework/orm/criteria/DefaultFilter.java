@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+
 /**
  * @author yangankang
  */
@@ -93,10 +96,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "=";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException("查询条件不能为null,特殊查询请用Keyword.NULL");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_not_allow_null"));
         }
         return this;
     }
@@ -107,10 +110,10 @@ public class DefaultFilter implements Filter {
         this.value = values;
         this.symbol = "in";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (values == null || !values.iterator().hasNext()) {
-            throw new IllegalArgumentException("查询条件不能为null且条数大于0");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_gt0"));
         }
         return this;
     }
@@ -121,10 +124,10 @@ public class DefaultFilter implements Filter {
         this.value = values;
         this.symbol = "in";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (values == null || values.length == 0) {
-            throw new IllegalArgumentException("查询条件不能为null且条数大于0");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_gt0"));
         }
         return this;
     }
@@ -135,10 +138,10 @@ public class DefaultFilter implements Filter {
         this.value = values;
         this.symbol = "notIn";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (values == null || !values.iterator().hasNext()) {
-            throw new IllegalArgumentException("查询条件不能为null且条数大于0");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_gt0"));
         }
         return this;
     }
@@ -149,10 +152,10 @@ public class DefaultFilter implements Filter {
         this.value = values;
         this.symbol = "notIn";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (values == null || values.length == 0) {
-            throw new IllegalArgumentException("查询条件不能为null且条数大于0");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_gt0"));
         }
         return this;
     }
@@ -163,10 +166,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "like";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException("查询条件不能为null");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
         }
         return this;
     }
@@ -177,10 +180,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "!=";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException("查询条件不能为null,特殊查询请用Keyword.NULL");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_not_allow_null"));
         }
         return this;
     }
@@ -191,10 +194,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = ">";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException("查询条件不能为null");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
         }
         return this;
     }
@@ -205,10 +208,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = ">=";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException("查询条件不能为null");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
         }
         return this;
     }
@@ -219,10 +222,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "<";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException("查询条件不能为null");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
         }
         return this;
     }
@@ -233,10 +236,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "<=";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException("查询条件不能为null");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
         }
         return this;
     }
@@ -248,10 +251,10 @@ public class DefaultFilter implements Filter {
         this.endValue = end;
         this.symbol = "between";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         if (start == null || end == null) {
-            throw new IllegalArgumentException("区间条件开闭条件不能为null");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_between_must"));
         }
         return this;
     }
@@ -262,7 +265,7 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "isNull";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         return this;
     }
@@ -273,7 +276,7 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "notNull";
         if (key == null) {
-            throw new IllegalArgumentException("查询字段未能为空");
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
         }
         return this;
     }

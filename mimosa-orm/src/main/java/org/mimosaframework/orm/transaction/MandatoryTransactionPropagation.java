@@ -1,7 +1,9 @@
 package org.mimosaframework.orm.transaction;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import java.sql.Connection;
 
@@ -25,7 +27,8 @@ public class MandatoryTransactionPropagation implements TransactionPropagation {
         if (this.previousTransaction != null && this.previousTransaction.isAutoCommit(dataSource)) {
             return this.previousTransaction.getConnection(dataSource);
         } else {
-            throw new TransactionException("当前传播等级要求必须有外层事务");
+            throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
+                    MandatoryTransactionPropagation.class, "must_in_trans"));
         }
     }
 

@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.utils;
 
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -29,9 +32,11 @@ public class SQLUtils {
             } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypeEnum.SQLITE.name()) != -1) {
                 return DatabaseTypeEnum.SQLITE;
             }
-            throw new SQLException("不支持的数据库 " + metaData.getDriverName() + " ");
+            throw new SQLException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SQLUtils.class, "not_support_db", metaData.getDriverName()));
         } else {
-            throw new SQLException("必须创建一个数据库连接");
+            throw new SQLException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SQLUtils.class, "must_create_ds"));
         }
     }
 
