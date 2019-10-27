@@ -187,6 +187,14 @@ public class AutoResult {
         return 0;
     }
 
+    public Long longValue(String field) {
+        ModelObject object = this.getSingle();
+        if (object != null) {
+            object.getLong(field);
+        }
+        return null;
+    }
+
     public double doubleValue() {
         if (value != null && value instanceof Number) {
             return (double) value;
@@ -206,6 +214,14 @@ public class AutoResult {
             }
         }
         return 0;
+    }
+
+    public Double doubleValue(String field) {
+        ModelObject object = this.getSingle();
+        if (object != null) {
+            object.getDouble(field);
+        }
+        return null;
     }
 
     public int intValue() {
@@ -229,6 +245,14 @@ public class AutoResult {
         return 0;
     }
 
+    public Integer intValue(String field) {
+        ModelObject object = this.getSingle();
+        if (object != null) {
+            object.getInteger(field);
+        }
+        return null;
+    }
+
     public String stringValue() {
         if (value != null && value instanceof String) {
             return (String) value;
@@ -238,6 +262,14 @@ public class AutoResult {
                 if (v instanceof String) return (String) v;
                 else return "" + v;
             }
+        }
+        return null;
+    }
+
+    public String stringValue(String field) {
+        ModelObject object = this.getSingle();
+        if (object != null) {
+            object.getString(field);
         }
         return null;
     }
