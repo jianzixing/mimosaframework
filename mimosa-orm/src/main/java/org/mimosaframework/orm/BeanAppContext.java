@@ -6,6 +6,7 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.*;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.*;
 
 import java.sql.SQLException;
@@ -16,6 +17,10 @@ public class BeanAppContext implements Context {
     private final NormalContextContainer contextValues;
     private SessionFactoryBuilder sessionFactoryBuilder = null;
     private ConfigBuilder configBuilder = null;
+
+    static {
+        LanguageMessageFactory.register();
+    }
 
     public BeanAppContext() {
         this.contextValues = new NormalContextContainer();

@@ -356,7 +356,10 @@ replaces：将url前缀的某些单词替换成想要的单词，比如 Web;w �
 
 ## 六、历史版本
 
-版本 v3.4.0 (待更新)
+版本 v3.4.1 (待更新)
+* 增加日志输出国际化
+
+版本 v3.4.0
 * 增加Session拦截器AbstractInterceptSession类，可以自主控制Session执行。
 Spring可以使用属性setInterceptSession，xml可以使用标签interceptSession。
 * Query接口增加了getSubjoins方法，方便增加查询条件。(返回List增删无效)
