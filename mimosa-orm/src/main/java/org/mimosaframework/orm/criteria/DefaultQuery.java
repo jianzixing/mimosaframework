@@ -605,6 +605,30 @@ public class DefaultQuery<T> implements Query<T> {
         return slaveName;
     }
 
+    public void setLogicWraps(LogicWraps<Filter> logicWraps) {
+        this.logicWraps = logicWraps;
+    }
+
+    public void setFields(Map<Class, List<String>> fields) {
+        this.fields = fields;
+    }
+
+    public void setExcludes(Map<Class, List<String>> excludes) {
+        this.excludes = excludes;
+    }
+
+    public void setLimit(Limit limit) {
+        this.limit = limit;
+    }
+    
+    public void setMaster(boolean master) {
+        isMaster = master;
+    }
+
+    public void setSlaveName(String slaveName) {
+        this.slaveName = slaveName;
+    }
+
     @Override
     public Query limit(long start, long count) {
         Limit limit = new Limit(this);

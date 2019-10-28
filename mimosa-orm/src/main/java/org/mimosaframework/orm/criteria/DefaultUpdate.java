@@ -16,6 +16,9 @@ public class DefaultUpdate implements Update {
     private Session session;
     private BeanSession beanSession;
 
+    public DefaultUpdate() {
+    }
+
     public DefaultUpdate(Class tableClass) {
         this.tableClass = tableClass;
     }
