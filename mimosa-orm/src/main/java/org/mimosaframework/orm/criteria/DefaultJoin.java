@@ -302,4 +302,24 @@ public class DefaultJoin implements Join {
     public Set<Join> getChildJoin() {
         return childJoin;
     }
+
+    public Join clone() {
+        DefaultJoin join = new DefaultJoin();
+        join.valueFilters = valueFilters;
+        join.onFilters = onFilters;
+        join.aliasName = aliasName;
+        join.query = query;
+        join.table = table;
+        join.mainTable = mainTable;
+        join.isMulti = isMulti;
+        join.parentJoin = parentJoin;
+        join.childJoin = childJoin;
+        join.mainClassAliasName = mainClassAliasName;
+        join.tableClassAliasName = tableClassAliasName;
+        return join;
+    }
+
+    public void setParentJoin(Join parentJoin) {
+        this.parentJoin = parentJoin;
+    }
 }

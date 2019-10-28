@@ -1,12 +1,9 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.criteria.DefaultJoin;
 import org.mimosaframework.orm.criteria.DefaultQuery;
-import org.mimosaframework.orm.i18n.LanguageMessageDefault;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -17,13 +14,11 @@ public final class SessionUtils {
 
     public static void clearModelObject(MappingGlobalWrapper mappingDatabaseWrapper, Class c, ModelObject object) {
         if (c == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SessionUtils.class, "not_set_mapping_table"));
+            throw new IllegalArgumentException("没有设置要操作的映射类");
         }
         MappingTable tableFromClass = mappingDatabaseWrapper.getMappingTable(c);
         if (tableFromClass == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SessionUtils.class, "not_found_mapping_table", c.getName()));
+            throw new IllegalArgumentException("没有找到对应的关系映射[" + c.getName() + "]");
         }
 
         // 不能清空，需要NULL和空字符串更新和添加
@@ -116,41 +111,44 @@ public final class SessionUtils {
         if (innerJoins != null) totalAliasTables += innerJoins.size();
         if (leftJoins != null) totalAliasTables += leftJoins.size();
 
-        MappingTable table = mappingGlobalWrapper.getDatabaseTable(dataSource, databaseTableName);
+        MappingTable table = mappingGlobalWrapper.getMappingDatabaseTable(dataSource, databaseTableName);
         if (table != null) {
             Map<Object, MappingTable> tables = new LinkedHashMap<>(totalAliasTables + 1);
             tables.put(query, table);
             if (innerJoins != null) {
                 for (Object join : innerJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
-                    if (joinTable != null) {
-                        tables.put(join, joinTable);
+                    List<MappingTable> joinTable = mappingGlobalWrapper.getMappingDatabaseTable(j.getTable());
+                    if (joinTable != null && joinTable.size() > 0) {
+                        tables.put(join, joinTable.get(0));
                     } else {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                SessionUtils.class, "not_found_db_table", j.getTable().getSimpleName()));
+                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
                     }
                 }
                 for (Object join : leftJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
-                    if (joinTable != null) {
-                        tables.put(join, joinTable);
+                    List<MappingTable> joinTable = mappingGlobalWrapper.getMappingDatabaseTable(j.getTable());
+                    if (joinTable != null && joinTable.size() > 0) {
+                        tables.put(join, joinTable.get(0));
                     } else {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                SessionUtils.class, "not_found_db_table", j.getTable().getSimpleName()));
+                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
                     }
                 }
             }
 
             return tables;
         } else {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SessionUtils.class, "not_found_db_table", c.getSimpleName()));
+            throw new IllegalArgumentException("没有找到和" + c.getSimpleName() + "对应的数据库映射表");
         }
     }
 
     public static Map<Object, MappingTable> getUsedMappingTable(MappingGlobalWrapper mappingGlobalWrapper, DefaultQuery query) {
+        return getUsedMappingTable(mappingGlobalWrapper, query, null);
+    }
+
+    public static Map<Object, MappingTable> getUsedMappingTable(MappingGlobalWrapper mappingGlobalWrapper,
+                                                                DefaultQuery query,
+                                                                Map<Object, String> aliasNames) {
         Class c = query.getTableClass();
         List innerJoins = query.getInnerJoin();
         List leftJoins = query.getLeftJoin();
@@ -159,37 +157,40 @@ public final class SessionUtils {
         if (innerJoins != null) totalAliasTables += innerJoins.size();
         if (leftJoins != null) totalAliasTables += leftJoins.size();
 
-        MappingTable table = mappingGlobalWrapper.getMappingTable(c);
+        MappingTable table = mappingGlobalWrapper.getMappingDatabaseTable(c,
+                aliasNames != null ? aliasNames.get(query) : null);
+
         if (table != null) {
             Map<Object, MappingTable> tables = new LinkedHashMap<>(totalAliasTables + 1);
             tables.put(query, table);
             if (innerJoins != null) {
                 for (Object join : innerJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
+                    MappingTable joinTable = mappingGlobalWrapper.getMappingDatabaseTable(j.getTable(),
+                            aliasNames != null ? aliasNames.get(join) : null);
+
                     if (joinTable != null) {
                         tables.put(join, joinTable);
                     } else {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                SessionUtils.class, "not_found_db_table", j.getTable().getSimpleName()));
+                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
                     }
                 }
                 for (Object join : leftJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
+                    MappingTable joinTable = mappingGlobalWrapper.getMappingDatabaseTable(j.getTable(),
+                            aliasNames != null ? aliasNames.get(join) : null);
+
                     if (joinTable != null) {
                         tables.put(join, joinTable);
                     } else {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                SessionUtils.class, "not_found_db_table", j.getTable().getSimpleName()));
+                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
                     }
                 }
             }
 
             return tables;
         } else {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SessionUtils.class, "not_found_db_table", c.getSimpleName()));
+            throw new IllegalArgumentException("没有找到和" + c.getSimpleName() + "对应的数据库映射表");
         }
     }
 
@@ -217,5 +218,21 @@ public final class SessionUtils {
                 }
             }
         }
+    }
+
+    public static boolean isEqual(Object obj1, Object obj2) {
+        if (obj1 == null && obj2 == null) {
+            return true;
+        }
+
+        if (obj1 != null && obj1.equals(obj2)) {
+            return true;
+        }
+
+        if (obj1 == obj2) {
+            return true;
+        }
+
+        return false;
     }
 }

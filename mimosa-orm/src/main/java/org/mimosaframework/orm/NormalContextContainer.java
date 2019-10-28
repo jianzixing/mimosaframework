@@ -21,34 +21,34 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NormalContextContainer implements ContextContainer {
     private static final Log logger = LogFactory.getLog(NormalContextContainer.class);
-    private ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
-    private List<MimosaDataSource> globalDataSource = new CopyOnWriteArrayList<>();
-    private List<FactoryBuilder> factoryBuilderList = new CopyOnWriteArrayList<>();
-    private AbstractInterceptSession interceptSession;
+    protected ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
+    protected List<MimosaDataSource> globalDataSource = new CopyOnWriteArrayList<>();
+    protected List<FactoryBuilder> factoryBuilderList = new CopyOnWriteArrayList<>();
+    protected AbstractInterceptSession interceptSession;
 
-    private String applicationName;
-    private String applicationDetail;
-    private MappingLevel mappingLevel;
+    protected String applicationName;
+    protected String applicationDetail;
+    protected MappingLevel mappingLevel;
 
-    private Set<Class> resolvers;
-    private Set<MappingTable> mappingTables;
-    private MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
-    private MappingNamedConvert convert;
+    protected Set<Class> resolvers;
+    protected Set<MappingTable> mappingTables;
+    protected MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
+    protected MappingNamedConvert convert;
 
-    private ActionDataSourceWrapper defaultDataSource;
+    protected ActionDataSourceWrapper defaultDataSource;
 
-    private List<? extends IDStrategy> idStrategies;
-    private boolean isShowSQL = false;
-    private List<String> mappers;
-    private SQLDefinedLoader definedLoader;
+    protected List<? extends IDStrategy> idStrategies;
+    protected boolean isShowSQL = false;
+    protected List<String> mappers;
+    protected SQLDefinedLoader definedLoader;
 
     /**
      * True : 在选择从库时如果没有从库则选择主库,防止报错
      * False : 在选择从库时如果没有从库返回为空直接报错
      */
-    private boolean isIgnoreEmptySlave = true;
+    protected boolean isIgnoreEmptySlave = true;
 
-    private Context context;
+    protected Context context;
 
     public MappingLevel getMappingLevel() {
         if (mappingLevel == null) {
@@ -295,6 +295,10 @@ public class NormalContextContainer implements ContextContainer {
 
     public Set<MappingTable> getMappingTables() {
         return this.mappingTables;
+    }
+
+    public void setMappingTables(Set<MappingTable> mappingTables) {
+        this.mappingTables = mappingTables;
     }
 
     /**
