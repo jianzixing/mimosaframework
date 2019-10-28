@@ -20,6 +20,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StrategyFactory {
     private static final Map<Class, IDStrategy> strategys = new ConcurrentHashMap<>();
 
+    public static void applyStrategy(ContextContainer values,
+                                     MappingTable table,
+                                     ModelObject object,
+                                     Session session) throws StrategyException {
+        applyStrategy(values, table, object, session);
+    }
+
     /**
      * MappingTable 是Class的映射类，不包含数据库字段
      *
@@ -27,13 +34,23 @@ public class StrategyFactory {
      * @param table
      * @param object
      */
-    public static void applyStrategy(ContextContainer values, MappingTable table, ModelObject object, Session session) throws StrategyException {
+    public static void applyStrategy(ContextContainer values,
+                                     MappingTable table,
+                                     ModelObject object,
+                                     Session session,
+                                     Class<? extends IDStrategy> defaultAutoIncr) throws StrategyException {
         Set<MappingField> fields = table.getMappingFields();
         for (MappingField f : fields) {
             Column column = f.getMappingFieldAnnotation();
             if (column != null) {
                 // 如果表没有分表则使用数据库默认规则
                 Class<? extends IDStrategy> c = column.strategy();
+
+                // 如果传入默认策略使用默认的数据库ID自增策略
+                if (c == AutoIncrementStrategy.class
+                        && defaultAutoIncr != null) {
+                    c = defaultAutoIncr;
+                }
 
                 if (c != AutoIncrementStrategy.class && c != IDStrategy.class) {
                     if (strategys.get(c) == null) {
