@@ -1,7 +1,5 @@
 package org.mimosaframework.orm.criteria;
 
-import java.util.List;
-
 public class LogicLinked implements Filter {
     private LogicWraps<Filter> logicWraps;
 
@@ -60,6 +58,10 @@ public class LogicLinked implements Filter {
         }
         this.logicWraps.addLastLink(lw, CriteriaLogic.OR);
         return this;
+    }
+
+    public void setLogicWraps(LogicWraps<Filter> logicWraps) {
+        this.logicWraps = logicWraps;
     }
 
     @Override

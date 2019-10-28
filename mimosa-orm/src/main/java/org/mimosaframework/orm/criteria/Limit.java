@@ -45,4 +45,12 @@ public class Limit implements LimitInterface {
         this.limit = count;
         return this;
     }
+
+    @Override
+    public Limit clone() {
+        Limit limit = new Limit();
+        limit.start = this.start;
+        limit.limit = this.limit;
+        return limit;
+    }
 }

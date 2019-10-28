@@ -15,6 +15,9 @@ public class DefaultFunction implements Function {
     private List<Order> orderBy = null;
     private List childGroupBy = null;
 
+    public DefaultFunction() {
+    }
+
     public DefaultFunction(Class tableClass) {
         this.tableClass = tableClass;
     }
@@ -291,5 +294,37 @@ public class DefaultFunction implements Function {
 
     public List getChildGroupBy() {
         return childGroupBy;
+    }
+
+    public void setFuns(List<FunctionField> funs) {
+        this.funs = funs;
+    }
+
+    public void setTableClass(Class tableClass) {
+        this.tableClass = tableClass;
+    }
+
+    public void setMaster(boolean master) {
+        isMaster = master;
+    }
+
+    public void setSlaveName(String slaveName) {
+        this.slaveName = slaveName;
+    }
+
+    public void setLogicWraps(LogicWraps<Filter> logicWraps) {
+        this.logicWraps = logicWraps;
+    }
+
+    public void setGroupBy(List groupBy) {
+        this.groupBy = groupBy;
+    }
+
+    public void setOrderBy(List<Order> orderBy) {
+        this.orderBy = orderBy;
+    }
+
+    public void setChildGroupBy(List childGroupBy) {
+        this.childGroupBy = childGroupBy;
     }
 }

@@ -70,6 +70,26 @@ public class DefaultFilter implements Filter {
         return symbol;
     }
 
+    public void setKey(Object key) {
+        this.key = key;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
+    public void setStartValue(Object startValue) {
+        this.startValue = startValue;
+    }
+
+    public void setEndValue(Object endValue) {
+        this.endValue = endValue;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
     @Override
     public Query query() {
         return this.query;

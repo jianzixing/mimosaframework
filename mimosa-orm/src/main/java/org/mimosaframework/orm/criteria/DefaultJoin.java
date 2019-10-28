@@ -93,6 +93,27 @@ public class DefaultJoin implements Join {
         return aliasName;
     }
 
+
+    public void setValueFilters(List<Filter> valueFilters) {
+        this.valueFilters = valueFilters;
+    }
+
+    public void setOnFilters(List<OnField> onFilters) {
+        this.onFilters = onFilters;
+    }
+
+    public void setAliasName(String aliasName) {
+        this.aliasName = aliasName;
+    }
+
+    public void setTable(Class<?> table) {
+        this.table = table;
+    }
+
+    public void setChildJoin(Set<Join> childJoin) {
+        this.childJoin = childJoin;
+    }
+
     public Join getParentJoin() {
         return parentJoin;
     }
