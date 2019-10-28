@@ -20,7 +20,7 @@ public class SessionAgency implements Session {
     }
 
     private Session buildRealSession(ContextContainer context) {
-        return new DefaultSession(context);
+        return context.buildSession();
     }
 
     @Override

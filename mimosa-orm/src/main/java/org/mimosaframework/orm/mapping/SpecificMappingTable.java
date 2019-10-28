@@ -267,4 +267,28 @@ public class SpecificMappingTable implements MappingTable {
     public void setSourceMappingTableName(String sourceMappingTableName) {
         this.sourceMappingTableName = sourceMappingTableName;
     }
+
+    public Set<MappingIndex> getMappingIndexs() {
+        return mappingIndexs;
+    }
+
+    public void setMappingIndexs(Set<MappingIndex> mappingIndexs) {
+        this.mappingIndexs = mappingIndexs;
+    }
+
+    public void setMappingFields(Map<String, MappingField> mappingFields) {
+        this.mappingFields = mappingFields;
+    }
+
+    public Map<String, MappingField> getMappingFieldsMap() {
+        return this.mappingFields;
+    }
+
+    public void setMappingColumns(Map<String, MappingField> mappingColumns) {
+        this.mappingColumns = mappingColumns;
+    }
+
+    public Map<String, MappingField> getMappingColumnsMap() {
+        return this.mappingFields;
+    }
 }

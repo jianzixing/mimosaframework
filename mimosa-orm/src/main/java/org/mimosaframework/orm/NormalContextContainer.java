@@ -376,6 +376,11 @@ public class NormalContextContainer implements ContextContainer {
         return this.interceptSession;
     }
 
+    @Override
+    public Session buildSession() {
+        return new DefaultSession(this);
+    }
+
     public void setInterceptSession(AbstractInterceptSession interceptSession) {
         this.interceptSession = interceptSession;
     }

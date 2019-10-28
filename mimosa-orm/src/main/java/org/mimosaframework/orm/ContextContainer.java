@@ -56,4 +56,6 @@ public interface ContextContainer {
     void clearMimosaDataSources();
 
     AbstractInterceptSession getInterceptSession();
+
+    Session buildSession();
 }
