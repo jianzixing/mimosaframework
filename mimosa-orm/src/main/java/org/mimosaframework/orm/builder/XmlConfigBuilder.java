@@ -75,7 +75,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         }
     }
 
-    private void parseXml() throws ParserConfigurationException, IOException, SAXException, ContextException {
+    protected void parseXml() throws ParserConfigurationException, IOException, SAXException, ContextException {
         db = documentBuilderFactory.newDocumentBuilder();
         document = db.parse(inputSource);
         root = document.getElementsByTagName(DEFAULT_ROOT);
@@ -137,6 +137,28 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         }
 
 
+        this.parseXmlWrappers();
+
+        for (int i = 0; i < root.getLength(); i++) {
+            Node node = root.item(i);
+            NodeList levelOneList = node.getChildNodes();
+
+            // 后初始化,防止配置文件依赖报错
+            for (int j = 0; j < levelOneList.getLength(); j++) {
+                Node nodeOne = levelOneList.item(j);
+                // 在解析全局数据库链接配置(不管是单机还是集群只要没有单独配置链接就使用这个)
+                if (nodeOne.getNodeName().equalsIgnoreCase("datasource")) {
+                    mimosaDataSource = this.parseXmlDataSourceNode(nodeOne);
+                }
+
+                if (nodeOne.getNodeName().equalsIgnoreCase("strategies")) {
+                    this.parseXmlStrategy(nodeOne);
+                }
+            }
+        }
+    }
+
+    protected void parseXmlWrappers() throws ContextException {
         for (int i = 0; i < root.getLength(); i++) {
             Node node = root.item(i);
             NodeList levelOneList = node.getChildNodes();
@@ -189,27 +211,9 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                 }
             }
         }
-
-        for (int i = 0; i < root.getLength(); i++) {
-            Node node = root.item(i);
-            NodeList levelOneList = node.getChildNodes();
-
-            // 后初始化,防止配置文件依赖报错
-            for (int j = 0; j < levelOneList.getLength(); j++) {
-                Node nodeOne = levelOneList.item(j);
-                // 在解析全局数据库链接配置(不管是单机还是集群只要没有单独配置链接就使用这个)
-                if (nodeOne.getNodeName().equalsIgnoreCase("datasource")) {
-                    mimosaDataSource = this.parseXmlDataSourceNode(nodeOne);
-                }
-
-                if (nodeOne.getNodeName().equalsIgnoreCase("strategies")) {
-                    this.parseXmlStrategy(nodeOne);
-                }
-            }
-        }
     }
 
-    private void parseXmlStrategy(Node nodeOne) throws ContextException {
+    protected void parseXmlStrategy(Node nodeOne) throws ContextException {
         NodeList list = nodeOne.getChildNodes();
         for (int i = 0; i < list.getLength(); i++) {
             Node node = list.item(i);
@@ -249,7 +253,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         }
     }
 
-    private Map<String, String> getNodeByProperties(Node ds) {
+    protected Map<String, String> getNodeByProperties(Node ds) {
         NodeList properties = ds.getChildNodes();
         Map<String, String> map = new LinkedHashMap<String, String>();
         for (int p = 0; p < properties.getLength(); p++) {
@@ -270,7 +274,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         return map;
     }
 
-    private void initXmlDataSources(Map<String, Map<String, String>> array) throws ContextException {
+    protected void initXmlDataSources(Map<String, Map<String, String>> array) throws ContextException {
         if (array.size() > 0) {
             for (Map.Entry<String, Map<String, String>> map : array.entrySet()) {
                 DataSource ds = this.getDataSourceFromProperties(map.getValue());
@@ -281,13 +285,13 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         }
     }
 
-    private DataSource getDataSourceFromProperties(Node node, StringHolder holder) throws ContextException {
+    protected DataSource getDataSourceFromProperties(Node node, StringHolder holder) throws ContextException {
         Map<String, String> map = this.getNodeByProperties(node);
         if (holder != null) holder.setName(map.get("name"));
         return this.getDataSourceFromProperties(map);
     }
 
-    private String parseXmlDataSourceName(Node node) throws ContextException {
+    protected String parseXmlDataSourceName(Node node) throws ContextException {
         NamedNodeMap attribute = node.getAttributes();
         if (attribute != null) {
             Node wrapper = attribute.getNamedItem("wrapper");
@@ -318,7 +322,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         return null;
     }
 
-    private MimosaDataSource parseXmlDataSourceNode(Node node) throws ContextException {
+    protected MimosaDataSource parseXmlDataSourceNode(Node node) throws ContextException {
 
         // 先找子元素如果当前元素不是datasource的话
         if (!node.getNodeName().equalsIgnoreCase("datasource")) {
@@ -479,7 +483,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
      * @param name
      * @return
      */
-    private String getXmlNodeAny(Node node, String name) {
+    protected String getXmlNodeAny(Node node, String name) {
         NamedNodeMap attr = node.getAttributes();
         if (attr != null && attr.getNamedItem(name) != null) {
             return attr.getNamedItem(name).getNodeValue().trim();
@@ -712,7 +716,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
         return mps;
     }
 
-    private String getAttrByName(Node node, String name) {
+    protected String getAttrByName(Node node, String name) {
         NamedNodeMap map = node.getAttributes();
         if (map != null) {
             Node attr = map.getNamedItem(name);
