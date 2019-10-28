@@ -15,7 +15,7 @@ import java.util.*;
 
 public class BeanAppContext implements Context {
     private static final Log logger = LogFactory.getLog("init");
-    private final NormalContextContainer contextValues;
+    protected final NormalContextContainer contextValues;
     private SessionFactoryBuilder sessionFactoryBuilder = null;
     private ConfigBuilder configBuilder = null;
 
@@ -25,6 +25,10 @@ public class BeanAppContext implements Context {
 
     public BeanAppContext() {
         this.contextValues = new NormalContextContainer();
+    }
+
+    public BeanAppContext(NormalContextContainer contextValues) {
+        this.contextValues = contextValues;
     }
 
     public BeanAppContext(ConfigBuilder configBuilder) throws ContextException {
@@ -38,7 +42,7 @@ public class BeanAppContext implements Context {
         this.init();
     }
 
-    private void init() throws ContextException {
+    protected void init() throws ContextException {
         contextValues.setContext(this);
 
         {
@@ -139,7 +143,7 @@ public class BeanAppContext implements Context {
         return this.sessionFactoryBuilder;
     }
 
-    private void checkDBMapping() throws ContextException {
+    protected void checkDBMapping() throws ContextException {
 
         try {
             MappingTableWrapper tableWrapper = new MappingTableWrapper(this.contextValues.getMappingTables());

@@ -30,36 +30,35 @@ import java.util.Set;
  * @author yangankang
  */
 public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements InitializingBean, ApplicationContextAware, SpringContextHolder, SessionFactory {
-    private BeanAppContext context;
+    protected BeanAppContext context;
 
-    private ApplicationContext applicationContext;
-    private SessionFactoryBuilder sessionFactoryBuilder;
-    private SessionFactory sessionFactory = null;
-    private AbstractInterceptSession interceptSession;
+    protected ApplicationContext applicationContext;
+    protected SessionFactoryBuilder sessionFactoryBuilder;
+    protected SessionFactory sessionFactory = null;
+    protected AbstractInterceptSession interceptSession;
 
-    private ApplicationSetting applicationSetting = new ApplicationSetting();
-    private BasicSetting basicSetting = new BasicSetting();
-    private CenterConfigSetting centerConfigSetting = null;
-    private MimosaDataSource defaultDataSource = null;
-    private Set<Class> resolvers = null;
-    private List<MimosaDataSource> dataSources = new ArrayList<>();
+    protected ApplicationSetting applicationSetting = new ApplicationSetting();
+    protected BasicSetting basicSetting = new BasicSetting();
+    protected CenterConfigSetting centerConfigSetting = null;
+    protected MimosaDataSource defaultDataSource = null;
+    protected Set<Class> resolvers = null;
+    protected List<MimosaDataSource> dataSources = new ArrayList<>();
 
-    private String applicationName;
-    private String applicationDetail;
-    private boolean isShowSQL;
-    private MappingNamedConvert convert;
-    private String convertType;
-    private boolean isCluster;
-    private String scanPackage;
-    private Set<String> mappingClasses;
-    private DataSource dataSource;
-    private MappingLevel mappingLevel;
-    private Boolean ignoreEmptySlave;
+    protected String applicationName;
+    protected String applicationDetail;
+    protected boolean isShowSQL;
+    protected MappingNamedConvert convert;
+    protected String convertType;
+    protected String scanPackage;
+    protected Set<String> mappingClasses;
+    protected DataSource dataSource;
+    protected MappingLevel mappingLevel;
+    protected Boolean ignoreEmptySlave;
 
-    private String mapper;
-    private List<String> mappers;
-    private List<FactoryBuilder> auxFactoryBuilder;
-    private List<? extends IDStrategy> strategies;
+    protected String mapper;
+    protected List<String> mappers;
+    protected List<FactoryBuilder> auxFactoryBuilder;
+    protected List<? extends IDStrategy> strategies;
 
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;

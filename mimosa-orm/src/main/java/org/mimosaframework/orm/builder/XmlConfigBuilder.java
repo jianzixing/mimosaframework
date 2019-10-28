@@ -24,28 +24,28 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class XmlConfigBuilder extends AbstractConfigBuilder {
-    private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-    private static final String DEFAULT_ROOT = "mimosa";
-    private DocumentBuilder db = null;
-    private Document document = null;
-    private NodeList root = null;
-    private ApplicationSetting applicationInfo = null;
-    private BasicSetting basicInfo = new BasicSetting();
-    private CenterConfigSetting configCenterInfo = null;
+    protected DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+    protected static final String DEFAULT_ROOT = "mimosa";
+    protected DocumentBuilder db = null;
+    protected Document document = null;
+    protected NodeList root = null;
+    protected ApplicationSetting applicationInfo = null;
+    protected BasicSetting basicInfo = new BasicSetting();
+    protected CenterConfigSetting configCenterInfo = null;
 
-    private Set<Class> resolvers;
-    private List<IDStrategy> strategies;
+    protected Set<Class> resolvers;
+    protected List<IDStrategy> strategies;
 
-    private Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
-    private Map<String, MimosaDataSource> wrappers = new HashMap<String, MimosaDataSource>();
-    private InputSource inputSource;
+    protected Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
+    protected Map<String, MimosaDataSource> wrappers = new HashMap<String, MimosaDataSource>();
+    protected InputSource inputSource;
 
-    private String mappingClassPackage;
-    private Set<String> additionMappingClass;
-    private MimosaDataSource mimosaDataSource;
-    private boolean isShowSQL = false;
-    private boolean isInitBasic = false;
-    private String mappingLevel;
+    protected String mappingClassPackage;
+    protected Set<String> additionMappingClass;
+    protected MimosaDataSource mimosaDataSource;
+    protected boolean isShowSQL = false;
+    protected boolean isInitBasic = false;
+    protected String mappingLevel;
 
     public XmlConfigBuilder(InputStream inputStream) throws ContextException {
         this(inputStream != null ? new InputSource(inputStream) : null);
