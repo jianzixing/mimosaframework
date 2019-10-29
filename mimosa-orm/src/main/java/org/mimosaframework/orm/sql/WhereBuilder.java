@@ -138,4 +138,20 @@ public class WhereBuilder {
         whereItems.add(item);
         return this;
     }
+
+    public SelectBuilder getSelectBuilder() {
+        return selectBuilder;
+    }
+
+    public WhereType getWhereType() {
+        return whereType;
+    }
+
+    public List<Object> getWhereItems() {
+        return whereItems;
+    }
+
+    public CriteriaLogic getLogic() {
+        return logic;
+    }
 }

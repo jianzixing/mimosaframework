@@ -8,6 +8,7 @@ import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.sql.*;
 
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -1525,5 +1526,289 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
     protected boolean hasInnerJoin(DefaultQuery query) {
         return !(query.getInnerJoin() == null || query.getInnerJoin().size() == 0);
+    }
+
+    @Override
+    public List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException {
+        SQLBuilder sqlBuilder = this.createSQLBuilder();
+        this.transformationSQLSelect(builder, sqlBuilder, mappingTables);
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, sqlBuilder));
+        return objects;
+    }
+
+    protected void transformationSQLSelect(SelectBuilder builder, SQLBuilder sqlBuilder, Map<Class, MappingTable> mappingTables) {
+        sqlBuilder.SELECT();
+        Map<Class, List<Object>> froms = builder.getFroms();
+        List<JoinBuilder> joinBuilders = builder.getJoinBuilders();
+        WhereBuilder whereBuilder = builder.getWhereBuilder();
+        List<Object> restricts = builder.getRestrict();
+
+        int count = 1;
+        Map<Class, String> aliasNames = new HashMap<>();
+        Set<Class> classes = builder.getAllTables();
+        Class defaultTableClass = classes.iterator().next();
+
+        for (Class c : classes) {
+            aliasNames.put(c, "t" + (count));
+            count++;
+        }
+
+        Iterator<Map.Entry<Class, List<Object>>> fromIterator = froms.entrySet().iterator();
+        while (fromIterator.hasNext()) {
+            Map.Entry<Class, List<Object>> entry = fromIterator.next();
+            Class tableClass = entry.getKey();
+            List<Object> fields = entry.getValue();
+
+            MappingTable mappingTable = mappingTables.get(tableClass);
+            String tableAliasName = aliasNames.get(tableClass);
+
+            if (fields != null && fields.size() > 0) {
+                Iterator iteratorFields = fields.iterator();
+                while (iteratorFields.hasNext()) {
+                    Object field = iteratorFields.next();
+                    if (field instanceof FunBuilder) {
+                        Class funTableClass = ((FunBuilder) field).getTable();
+                        Object funField = ((FunBuilder) field).getField();
+                        FunType funType = ((FunBuilder) field).getFunType();
+                        if (funTableClass == null) funTableClass = tableClass;
+                        String funTableAliasName = aliasNames.get(funTableClass);
+                        MappingTable funTable = mappingTables.get(funTableClass);
+                        MappingField mappingField = funTable.getMappingFieldByName(String.valueOf(funField));
+                        if (mappingField != null) {
+                            sqlBuilder.addString(funType.name())
+                                    .addParenthesisStart()
+                                    .addTableField(funTableAliasName, mappingField.getMappingColumnName())
+                                    .addParenthesisEnd();
+                        } else {
+                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                    AbstractDatabasePorter.class, "not_field_name", funTable.getMappingTableName(),
+                                    String.valueOf(funTable)));
+                        }
+                    } else if (field instanceof FieldBuilder) {
+                        Object fieldReal = ((FieldBuilder) field).getField();
+                        String fieldAliasName = ((FieldBuilder) field).getAliasName();
+                        MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(fieldReal));
+                        if (mappingField != null) {
+                            sqlBuilder.addTableField(tableAliasName, mappingField.getMappingColumnName())
+                                    .AS().addWrapString(fieldAliasName);
+                        } else {
+                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                    AbstractDatabasePorter.class, "not_field_name", mappingTable.getMappingTableName(),
+                                    String.valueOf(field)));
+                        }
+                    } else {
+                        MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(field));
+                        if (mappingField != null) {
+                            sqlBuilder.addTableField(tableAliasName, mappingField.getMappingColumnName());
+                        } else {
+                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                    AbstractDatabasePorter.class, "not_field_name", mappingTable.getMappingTableName(),
+                                    String.valueOf(field)));
+                        }
+                    }
+
+                    if (iteratorFields.hasNext()) {
+                        sqlBuilder.addSplit();
+                    }
+                }
+
+                if (fromIterator.hasNext()) {
+                    sqlBuilder.addSplit();
+                }
+            }
+        }
+
+        sqlBuilder.FROM();
+        fromIterator = froms.entrySet().iterator();
+        while (fromIterator.hasNext()) {
+            Map.Entry<Class, List<Object>> entry = fromIterator.next();
+            Class tableClass = entry.getKey();
+
+            MappingTable mappingTable = mappingTables.get(tableClass);
+            String tableAliasName = aliasNames.get(tableClass);
+
+            sqlBuilder.addString(mappingTable.getMappingTableName()).AS().addWrapString(tableAliasName);
+            if (fromIterator.hasNext()) {
+                sqlBuilder.addSplit();
+            }
+        }
+
+        if (joinBuilders != null && joinBuilders.size() > 0) {
+            for (JoinBuilder joinBuilder : joinBuilders) {
+                this.transformationSQLJoin(builder, aliasNames, joinBuilder, sqlBuilder, mappingTables);
+            }
+        }
+
+        if (whereBuilder != null) {
+            sqlBuilder.WHERE();
+            this.transformationSQLWhere(builder, aliasNames, whereBuilder, sqlBuilder, mappingTables);
+        }
+
+        if (restricts != null) {
+            for (Object restrict : restricts) {
+                if (restrict instanceof GroupBuilder) {
+                    Class groupTableClass = ((GroupBuilder) restrict).getTable();
+                    Object groupField = ((GroupBuilder) restrict).getField();
+                    if (groupTableClass == null) groupTableClass = defaultTableClass;
+                    MappingTable mappingTable = mappingTables.get(groupTableClass);
+                    String tableAliasName = aliasNames.get(groupTableClass);
+                    MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(groupField));
+
+                    sqlBuilder.GROUP().BY().addTableField(tableAliasName, mappingField.getMappingColumnName());
+                }
+                if (restrict instanceof HavingBuilder) {
+                    FunBuilder funBuilder = ((HavingBuilder) restrict).getFunBuilder();
+                    SymbolType symbol = ((HavingBuilder) restrict).getSymbol();
+                    Object value = ((HavingBuilder) restrict).getValue();
+
+                    Class funTableClass = funBuilder.getTable();
+                    Object funField = funBuilder.getField();
+                    FunType funType = funBuilder.getFunType();
+                    if (funTableClass == null) funTableClass = defaultTableClass;
+                    String funTableAliasName = aliasNames.get(funTableClass);
+                    MappingTable funTable = mappingTables.get(funTableClass);
+                    MappingField mappingField = funTable.getMappingFieldByName(String.valueOf(funField));
+
+                    if (mappingField != null) {
+                        sqlBuilder.addString(funType.name())
+                                .addParenthesisStart()
+                                .addTableField(funTableAliasName, mappingField.getMappingColumnName())
+                                .addParenthesisEnd();
+
+                        this.setSymbolType(symbol, sqlBuilder);
+                        sqlBuilder.addDataPlaceholder(funTableAliasName + "." + mappingField.getMappingColumnName(), value);
+                    } else {
+                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                AbstractDatabasePorter.class, "not_field_name", funTable.getMappingTableName(),
+                                String.valueOf(funField)));
+                    }
+                }
+                if (restrict instanceof OrderBuilder) {
+                    Class orderTableClass = ((OrderBuilder) restrict).getTable();
+                    OrderType orderType = ((OrderBuilder) restrict).getOrderType();
+                    Object field = ((OrderBuilder) restrict).getField();
+                    if (orderTableClass == null) orderTableClass = defaultTableClass;
+                    String orderTableAliasName = aliasNames.get(orderTableClass);
+                    MappingTable orderTable = mappingTables.get(orderTableClass);
+                    MappingField mappingField = orderTable.getMappingFieldByName(String.valueOf(field));
+                    sqlBuilder.ORDER().BY().addTableField(orderTableAliasName, mappingField.getMappingColumnName());
+                    if (orderType == OrderType.ASC) sqlBuilder.ASC();
+                    if (orderType == OrderType.DESC) sqlBuilder.DESC();
+                }
+                if (restrict instanceof LimitBuilder) {
+                    sqlBuilder.LIMIT().addString(((LimitBuilder) restrict).getStart() + "," + ((LimitBuilder) restrict).getLimit());
+                }
+            }
+        }
+    }
+
+    protected void transformationSQLJoin(SelectBuilder builder,
+                                         Map<Class, String> aliasNames,
+                                         JoinBuilder joinBuilder,
+                                         SQLBuilder sqlBuilder,
+                                         Map<Class, MappingTable> mappingTables) {
+        Class joinTable = joinBuilder.getTable();
+        JoinType joinType = joinBuilder.getJoinType();
+        WhereBuilder whereBuilder = joinBuilder.getWhereBuilder();
+        if (joinType == JoinType.LEFT_JOIN) {
+            sqlBuilder.LEFT().JOIN();
+        }
+        if (joinType == JoinType.INNER_JOIN) {
+            sqlBuilder.INNER().JOIN();
+        }
+        MappingTable mappingTable = mappingTables.get(joinTable);
+        String aliasName = aliasNames.get(joinTable);
+        sqlBuilder.addString(mappingTable.getMappingTableName())
+                .AS().addWrapString(aliasName);
+        sqlBuilder.ON();
+
+        this.transformationSQLWhere(builder, aliasNames, whereBuilder, sqlBuilder, mappingTables);
+    }
+
+    protected void transformationSQLWhere(SelectBuilder builder,
+                                          Map<Class, String> aliasNames,
+                                          WhereBuilder whereBuilder,
+                                          SQLBuilder sqlBuilder,
+                                          Map<Class, MappingTable> mappingTables) {
+        CriteriaLogic logic = whereBuilder.getLogic();
+        List<Object> whereItems = whereBuilder.getWhereItems();
+        WhereType whereType = whereBuilder.getWhereType();
+        Set<Class> classes = builder.getAllTables();
+        Class tableClass = classes.iterator().next();
+
+        if (logic != null) {
+            if (logic == CriteriaLogic.AND) sqlBuilder.AND();
+            if (logic == CriteriaLogic.OR) sqlBuilder.OR();
+        }
+
+        boolean isFirst = true;
+        for (Object whereItem : whereItems) {
+            if (whereItem instanceof WhereBuilder) {
+                if (!isFirst) {
+                    CriteriaLogic itemLogic = ((WhereBuilder) whereItem).getLogic();
+                    if (itemLogic == CriteriaLogic.AND) sqlBuilder.AND();
+                    if (itemLogic == CriteriaLogic.OR) sqlBuilder.OR();
+                }
+                sqlBuilder.addParenthesisStart();
+                this.transformationSQLWhere(builder, aliasNames, (WhereBuilder) whereItem, sqlBuilder, mappingTables);
+                sqlBuilder.addParenthesisEnd();
+            }
+            if (whereItem instanceof WhereItem) {
+                Object itemField = ((WhereItem) whereItem).getField();
+                CriteriaLogic itemLogic = ((WhereItem) whereItem).getLogic();
+                if (!isFirst) {
+                    if (itemLogic == CriteriaLogic.AND) sqlBuilder.AND();
+                    if (itemLogic == CriteriaLogic.OR) sqlBuilder.OR();
+                }
+                SymbolType itemSymbol = ((WhereItem) whereItem).getSymbol();
+                Object itemValue = ((WhereItem) whereItem).getValue();
+                Class tableLeft = ((WhereItem) whereItem).getTableLeft();
+                Class tableRight = ((WhereItem) whereItem).getTableRight();
+
+                String key = null;
+                if (tableLeft == null) {
+                    MappingTable mappingTable = mappingTables.get(tableClass);
+                    MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(itemField));
+                    sqlBuilder.addWrapString(mappingField.getMappingColumnName());
+                    key = mappingField.getMappingColumnName();
+                } else {
+                    MappingTable mappingTable = mappingTables.get(tableLeft);
+                    String aliasName = aliasNames.get(tableLeft);
+                    MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(itemField));
+                    sqlBuilder.addTableField(aliasName, mappingField.getMappingColumnName());
+                    key = aliasName + "." + mappingField.getMappingColumnName();
+                }
+
+                this.setSymbolType(itemSymbol, sqlBuilder);
+
+                if (tableRight == null) {
+                    if (itemValue instanceof SelectBuilder) {
+                        this.transformationSQLSelect((SelectBuilder) itemValue, sqlBuilder, mappingTables);
+                    } else {
+                        sqlBuilder.addDataPlaceholder(key, itemValue);
+                    }
+                } else {
+                    MappingTable mappingTable = mappingTables.get(tableRight);
+                    String aliasName = aliasNames.get(tableRight);
+                    MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(itemValue));
+                    sqlBuilder.addTableField(aliasName, mappingField.getMappingColumnName());
+                }
+            }
+            isFirst = false;
+        }
+    }
+
+    protected void setSymbolType(SymbolType symbol, SQLBuilder sqlBuilder) {
+        if (symbol == SymbolType.EQ) sqlBuilder.addString("=");
+        if (symbol == SymbolType.IN) sqlBuilder.IN();
+        if (symbol == SymbolType.NIN) sqlBuilder.NOT().IN();
+        if (symbol == SymbolType.LIKE) sqlBuilder.LIKE();
+        if (symbol == SymbolType.NE) sqlBuilder.addString("!=");
+        if (symbol == SymbolType.GT) sqlBuilder.addString(">");
+        if (symbol == SymbolType.GTE) sqlBuilder.addString(">=");
+        if (symbol == SymbolType.LT) sqlBuilder.addString("<");
+        if (symbol == SymbolType.LTE) sqlBuilder.addString("<=");
+        if (symbol == SymbolType.IS_NULL) sqlBuilder.IS().NULL();
+        if (symbol == SymbolType.NOT_NULL) sqlBuilder.NOT().NULL();
     }
 }

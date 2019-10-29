@@ -14,6 +14,8 @@ import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.scripting.BoundSql;
 import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
+import org.mimosaframework.orm.sql.Builder;
+import org.mimosaframework.orm.sql.SelectBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
 import org.mimosaframework.orm.utils.Clone;
 import org.mimosaframework.orm.utils.SessionUtils;
@@ -483,10 +485,12 @@ public class DefaultSession implements Session {
     @Override
     public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
         String sql = autonomously.getSql();
+        Builder builder = autonomously.getBuilder();
+
         boolean isMaster = autonomously.isMaster();
         String slaveName = autonomously.getSlaveName();
 
-        if (StringTools.isEmpty(sql)) {
+        if (StringTools.isEmpty(sql) && builder != null) {
             List<SQLAutonomously.LinkAutonomously> ds = autonomously.getDataSourceLinks();
             if (ds != null && ds.size() > 0) {
                 SQLAutonomously.LinkAutonomously link = ds.get(0);
@@ -496,15 +500,30 @@ public class DefaultSession implements Session {
                 slaveName = autonomously.getSlaveName(dsName);
             }
         }
-        if (StringTools.isNotEmpty(sql)) {
+        if (StringTools.isNotEmpty(sql) || builder != null) {
             wrapper.setMaster(isMaster);
             wrapper.setSlaveName(slaveName);
             PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
-            List<ModelObject> objects = platformWrapper.select(sql);
+            List<ModelObject> objects = null;
+            if (builder != null) {
+                if (builder instanceof SelectBuilder) {
+                    SelectBuilder selectBuilder = (SelectBuilder) builder;
+                    Set<Class> tables = selectBuilder.getAllTables();
+                    Map<Class, MappingTable> mappingTables = new HashMap<>();
+                    for (Class c : tables) {
+                        mappingTables.put(c, this.mappingGlobalWrapper.getMappingTable(c));
+                    }
+                    objects = platformWrapper.select(selectBuilder, mappingTables);
+                }
+            } else {
+                objects = platformWrapper.select(sql);
+            }
 
-            Map<String, List<ModelObject>> result = new LinkedHashMap<>(1);
-            result.put(MimosaDataSource.DEFAULT_DS_NAME, objects);
-            return new AutoResult(convert, result);
+            if (objects != null) {
+                Map<String, List<ModelObject>> result = new LinkedHashMap<>(1);
+                result.put(MimosaDataSource.DEFAULT_DS_NAME, objects);
+                return new AutoResult(convert, result);
+            }
         }
         return null;
     }

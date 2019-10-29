@@ -8,6 +8,7 @@ import org.mimosaframework.orm.criteria.DefaultQuery;
 import org.mimosaframework.orm.criteria.DefaultUpdate;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.sql.SelectBuilder;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -50,6 +51,8 @@ public interface PlatformWrapper {
     List<ModelObject> select(MappingTable table, DefaultFunction function) throws SQLException;
 
     List<ModelObject> select(String sql) throws SQLException;
+
+    List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException;
 
     long count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
 }

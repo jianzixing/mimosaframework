@@ -12,6 +12,7 @@ import org.mimosaframework.orm.mapping.SpecificMappingTable;
 import org.mimosaframework.orm.merge.DefaultModelMerge;
 import org.mimosaframework.orm.merge.MergeTree;
 import org.mimosaframework.orm.merge.ModelMerge;
+import org.mimosaframework.orm.sql.SelectBuilder;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -197,6 +198,11 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         builder.addSQLString(sql);
         List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, builder));
         return objects;
+    }
+
+    @Override
+    public List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException {
+        return this.databasePorter.select(builder, mappingTables);
     }
 
     @Override

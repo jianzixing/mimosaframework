@@ -69,4 +69,12 @@ public class JoinBuilder {
         this.whereBuilder.and(table1, field1, symbol, table2, field2);
         return this.whereBuilder;
     }
+
+    public WhereBuilder getWhereBuilder() {
+        return whereBuilder;
+    }
+
+    public Class getTable() {
+        return table;
+    }
 }

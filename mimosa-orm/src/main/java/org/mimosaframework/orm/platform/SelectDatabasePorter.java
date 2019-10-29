@@ -4,6 +4,7 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.criteria.DefaultFunction;
 import org.mimosaframework.orm.criteria.DefaultQuery;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.sql.SelectBuilder;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -32,4 +33,6 @@ public interface SelectDatabasePorter {
      * @return
      */
     List<ModelObject> selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
+
+    List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException;
 }

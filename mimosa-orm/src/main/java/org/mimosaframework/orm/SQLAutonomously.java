@@ -160,11 +160,15 @@ public class SQLAutonomously implements Serializable {
         return new LinkAutonomously();
     }
 
+    /**
+     * 不同数据源执行不同的SQL语句
+     */
     public static class LinkAutonomously {
         private String dataSourceName = MimosaDataSource.DEFAULT_DS_NAME;
         private boolean master = true;
         private String slaveDataSourceName;
         private String sql;
+        private Builder builder;
 
         public LinkAutonomously() {
         }
@@ -174,7 +178,6 @@ public class SQLAutonomously implements Serializable {
         }
 
         public LinkAutonomously(String sql, boolean master) {
-            this.dataSourceName = dataSourceName;
             this.master = master;
             this.sql = sql;
         }
@@ -195,6 +198,34 @@ public class SQLAutonomously implements Serializable {
             this.dataSourceName = dataSourceName;
             this.slaveDataSourceName = slaveDataSourceName;
             this.sql = sql;
+            this.master = false;
+        }
+
+        public LinkAutonomously(Builder builder) {
+            this.builder = builder;
+        }
+
+        public LinkAutonomously(Builder builder, boolean master) {
+            this.master = master;
+            this.builder = builder;
+        }
+
+
+        public LinkAutonomously(String dataSourceName, Builder builder) {
+            this.dataSourceName = dataSourceName;
+            this.builder = builder;
+        }
+
+        public LinkAutonomously(String dataSourceName, Builder builder, boolean master) {
+            this.dataSourceName = dataSourceName;
+            this.master = master;
+            this.builder = builder;
+        }
+
+        public LinkAutonomously(String dataSourceName, Builder builder, String slaveDataSourceName) {
+            this.dataSourceName = dataSourceName;
+            this.slaveDataSourceName = slaveDataSourceName;
+            this.builder = builder;
             this.master = false;
         }
 
@@ -226,8 +257,8 @@ public class SQLAutonomously implements Serializable {
             return sql;
         }
 
-        public void setSql(String sql) {
-            this.sql = sql;
+        public Builder getBuilder() {
+            return builder;
         }
     }
 }

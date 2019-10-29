@@ -198,6 +198,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         mapAbstractDatabasePorter.put("empty_data", "添加数据库的表或者数据是空的");
         mapAbstractDatabasePorter.put("not_found_table_field", "没有在表 %d 中找到字段 %d");
         mapAbstractDatabasePorter.put("order_not_in_table", "排序字段 %d 不在当前表中");
+        mapAbstractDatabasePorter.put("not_field_name", "在表 %d 中,没有找到字段 %d");
         messageWords.add(new MessageWords(PROJECT, AbstractDatabasePorter.class, mapAbstractDatabasePorter));
 
         // PlatformFactory
