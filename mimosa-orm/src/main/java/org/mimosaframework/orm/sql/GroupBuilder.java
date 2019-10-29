@@ -1,23 +1,25 @@
 package org.mimosaframework.orm.sql;
 
+import java.util.List;
+
 public class GroupBuilder {
     private Class table;
-    private Object field;
+    private List<Object> fields;
 
-    public GroupBuilder(Object field) {
-        this.field = field;
+    public GroupBuilder(List<Object> fields) {
+        this.fields = fields;
     }
 
-    public GroupBuilder(Class table, Object field) {
+    public GroupBuilder(Class table, List<Object> fields) {
         this.table = table;
-        this.field = field;
+        this.fields = fields;
     }
 
     public Class getTable() {
         return table;
     }
 
-    public Object getField() {
-        return field;
+    public List<Object> getFields() {
+        return fields;
     }
 }

@@ -7,8 +7,12 @@ import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.AutoResult;
 import org.mimosaframework.orm.BasicFunction;
+import org.mimosaframework.orm.SQLAutonomously;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.criteria.Criteria;
+import org.mimosaframework.orm.sql.Builder;
+import org.mimosaframework.orm.sql.FunType;
+import org.mimosaframework.orm.sql.SymbolType;
 import tables.*;
 
 import java.sql.SQLException;
@@ -617,5 +621,16 @@ public class SessionTemplateServiceTesting {
 
         List list = result.getNumbers();
         System.out.println("DISTINCT: " + list);
+    }
+
+    public static void testSQLBuilder(final SessionTemplate template) throws Exception {
+        AutoResult object = template.getAutonomously(
+                SQLAutonomously.newInstance(
+                        Builder.select(TableUser.class)
+                                .where(TableUser.class, TableUser.id, 61).selectBuilder()
+                                .innerJoin(TableOrder.class).where(TableUser.class, TableUser.id, TableOrder.class, TableOrder.userId).selectBuilder()
+                                .group(TableUser.class, TableUser.id)
+                                .having(FunType.COUNT, TableUser.class, TableUser.id, SymbolType.GT, 0)));
+        System.out.println(object.getObjects());
     }
 }

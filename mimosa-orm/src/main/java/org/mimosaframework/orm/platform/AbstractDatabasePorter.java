@@ -1531,9 +1531,41 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     @Override
     public List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException {
         SQLBuilder sqlBuilder = this.createSQLBuilder();
+        this.transformationSQLGroupByClear(builder);
         this.transformationSQLSelect(builder, sqlBuilder, mappingTables);
         List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, sqlBuilder));
         return objects;
+    }
+
+    /**
+     * 假如包含group by语句,则强制查询字段只有group by的字段
+     * 因为其它字段无效，可能导致某些数据库出错
+     *
+     * @param builder
+     */
+    protected void transformationSQLGroupByClear(SelectBuilder builder) {
+        Map<Class, List<Object>> froms = builder.getFroms();
+        Set<Class> classes = builder.getAllTables();
+        Class defaultTableClass = classes.iterator().next();
+
+        List<Object> restricts = builder.getRestrict();
+        if (restricts != null) {
+            Map<Class, List<Object>> newFroms = new LinkedHashMap<>();
+            for (Object restrict : restricts) {
+                if (restrict instanceof GroupBuilder) {
+                    Class groupTableClass = ((GroupBuilder) restrict).getTable();
+                    List<Object> groupFields = ((GroupBuilder) restrict).getFields();
+                    if (groupTableClass == null) groupTableClass = defaultTableClass;
+
+                    newFroms.put(groupTableClass, groupFields);
+                }
+            }
+
+            if (newFroms != null && newFroms.size() > 0) {
+                froms.clear();
+                froms.putAll(newFroms);
+            }
+        }
     }
 
     protected void transformationSQLSelect(SelectBuilder builder, SQLBuilder sqlBuilder, Map<Class, MappingTable> mappingTables) {
@@ -1626,7 +1658,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             MappingTable mappingTable = mappingTables.get(tableClass);
             String tableAliasName = aliasNames.get(tableClass);
 
-            sqlBuilder.addString(mappingTable.getMappingTableName()).AS().addWrapString(tableAliasName);
+            sqlBuilder.addString(mappingTable.getMappingTableName()).addWrapString(tableAliasName);
             if (fromIterator.hasNext()) {
                 sqlBuilder.addSplit();
             }
@@ -1647,13 +1679,21 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             for (Object restrict : restricts) {
                 if (restrict instanceof GroupBuilder) {
                     Class groupTableClass = ((GroupBuilder) restrict).getTable();
-                    Object groupField = ((GroupBuilder) restrict).getField();
+                    List<Object> groupFields = ((GroupBuilder) restrict).getFields();
                     if (groupTableClass == null) groupTableClass = defaultTableClass;
                     MappingTable mappingTable = mappingTables.get(groupTableClass);
                     String tableAliasName = aliasNames.get(groupTableClass);
-                    MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(groupField));
 
-                    sqlBuilder.GROUP().BY().addTableField(tableAliasName, mappingField.getMappingColumnName());
+                    sqlBuilder.GROUP().BY();
+                    Iterator groupIterator = groupFields.iterator();
+                    while (groupIterator.hasNext()) {
+                        Object groupField = groupIterator.next();
+                        MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(groupField));
+                        sqlBuilder.addTableField(tableAliasName, mappingField.getMappingColumnName());
+                        if (groupIterator.hasNext()) {
+                            sqlBuilder.addSplit();
+                        }
+                    }
                 }
                 if (restrict instanceof HavingBuilder) {
                     FunBuilder funBuilder = ((HavingBuilder) restrict).getFunBuilder();
@@ -1715,8 +1755,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
         MappingTable mappingTable = mappingTables.get(joinTable);
         String aliasName = aliasNames.get(joinTable);
-        sqlBuilder.addString(mappingTable.getMappingTableName())
-                .AS().addWrapString(aliasName);
+        sqlBuilder.addString(mappingTable.getMappingTableName()).addWrapString(aliasName);
         sqlBuilder.ON();
 
         this.transformationSQLWhere(builder, aliasNames, whereBuilder, sqlBuilder, mappingTables);

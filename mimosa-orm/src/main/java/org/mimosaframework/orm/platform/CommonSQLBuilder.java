@@ -70,9 +70,9 @@ public class CommonSQLBuilder implements SQLBuilder {
     @Override
     public SQLBuilder addTableField(String tableAliasName, String fieldName) {
         if (StringTools.isNotEmpty(tableAliasName)) {
-            sql.add(tableAliasName + "." + fieldName);
+            sql.add(ruleStart + tableAliasName + ruleFinish + "." + ruleStart + fieldName + ruleFinish);
         } else {
-            sql.add(fieldName);
+            sql.add(ruleStart + fieldName + ruleFinish);
         }
         return this;
     }
@@ -569,7 +569,7 @@ public class CommonSQLBuilder implements SQLBuilder {
                     sb.append("(" + f + ")");
                 } else {
                     if (StringTools.isNotEmpty(tableAliasName)) {
-                        sb.append("(" + tableAliasName + "." + f + ")");
+                        sb.append("(" + ruleStart + tableAliasName + ruleFinish + "." + ruleStart + f + ruleFinish + ")");
                     } else {
                         sb.append("(" + ruleStart);
                         sb.append(f);

@@ -57,7 +57,7 @@ public class SelectBuilder extends Builder {
         this.whereBuilder.and(table1, field1, table2, field2);
         return this.whereBuilder;
     }
-    
+
     public WhereBuilder where(Class table, Object field, SymbolType symbol, Object value) {
         this.whereBuilder = new WhereBuilder(this, WhereType.SELECT);
         this.whereBuilder.and(table, field, symbol, value);
@@ -117,12 +117,26 @@ public class SelectBuilder extends Builder {
     }
 
     public SelectBuilder group(Object field) {
-        this.restrict.add(new GroupBuilder(field));
+        List<Object> fields = new ArrayList<>();
+        fields.add(field);
+        this.restrict.add(new GroupBuilder(fields));
         return this;
     }
 
     public SelectBuilder group(Class table, Object field) {
-        this.restrict.add(new GroupBuilder(table, field));
+        List<Object> fields = new ArrayList<>();
+        fields.add(field);
+        this.restrict.add(new GroupBuilder(table, fields));
+        return this;
+    }
+
+    public SelectBuilder group(List<Object> fields) {
+        this.restrict.add(new GroupBuilder(fields));
+        return this;
+    }
+
+    public SelectBuilder group(Class table, List<Object> fields) {
+        this.restrict.add(new GroupBuilder(table, fields));
         return this;
     }
 

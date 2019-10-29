@@ -250,4 +250,9 @@ public class PostgreSQLSessionTemplateTesting {
     public void testJavaTypes() throws SQLException {
         SessionTemplateServiceTesting.addJavaTypes(template);
     }
+
+    @Test
+    public void testBuilder() throws Exception {
+        SessionTemplateServiceTesting.testSQLBuilder(template);
+    }
 }
