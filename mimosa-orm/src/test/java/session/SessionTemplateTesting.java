@@ -9,6 +9,8 @@ import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.sql.Builder;
+import org.mimosaframework.orm.sql.FunType;
+import org.mimosaframework.orm.sql.SymbolType;
 import program.service.SessionTemplateServiceTesting;
 import tables.TableMultiKey1;
 import tables.TableMultiKey2;
@@ -319,7 +321,11 @@ public class SessionTemplateTesting {
     public void testBuilder() throws Exception {
         AutoResult object = template.getAutonomously(
                 SQLAutonomously.newInstance(
-                        Builder.select(TableUser.class).where(TableUser.id, 10).selectBuilder()));
+                        Builder.select(TableUser.class)
+                                .where(TableUser.id, 30).selectBuilder()
+                                .innerJoin(TableOrder.class).where(TableUser.class, TableUser.id, TableOrder.class, TableOrder.userId).selectBuilder()
+                                .group(TableUser.class, TableUser.id)
+                                .having(FunType.COUNT, TableUser.class, TableUser.age, SymbolType.GT, 10)));
         System.out.println(object.getObjects());
     }
 }

@@ -94,6 +94,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     @Override
+    public SQLBuilder addFun(String funName, String tableAliasName, Object field, String alias) {
+        sql.add(new SQLFunction(funName, tableAliasName, field, alias));
+        return this;
+    }
+
+    @Override
     public SQLBuilder INNER() {
         sql.add(Command.INNER);
         return this;
@@ -108,6 +114,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     @Override
     public SQLBuilder COLUMN() {
         sql.add(Command.COLUMN);
+        return this;
+    }
+
+    @Override
+    public SQLBuilder HAVING() {
+        sql.add(Command.HAVING);
         return this;
     }
 
@@ -549,17 +561,22 @@ public class CommonSQLBuilder implements SQLBuilder {
                 }
             } else if (o instanceof SQLFunction) {
                 sb.append(((SQLFunction) o).getFunName());
+                String tableAliasName = ((SQLFunction) o).getTableAliasName();
                 Object f = ((SQLFunction) o).getField();
                 if (f == null) {
                     sb.append("(*)");
                 } else if (f instanceof Integer) {
                     sb.append("(" + f + ")");
                 } else {
-                    sb.append("(" + ruleStart);
-                    sb.append(f);
-                    sb.append(ruleFinish + ")");
+                    if (StringTools.isNotEmpty(tableAliasName)) {
+                        sb.append("(" + tableAliasName + "." + f + ")");
+                    } else {
+                        sb.append("(" + ruleStart);
+                        sb.append(f);
+                        sb.append(ruleFinish + ")");
+                    }
                 }
-                String alias = ((SQLFunction) o).getAlias();
+                String alias = ((SQLFunction) o).getFieldAliasName();
                 if (alias != null) {
                     sb.append(" ");
                     sb.append("AS ");

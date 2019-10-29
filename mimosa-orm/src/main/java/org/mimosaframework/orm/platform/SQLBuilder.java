@@ -30,11 +30,15 @@ public interface SQLBuilder {
 
     SQLBuilder addFun(String funName, Object field, String alias);
 
+    SQLBuilder addFun(String funName, String tableAliasName, Object field, String alias);
+
     SQLBuilder INNER();
 
     SQLBuilder FULL();
 
     SQLBuilder COLUMN();
+
+    SQLBuilder HAVING();
 
     void removeLast();
 
@@ -43,7 +47,7 @@ public interface SQLBuilder {
         INDEX, ALTER, ADD, INSERT, INTO, VALUES, UPDATE, SET, WHERE, AND, OR, ENGINE,
         CHARSET, IN, LIKE, BY, ORDER, ASC, DESC, LIMIT, DELETE, FROM, SELECT, COUNT,
         ON, AS, LEFT, JOIN, FIRST, AFTER, COMMENT, SUM, MODIFY, DROP, IS, INNER, FULL,
-        COLUMN, UNIQUE, GROUP, BETWEEN, ALL, CHARACTER, COLLATE, OFF,
+        COLUMN, UNIQUE, GROUP, BETWEEN, ALL, CHARACTER, COLLATE, OFF, HAVING,
 
         CONSTRAINT
     }

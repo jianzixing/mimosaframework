@@ -1575,10 +1575,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                         MappingTable funTable = mappingTables.get(funTableClass);
                         MappingField mappingField = funTable.getMappingFieldByName(String.valueOf(funField));
                         if (mappingField != null) {
-                            sqlBuilder.addString(funType.name())
-                                    .addParenthesisStart()
-                                    .addTableField(funTableAliasName, mappingField.getMappingColumnName())
-                                    .addParenthesisEnd();
+                            sqlBuilder.addFun(funType.name(), funTableAliasName, mappingField.getMappingColumnName(), null);
                         } else {
                             throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
                                     AbstractDatabasePorter.class, "not_field_name", funTable.getMappingTableName(),
@@ -1672,10 +1669,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     MappingField mappingField = funTable.getMappingFieldByName(String.valueOf(funField));
 
                     if (mappingField != null) {
-                        sqlBuilder.addString(funType.name())
-                                .addParenthesisStart()
-                                .addTableField(funTableAliasName, mappingField.getMappingColumnName())
-                                .addParenthesisEnd();
+                        sqlBuilder.HAVING();
+                        sqlBuilder.addFun(funType.name(), funTableAliasName, mappingField.getMappingColumnName(), null);
 
                         this.setSymbolType(symbol, sqlBuilder);
                         sqlBuilder.addDataPlaceholder(funTableAliasName + "." + mappingField.getMappingColumnName(), value);

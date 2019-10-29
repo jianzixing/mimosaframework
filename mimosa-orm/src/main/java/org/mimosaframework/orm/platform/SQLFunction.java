@@ -2,13 +2,21 @@ package org.mimosaframework.orm.platform;
 
 public class SQLFunction {
     private String funName;
+    private String tableAliasName;
     private Object field;
-    private String alias;
+    private String fieldAliasName;
 
     public SQLFunction(String funName, Object field, String alias) {
         this.funName = funName;
         this.field = field;
-        this.alias = alias;
+        this.fieldAliasName = alias;
+    }
+
+    public SQLFunction(String funName, String tableAliasName, Object field, String fieldAliasName) {
+        this.funName = funName;
+        this.tableAliasName = tableAliasName;
+        this.field = field;
+        this.fieldAliasName = fieldAliasName;
     }
 
     public String getFunName() {
@@ -27,11 +35,19 @@ public class SQLFunction {
         this.field = field;
     }
 
-    public String getAlias() {
-        return alias;
+    public String getTableAliasName() {
+        return tableAliasName;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setTableAliasName(String tableAliasName) {
+        this.tableAliasName = tableAliasName;
+    }
+
+    public String getFieldAliasName() {
+        return fieldAliasName;
+    }
+
+    public void setFieldAliasName(String fieldAliasName) {
+        this.fieldAliasName = fieldAliasName;
     }
 }

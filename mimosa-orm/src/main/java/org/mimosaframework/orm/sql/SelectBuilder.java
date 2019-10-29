@@ -83,14 +83,14 @@ public class SelectBuilder extends Builder {
     }
 
     public JoinBuilder leftJoin(Class table) {
-        JoinBuilder joinBuilder = new JoinBuilder(table);
+        JoinBuilder joinBuilder = new JoinBuilder(this, table);
         joinBuilder.setJoinType(JoinType.LEFT_JOIN);
         this.joinBuilders.add(joinBuilder);
         return joinBuilder;
     }
 
     public JoinBuilder innerJoin(Class table) {
-        JoinBuilder joinBuilder = new JoinBuilder(table);
+        JoinBuilder joinBuilder = new JoinBuilder(this, table);
         joinBuilder.setJoinType(JoinType.INNER_JOIN);
         this.joinBuilders.add(joinBuilder);
         return joinBuilder;
