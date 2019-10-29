@@ -24,7 +24,7 @@ public class StrategyFactory {
                                      MappingTable table,
                                      ModelObject object,
                                      Session session) throws StrategyException {
-        applyStrategy(values, table, object, session);
+        applyStrategy(values, table, object, session, null);
     }
 
     /**

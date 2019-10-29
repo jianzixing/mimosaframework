@@ -45,12 +45,6 @@ public class JoinBuilder {
         return this.whereBuilder;
     }
 
-    public WhereBuilder where(Object field, Object value) {
-        this.whereBuilder = new WhereBuilder(this.selectBuilder, WhereType.JOIN);
-        this.whereBuilder.and(field, value);
-        return this.whereBuilder;
-    }
-
     public WhereBuilder where(Class table, Object field, Object value) {
         this.whereBuilder = new WhereBuilder(this.selectBuilder, WhereType.JOIN);
         this.whereBuilder.and(table, field, value);
@@ -60,12 +54,6 @@ public class JoinBuilder {
     public WhereBuilder where(Class table1, Object field1, Class table2, Object field2) {
         this.whereBuilder = new WhereBuilder(this.selectBuilder, WhereType.JOIN);
         this.whereBuilder.and(table1, field1, table2, field2);
-        return this.whereBuilder;
-    }
-
-    public WhereBuilder where(Object field, SymbolType symbol, Object value) {
-        this.whereBuilder = new WhereBuilder(this.selectBuilder, WhereType.JOIN);
-        this.whereBuilder.and(field, symbol, value);
         return this.whereBuilder;
     }
 

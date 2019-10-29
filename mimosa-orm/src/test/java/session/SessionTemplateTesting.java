@@ -322,7 +322,7 @@ public class SessionTemplateTesting {
         AutoResult object = template.getAutonomously(
                 SQLAutonomously.newInstance(
                         Builder.select(TableUser.class)
-                                .where(TableUser.id, 30).selectBuilder()
+                                .where(TableUser.class, TableUser.id, 30).selectBuilder()
                                 .innerJoin(TableOrder.class).where(TableUser.class, TableUser.id, TableOrder.class, TableOrder.userId).selectBuilder()
                                 .group(TableUser.class, TableUser.id)
                                 .having(FunType.COUNT, TableUser.class, TableUser.age, SymbolType.GT, 10)));
