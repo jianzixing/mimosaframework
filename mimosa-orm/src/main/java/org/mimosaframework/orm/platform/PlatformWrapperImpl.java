@@ -215,35 +215,6 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         return 0;
     }
 
-    @Override
-    public Long simpleInsert(String table, ModelObject object) throws SQLException {
-        return this.databasePorter.simpleInsert(table, object);
-    }
-
-    @Override
-    public int simpleDelete(String table, ModelObject where) throws SQLException {
-        return this.databasePorter.simpleDelete(table, where);
-    }
-
-    @Override
-    public int simpleUpdate(String table, ModelObject object, ModelObject where) throws SQLException {
-        return this.databasePorter.simpleUpdate(table, object, where);
-    }
-
-    @Override
-    public List<ModelObject> simpleSelect(String table, ModelObject where) throws SQLException {
-        return this.databasePorter.simpleSelect(table, where);
-    }
-
-    @Override
-    public long simpleCount(String table, ModelObject where) throws SQLException {
-        List<ModelObject> objects = this.databasePorter.simpleCount(table, where);
-        if (objects != null && objects.size() > 0) {
-            objects.get(0).getLongValue("count");
-        }
-        return 0;
-    }
-
     private List<ModelObject> buildMergeObjects(Map<Object, List<SelectFieldAliasReference>> references,
                                                 DefaultQuery query,
                                                 ModelObjectConvertKey convert,

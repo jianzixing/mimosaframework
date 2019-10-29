@@ -10,6 +10,4 @@ public interface UpdateDatabasePorter {
     Integer update(MappingTable table, ModelObject object) throws SQLException;
 
     Integer update(MappingTable table, DefaultUpdate update) throws SQLException;
-
-    Integer simpleUpdate(String table, ModelObject object, ModelObject where) throws SQLException;
 }

@@ -536,25 +536,6 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public Integer simpleUpdate(String table, ModelObject object, ModelObject where) throws SQLException {
-        SQLBuilder sqlBuilder = this.createSQLBuilder();
-        sqlBuilder.UPDATE().addWrapString(table).SET();
-
-        Iterator<Map.Entry<Object, Object>> iterator = object.entrySet().iterator();
-        while (iterator.hasNext()) {
-            this.simpleBuildValue(sqlBuilder, iterator);
-            if (iterator.hasNext()) {
-                sqlBuilder.addSplit();
-            }
-        }
-
-        sqlBuilder.WHERE();
-
-        this.simpleSelectCountBuilder(sqlBuilder, where);
-        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, sqlBuilder));
-    }
-
-    @Override
     public Integer delete(MappingTable table, ModelObject object) throws SQLException {
         String tableName = table.getDatabaseTableName();
         List<MappingField> primaryKeyFields = table.getMappingPrimaryKeyFields();
@@ -595,14 +576,6 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         sqlBuilder.DELETE().FROM().addString(tableName);
 
         selectBuildWhere(table, sqlBuilder, delete.getLogicWraps());
-        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.DELETE, sqlBuilder));
-    }
-
-    @Override
-    public Integer simpleDelete(String table, ModelObject where) throws SQLException {
-        SQLBuilder sqlBuilder = this.createSQLBuilder();
-        sqlBuilder.DELETE().FROM().TABLE(table).WHERE();
-        this.simpleSelectCountBuilder(sqlBuilder, where);
         return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.DELETE, sqlBuilder));
     }
 
@@ -875,25 +848,6 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 sqlBuilder.AND();
             }
         }
-    }
-
-    @Override
-    public List<ModelObject> simpleSelect(String table, ModelObject where) throws SQLException {
-        SQLBuilder sqlBuilder = this.createSQLBuilder();
-        sqlBuilder.SELECT().addString("*").FROM().TABLE(table).WHERE();
-        this.simpleSelectCountBuilder(sqlBuilder, where);
-
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, sqlBuilder));
-        return objects;
-    }
-
-    @Override
-    public List<ModelObject> simpleCount(String table, ModelObject where) throws SQLException {
-        SQLBuilder sqlBuilder = this.createSQLBuilder();
-        sqlBuilder.SELECT().addString("COUNT(1)").FROM().TABLE(table).WHERE();
-        this.simpleSelectCountBuilder(sqlBuilder, where);
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.COUNT, sqlBuilder));
-        return objects;
     }
 
     protected Map<Object, List<SelectFieldAliasReference>> getFieldAliasReference(

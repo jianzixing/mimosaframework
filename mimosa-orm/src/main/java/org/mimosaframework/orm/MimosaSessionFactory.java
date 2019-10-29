@@ -108,19 +108,4 @@ public class MimosaSessionFactory implements SessionFactory {
     public List<FactoryBuilder> getAuxFactoryBuilder() {
         return this.context.getAuxFactoryBuilder();
     }
-
-    @Override
-    public SimpleTemplate getSimpleTemplate(String dsname) {
-        ActionDataSourceWrapper wrapper = context.getDefaultDataSourceWrapper(true);
-        wrapper.setAutoCloseConnection(true);
-        if (StringTools.isNotEmpty(dsname)) {
-            MimosaDataSource ds = context.getDataSourceByName(dsname);
-            if (ds == null) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        MimosaSessionFactory.class, "not_found_ds", dsname));
-            }
-            wrapper.setDataSource(ds);
-        }
-        return PlatformFactory.getPlatformSimpleSession(wrapper);
-    }
 }

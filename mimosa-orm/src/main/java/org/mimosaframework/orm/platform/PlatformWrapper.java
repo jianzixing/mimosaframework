@@ -52,15 +52,4 @@ public interface PlatformWrapper {
     List<ModelObject> select(String sql) throws SQLException;
 
     long count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
-
-
-    Long simpleInsert(String table, ModelObject object) throws SQLException;
-
-    int simpleDelete(String table, ModelObject where) throws SQLException;
-
-    int simpleUpdate(String table, ModelObject object, ModelObject where) throws SQLException;
-
-    List<ModelObject> simpleSelect(String table, ModelObject where) throws SQLException;
-
-    long simpleCount(String table, ModelObject where) throws SQLException;
 }

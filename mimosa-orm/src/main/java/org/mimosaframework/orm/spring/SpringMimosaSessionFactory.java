@@ -222,11 +222,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     }
 
     @Override
-    public SimpleTemplate getSimpleTemplate(String dsname) {
-        return this.sessionFactory.getSimpleTemplate(dsname);
-    }
-
-    @Override
     public ApplicationContext getSpringContext() {
         return this.applicationContext;
     }

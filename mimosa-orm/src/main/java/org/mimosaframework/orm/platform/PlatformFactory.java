@@ -125,18 +125,6 @@ public class PlatformFactory {
         return null;
     }
 
-    public static SimpleTemplate getPlatformSimpleSession(ActionDataSourceWrapper dswrapper) {
-        CarryHandler carryHandler = getCarryHandler(dswrapper);
-        DatabasePorter databasePorter = getDatabasePorter(dswrapper);
-
-        if (carryHandler == null || databasePorter == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    PlatformFactory.class, "not_support_platform"));
-        }
-
-        return new SimpleTemplateImpl(databasePorter, carryHandler);
-    }
-
     public static DatabaseSpeciality getLocalSpeciality(MimosaDataSource dataSource) {
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.MYSQL)) {
             return new MysqlDatabaseSpeciality();

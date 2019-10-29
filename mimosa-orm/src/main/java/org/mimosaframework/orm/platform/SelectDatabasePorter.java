@@ -32,8 +32,4 @@ public interface SelectDatabasePorter {
      * @return
      */
     List<ModelObject> selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
-
-    List<ModelObject> simpleSelect(String table, ModelObject where) throws SQLException;
-
-    List<ModelObject> simpleCount(String table, ModelObject where) throws SQLException;
 }

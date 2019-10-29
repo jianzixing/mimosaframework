@@ -34,6 +34,4 @@ public interface SessionFactory {
     Transaction createTransaction(TransactionPropagationType pt, TransactionIsolationType it);
 
     List<FactoryBuilder> getAuxFactoryBuilder();
-
-    SimpleTemplate getSimpleTemplate(String dsname);
 }

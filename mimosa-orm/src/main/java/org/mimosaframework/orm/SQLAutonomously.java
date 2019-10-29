@@ -3,6 +3,7 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.sql.Builder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 public class SQLAutonomously implements Serializable {
     private List<LinkAutonomously> dataSourceLinks;
     private String sql;
+    private Builder builder;
     private boolean isMaster = true;
     private String slaveName;
 
@@ -19,6 +21,36 @@ public class SQLAutonomously implements Serializable {
 
     public SQLAutonomously(String sql) {
         this.sql = sql;
+    }
+
+    public SQLAutonomously(String sql, boolean isMaster) {
+        this.sql = sql;
+        this.isMaster = isMaster;
+    }
+
+    public SQLAutonomously(String sql, String slaveName) {
+        this.sql = sql;
+        this.isMaster = true;
+        this.slaveName = slaveName;
+    }
+
+    public SQLAutonomously(Builder builder) {
+        this.builder = builder;
+    }
+
+    public SQLAutonomously(Builder builder, boolean isMaster) {
+        this.builder = builder;
+        this.isMaster = isMaster;
+    }
+
+    public SQLAutonomously(Builder builder, String slaveName) {
+        this.builder = builder;
+        this.isMaster = true;
+        this.slaveName = slaveName;
+    }
+
+    public static SQLAutonomously newInstance() {
+        return new SQLAutonomously();
     }
 
     public static SQLAutonomously newInstance(String sql) {
@@ -33,19 +65,16 @@ public class SQLAutonomously implements Serializable {
         return new SQLAutonomously(sql, slaveName);
     }
 
-    public SQLAutonomously(String sql, boolean isMaster) {
-        this.sql = sql;
-        this.isMaster = isMaster;
+    public static SQLAutonomously newInstance(Builder builder) {
+        return new SQLAutonomously(builder);
     }
 
-    public SQLAutonomously(String sql, String slaveName) {
-        this.sql = sql;
-        this.isMaster = true;
-        this.slaveName = slaveName;
+    public static SQLAutonomously newInstance(Builder builder, boolean isMaster) {
+        return new SQLAutonomously(builder, isMaster);
     }
 
-    public static SQLAutonomously newInstance() {
-        return new SQLAutonomously();
+    public static SQLAutonomously newInstance(Builder builder, String slaveName) {
+        return new SQLAutonomously(builder, slaveName);
     }
 
     public void add(String sql) {
@@ -90,6 +119,10 @@ public class SQLAutonomously implements Serializable {
 
     public String getSql() {
         return sql;
+    }
+
+    public Builder getBuilder() {
+        return builder;
     }
 
     public boolean isMaster() {
