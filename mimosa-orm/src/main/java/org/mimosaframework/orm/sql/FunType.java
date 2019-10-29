@@ -1,5 +1,5 @@
 package org.mimosaframework.orm.sql;
 
 public enum FunType {
-    COUNT
+    COUNT, SUM, MAX, MIN, AVG, DISTINCT
 }
