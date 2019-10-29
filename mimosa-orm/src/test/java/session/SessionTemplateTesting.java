@@ -8,6 +8,7 @@ import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.sql.Builder;
 import program.service.SessionTemplateServiceTesting;
 import tables.TableMultiKey1;
 import tables.TableMultiKey2;
@@ -312,5 +313,13 @@ public class SessionTemplateTesting {
     @Test
     public void testJavaTypes() throws SQLException {
         SessionTemplateServiceTesting.addJavaTypes(template);
+    }
+
+    @Test
+    public void testBuilder() throws Exception {
+        AutoResult object = template.getAutonomously(
+                SQLAutonomously.newInstance(
+                        Builder.select(TableUser.class).where(TableUser.id, 10).selectBuilder()));
+        System.out.println(object.getObjects());
     }
 }

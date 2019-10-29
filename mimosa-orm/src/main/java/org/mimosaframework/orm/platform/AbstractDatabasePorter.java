@@ -1615,6 +1615,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 if (fromIterator.hasNext()) {
                     sqlBuilder.addSplit();
                 }
+            } else {
+                sqlBuilder.addTableField(tableAliasName, "*");
             }
         }
 
@@ -1734,7 +1736,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         List<Object> whereItems = whereBuilder.getWhereItems();
         WhereType whereType = whereBuilder.getWhereType();
         Set<Class> classes = builder.getAllTables();
-        Class tableClass = classes.iterator().next();
+        Class defaultTableClass = classes.iterator().next();
 
         if (logic != null) {
             if (logic == CriteriaLogic.AND) sqlBuilder.AND();
@@ -1767,10 +1769,11 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
                 String key = null;
                 if (tableLeft == null) {
-                    MappingTable mappingTable = mappingTables.get(tableClass);
+                    MappingTable mappingTable = mappingTables.get(defaultTableClass);
+                    String aliasTableName = aliasNames.get(defaultTableClass);
                     MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(itemField));
-                    sqlBuilder.addWrapString(mappingField.getMappingColumnName());
-                    key = mappingField.getMappingColumnName();
+                    sqlBuilder.addTableField(aliasTableName, mappingField.getMappingColumnName());
+                    key = aliasTableName + "." + mappingField.getMappingColumnName();
                 } else {
                     MappingTable mappingTable = mappingTables.get(tableLeft);
                     String aliasName = aliasNames.get(tableLeft);

@@ -26,6 +26,10 @@ public class WhereBuilder {
         this.selectBuilder = selectBuilder;
     }
 
+    public SelectBuilder selectBuilder() {
+        return this.selectBuilder;
+    }
+
     public WhereBuilder and(WhereItem item) {
         whereItems.add(item);
         return this;

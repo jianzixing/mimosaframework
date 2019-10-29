@@ -96,12 +96,12 @@ public class SelectBuilder extends Builder {
         return joinBuilder;
     }
 
-    public JoinBuilder fullJoin(Class table) {
-        JoinBuilder joinBuilder = new JoinBuilder(table);
-        joinBuilder.setJoinType(JoinType.FULL_JOIN);
-        this.joinBuilders.add(joinBuilder);
-        return joinBuilder;
-    }
+    // public JoinBuilder fullJoin(Class table) {
+    //     JoinBuilder joinBuilder = new JoinBuilder(table);
+    //     joinBuilder.setJoinType(JoinType.FULL_JOIN);
+    //     this.joinBuilders.add(joinBuilder);
+    //     return joinBuilder;
+    // }
 
     public SelectBuilder limit(long start, long limit) {
         this.restrict.add(new LimitBuilder(start, limit));
