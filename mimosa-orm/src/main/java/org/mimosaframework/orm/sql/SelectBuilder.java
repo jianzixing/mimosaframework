@@ -46,12 +46,6 @@ public class SelectBuilder extends Builder {
         return this.whereBuilder;
     }
 
-    public WhereBuilder where(Object field, Object value) {
-        this.whereBuilder = new WhereBuilder(this, WhereType.SELECT);
-        this.whereBuilder.and(field, value);
-        return this.whereBuilder;
-    }
-
     public WhereBuilder where(Class table, Object field, Object value) {
         this.whereBuilder = new WhereBuilder(this, WhereType.SELECT);
         this.whereBuilder.and(table, field, value);
@@ -63,13 +57,7 @@ public class SelectBuilder extends Builder {
         this.whereBuilder.and(table1, field1, table2, field2);
         return this.whereBuilder;
     }
-
-    public WhereBuilder where(Object field, SymbolType symbol, Object value) {
-        this.whereBuilder = new WhereBuilder(this, WhereType.SELECT);
-        this.whereBuilder.and(field, symbol, value);
-        return this.whereBuilder;
-    }
-
+    
     public WhereBuilder where(Class table, Object field, SymbolType symbol, Object value) {
         this.whereBuilder = new WhereBuilder(this, WhereType.SELECT);
         this.whereBuilder.and(table, field, symbol, value);

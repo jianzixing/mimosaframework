@@ -41,13 +41,6 @@ public class WhereBuilder {
         return this;
     }
 
-    public WhereBuilder and(Object field, Object value) {
-        WhereItem item = new WhereItem();
-        item.set(field, value);
-        whereItems.add(item);
-        return this;
-    }
-
     public WhereBuilder and(Class table, Object field, Object value) {
         WhereItem item = new WhereItem();
         item.set(table, field, value);
@@ -58,13 +51,6 @@ public class WhereBuilder {
     public WhereBuilder and(Class table1, Object field1, Class table2, Object field2) {
         WhereItem item = new WhereItem();
         item.set(table1, field1, table2, field2);
-        whereItems.add(item);
-        return this;
-    }
-
-    public WhereBuilder and(Object field, SymbolType symbol, Object value) {
-        WhereItem item = new WhereItem();
-        item.set(field, symbol, value);
         whereItems.add(item);
         return this;
     }
@@ -95,14 +81,6 @@ public class WhereBuilder {
         return this;
     }
 
-    public WhereBuilder or(Object field, Object value) {
-        WhereItem item = new WhereItem();
-        item.setLogic(CriteriaLogic.OR);
-        item.set(field, value);
-        whereItems.add(item);
-        return this;
-    }
-
     public WhereBuilder or(Class table, Object field, Object value) {
         WhereItem item = new WhereItem();
         item.setLogic(CriteriaLogic.OR);
@@ -115,14 +93,6 @@ public class WhereBuilder {
         WhereItem item = new WhereItem();
         item.setLogic(CriteriaLogic.OR);
         item.set(table1, field1, table2, field2);
-        whereItems.add(item);
-        return this;
-    }
-
-    public WhereBuilder or(Object field, SymbolType symbol, Object value) {
-        WhereItem item = new WhereItem();
-        item.setLogic(CriteriaLogic.OR);
-        item.set(field, symbol, value);
         whereItems.add(item);
         return this;
     }

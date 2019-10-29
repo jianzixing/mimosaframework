@@ -23,11 +23,6 @@ public class WhereItem {
         this.logic = logic;
     }
 
-    public void set(Object field, Object value) {
-        this.field = field;
-        this.value = value;
-    }
-
     public void set(Class table, Object field, Object value) {
         this.tableLeft = table;
         this.field = field;
@@ -39,12 +34,6 @@ public class WhereItem {
         this.field = field1;
         this.tableRight = table2;
         this.value = field2;
-    }
-
-    public void set(Object field, SymbolType symbol, Object value) {
-        this.field = field;
-        this.symbol = symbol;
-        this.value = value;
     }
 
     public void set(Class table, Object field, SymbolType symbol, Object value) {
