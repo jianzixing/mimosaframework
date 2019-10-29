@@ -69,7 +69,9 @@ public class CommonSQLBuilder implements SQLBuilder {
 
     @Override
     public SQLBuilder addTableField(String tableAliasName, String fieldName) {
-        if (StringTools.isNotEmpty(tableAliasName)) {
+        if (fieldName.equals("*")) {
+            sql.add(ruleStart + tableAliasName + ruleFinish + "." + fieldName);
+        } else if (StringTools.isNotEmpty(tableAliasName)) {
             sql.add(ruleStart + tableAliasName + ruleFinish + "." + ruleStart + fieldName + ruleFinish);
         } else {
             sql.add(ruleStart + fieldName + ruleFinish);
@@ -79,7 +81,9 @@ public class CommonSQLBuilder implements SQLBuilder {
 
     @Override
     public SQLBuilder addTableWrapField(String tableAliasName, String fieldName) {
-        if (StringTools.isNotEmpty(tableAliasName)) {
+        if (fieldName.equals("*")) {
+            sql.add(ruleStart + tableAliasName + ruleFinish + "." + fieldName);
+        } else if (StringTools.isNotEmpty(tableAliasName)) {
             sql.add(ruleStart + tableAliasName + ruleFinish + "." + ruleStart + fieldName + ruleFinish);
         } else {
             sql.add(ruleStart + fieldName + ruleFinish);

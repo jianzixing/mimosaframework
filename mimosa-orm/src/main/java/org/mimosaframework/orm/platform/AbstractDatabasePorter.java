@@ -1649,6 +1649,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
         }
 
+        this.transformationSQLAssistField(builder, sqlBuilder, aliasNames, mappingTables);
+
         sqlBuilder.FROM();
         fromIterator = froms.entrySet().iterator();
         while (fromIterator.hasNext()) {
@@ -1733,10 +1735,18 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     if (orderType == OrderType.DESC) sqlBuilder.DESC();
                 }
                 if (restrict instanceof LimitBuilder) {
-                    sqlBuilder.LIMIT().addString(((LimitBuilder) restrict).getStart() + "," + ((LimitBuilder) restrict).getLimit());
+                    this.transformationSQLLimit((LimitBuilder) restrict, sqlBuilder);
                 }
             }
         }
+    }
+
+    protected void transformationSQLAssistField(SelectBuilder builder, SQLBuilder sqlBuilder, Map<Class, String> aliasNames, Map<Class, MappingTable> mappingTables) {
+
+    }
+
+    protected void transformationSQLLimit(LimitBuilder limitBuilder, SQLBuilder sqlBuilder) {
+        sqlBuilder.LIMIT().addString(limitBuilder.getStart() + "," + limitBuilder.getLimit());
     }
 
     protected void transformationSQLJoin(SelectBuilder builder,

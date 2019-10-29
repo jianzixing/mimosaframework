@@ -632,5 +632,12 @@ public class SessionTemplateServiceTesting {
                                 .group(TableUser.class, TableUser.id)
                                 .having(FunType.COUNT, TableUser.class, TableUser.id, SymbolType.GT, 0)));
         System.out.println(object.getObjects());
+
+        template.getAutonomously(
+                SQLAutonomously.newInstance(
+                        Builder.select(TableUser.class)
+                                .where(TableUser.class, TableUser.id, SymbolType.GT, 0).selectBuilder()
+                                .innerJoin(TableOrder.class).where(TableUser.class, TableUser.id, TableOrder.class, TableOrder.userId).selectBuilder()
+                                .limit(0, 10)));
     }
 }

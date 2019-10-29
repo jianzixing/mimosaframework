@@ -10,6 +10,7 @@ import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.sql.LimitBuilder;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -209,5 +210,11 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
     @Override
     protected SQLBuilder createSQLBuilder() {
         return SQLBuilderFactory.createQMSQLBuilder();
+    }
+
+    @Override
+    protected void transformationSQLLimit(LimitBuilder limitBuilder, SQLBuilder sqlBuilder) {
+        sqlBuilder.LIMIT().addString("" + limitBuilder.getLimit())
+                .addString("OFFSET").addString("" + limitBuilder.getStart());
     }
 }
