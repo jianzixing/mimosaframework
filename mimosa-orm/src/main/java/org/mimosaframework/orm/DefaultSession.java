@@ -15,6 +15,7 @@ import org.mimosaframework.orm.scripting.BoundSql;
 import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.sql.Builder;
+import org.mimosaframework.orm.sql.ResultMappingFieldUtils;
 import org.mimosaframework.orm.sql.SelectBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
 import org.mimosaframework.orm.utils.Clone;
@@ -514,6 +515,7 @@ public class DefaultSession implements Session {
                         mappingTables.put(c, this.mappingGlobalWrapper.getMappingTable(c));
                     }
                     objects = platformWrapper.select(selectBuilder, mappingTables);
+                    ResultMappingFieldUtils.convert(selectBuilder, convert, objects, mappingTables);
                 }
             } else {
                 objects = platformWrapper.select(sql);
