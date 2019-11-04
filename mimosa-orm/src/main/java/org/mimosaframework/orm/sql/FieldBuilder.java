@@ -16,4 +16,8 @@ public class FieldBuilder {
     public String getAliasName() {
         return aliasName;
     }
+
+    public static FieldBuilder builder(Object field, String aliasName) {
+        return new FieldBuilder(field, aliasName);
+    }
 }

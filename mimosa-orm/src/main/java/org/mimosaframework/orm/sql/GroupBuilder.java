@@ -6,10 +6,6 @@ public class GroupBuilder {
     private Class table;
     private List<Object> fields;
 
-    public GroupBuilder(List<Object> fields) {
-        this.fields = fields;
-    }
-
     public GroupBuilder(Class table, List<Object> fields) {
         this.table = table;
         this.fields = fields;
@@ -21,5 +17,9 @@ public class GroupBuilder {
 
     public List<Object> getFields() {
         return fields;
+    }
+
+    public static GroupBuilder builder(Class table, List<Object> fields) {
+        return new GroupBuilder(table, fields);
     }
 }

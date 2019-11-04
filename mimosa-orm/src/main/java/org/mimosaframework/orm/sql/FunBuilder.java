@@ -5,11 +5,6 @@ public class FunBuilder {
     private Object field;
     private FunType funType;
 
-    public FunBuilder(Object field, FunType funType) {
-        this.field = field;
-        this.funType = funType;
-    }
-
     public FunBuilder(Class table, Object field, FunType funType) {
         this.table = table;
         this.field = field;
@@ -26,5 +21,9 @@ public class FunBuilder {
 
     public FunType getFunType() {
         return funType;
+    }
+
+    public static FunBuilder builder(Class table, Object field, FunType funType) {
+        return new FunBuilder(table, field, funType);
     }
 }

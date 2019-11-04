@@ -116,22 +116,10 @@ public class SelectBuilder extends Builder {
         return this;
     }
 
-    public SelectBuilder group(Object field) {
-        List<Object> fields = new ArrayList<>();
-        fields.add(field);
-        this.restrict.add(new GroupBuilder(fields));
-        return this;
-    }
-
     public SelectBuilder group(Class table, Object field) {
         List<Object> fields = new ArrayList<>();
         fields.add(field);
         this.restrict.add(new GroupBuilder(table, fields));
-        return this;
-    }
-
-    public SelectBuilder group(List<Object> fields) {
-        this.restrict.add(new GroupBuilder(fields));
         return this;
     }
 
@@ -147,11 +135,6 @@ public class SelectBuilder extends Builder {
 
     public SelectBuilder having(HavingBuilder havingBuilder) {
         this.restrict.add(havingBuilder);
-        return this;
-    }
-
-    public SelectBuilder having(FunType funType, Object field, SymbolType symbol, Object value) {
-        this.restrict.add(new HavingBuilder(new FunBuilder(field, funType), symbol, value));
         return this;
     }
 

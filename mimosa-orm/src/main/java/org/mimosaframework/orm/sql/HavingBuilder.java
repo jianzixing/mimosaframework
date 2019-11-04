@@ -22,4 +22,8 @@ public class HavingBuilder {
     public Object getValue() {
         return value;
     }
+
+    public static HavingBuilder builder(FunBuilder funBuilder, SymbolType symbol, Object value) {
+        return new HavingBuilder(funBuilder, symbol, value);
+    }
 }
