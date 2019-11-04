@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.sql;
 
+import org.mimosaframework.orm.SQLAutonomously;
+
 import java.util.*;
 
 public class SelectBuilder extends Builder {
@@ -172,5 +174,10 @@ public class SelectBuilder extends Builder {
             }
         }
         return classes;
+    }
+
+    @Override
+    public SQLAutonomously autonomously() {
+        return SQLAutonomously.newInstance(this);
     }
 }

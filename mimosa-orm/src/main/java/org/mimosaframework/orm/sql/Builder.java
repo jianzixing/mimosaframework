@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.sql;
 
+import org.mimosaframework.orm.SQLAutonomously;
+
 import java.util.Set;
 
 /**
@@ -12,4 +14,6 @@ public abstract class Builder {
     }
 
     public abstract Set<Class> getAllTables();
+
+    public abstract SQLAutonomously autonomously();
 }
