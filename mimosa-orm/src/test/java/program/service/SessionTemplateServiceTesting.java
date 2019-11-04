@@ -10,9 +10,7 @@ import org.mimosaframework.orm.BasicFunction;
 import org.mimosaframework.orm.SQLAutonomously;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.criteria.Criteria;
-import org.mimosaframework.orm.sql.Builder;
-import org.mimosaframework.orm.sql.FunType;
-import org.mimosaframework.orm.sql.SymbolType;
+import org.mimosaframework.orm.sql.*;
 import tables.*;
 
 import java.sql.SQLException;
@@ -626,19 +624,21 @@ public class SessionTemplateServiceTesting {
     public static void testSQLBuilder(final SessionTemplate template) throws Exception {
         AutoResult object = template.getAutonomously(
                 SQLAutonomously.newInstance(
-                        Builder.select(TableUser.class)
+                        Builder.select(FromBuilder.builder(TableUser.class))
                                 .where(TableUser.class, TableUser.id, 61).selectBuilder()
                                 .innerJoin(TableOrder.class).where(TableUser.class, TableUser.id, TableOrder.class, TableOrder.userId).selectBuilder()
                                 .group(TableUser.class, TableUser.id)
                                 .having(FunType.COUNT, TableUser.class, TableUser.id, SymbolType.GT, 0)));
         System.out.println(object.getObjects());
 
-        object = template.getAutonomously(
-                SQLAutonomously.newInstance(
-                        Builder.select(TableUser.class)
-                                .where(TableUser.class, TableUser.id, SymbolType.GT, 0).selectBuilder()
-                                .innerJoin(TableOrder.class).where(TableUser.class, TableUser.id, TableOrder.class, TableOrder.userId).selectBuilder()
-                                .limit(0, 10)));
+        SelectBuilder builder = Builder.select(FromBuilder.builder(TableUser.class))
+                .where(TableUser.class, TableUser.id, SymbolType.GT, 0).selectBuilder()
+                .innerJoin(TableOrder.class).where(TableUser.class, TableUser.id, TableOrder.class, TableOrder.userId).selectBuilder()
+                .limit(0, 10);
+        object = template.getAutonomously(SQLAutonomously.newInstance(builder));
+        System.out.println(object.getObjects());
+
+        object = template.getAutonomously(SQLAutonomously.newInstance(builder.fromCount()));
         System.out.println(object.getObjects());
     }
 }

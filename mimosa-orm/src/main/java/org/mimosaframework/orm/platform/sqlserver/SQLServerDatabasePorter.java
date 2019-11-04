@@ -440,7 +440,6 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
 
 
     protected void transformationSQLAssistField(SelectBuilder builder, SQLBuilder sqlBuilder, Map<Class, String> aliasNames, Map<Class, MappingTable> mappingTables) {
-        Map<Class, List<Object>> froms = builder.getFroms();
         Set<Class> classes = builder.getAllTables();
         Class defaultTableClass = classes.iterator().next();
 

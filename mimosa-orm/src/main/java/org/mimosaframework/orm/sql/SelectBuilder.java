@@ -1,6 +1,8 @@
 package org.mimosaframework.orm.sql;
 
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.SQLAutonomously;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
 import java.util.*;
 
@@ -10,24 +12,19 @@ public class SelectBuilder extends Builder {
      * List<Object>字段列表中如果Object属于特殊类型
      * 则特殊处理，比如函数类型 FunBuilder , FieldBuilder
      */
-    private Map<Class, List<Object>> froms = new LinkedHashMap<>(1);
+    private List<FromBuilder> froms = new ArrayList<>(1);
     private List<JoinBuilder> joinBuilders = new ArrayList<>(1);
     private WhereBuilder whereBuilder;
     private List<Object> restrict = new ArrayList<>(1);
 
-    public SelectBuilder(Object... froms) {
+    public SelectBuilder(FromBuilder... froms) {
         if (froms != null) {
-            Class last = null;
-            for (Object o : froms) {
-                if (o instanceof Class) {
-                    this.froms.put((Class) o, new ArrayList<Object>());
-                    last = (Class) o;
-                } else {
-                    List<Object> fields = this.froms.get(last);
-                    fields.add(o);
-                    this.froms.put(last, fields);
-                }
+            for (FromBuilder fb : froms) {
+                this.froms.add(fb);
             }
+        } else {
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    SelectBuilder.class, "empty_from_builder"));
         }
     }
 
@@ -145,7 +142,7 @@ public class SelectBuilder extends Builder {
         return this;
     }
 
-    public Map<Class, List<Object>> getFroms() {
+    public List<FromBuilder> getFroms() {
         return froms;
     }
 
@@ -164,9 +161,10 @@ public class SelectBuilder extends Builder {
     @Override
     public Set<Class> getAllTables() {
         Set<Class> classes = new HashSet<>();
-        Set<Map.Entry<Class, List<Object>>> set = this.froms.entrySet();
-        for (Map.Entry<Class, List<Object>> entry : set) {
-            classes.add(entry.getKey());
+        for (FromBuilder fromBuilder : this.froms) {
+            if (fromBuilder.getTable() != SelectBuilder.class) {
+                classes.add(fromBuilder.getTable());
+            }
         }
         if (joinBuilders != null) {
             for (JoinBuilder joinBuilder : joinBuilders) {
@@ -179,5 +177,30 @@ public class SelectBuilder extends Builder {
     @Override
     public SQLAutonomously autonomously() {
         return SQLAutonomously.newInstance(this);
+    }
+
+    public SelectBuilder clone() {
+        SelectBuilder clone = new SelectBuilder();
+        if (froms != null) {
+            clone.froms = new ArrayList<>();
+            for (FromBuilder fromBuilder : froms) {
+                clone.froms.add(fromBuilder.clone());
+            }
+        }
+        if (joinBuilders != null) clone.joinBuilders = new ArrayList<>(joinBuilders);
+        if (whereBuilder != null) {
+            clone.whereBuilder = whereBuilder.clone(this);
+        }
+        if (restrict != null) clone.restrict = new ArrayList<>(restrict);
+        return clone;
+    }
+
+    public SelectBuilder fromCount() {
+        SelectBuilder builder = this.clone();
+        builder.froms = new ArrayList<>();
+        List<Object> fields = new ArrayList<>();
+        fields.add(FunBuilder.builder("1", FunType.COUNT));
+        builder.froms.add(FromBuilder.builder(SelectBuilder.class, fields));
+        return builder;
     }
 }

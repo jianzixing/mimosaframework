@@ -24,6 +24,7 @@ import org.mimosaframework.orm.platform.sqlite.SqliteDatabasePorter;
 import org.mimosaframework.orm.platform.sqlserver.SQLServerDifferentColumn;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.spring.SpringMimosaSessionFactory;
+import org.mimosaframework.orm.sql.SelectBuilder;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 import org.mimosaframework.orm.strategy.StrategyFactory;
 import org.mimosaframework.orm.transaction.*;
@@ -199,6 +200,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         mapAbstractDatabasePorter.put("not_found_table_field", "没有在表 %s 中找到字段 %s");
         mapAbstractDatabasePorter.put("order_not_in_table", "排序字段 %s 不在当前表中");
         mapAbstractDatabasePorter.put("not_field_name", "在表 %s 中,没有找到字段 %s");
+        mapAbstractDatabasePorter.put("not_support_select_type", "不支持的查询字段 %s");
         messageWords.add(new MessageWords(PROJECT, AbstractDatabasePorter.class, mapAbstractDatabasePorter));
 
         // PlatformFactory
@@ -419,6 +421,11 @@ public class LanguageMessageDefault implements MessagesRegister {
         Map<String, String> mapSQLAutonomously = new HashMap<>();
         mapSQLAutonomously.put("not_empty", "要执行的数据源不能为空(多级可以用.表示分层,比如 app.default)");
         messageWords.add(new MessageWords(PROJECT, SQLAutonomously.class, mapSQLAutonomously));
+
+        // SelectBuilder
+        Map<String, String> mapSelectBuilder = new HashMap<>();
+        mapSelectBuilder.put("empty_from_builder", "没有设置要查询的字段");
+        messageWords.add(new MessageWords(PROJECT, SelectBuilder.class, mapSelectBuilder));
     }
 
     @Override

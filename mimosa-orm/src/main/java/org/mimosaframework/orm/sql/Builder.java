@@ -9,7 +9,7 @@ import java.util.Set;
  * 可以生成跨平台的SQL语句
  */
 public abstract class Builder {
-    public static final SelectBuilder select(Object... froms) {
+    public static final SelectBuilder select(FromBuilder... froms) {
         return new SelectBuilder(froms);
     }
 

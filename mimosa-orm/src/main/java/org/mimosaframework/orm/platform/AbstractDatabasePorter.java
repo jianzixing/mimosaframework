@@ -1544,33 +1544,33 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
      * @param builder
      */
     protected void transformationSQLGroupByClear(SelectBuilder builder) {
-        Map<Class, List<Object>> froms = builder.getFroms();
+        List<FromBuilder> froms = builder.getFroms();
         Set<Class> classes = builder.getAllTables();
         Class defaultTableClass = classes.iterator().next();
 
         List<Object> restricts = builder.getRestrict();
         if (restricts != null) {
-            Map<Class, List<Object>> newFroms = new LinkedHashMap<>();
+            List<FromBuilder> newFroms = new ArrayList<>();
             for (Object restrict : restricts) {
                 if (restrict instanceof GroupBuilder) {
                     Class groupTableClass = ((GroupBuilder) restrict).getTable();
                     List<Object> groupFields = ((GroupBuilder) restrict).getFields();
                     if (groupTableClass == null) groupTableClass = defaultTableClass;
 
-                    newFroms.put(groupTableClass, groupFields);
+                    newFroms.add(FromBuilder.builder(groupTableClass, groupFields));
                 }
             }
 
             if (newFroms != null && newFroms.size() > 0) {
                 froms.clear();
-                froms.putAll(newFroms);
+                froms.addAll(newFroms);
             }
         }
     }
 
     protected void transformationSQLSelect(SelectBuilder builder, SQLBuilder sqlBuilder, Map<Class, MappingTable> mappingTables) {
         sqlBuilder.SELECT();
-        Map<Class, List<Object>> froms = builder.getFroms();
+        List<FromBuilder> froms = builder.getFroms();
         List<JoinBuilder> joinBuilders = builder.getJoinBuilders();
         WhereBuilder whereBuilder = builder.getWhereBuilder();
         List<Object> restricts = builder.getRestrict();
@@ -1585,77 +1585,102 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             count++;
         }
 
-        Iterator<Map.Entry<Class, List<Object>>> fromIterator = froms.entrySet().iterator();
+        Iterator<FromBuilder> fromIterator = froms.iterator();
         while (fromIterator.hasNext()) {
-            Map.Entry<Class, List<Object>> entry = fromIterator.next();
-            Class tableClass = entry.getKey();
-            List<Object> fields = entry.getValue();
+            FromBuilder entry = fromIterator.next();
+            Class tableClass = entry.getTable();
+            List<Object> fields = entry.getFields();
 
-            MappingTable mappingTable = mappingTables.get(tableClass);
-            String tableAliasName = aliasNames.get(tableClass);
+            if (tableClass == null || tableClass == SelectBuilder.class) {
+                // 无表字段做特殊处理
+                if (fields != null && fields.size() > 0) {
+                    Iterator iteratorFields = fields.iterator();
+                    while (iteratorFields.hasNext()) {
+                        Object field = iteratorFields.next();
 
-            if (fields != null && fields.size() > 0) {
-                Iterator iteratorFields = fields.iterator();
-                while (iteratorFields.hasNext()) {
-                    Object field = iteratorFields.next();
-                    if (field instanceof FunBuilder) {
-                        Class funTableClass = ((FunBuilder) field).getTable();
-                        Object funField = ((FunBuilder) field).getField();
-                        FunType funType = ((FunBuilder) field).getFunType();
-                        if (funTableClass == null) funTableClass = tableClass;
-                        String funTableAliasName = aliasNames.get(funTableClass);
-                        MappingTable funTable = mappingTables.get(funTableClass);
-                        MappingField mappingField = funTable.getMappingFieldByName(String.valueOf(funField));
-                        if (mappingField != null) {
-                            sqlBuilder.addFun(funType.name(), funTableAliasName, mappingField.getMappingColumnName(), null);
-                        } else {
-                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                    AbstractDatabasePorter.class, "not_field_name", funTable.getMappingTableName(),
-                                    String.valueOf(funTable)));
-                        }
-                    } else if (field instanceof FieldBuilder) {
-                        Object fieldReal = ((FieldBuilder) field).getField();
-                        String fieldAliasName = ((FieldBuilder) field).getAliasName();
-                        MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(fieldReal));
-                        if (mappingField != null) {
-                            sqlBuilder.addTableField(tableAliasName, mappingField.getMappingColumnName())
-                                    .AS().addWrapString(fieldAliasName);
-                        } else {
-                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                    AbstractDatabasePorter.class, "not_field_name", mappingTable.getMappingTableName(),
-                                    String.valueOf(field)));
-                        }
-                    } else {
-                        MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(field));
-                        if (mappingField != null) {
-                            sqlBuilder.addTableField(tableAliasName, mappingField.getMappingColumnName());
-                        } else {
-                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                    AbstractDatabasePorter.class, "not_field_name", mappingTable.getMappingTableName(),
-                                    String.valueOf(field)));
+                        if (field instanceof FunBuilder) {
+                            Object funField = ((FunBuilder) field).getField();
+                            FunType funType = ((FunBuilder) field).getFunType();
+                            String funAliasName = ((FunBuilder) field).getAliasName();
+                            sqlBuilder.addFun(funType.name(), funField, funAliasName);
                         }
                     }
-
-                    if (iteratorFields.hasNext()) {
-                        sqlBuilder.addSplit();
-                    }
-                }
-
-                if (fromIterator.hasNext()) {
-                    sqlBuilder.addSplit();
                 }
             } else {
-                sqlBuilder.addTableField(tableAliasName, "*");
+                MappingTable mappingTable = mappingTables.get(tableClass);
+                String tableAliasName = aliasNames.get(tableClass);
+
+                if (fields != null && fields.size() > 0) {
+                    Iterator iteratorFields = fields.iterator();
+                    while (iteratorFields.hasNext()) {
+                        Object field = iteratorFields.next();
+                        if (field instanceof FunBuilder) {
+                            Class funTableClass = ((FunBuilder) field).getTable();
+                            Object funField = ((FunBuilder) field).getField();
+                            FunType funType = ((FunBuilder) field).getFunType();
+                            String funAliasName = ((FunBuilder) field).getAliasName();
+                            if (funTableClass == null) funTableClass = tableClass;
+                            String funTableAliasName = aliasNames.get(funTableClass);
+                            MappingTable funTable = mappingTables.get(funTableClass);
+                            MappingField mappingField = funTable.getMappingFieldByName(String.valueOf(funField));
+                            if (mappingField != null) {
+                                sqlBuilder.addFun(funType.name(), funTableAliasName, mappingField.getMappingColumnName(), funAliasName);
+                            } else {
+                                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                        AbstractDatabasePorter.class, "not_field_name", funTable.getMappingTableName(),
+                                        String.valueOf(funTable)));
+                            }
+                        } else if (field instanceof FieldBuilder) {
+                            Object fieldReal = ((FieldBuilder) field).getField();
+                            String fieldAliasName = ((FieldBuilder) field).getAliasName();
+                            MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(fieldReal));
+                            if (mappingField != null) {
+                                sqlBuilder.addTableField(tableAliasName, mappingField.getMappingColumnName())
+                                        .AS().addWrapString(fieldAliasName);
+                            } else {
+                                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                        AbstractDatabasePorter.class, "not_field_name", mappingTable.getMappingTableName(),
+                                        String.valueOf(field)));
+                            }
+                        } else if (field instanceof FieldSelectType) {
+                            if (field == FieldSelectType.FULL) {
+                                sqlBuilder.addTableField(tableAliasName, "*");
+                            } else {
+                                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                        AbstractDatabasePorter.class, "not_support_select_type", String.valueOf(field)));
+                            }
+                        } else {
+                            MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(field));
+                            if (mappingField != null) {
+                                sqlBuilder.addTableField(tableAliasName, mappingField.getMappingColumnName());
+                            } else {
+                                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                                        AbstractDatabasePorter.class, "not_field_name", mappingTable.getMappingTableName(),
+                                        String.valueOf(field)));
+                            }
+                        }
+
+                        if (iteratorFields.hasNext()) {
+                            sqlBuilder.addSplit();
+                        }
+                    }
+
+                    if (fromIterator.hasNext()) {
+                        sqlBuilder.addSplit();
+                    }
+                } else {
+                    sqlBuilder.addTableField(tableAliasName, "*");
+                }
             }
         }
 
         this.transformationSQLAssistField(builder, sqlBuilder, aliasNames, mappingTables);
 
         sqlBuilder.FROM();
-        fromIterator = froms.entrySet().iterator();
+        fromIterator = froms.iterator();
         while (fromIterator.hasNext()) {
-            Map.Entry<Class, List<Object>> entry = fromIterator.next();
-            Class tableClass = entry.getKey();
+            FromBuilder entry = fromIterator.next();
+            Class tableClass = entry.getTable();
 
             MappingTable mappingTable = mappingTables.get(tableClass);
             String tableAliasName = aliasNames.get(tableClass);

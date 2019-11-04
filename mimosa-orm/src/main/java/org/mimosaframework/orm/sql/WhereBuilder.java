@@ -128,4 +128,13 @@ public class WhereBuilder {
     public CriteriaLogic getLogic() {
         return logic;
     }
+
+    public WhereBuilder clone(SelectBuilder selectBuilder) {
+        WhereBuilder builder = new WhereBuilder();
+        if (selectBuilder != null) builder.selectBuilder = selectBuilder;
+        if (whereType != null) builder.whereType = whereType;
+        if (whereItems != null) builder.whereItems = new ArrayList<>(this.whereItems);
+        if (logic != null) builder.logic = logic;
+        return builder;
+    }
 }

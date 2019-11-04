@@ -23,8 +23,8 @@ public class ResultMappingFieldUtils {
 
         if (objects != null && objects.size() > 0) {
             Map<String, String> tableFields = new HashMap<>();
-            Map<Class, List<Object>> froms = selectBuilder.getFroms();
-            Class defaultTableClass = froms.entrySet().iterator().next().getKey();
+            List<FromBuilder> froms = selectBuilder.getFroms();
+            Class defaultTableClass = froms.iterator().next().getTable();
 
             List<Object> restricts = selectBuilder.getRestrict();
             if (restricts != null) {
@@ -47,11 +47,11 @@ public class ResultMappingFieldUtils {
             }
 
             if (tableFields.size() <= 0) {
-                Iterator<Map.Entry<Class, List<Object>>> iterator = froms.entrySet().iterator();
+                Iterator<FromBuilder> iterator = froms.iterator();
                 while (iterator.hasNext()) {
-                    Map.Entry<Class, List<Object>> entry = iterator.next();
-                    Class tableClass = entry.getKey();
-                    List<Object> selectFields = entry.getValue();
+                    FromBuilder entry = iterator.next();
+                    Class tableClass = entry.getTable();
+                    List<Object> selectFields = entry.getFields();
 
                     MappingTable mappingTable = mappingTables.get(tableClass);
 
