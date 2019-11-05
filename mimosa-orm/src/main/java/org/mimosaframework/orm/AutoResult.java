@@ -6,6 +6,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.criteria.Query;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class AutoResult {
@@ -170,87 +171,98 @@ public class AutoResult {
     }
 
     public long longValue() {
-        if (value != null && value instanceof Number) {
-            return (long) value;
-        } else {
-            Object v = this.getSingleByList();
-            if (v != null) {
-                if (v instanceof Number) {
-                    if (v instanceof Double || v instanceof Float) {
-                        return Long.parseLong("" + v);
-                    }
-                    return (long) v;
-                }
-                if (v instanceof String && StringTools.isNumber((String) v)) {
-                    Long.parseLong((String) v);
-                }
-            }
+        BigDecimal bigDecimal = this.bigDecimalValue(null);
+        if (bigDecimal != null) {
+            return bigDecimal.intValue();
         }
         return 0;
     }
 
     public Long longValue(String field) {
-        ModelObject object = this.getSingle();
-        if (object != null) {
-            object.getLong(field);
+        BigDecimal bigDecimal = this.bigDecimalValue(field);
+        if (bigDecimal != null) {
+            return bigDecimal.longValue();
         }
         return null;
     }
 
     public double doubleValue() {
-        if (value != null && value instanceof Number) {
-            return (double) value;
-        } else {
-            Object v = this.getSingleByList();
-            if (v != null) {
-                if (v instanceof Number) {
-                    if (v instanceof Double) {
-                        return (double) v;
-                    } else {
-                        return Double.parseDouble("" + v);
-                    }
-                }
-                if (v instanceof String && StringTools.isNumber((String) v)) {
-                    Double.parseDouble((String) v);
-                }
-            }
+        BigDecimal bigDecimal = this.bigDecimalValue(null);
+        if (bigDecimal != null) {
+            return bigDecimal.intValue();
         }
         return 0;
     }
 
     public Double doubleValue(String field) {
-        ModelObject object = this.getSingle();
-        if (object != null) {
-            object.getDouble(field);
+        BigDecimal bigDecimal = this.bigDecimalValue(field);
+        if (bigDecimal != null) {
+            return bigDecimal.doubleValue();
         }
         return null;
     }
 
     public int intValue() {
-        if (value != null && value instanceof Number) {
-            return (int) value;
-        } else {
-            Object v = this.getSingleByList();
-            if (v != null) {
-                if (v instanceof Number) {
-                    if (v instanceof Integer) {
-                        return (int) v;
-                    } else {
-                        return Integer.parseInt("" + v);
-                    }
-                }
-                if (v instanceof String && StringTools.isNumber((String) v)) {
-                    Integer.parseInt((String) v);
-                }
-            }
+        BigDecimal bigDecimal = this.bigDecimalValue(null);
+        if (bigDecimal != null) {
+            return bigDecimal.intValue();
         }
         return 0;
     }
 
     public Integer intValue(String field) {
-        ModelObject object = this.getSingle();
-        if (object != null) {
-            object.getInteger(field);
+        BigDecimal bigDecimal = this.bigDecimalValue(field);
+        if (bigDecimal != null) {
+            return bigDecimal.intValue();
+        }
+        return null;
+    }
+
+    public BigDecimal bigDecimalValue(String field) {
+        if (this.value instanceof Map) {
+            BigDecimal bigDecimal = null;
+            Iterator<Map.Entry> iterator = ((Map) this.value).entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry entry = iterator.next();
+                Object entryValue = entry.getValue();
+                if (entryValue instanceof List) {
+                    List v = (List) entryValue;
+                    for (Object o : v) {
+                        if (o instanceof ModelObject) {
+                            if (field == null) {
+                                Object next = ((ModelObject) o).entrySet().iterator().next().getValue();
+                                if (next instanceof Number || (next instanceof String && StringTools.isNumber((String) next))) {
+                                    if (bigDecimal == null) bigDecimal = new BigDecimal("0");
+                                    bigDecimal = bigDecimal.add(new BigDecimal(String.valueOf(next)));
+                                }
+                            } else {
+                                if (bigDecimal == null) bigDecimal = new BigDecimal("0");
+                                bigDecimal = bigDecimal.add(((ModelObject) o).getBigDecimal(field));
+                            }
+                        }
+                    }
+                }
+            }
+            return bigDecimal;
+        }
+        if (this.value instanceof List) {
+            BigDecimal bigDecimal = null;
+            List v = (List) this.value;
+            for (Object o : v) {
+                if (o instanceof ModelObject) {
+                    if (field == null) {
+                        Object next = ((ModelObject) o).entrySet().iterator().next().getValue();
+                        if (next instanceof Number || (next instanceof String && StringTools.isNumber((String) next))) {
+                            if (bigDecimal == null) bigDecimal = new BigDecimal("0");
+                            bigDecimal = bigDecimal.add(new BigDecimal(String.valueOf(next)));
+                        }
+                    } else {
+                        if (bigDecimal == null) bigDecimal = new BigDecimal("0");
+                        bigDecimal = bigDecimal.add(((ModelObject) o).getBigDecimal(field));
+                    }
+                }
+            }
+            return bigDecimal;
         }
         return null;
     }
@@ -374,7 +386,7 @@ public class AutoResult {
                 Iterator<Map.Entry<Object, Object>> iterator = ((Map<Object, Object>) value).entrySet().iterator();
                 while (iterator.hasNext()) {
                     Object mapValue = iterator.next().getValue();
-                    if (selfValue instanceof List) {
+                    if (mapValue instanceof List) {
                         if (list == null) {
                             list = new ArrayList();
                         }
