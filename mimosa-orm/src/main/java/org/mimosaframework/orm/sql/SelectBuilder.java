@@ -142,6 +142,10 @@ public class SelectBuilder extends Builder {
         return this;
     }
 
+    public void addFrom(FromBuilder fromBuilder) {
+        this.froms.add(fromBuilder);
+    }
+
     public List<FromBuilder> getFroms() {
         return froms;
     }
