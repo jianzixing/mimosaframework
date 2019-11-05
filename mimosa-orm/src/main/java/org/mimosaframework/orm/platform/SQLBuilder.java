@@ -30,6 +30,8 @@ public interface SQLBuilder {
 
     SQLBuilder addFun(String funName, Object field, String alias);
 
+    SQLBuilder addValueFun(String funName, Object field, String alias);
+
     SQLBuilder addFun(String funName, String tableAliasName, Object field, String alias);
 
     SQLBuilder INNER();

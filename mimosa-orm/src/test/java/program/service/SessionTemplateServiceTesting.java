@@ -631,7 +631,7 @@ public class SessionTemplateServiceTesting {
                                 .having(FunType.COUNT, TableUser.class, TableUser.id, SymbolType.GT, 0)));
         System.out.println(object.getObjects());
 
-        SelectBuilder builder = Builder.select(FromBuilder.builder(TableUser.class))
+        SelectBuilder builder = Builder.select(FromBuilder.builder(TableUser.class, FieldSelectType.FULL))
                 .where(TableUser.class, TableUser.id, SymbolType.GT, 0).selectBuilder()
                 .innerJoin(TableOrder.class).where(TableUser.class, TableUser.id, TableOrder.class, TableOrder.userId).selectBuilder()
                 .limit(0, 10);

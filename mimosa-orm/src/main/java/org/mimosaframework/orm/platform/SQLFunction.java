@@ -5,11 +5,20 @@ public class SQLFunction {
     private String tableAliasName;
     private Object field;
     private String fieldAliasName;
+    private boolean isValue;
 
     public SQLFunction(String funName, Object field, String alias) {
         this.funName = funName;
         this.field = field;
         this.fieldAliasName = alias;
+    }
+
+
+    public SQLFunction(String funName, Object field, String alias, boolean isValue) {
+        this.funName = funName;
+        this.field = field;
+        this.fieldAliasName = alias;
+        this.isValue = isValue;
     }
 
     public SQLFunction(String funName, String tableAliasName, Object field, String fieldAliasName) {
@@ -49,5 +58,13 @@ public class SQLFunction {
 
     public void setFieldAliasName(String fieldAliasName) {
         this.fieldAliasName = fieldAliasName;
+    }
+
+    public boolean isValue() {
+        return isValue;
+    }
+
+    public void setValue(boolean value) {
+        isValue = value;
     }
 }

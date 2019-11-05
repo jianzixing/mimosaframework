@@ -174,6 +174,16 @@ public class SelectBuilder extends Builder {
         return classes;
     }
 
+    public List<Class> getFromTables() {
+        List<Class> classes = new ArrayList<>();
+        for (FromBuilder fromBuilder : this.froms) {
+            if (fromBuilder.getTable() != SelectBuilder.class) {
+                classes.add(fromBuilder.getTable());
+            }
+        }
+        return classes;
+    }
+
     @Override
     public SQLAutonomously autonomously() {
         return SQLAutonomously.newInstance(this);
@@ -198,9 +208,12 @@ public class SelectBuilder extends Builder {
     public SelectBuilder fromCount() {
         SelectBuilder builder = this.clone();
         builder.froms = new ArrayList<>();
-        List<Object> fields = new ArrayList<>();
-        fields.add(FunBuilder.builder("1", FunType.COUNT));
-        builder.froms.add(FromBuilder.builder(SelectBuilder.class, fields));
+        if (this.froms != null) {
+            for (FromBuilder fromBuilder : this.froms) {
+                builder.froms.add(FromBuilder.builder(fromBuilder.getTable()));
+            }
+        }
+        builder.froms.add(FromBuilder.builder(SelectBuilder.class, FunBuilder.builder("1", FunType.COUNT)));
         return builder;
     }
 }

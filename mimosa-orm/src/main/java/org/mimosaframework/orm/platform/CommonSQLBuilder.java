@@ -98,6 +98,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     @Override
+    public SQLBuilder addValueFun(String funName, Object field, String alias) {
+        sql.add(new SQLFunction(funName, field, alias, true));
+        return this;
+    }
+
+    @Override
     public SQLBuilder addFun(String funName, String tableAliasName, Object field, String alias) {
         sql.add(new SQLFunction(funName, tableAliasName, field, alias));
         return this;
@@ -567,19 +573,25 @@ public class CommonSQLBuilder implements SQLBuilder {
                 sb.append(((SQLFunction) o).getFunName());
                 String tableAliasName = ((SQLFunction) o).getTableAliasName();
                 Object f = ((SQLFunction) o).getField();
-                if (f == null) {
-                    sb.append("(*)");
-                } else if (f instanceof Integer) {
+                boolean isValue = ((SQLFunction) o).isValue();
+                if (isValue) {
                     sb.append("(" + f + ")");
                 } else {
-                    if (StringTools.isNotEmpty(tableAliasName)) {
-                        sb.append("(" + ruleStart + tableAliasName + ruleFinish + "." + ruleStart + f + ruleFinish + ")");
+                    if (f == null) {
+                        sb.append("(*)");
+                    } else if (f instanceof Integer) {
+                        sb.append("(" + f + ")");
                     } else {
-                        sb.append("(" + ruleStart);
-                        sb.append(f);
-                        sb.append(ruleFinish + ")");
+                        if (StringTools.isNotEmpty(tableAliasName)) {
+                            sb.append("(" + ruleStart + tableAliasName + ruleFinish + "." + ruleStart + f + ruleFinish + ")");
+                        } else {
+                            sb.append("(" + ruleStart);
+                            sb.append(f);
+                            sb.append(ruleFinish + ")");
+                        }
                     }
                 }
+
                 String alias = ((SQLFunction) o).getFieldAliasName();
                 if (alias != null) {
                     sb.append(" ");

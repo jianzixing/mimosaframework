@@ -7,6 +7,14 @@ public class FromBuilder {
     private Class table;
     private List<Object> fields;
 
+    public FromBuilder(Class table, Object... fields) {
+        this.table = table;
+        this.fields = new ArrayList<>();
+        for (Object o : fields) {
+            this.fields.add(o);
+        }
+    }
+
     public FromBuilder(Class table, List<Object> fields) {
         this.table = table;
         this.fields = fields;
@@ -22,6 +30,10 @@ public class FromBuilder {
 
     public List<Object> getFields() {
         return fields;
+    }
+
+    public static FromBuilder builder(Class table, Object... fields) {
+        return new FromBuilder(table, fields);
     }
 
     public static FromBuilder builder(Class table, List<Object> fields) {

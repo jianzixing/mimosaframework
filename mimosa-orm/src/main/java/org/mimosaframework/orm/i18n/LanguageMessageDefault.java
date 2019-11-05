@@ -201,6 +201,8 @@ public class LanguageMessageDefault implements MessagesRegister {
         mapAbstractDatabasePorter.put("order_not_in_table", "排序字段 %s 不在当前表中");
         mapAbstractDatabasePorter.put("not_field_name", "在表 %s 中,没有找到字段 %s");
         mapAbstractDatabasePorter.put("not_support_select_type", "不支持的查询字段 %s");
+        mapAbstractDatabasePorter.put("empty_trans_froms", "必须设置要查询的表");
+        mapAbstractDatabasePorter.put("empty_trans_froms_fields", "查询表的字段不能为空,SELECT必须设置查询字段,查询所有字段请用FieldSelectType.FULL");
         messageWords.add(new MessageWords(PROJECT, AbstractDatabasePorter.class, mapAbstractDatabasePorter));
 
         // PlatformFactory
