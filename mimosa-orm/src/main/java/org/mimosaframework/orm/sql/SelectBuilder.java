@@ -214,6 +214,16 @@ public class SelectBuilder extends Builder {
             }
         }
         builder.froms.add(FromBuilder.builder(SelectBuilder.class, FunBuilder.builder("1", FunType.COUNT)));
+        List<Object> restricts = builder.restrict;
+        if (restricts != null) {
+            List<Object> rms = new ArrayList<>(1);
+            for (Object o : restricts) {
+                if (o instanceof LimitBuilder) {
+                    rms.add(o);
+                }
+            }
+            restricts.removeAll(rms);
+        }
         return builder;
     }
 }

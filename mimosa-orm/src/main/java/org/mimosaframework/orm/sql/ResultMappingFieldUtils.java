@@ -81,8 +81,9 @@ public class ResultMappingFieldUtils {
                 Set<Object> keyset = new LinkedHashSet<>(iterator);
                 for (Object key : keyset) {
                     if (tableFields.get(String.valueOf(key)) != null) {
-                        object.put(tableFields.get(String.valueOf(key)), object.get(key));
+                        Object o = object.get(key);
                         object.remove(key);
+                        object.put(tableFields.get(String.valueOf(key)), o);
                     }
                 }
             }
