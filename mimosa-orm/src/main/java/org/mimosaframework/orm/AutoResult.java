@@ -367,10 +367,30 @@ public class AutoResult {
         if (key != null) {
             name = String.valueOf(key);
         }
-        if (value instanceof List) {
+        if (value instanceof List || value instanceof Map) {
+            Object selfValue = value;
+            if (value instanceof Map) {
+                List list = null;
+                Iterator<Map.Entry<Object, Object>> iterator = ((Map<Object, Object>) value).entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Object mapValue = iterator.next().getValue();
+                    if (selfValue instanceof List) {
+                        if (list == null) {
+                            list = new ArrayList();
+                        }
+                        list.addAll((List) mapValue);
+                    }
+                }
+                if (list != null && list.size() > 0) {
+                    selfValue = list;
+                } else {
+                    return null;
+                }
+            }
+
             List<Long> values = new ArrayList<>();
-            for (int i = 0; i < ((List) value).size(); i++) {
-                ModelObject obj = (ModelObject) ((List) value).get(i);
+            for (int i = 0; i < ((List) selfValue).size(); i++) {
+                ModelObject obj = (ModelObject) ((List) selfValue).get(i);
                 Object v = name == null ? obj.get(obj.keySet().iterator().next()) : obj.get(name);
 
                 if (v instanceof Number) {
