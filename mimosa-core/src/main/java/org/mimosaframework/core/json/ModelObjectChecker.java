@@ -9,7 +9,7 @@ import org.mimosaframework.core.exception.ModelCheckerException;
  */
 public interface ModelObjectChecker {
 
-    void checker(ModelObject object, Object[] removed) throws ModelCheckerException;
+    void checker(ModelObject object, String[] removed) throws ModelCheckerException;
 
-    void checkerUpdate(ModelObject object, Object[] removed) throws ModelCheckerException;
+    void checkerUpdate(ModelObject object, String[] removed) throws ModelCheckerException;
 }

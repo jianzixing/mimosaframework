@@ -613,6 +613,7 @@ public class SessionTemplateServiceTesting {
         object.put(TableUser.createdTime, new Date());
         template.save(object);
 
+
         AutoResult result = template.calculate(Criteria.fun(TableUser.class)
                 .addFunction(BasicFunction.DISTINCT, TableUser.age, "ages")
                 .orderBy(TableUser.age, true));

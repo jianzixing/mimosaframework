@@ -310,7 +310,7 @@ public class DefaultQuery<T> implements Query<T> {
             if (k.startsWith("eq_")) {
                 this.eq(k.replaceFirst("eq_", ""), object.get(key));
             } else if (k.startsWith("in_")) {
-                ModelArray array = object.getModelArray(key);
+                ModelArray array = object.getModelArray(String.valueOf(key));
                 if (array != null) {
                     this.in(k.replaceFirst("in_", ""), array);
                 }
@@ -327,7 +327,7 @@ public class DefaultQuery<T> implements Query<T> {
             } else if (k.startsWith("lteq_")) {
                 this.lte(k.replaceFirst("lteq_", ""), object.get(key));
             } else if (k.startsWith("btn_")) {
-                ModelObject b = object.getModelObject(key);
+                ModelObject b = object.getModelObject(String.valueOf(key));
                 if (b != null) {
                     this.between(k.replaceFirst("btn_", ""), b.get("start"), b.get("end"));
                 }
@@ -620,7 +620,7 @@ public class DefaultQuery<T> implements Query<T> {
     public void setLimit(Limit limit) {
         this.limit = limit;
     }
-    
+
     public void setMaster(boolean master) {
         isMaster = master;
     }

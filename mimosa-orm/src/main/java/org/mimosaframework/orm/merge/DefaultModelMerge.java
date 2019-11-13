@@ -168,7 +168,7 @@ public class DefaultModelMerge implements ModelMerge {
             Map<Object, Object> children = new LinkedHashMap<Object, Object>();
             for (Object k : keys) {
                 if (k instanceof MergeTree) {
-                    Object o = object.getObjectKey(k);
+                    Object o = object.getAny(k);
                     MergeTree mt = (MergeTree) k;
                     List<ModelObject> mos = null;
                     if (o instanceof List) {
@@ -188,7 +188,7 @@ public class DefaultModelMerge implements ModelMerge {
             }
             if (children.size() > 0) {
                 for (Map.Entry<Object, Object> entry : children.entrySet()) {
-                    object.putObjectKey(entry.getKey(), entry.getValue());
+                    object.putAny(entry.getKey(), entry.getValue());
                 }
             }
         }
@@ -207,7 +207,7 @@ public class DefaultModelMerge implements ModelMerge {
             List<Object> rmkey = new ArrayList<Object>();
             for (Object o : sets) {
                 if (o instanceof MergeTree) {
-                    Object v = object.getObjectKey(o);
+                    Object v = object.getAny(o);
                     if (v != null) {
                         List<ModelObject> vl = null;
                         if (v instanceof List) {
@@ -228,11 +228,11 @@ public class DefaultModelMerge implements ModelMerge {
                     cv.add(o);
                 }
             }
-            for (Object o : rmkey) object.removeObjectKey(o);
+            for (Object o : rmkey) object.removeAny(o);
             for (Object o : cv) {
                 MergeTree mergeTree = (MergeTree) o;
-                Object os = object.getObjectKey(o);
-                object.removeObjectKey(o);
+                Object os = object.getAny(o);
+                object.removeAny(o);
                 if (os != null) {
                     object.put(mergeTree.getExternalConnectionName(), os);
                 }
@@ -271,12 +271,12 @@ public class DefaultModelMerge implements ModelMerge {
                     Object k = entry.getKey();
                     //判断是否是结果集对象
                     if (!(k instanceof MergeTree)) {
-                        if (!String.valueOf(o.getObjectKey(k)).equals(String.valueOf(object.getObjectKey(k)))) {
+                        if (!String.valueOf(o.getAny(k)).equals(String.valueOf(object.getAny(k)))) {
                             isEq = false;
                         }
                     } else {
                         //假如到children的map缓存中去以便假设一致时处理
-                        Object v = object.getObjectKey(k);
+                        Object v = object.getAny(k);
                         if (v instanceof List) {
                             children.put(k, (List<ModelObject>) v);
                         } else {
@@ -292,7 +292,7 @@ public class DefaultModelMerge implements ModelMerge {
                 if (isEq) {
                     if (children.size() > 0) {
                         for (Map.Entry<Object, List<ModelObject>> entry : children.entrySet()) {
-                            Object co = o.getObjectKey(entry.getKey());
+                            Object co = o.getAny(entry.getKey());
                             List<ModelObject> objects = null;
                             if (co == null) {
                                 objects = entry.getValue();
@@ -305,7 +305,7 @@ public class DefaultModelMerge implements ModelMerge {
                                 }
                                 objects.addAll(entry.getValue());
                             }
-                            o.putObjectKey(entry.getKey(), objects);
+                            o.putAny(entry.getKey(), objects);
                         }
                     }
                 }

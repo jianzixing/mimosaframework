@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.*;
 
 import static org.mimosaframework.core.json.util.TypeUtils.*;
@@ -33,7 +34,7 @@ import static org.mimosaframework.core.json.util.TypeUtils.*;
  * @author wenshao[szujobs@hotmail.com]
  */
 @SuppressWarnings("serial")
-public class ModelObject extends Model implements Map<Object, Object>, Cloneable, Serializable, InvocationHandler {
+public class ModelObject extends Model implements Map<Object, Object>, Cloneable, Serializable, InvocationHandler, ModelByEnum, ModelByClass {
 
     private static final int DEFAULT_INITIAL_CAPACITY = 16;
 
@@ -79,12 +80,24 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return new ModelObject(tableContactsClass);
     }
 
-    private String getKeyValue(Object key) {
+    public static String getKeyName(Object key) {
         if (key != null) {
             if (key instanceof Class) key = ((Class) key).getSimpleName();
             return String.valueOf(key);
         }
         return null;
+    }
+
+    public void putAny(Object key, Object value) {
+        map.put(key, value);
+    }
+
+    public Object getAny(Object key) {
+        return map.get(key);
+    }
+
+    public void removeAny(Object key) {
+        map.remove(key);
     }
 
     public int size() {
@@ -95,24 +108,40 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return map.isEmpty();
     }
 
+    @Override
     public boolean containsKey(Object key) {
-        return map.containsKey(getKeyValue(key));
+        return map.containsKey(getKeyName(key));
+    }
+
+    public boolean containsKey(String key) {
+        return map.containsKey(key);
     }
 
     public boolean containsValue(Object value) {
         return map.containsValue(value);
     }
 
+    @Override
     public Object get(Object key) {
-        return map.get(getKeyValue(key));
+        return map.get(getKeyName(key));
     }
 
-    public Object getObjectKey(Object key) {
+    @Override
+    public Object put(Object key, Object value) {
+        return map.put(getKeyName(key), value);
+    }
+
+    @Override
+    public Object remove(Object key) {
+        return map.remove(getKeyName(key));
+    }
+
+    public Object get(String key) {
         return map.get(key);
     }
 
-    public ModelObject getModelObject(Object key) {
-        Object value = map.get(getKeyValue(key));
+    public ModelObject getModelObject(String key) {
+        Object value = map.get(key);
 
         if (value instanceof ModelObject) {
             return (ModelObject) value;
@@ -121,8 +150,8 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return (ModelObject) toJSON(value);
     }
 
-    public ModelArray getModelArray(Object key) {
-        Object value = map.get(getKeyValue(key));
+    public ModelArray getModelArray(String key) {
+        Object value = map.get(key);
 
         if (value instanceof ModelArray) {
             return (ModelArray) value;
@@ -131,7 +160,7 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return (ModelArray) toJSON(value);
     }
 
-    public <T> List<T> getArray(Object key) {
+    public <T> List<T> getArray(String key) {
         ModelArray array = this.getModelArray(key);
         if (array != null) {
             List<T> list = new ArrayList<>();
@@ -144,8 +173,8 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return null;
     }
 
-    public <T> T getObject(Object key, Class<T> clazz) {
-        Object obj = map.get(getKeyValue(key));
+    public <T> T getObject(String key, Class<T> clazz) {
+        Object obj = map.get(key);
         return TypeUtils.castToJavaBean(obj, clazz);
     }
 
@@ -159,8 +188,8 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToBoolean(value);
     }
 
-    public byte[] getBytes(Object key) {
-        Object value = get(getKeyValue(key));
+    public byte[] getBytes(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return null;
@@ -169,8 +198,8 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToBytes(value);
     }
 
-    public boolean getBooleanValue(Object key) {
-        Object value = get(getKeyValue(key));
+    public boolean getBooleanValue(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return false;
@@ -179,14 +208,14 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToBoolean(value).booleanValue();
     }
 
-    public Byte getByte(Object key) {
-        Object value = get(getKeyValue(key));
+    public Byte getByte(String key) {
+        Object value = get(key);
 
         return castToByte(value);
     }
 
-    public byte getByteValue(Object key) {
-        Object value = get(getKeyValue(key));
+    public byte getByteValue(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return 0;
@@ -195,14 +224,14 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToByte(value).byteValue();
     }
 
-    public Short getShort(Object key) {
-        Object value = get(getKeyValue(key));
+    public Short getShort(String key) {
+        Object value = get(key);
 
         return castToShort(value);
     }
 
-    public short getShortValue(Object key) {
-        Object value = get(getKeyValue(key));
+    public short getShortValue(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return 0;
@@ -211,14 +240,14 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToShort(value).shortValue();
     }
 
-    public Integer getInteger(Object key) {
-        Object value = get(getKeyValue(key));
+    public Integer getInteger(String key) {
+        Object value = get(key);
 
         return castToInt(value);
     }
 
-    public int getIntValue(Object key) {
-        Object value = get(getKeyValue(key));
+    public int getIntValue(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return 0;
@@ -227,14 +256,14 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToInt(value).intValue();
     }
 
-    public Long getLong(Object key) {
-        Object value = get(getKeyValue(key));
+    public Long getLong(String key) {
+        Object value = get(key);
 
         return castToLong(value);
     }
 
-    public long getLongValue(Object key) {
-        Object value = get(getKeyValue(key));
+    public long getLongValue(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return 0L;
@@ -243,14 +272,14 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToLong(value).longValue();
     }
 
-    public Float getFloat(Object key) {
-        Object value = get(getKeyValue(key));
+    public Float getFloat(String key) {
+        Object value = get(key);
 
         return castToFloat(value);
     }
 
-    public float getFloatValue(Object key) {
-        Object value = get(getKeyValue(key));
+    public float getFloatValue(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return 0F;
@@ -259,14 +288,14 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToFloat(value).floatValue();
     }
 
-    public Double getDouble(Object key) {
-        Object value = get(getKeyValue(key));
+    public Double getDouble(String key) {
+        Object value = get(key);
 
         return castToDouble(value);
     }
 
-    public double getDoubleValue(Object key) {
-        Object value = get(getKeyValue(key));
+    public double getDoubleValue(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return 0D;
@@ -275,20 +304,20 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return castToDouble(value);
     }
 
-    public BigDecimal getBigDecimal(Object key) {
-        Object value = get(getKeyValue(key));
+    public BigDecimal getBigDecimal(String key) {
+        Object value = get(key);
 
         return castToBigDecimal(value);
     }
 
-    public BigInteger getBigInteger(Object key) {
-        Object value = get(getKeyValue(key));
+    public BigInteger getBigInteger(String key) {
+        Object value = get(key);
 
         return castToBigInteger(value);
     }
 
-    public String getString(Object key) {
-        Object value = get(getKeyValue(key));
+    public String getString(String key) {
+        Object value = get(key);
 
         if (value == null) {
             return null;
@@ -297,34 +326,30 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return value.toString();
     }
 
-    public Date getDate(Object key) {
-        Object value = get(getKeyValue(key));
+    public Date getDate(String key) {
+        Object value = get(key);
 
         return castToDate(value);
     }
 
-    public java.sql.Date getSqlDate(Object key) {
-        Object value = get(getKeyValue(key));
+    public java.sql.Date getSqlDate(String key) {
+        Object value = get(key);
 
         return castToSqlDate(value);
     }
 
-    public java.sql.Timestamp getTimestamp(Object key) {
-        Object value = get(getKeyValue(key));
+    public java.sql.Timestamp getTimestamp(String key) {
+        Object value = get(key);
 
         return castToTimestamp(value);
     }
 
-    public Object put(Object key, Object value) {
-        return map.put(getKeyValue(key), value);
-    }
-
-    public Object putObjectKey(Object key, Object value) {
+    public Object put(String key, Object value) {
         return map.put(key, value);
     }
 
-    public ModelObject chainPut(Object key, Object value) {
-        map.put(getKeyValue(key), value);
+    public ModelObject chainPut(String key, Object value) {
+        map.put(key, value);
         return this;
     }
 
@@ -332,7 +357,7 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         map.putAll(m);
     }
 
-    public ModelObject chainPutAll(Map<? extends Object, ? extends Object> m) {
+    public ModelObject chainPutAll(Map<? extends String, ? extends Object> m) {
         map.putAll(m);
         return this;
     }
@@ -346,16 +371,12 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return this;
     }
 
-    public Object remove(Object key) {
-        return map.remove(getKeyValue(key));
-    }
-
-    public Object removeObjectKey(Object key) {
+    public Object remove(String key) {
         return map.remove(key);
     }
 
-    public ModelObject chainRemove(Object key) {
-        map.remove(getKeyValue(key));
+    public ModelObject chainRemove(String key) {
+        map.remove(key);
         return this;
     }
 
@@ -367,7 +388,7 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return map.values();
     }
 
-    public Set<Entry<Object, Object>> entrySet() {
+    public Set<Map.Entry<Object, Object>> entrySet() {
         return map.entrySet();
     }
 
@@ -503,7 +524,7 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
             }
         }
         for (Object key : keys) {
-            this.remove(key);
+            this.map.remove(key);
         }
     }
 
@@ -521,11 +542,11 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
             }
         }
         for (Object key : keys) {
-            this.remove(key);
+            this.map.remove(key);
         }
     }
 
-    public boolean isEmpty(Object key) {
+    public boolean isEmpty(String key) {
         if (this.get(key) == null || String.valueOf(this.get(key)).equals("")) {
             return true;
         } else {
@@ -533,7 +554,7 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         }
     }
 
-    public boolean isNotEmpty(Object key) {
+    public boolean isNotEmpty(String key) {
         if (!isEmpty(key)) {
             return true;
         } else {
@@ -569,16 +590,26 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
     }
 
     public boolean checkUpdateThrowable(Object... removed) throws ModelCheckerException {
+        String[] strings = new String[removed.length];
+        for (int i = 0; i < removed.length; i++) {
+            strings[i] = getKeyName(removed[i]);
+        }
+
         for (ModelObjectChecker checker : checkers) {
-            checker.checkerUpdate(this, removed);
+            checker.checkerUpdate(this, strings);
         }
         return true;
     }
 
     public boolean checkUpdate(Object... removed) {
         try {
+            String[] strings = new String[removed.length];
+            for (int i = 0; i < removed.length; i++) {
+                strings[i] = getKeyName(removed[i]);
+            }
+
             for (ModelObjectChecker checker : checkers) {
-                checker.checkerUpdate(this, removed);
+                checker.checkerUpdate(this, strings);
             }
             return true;
         } catch (ModelCheckerException e) {
@@ -599,7 +630,7 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
             for (Object o : objects) {
                 boolean in = false;
                 for (Object k : ks) {
-                    if (getKeyValue(o).equals(getKeyValue(k))) {
+                    if (getKeyName(o).equals(getKeyName(k))) {
                         in = true;
                     }
                 }
@@ -609,7 +640,7 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
             }
 
             for (Object o : removed) {
-                this.remove(o);
+                this.map.remove(o);
             }
         }
     }
@@ -619,8 +650,8 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
             ModelObject object = new ModelObject();
             object.objectClass = this.objectClass;
             for (Object key : keys) {
-                if (this.get(key) != null) {
-                    object.put(key, this.get(key));
+                if (this.map.get(key) != null) {
+                    object.map.put(key, this.get(getKeyName(key)));
                 }
             }
             return object;
@@ -630,5 +661,335 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
 
     public ModelObject copy(List keys) {
         return this.copy(keys.toArray());
+    }
+
+    @Override
+    public boolean containsKey(Enum key) {
+        return this.containsKey(key.name());
+    }
+
+    @Override
+    public Object get(Enum key) {
+        return get(key.name());
+    }
+
+    @Override
+    public ModelObject getModelObject(Enum key) {
+        return getModelObject(key.name());
+    }
+
+    @Override
+    public ModelArray getModelArray(Enum key) {
+        return getModelArray(key.name());
+    }
+
+    @Override
+    public <T> List<T> getArray(Enum key) {
+        return getArray(key.name());
+    }
+
+    @Override
+    public <T> T getObject(Enum key, Class<T> clazz) {
+        return getObject(key.name(), clazz);
+    }
+
+    @Override
+    public Boolean getBoolean(Enum key) {
+        return getBoolean(key.name());
+    }
+
+    @Override
+    public byte[] getBytes(Enum key) {
+        return getBytes(key.name());
+    }
+
+    @Override
+    public boolean getBooleanValue(Enum key) {
+        return getBooleanValue(key.name());
+    }
+
+    @Override
+    public Byte getByte(Enum key) {
+        return getByte(key.name());
+    }
+
+    @Override
+    public byte getByteValue(Enum key) {
+        return getByteValue(key.name());
+    }
+
+    @Override
+    public Short getShort(Enum key) {
+        return getShort(key.name());
+    }
+
+    @Override
+    public short getShortValue(Enum key) {
+        return getShortValue(key.name());
+    }
+
+    @Override
+    public Integer getInteger(Enum key) {
+        return getInteger(key.name());
+    }
+
+    @Override
+    public int getIntValue(Enum key) {
+        return getIntValue(key.name());
+    }
+
+    @Override
+    public Long getLong(Enum key) {
+        return getLong(key.name());
+    }
+
+    @Override
+    public long getLongValue(Enum key) {
+        return getLongValue(key.name());
+    }
+
+    @Override
+    public Float getFloat(Enum key) {
+        return getFloat(key.name());
+    }
+
+    @Override
+    public float getFloatValue(Enum key) {
+        return getFloatValue(key.name());
+    }
+
+    @Override
+    public Double getDouble(Enum key) {
+        return getDouble(key.name());
+    }
+
+    @Override
+    public double getDoubleValue(Enum key) {
+        return getDoubleValue(key.name());
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(Enum key) {
+        return getBigDecimal(key.name());
+    }
+
+    @Override
+    public BigInteger getBigInteger(Enum key) {
+        return getBigInteger(key.name());
+    }
+
+    @Override
+    public String getString(Enum key) {
+        return getString(key.name());
+    }
+
+    @Override
+    public Date getDate(Enum key) {
+        return getDate(key.name());
+    }
+
+    @Override
+    public java.sql.Date getSqlDate(Enum key) {
+        return getSqlDate(key.name());
+    }
+
+    @Override
+    public Timestamp getTimestamp(Enum key) {
+        return getTimestamp(key.name());
+    }
+
+    @Override
+    public Object put(Enum key, Object value) {
+        return put(key.name(), value);
+    }
+
+    @Override
+    public ModelObject chainPut(Enum key, Object value) {
+        return chainPut(key.name(), value);
+    }
+
+    @Override
+    public Object remove(Enum key) {
+        return remove(key.name());
+    }
+
+    @Override
+    public ModelObject chainRemove(Enum key) {
+        return chainRemove(key.name());
+    }
+
+    @Override
+    public boolean isEmpty(Enum key) {
+        return isEmpty(key.name());
+    }
+
+    @Override
+    public boolean isNotEmpty(Enum key) {
+        return isNotEmpty(key.name());
+    }
+
+    @Override
+    public boolean containsKey(Class key) {
+        return this.containsKey(key.getSimpleName());
+    }
+
+    @Override
+    public Object get(Class key) {
+        return get(key.getSimpleName());
+    }
+
+    @Override
+    public ModelObject getModelObject(Class key) {
+        return getModelObject(key.getSimpleName());
+    }
+
+    @Override
+    public ModelArray getModelArray(Class key) {
+        return getModelArray(key.getSimpleName());
+    }
+
+    @Override
+    public <T> List<T> getArray(Class key) {
+        return getArray(key.getSimpleName());
+    }
+
+    @Override
+    public <T> T getObject(Class key, Class<T> clazz) {
+        return getObject(key.getSimpleName(), clazz);
+    }
+
+    @Override
+    public Boolean getBoolean(Class key) {
+        return getBoolean(key.getSimpleName());
+    }
+
+    @Override
+    public byte[] getBytes(Class key) {
+        return getBytes(key.getSimpleName());
+    }
+
+    @Override
+    public boolean getBooleanValue(Class key) {
+        return getBooleanValue(key.getSimpleName());
+    }
+
+    @Override
+    public Byte getByte(Class key) {
+        return getByte(key.getSimpleName());
+    }
+
+    @Override
+    public byte getByteValue(Class key) {
+        return getByteValue(key.getSimpleName());
+    }
+
+    @Override
+    public Short getShort(Class key) {
+        return getShort(key.getSimpleName());
+    }
+
+    @Override
+    public short getShortValue(Class key) {
+        return getShortValue(key.getSimpleName());
+    }
+
+    @Override
+    public Integer getInteger(Class key) {
+        return getInteger(key.getSimpleName());
+    }
+
+    @Override
+    public int getIntValue(Class key) {
+        return getIntValue(key.getSimpleName());
+    }
+
+    @Override
+    public Long getLong(Class key) {
+        return getLong(key.getSimpleName());
+    }
+
+    @Override
+    public long getLongValue(Class key) {
+        return getLongValue(key.getSimpleName());
+    }
+
+    @Override
+    public Float getFloat(Class key) {
+        return getFloat(key.getSimpleName());
+    }
+
+    @Override
+    public float getFloatValue(Class key) {
+        return getFloatValue(key.getSimpleName());
+    }
+
+    @Override
+    public Double getDouble(Class key) {
+        return getDouble(key.getSimpleName());
+    }
+
+    @Override
+    public double getDoubleValue(Class key) {
+        return getDoubleValue(key.getSimpleName());
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(Class key) {
+        return getBigDecimal(key.getSimpleName());
+    }
+
+    @Override
+    public BigInteger getBigInteger(Class key) {
+        return getBigInteger(key.getSimpleName());
+    }
+
+    @Override
+    public String getString(Class key) {
+        return getString(key.getSimpleName());
+    }
+
+    @Override
+    public Date getDate(Class key) {
+        return getDate(key.getSimpleName());
+    }
+
+    @Override
+    public java.sql.Date getSqlDate(Class key) {
+        return getSqlDate(key.getSimpleName());
+    }
+
+    @Override
+    public Timestamp getTimestamp(Class key) {
+        return getTimestamp(key.getSimpleName());
+    }
+
+    @Override
+    public Object put(Class key, Object value) {
+        return put(key.getSimpleName(), value);
+    }
+
+    @Override
+    public ModelObject chainPut(Class key, Object value) {
+        return chainPut(key.getSimpleName(), value);
+    }
+
+    @Override
+    public Object remove(Class key) {
+        return remove(key.getSimpleName());
+    }
+
+    @Override
+    public ModelObject chainRemove(Class key) {
+        return chainRemove(key.getSimpleName());
+    }
+
+    @Override
+    public boolean isEmpty(Class key) {
+        return isEmpty(key.getSimpleName());
+    }
+
+    @Override
+    public boolean isNotEmpty(Class key) {
+        return isNotEmpty(key.getSimpleName());
     }
 }

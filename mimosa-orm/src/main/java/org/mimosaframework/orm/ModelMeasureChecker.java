@@ -32,13 +32,13 @@ public class ModelMeasureChecker implements ModelObjectChecker {
     }
 
     @Override
-    public void checker(ModelObject object, Object[] removed) throws ModelCheckerException {
+    public void checker(ModelObject object, String[] removed) throws ModelCheckerException {
         object.clearEmpty();
         this.checkerValid(object, removed);
     }
 
     @Override
-    public void checkerUpdate(ModelObject object, Object[] removed) throws ModelCheckerException {
+    public void checkerUpdate(ModelObject object, String[] removed) throws ModelCheckerException {
         if (tables == null || object.getObjectClass() == null) {
             throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
                     ModelMeasureChecker.class, "not_found_mapping_class"));
@@ -52,7 +52,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
         }
 
         Set<MappingField> fields = table.getMappingFields();
-        List<Object> removedList = null;
+        List<String> removedList = null;
 
         for (MappingField field : fields) {
             if (field.isMappingFieldPrimaryKey()) {
@@ -74,7 +74,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                 if (removedList == null) {
                     removedList = new ArrayList<>();
                 }
-                for (Object o : removed) {
+                for (String o : removed) {
                     removedList.add(o);
                 }
             }
@@ -87,12 +87,12 @@ public class ModelMeasureChecker implements ModelObjectChecker {
         }
 
         if (removedList != null) {
-            removed = removedList.toArray();
+            removed = removedList.toArray(new String[]{});
         }
         this.checkerValid(object, removed);
     }
 
-    private void checkerValid(ModelObject object, Object[] removed) throws ModelCheckerException {
+    private void checkerValid(ModelObject object, String[] removed) throws ModelCheckerException {
         if (tables == null || object.getObjectClass() == null) {
             throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
                     ModelMeasureChecker.class, "not_found_mapping_class"));

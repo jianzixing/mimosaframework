@@ -29,7 +29,7 @@ public abstract class ModelUtils {
         Map<String, ModelObject> map = new LinkedHashMap();
         if (objects != null) {
             for (ModelObject m : objects) {
-                map.put(m.getString(idKey), m);
+                map.put(m.getString(ModelObject.getKeyName(idKey)), m);
             }
 
             List<ModelObject> result = new ArrayList();
@@ -37,10 +37,10 @@ public abstract class ModelUtils {
 
             Set<Map.Entry<String, ModelObject>> set = map.entrySet();
             for (Map.Entry<String, ModelObject> entry : set) {
-                String pid = entry.getValue().getString(pidKey);
+                String pid = entry.getValue().getString(ModelObject.getKeyName(pidKey));
                 Set<Map.Entry<String, ModelObject>> set2 = map.entrySet();
                 for (Map.Entry<String, ModelObject> cen : set2) {
-                    if (cen.getValue().getString(idKey).equals(pid)) {
+                    if (cen.getValue().getString(ModelObject.getKeyName(idKey)).equals(pid)) {
                         ModelObject object = cen.getValue();
                         List children = object.getModelArray(childrenKey);
                         if (children == null) {
@@ -259,7 +259,7 @@ public abstract class ModelUtils {
 
     public static ModelObject queryPKModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c) {
         if (sessionTemplate != null && object != null && keyFrom != null && c != null) {
-            return sessionTemplate.get(c, object.getString(keyFrom));
+            return sessionTemplate.get(c, object.getString(ModelObject.getKeyName(keyFrom)));
         }
         return null;
     }
