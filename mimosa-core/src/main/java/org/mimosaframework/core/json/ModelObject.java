@@ -590,9 +590,12 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
     }
 
     public boolean checkUpdateThrowable(Object... removed) throws ModelCheckerException {
-        String[] strings = new String[removed.length];
-        for (int i = 0; i < removed.length; i++) {
-            strings[i] = getKeyName(removed[i]);
+        String[] strings = null;
+        if (removed != null) {
+            strings = new String[removed.length];
+            for (int i = 0; i < removed.length; i++) {
+                strings[i] = getKeyName(removed[i]);
+            }
         }
 
         for (ModelObjectChecker checker : checkers) {
@@ -603,9 +606,12 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
 
     public boolean checkUpdate(Object... removed) {
         try {
-            String[] strings = new String[removed.length];
-            for (int i = 0; i < removed.length; i++) {
-                strings[i] = getKeyName(removed[i]);
+            String[] strings = null;
+            if (removed != null) {
+                strings = new String[removed.length];
+                for (int i = 0; i < removed.length; i++) {
+                    strings[i] = getKeyName(removed[i]);
+                }
             }
 
             for (ModelObjectChecker checker : checkers) {

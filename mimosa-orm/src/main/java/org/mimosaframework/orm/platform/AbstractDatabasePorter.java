@@ -1709,7 +1709,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
         }
 
-        if (whereBuilder != null) {
+        if (whereBuilder != null && !whereBuilder.isEmpty()) {
             sqlBuilder.WHERE();
             this.transformationSQLWhere(builder, aliasNames, whereBuilder, sqlBuilder, mappingTables);
         }

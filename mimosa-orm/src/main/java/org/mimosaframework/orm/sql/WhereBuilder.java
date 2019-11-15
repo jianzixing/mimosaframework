@@ -137,4 +137,9 @@ public class WhereBuilder {
         if (logic != null) builder.logic = logic;
         return builder;
     }
+
+    public boolean isEmpty() {
+        if (this.whereItems == null) return true;
+        return this.whereItems.isEmpty();
+    }
 }
