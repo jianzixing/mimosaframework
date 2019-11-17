@@ -264,6 +264,16 @@ public abstract class ModelUtils {
         return null;
     }
 
+    /**
+     * 判断数据库中是否存在某个对象
+     *
+     * @param sessionTemplate
+     * @param object
+     * @param keyFrom
+     * @param c
+     * @param keyQuery
+     * @return
+     */
     public static boolean hasModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Object keyQuery) {
         ModelObject o = queryModelObject(sessionTemplate, object, keyFrom, c, keyQuery);
         if (o == null) {
@@ -272,11 +282,64 @@ public abstract class ModelUtils {
         return true;
     }
 
+    /**
+     * 判断数据库中是否存在某个对象
+     *
+     * @param sessionTemplate
+     * @param object
+     * @param keyFrom
+     * @param c
+     * @return
+     */
     public static boolean hasPKModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c) {
         ModelObject o = queryPKModelObject(sessionTemplate, object, keyFrom, c);
         if (o == null) {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 通过keys对比两个列表中的差异，返回内容包含
+     * 两个列表的交集和不同的集合
+     *
+     * @param exists
+     * @param news
+     * @param keys
+     * @return
+     */
+    public static ModelDiffObject diffObjects(List<ModelObject> exists, List<ModelObject> news, String... keys) {
+        if (exists != null && news != null && keys != null) {
+            List<ModelObject> removedList;
+            List<ModelObject> existList = new ArrayList<>();
+            List<ModelObject> existList2 = new ArrayList<>();
+            List<ModelObject> insertList;
+            for (ModelObject exist : exists) {
+                for (ModelObject item : news) {
+                    boolean isEqual = true;
+                    for (String key : keys) {
+                        String v1 = exist.getString(key);
+                        String v2 = item.getString(key);
+                        if (v1 != null && v2 != null && v1.equals(v2)) {
+
+                        } else {
+                            isEqual = false;
+                        }
+                    }
+                    if (isEqual) {
+                        existList.add(exist);
+                        existList2.add(item);
+                    }
+                }
+            }
+
+            removedList = new ArrayList<>(exists);
+            removedList.removeAll(existList);
+            insertList = new ArrayList<>(news);
+            insertList.removeAll(existList2);
+
+            return new ModelDiffObject(removedList, existList, insertList);
+        }
+        return null;
     }
 }
