@@ -115,6 +115,10 @@ public class AutoResult {
         this.value = value;
     }
 
+    public AutoResult(Object value) {
+        this.value = value;
+    }
+
     public Object getValue() {
         return value;
     }

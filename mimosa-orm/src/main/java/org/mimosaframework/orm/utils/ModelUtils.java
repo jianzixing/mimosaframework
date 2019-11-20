@@ -313,6 +313,7 @@ public abstract class ModelUtils {
             List<ModelObject> removedList;
             List<ModelObject> existList = new ArrayList<>();
             List<ModelObject> existList2 = new ArrayList<>();
+            Map<ModelObject, ModelObject> map = new LinkedHashMap<>();
             List<ModelObject> insertList;
             for (ModelObject exist : exists) {
                 for (ModelObject item : news) {
@@ -329,6 +330,7 @@ public abstract class ModelUtils {
                     if (isEqual) {
                         existList.add(exist);
                         existList2.add(item);
+                        map.put(exist, item);
                     }
                 }
             }
@@ -338,7 +340,18 @@ public abstract class ModelUtils {
             insertList = new ArrayList<>(news);
             insertList.removeAll(existList2);
 
-            return new ModelDiffObject(removedList, existList, insertList);
+            return new ModelDiffObject(removedList, existList, existList2, insertList, map);
+        }
+        return null;
+    }
+
+    public static ModelDiffObject diffObjects(List<ModelObject> exists, List<ModelObject> news, Enum... keys) {
+        if (exists != null && news != null && keys != null) {
+            String[] strings = new String[keys.length];
+            for (int i = 0; i < strings.length; i++) {
+                strings[i] = keys[i].name();
+            }
+            return diffObjects(exists, news, strings);
         }
         return null;
     }

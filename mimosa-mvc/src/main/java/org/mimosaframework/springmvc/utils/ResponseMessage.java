@@ -8,6 +8,7 @@ import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.springmvc.exception.ModuleException;
 import org.mimosaframework.springmvc.exception.StockCode;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
@@ -115,6 +116,17 @@ public class ResponseMessage {
                 this.msg = Messages.get("mimosa_mvc", ResponseMessage.class, "trans_fail") + "," + throwable.getClass().getSimpleName() + ":" + msg;
             }
             ((Exception) data).printStackTrace();
+        } else if (data instanceof InvocationTargetException) {
+            Throwable throwable = ((InvocationTargetException) data);
+            if (!this.setMatchMessage(throwable)) {
+                if (throwable.getMessage() == null && throwable.getCause() != null) {
+                    this.msg = throwable.getCause().getMessage();
+                }
+                if (throwable.getMessage() != null) {
+                    this.msg = throwable.getMessage();
+                }
+            }
+            ((Exception) data).printStackTrace();
         } else if (data instanceof Exception) {
             this.code = -9999;
             if (!this.setMatchMessage(((Exception) data))) {
@@ -129,7 +141,7 @@ public class ResponseMessage {
 
     private boolean setMatchMessage(Throwable throwable) {
         if (throwable != null) {
-            if (throwable.getMessage().indexOf("Duplicate entry") >= 0) {
+            if (throwable.getMessage() != null && throwable.getMessage().indexOf("Duplicate entry") >= 0) {
                 this.msg = Messages.get("mimosa_mvc", ResponseMessage.class, "duplicate_unique_field") + ": " + throwable.getMessage();
                 return true;
             }
