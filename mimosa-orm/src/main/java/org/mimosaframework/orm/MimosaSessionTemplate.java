@@ -16,6 +16,7 @@ import org.mimosaframework.orm.transaction.TransactionPropagationType;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.List;
@@ -464,6 +465,9 @@ public class MimosaSessionTemplate implements SessionTemplate {
             try {
                 object = method.invoke(session, args);
             } catch (Throwable throwable) {
+                if (throwable instanceof InvocationTargetException) {
+                    throw throwable.getCause();
+                }
                 throw throwable;
             } finally {
                 if (session != null) {
