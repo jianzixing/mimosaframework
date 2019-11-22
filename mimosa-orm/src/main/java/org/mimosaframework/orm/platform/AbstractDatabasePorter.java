@@ -1869,7 +1869,24 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     if (itemValue instanceof SelectBuilder) {
                         this.transformationSQLSelect((SelectBuilder) itemValue, sqlBuilder, mappingTables);
                     } else {
-                        sqlBuilder.addDataPlaceholder(key, itemValue);
+                        if (itemSymbol == SymbolType.IN || itemSymbol == SymbolType.NIN) {
+                            sqlBuilder.addParenthesisStart();
+                            if (itemValue instanceof Iterable) {
+                                Iterator iterator = ((Iterable) itemValue).iterator();
+                                while (iterator.hasNext()) {
+                                    Object v = iterator.next();
+                                    sqlBuilder.addDataPlaceholder(key, v);
+                                    if (iterator.hasNext()) {
+                                        sqlBuilder.addSplit();
+                                    }
+                                }
+                            } else {
+                                sqlBuilder.addDataPlaceholder(key, itemValue);
+                            }
+                            sqlBuilder.addParenthesisEnd();
+                        } else {
+                            sqlBuilder.addDataPlaceholder(key, itemValue);
+                        }
                     }
                 } else {
                     MappingTable mappingTable = mappingTables.get(tableRight);
