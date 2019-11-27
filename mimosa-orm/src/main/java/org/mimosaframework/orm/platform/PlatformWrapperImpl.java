@@ -111,6 +111,14 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         return this.databasePorter.delete(table, delete);
     }
 
+    private boolean isNeedSelectPrimaryKey(DefaultQuery query) {
+        Limit limit = query.getLimit();
+        if (limit != null && (query.hasInnerJoin() || query.hasLeftJoin())) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public List<ModelObject> select(Map<Object, MappingTable> tables, DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
         if (tables != null) {
@@ -120,11 +128,11 @@ public class PlatformWrapperImpl implements PlatformWrapper {
             }
         }
 
-        if (query.hasInnerJoin() || query.hasLeftJoin()) {
+        if (this.isNeedSelectPrimaryKey(query)) {
             List<ModelObject> ids = this.databasePorter.selectPrimaryKey(tables, query);
             if (ids != null && ids.size() > 0) {
                 DefaultQuery newQuery = (DefaultQuery) query.clone();
-                // 清楚分页信息inner join信息和where条件
+                // 清除分页信息inner join信息和where条件
                 newQuery.removeLimit();
                 newQuery.clearFilters();
                 // 然后将inner join转换成left join
