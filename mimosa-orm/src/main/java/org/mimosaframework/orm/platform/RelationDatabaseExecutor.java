@@ -273,20 +273,25 @@ public class RelationDatabaseExecutor implements DatabaseExecutor {
         try {
             connection = this.getConnection();
             statement = replacePlaceholder(connection, structure, false);
-            ResultSet rs = statement.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int fieldCount = rsmd.getColumnCount();
-            List result = new ArrayList();
-            while (rs.next()) {
-                ModelObject object = new ModelObject(true);
-                for (int i = 1; i <= fieldCount; i++) {
-                    String fieldClassName = rsmd.getColumnClassName(i);
-                    //获得查询后的列名称，并非表列名称
-                    String fieldName = rsmd.getColumnLabel(i);
-                    SQLUtils.recordMappingToMap(fieldClassName, fieldName, rs, object);
+            // ResultSet rs = statement.executeQuery();
+            boolean success = statement.execute();
+            List result = null;
+            if (success) {
+                ResultSet rs = statement.getResultSet();
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int fieldCount = rsmd.getColumnCount();
+                result = new ArrayList();
+                while (rs.next()) {
+                    ModelObject object = new ModelObject(true);
+                    for (int i = 1; i <= fieldCount; i++) {
+                        String fieldClassName = rsmd.getColumnClassName(i);
+                        //获得查询后的列名称，并非表列名称
+                        String fieldName = rsmd.getColumnLabel(i);
+                        SQLUtils.recordMappingToMap(fieldClassName, fieldName, rs, object);
+                    }
+                    if (callback != null) callback.select(connection, statement, rs, object);
+                    result.add(object);
                 }
-                if (callback != null) callback.select(connection, statement, rs, object);
-                result.add(object);
             }
             return result;
         } finally {
