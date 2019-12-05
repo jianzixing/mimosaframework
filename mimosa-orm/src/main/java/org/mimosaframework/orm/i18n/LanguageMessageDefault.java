@@ -12,6 +12,7 @@ import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.AbstractDatabasePorter;
 import org.mimosaframework.orm.platform.PlatformFactory;
 import org.mimosaframework.orm.platform.PlatformWrapperImpl;
+import org.mimosaframework.orm.platform.RelationDatabaseExecutor;
 import org.mimosaframework.orm.platform.db2.DB2DatabasePorter;
 import org.mimosaframework.orm.platform.db2.DB2DifferentColumn;
 import org.mimosaframework.orm.platform.mysql.MysqlDifferentColumn;
@@ -428,6 +429,11 @@ public class LanguageMessageDefault implements MessagesRegister {
         Map<String, String> mapSelectBuilder = new HashMap<>();
         mapSelectBuilder.put("empty_from_builder", "没有设置要查询的字段");
         messageWords.add(new MessageWords(PROJECT, SelectBuilder.class, mapSelectBuilder));
+
+        // RelationDatabaseExecutor
+        Map<String, String> mapRelationDatabaseExecutor = new HashMap<>();
+        mapRelationDatabaseExecutor.put("result_set_empty", "没有获取到ResultSet的结果集");
+        messageWords.add(new MessageWords(PROJECT, RelationDatabaseExecutor.class, mapRelationDatabaseExecutor));
     }
 
     @Override

@@ -3,7 +3,9 @@ package org.mimosaframework.orm.platform;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.criteria.Keyword;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.utils.SQLUtils;
 
 import java.sql.*;
@@ -278,19 +280,24 @@ public class RelationDatabaseExecutor implements DatabaseExecutor {
             List result = null;
             if (success) {
                 ResultSet rs = statement.getResultSet();
-                ResultSetMetaData rsmd = rs.getMetaData();
-                int fieldCount = rsmd.getColumnCount();
-                result = new ArrayList();
-                while (rs.next()) {
-                    ModelObject object = new ModelObject(true);
-                    for (int i = 1; i <= fieldCount; i++) {
-                        String fieldClassName = rsmd.getColumnClassName(i);
-                        //获得查询后的列名称，并非表列名称
-                        String fieldName = rsmd.getColumnLabel(i);
-                        SQLUtils.recordMappingToMap(fieldClassName, fieldName, rs, object);
+                if (rs != null) {
+                    ResultSetMetaData rsmd = rs.getMetaData();
+                    int fieldCount = rsmd.getColumnCount();
+                    result = new ArrayList();
+                    while (rs.next()) {
+                        ModelObject object = new ModelObject(true);
+                        for (int i = 1; i <= fieldCount; i++) {
+                            String fieldClassName = rsmd.getColumnClassName(i);
+                            //获得查询后的列名称，并非表列名称
+                            String fieldName = rsmd.getColumnLabel(i);
+                            SQLUtils.recordMappingToMap(fieldClassName, fieldName, rs, object);
+                        }
+                        if (callback != null) callback.select(connection, statement, rs, object);
+                        result.add(object);
                     }
-                    if (callback != null) callback.select(connection, statement, rs, object);
-                    result.add(object);
+                } else {
+                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
+                            RelationDatabaseExecutor.class, "result_set_empty"));
                 }
             }
             return result;
