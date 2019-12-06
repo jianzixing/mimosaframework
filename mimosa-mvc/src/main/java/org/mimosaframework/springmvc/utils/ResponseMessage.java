@@ -105,8 +105,12 @@ public class ResponseMessage {
                 if (c > 2) {
                     break;
                 }
-                throwable = throwable.getCause();
-                if (throwable.getCause() == null) {
+                Throwable nextThrowable = throwable.getCause();
+                if (nextThrowable == null) {
+                    break;
+                }
+                throwable = nextThrowable;
+                if (nextThrowable.getCause() == null) {
                     break;
                 }
                 c++;
