@@ -359,6 +359,7 @@ replaces：将url前缀的某些单词替换成想要的单词，比如 Web;w �
 版本 v3.4.1 (待更新)
 * 增加日志输出国际化
 * 增加Builder类，跨平台查询组装SQL
+* 更改ModelObject的API限制键值类型
 
 版本 v3.4.0
 * 增加Session拦截器AbstractInterceptSession类，可以自主控制Session执行。
