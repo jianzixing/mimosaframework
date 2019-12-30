@@ -356,7 +356,10 @@ replaces：将url前缀的某些单词替换成想要的单词，比如 Web;w �
 
 ## 六、历史版本
 
-版本 v3.4.1 (待更新)
+版本v3.4.2 (待更新)
+* update未设置tableClass提示
+
+版本 v3.4.1
 * 增加日志输出国际化
 * 增加Builder类，跨平台查询组装SQL
 * 更改ModelObject的API限制键值类型
