@@ -202,6 +202,9 @@ public class DefaultSession implements Session {
         }
         obj = Clone.cloneModelObject(obj);
         Class c = obj.getObjectClass();
+        if (c == null) {
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultSession.class, "miss_table_class"));
+        }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
                 DefaultSession.class, "not_found_mapping", c.getName()));
