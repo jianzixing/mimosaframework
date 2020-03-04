@@ -656,8 +656,8 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
             ModelObject object = new ModelObject();
             object.objectClass = this.objectClass;
             for (Object key : keys) {
-                if (this.map.get(key) != null) {
-                    object.map.put(key, this.get(getKeyName(key)));
+                if (this.map.get(this.getKeyName(key)) != null) {
+                    object.map.put(this.getKeyName(key), this.get(getKeyName(key)));
                 }
             }
             return object;
