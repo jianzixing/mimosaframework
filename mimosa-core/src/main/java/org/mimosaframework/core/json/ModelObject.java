@@ -669,6 +669,23 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return this.copy(keys.toArray());
     }
 
+    public void trim() {
+        Iterator<Map.Entry<Object, Object>> iterator = this.map.entrySet().iterator();
+        Map<Object, Object> map = new HashMap<>();
+        while (iterator.hasNext()) {
+            Map.Entry<Object, Object> entry = iterator.next();
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                map.put(entry.getKey(), ((String) value).trim());
+            }
+        }
+        iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Object, Object> entry = iterator.next();
+            this.map.put(entry.getKey(), entry.getValue());
+        }
+    }
+
     @Override
     public boolean containsKey(Enum key) {
         return this.containsKey(key.name());
