@@ -51,6 +51,11 @@ public class ResponsePageMessage extends ResponseMessage {
         this.setCode(100);
     }
 
+    public ResponsePageMessage() {
+        this.total = 0;
+        this.setCode(100);
+    }
+
     public long getTotal() {
         return total;
     }
