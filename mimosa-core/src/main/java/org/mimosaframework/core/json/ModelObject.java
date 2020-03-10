@@ -547,7 +547,8 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
     }
 
     public boolean isEmpty(String key) {
-        if (this.get(key) == null || String.valueOf(this.get(key)).equals("")) {
+        Object value = this.get(key);
+        if (value == null || (value instanceof String && value.equals(""))) {
             return true;
         } else {
             return false;
