@@ -29,5 +29,19 @@ public class TestSQL {
                                         )
                                 )
                 );
+
+
+        GlobalBuilder.delete().table(TestSQL.class)
+                .from(GlobalBuilder.fromItem(TestSQL.class)).where().eq("", "");
+
+        GlobalBuilder.delete().from(TestSQL.class)
+                .using(TestSQL.class, TestSQL.class)
+                .where().eq("", "");
+
+        GlobalBuilder.delete().from(TestSQL.class).where().eq("", "");
+
+        GlobalBuilder.delete().from("")
+                .using(GlobalBuilder.fromItem(TestSQL.class, "a"))
+                .where().eq("", "");
     }
 }
