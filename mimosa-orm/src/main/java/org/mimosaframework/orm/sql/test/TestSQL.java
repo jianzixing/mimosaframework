@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.test;
 
 import org.mimosaframework.orm.sql.test.delete.DeleteFactory;
+import org.mimosaframework.orm.sql.test.select.SelectFactory;
 
 public class TestSQL {
     public static void main(String[] args) {
@@ -30,6 +31,19 @@ public class TestSQL {
                 .from()
                 .table(TestSQL.class)
                 .where()
+                .eq("", "");
+
+
+        SelectFactory.select()
+                .fields(FieldItems.build().field("", "").field("", ""))
+                .from()
+                .table(TestSQL.class, TestSQL.class)
+                .where().eq("", "").and().eq("", "");
+
+        SelectFactory.select().all().from()
+                .table(TestSQL.class)
+                .left().join().table(TestSQL.class)
+                .on()
                 .eq("", "");
     }
 }
