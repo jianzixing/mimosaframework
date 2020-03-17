@@ -1,5 +1,5 @@
 package org.mimosaframework.orm.sql.test;
 
-public interface DeleteTableBuilder<T> {
+public interface TableBuilder<T> {
     T table();
 }
