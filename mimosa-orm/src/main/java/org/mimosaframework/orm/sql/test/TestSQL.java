@@ -7,7 +7,17 @@ public class TestSQL {
     public static void main(String[] args) {
         SelectFactory.select().fields().from().table(TestSQL.class).where();
         DeleteFactory.delete().table(TestSQL.class).from().table(TestSQL.class).where();
-        DeleteFactory.delete().from().table(TestSQL.class).where();
-        DeleteFactory.delete().from().table(TestSQL.class).using().where();
+        DeleteFactory.delete().from().table(TestSQL.class)
+                .where()
+                .gt("", "")
+                .and()
+                .wrapper().and().wrapper().and()
+                .in("", "")
+                .orderBy().limit();
+
+        DeleteFactory.delete().from()
+                .table(TestSQL.class)
+                .using()
+                .where();
     }
 }

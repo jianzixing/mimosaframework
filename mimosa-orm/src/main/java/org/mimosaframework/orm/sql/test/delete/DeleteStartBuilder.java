@@ -1,10 +1,15 @@
 package org.mimosaframework.orm.sql.test.delete;
 
-import org.mimosaframework.orm.sql.test.FromBuilder;
-import org.mimosaframework.orm.sql.test.TableBuilder;
-import org.mimosaframework.orm.sql.test.WhereBuilder;
+import org.mimosaframework.orm.sql.test.*;
 
 public interface DeleteStartBuilder
-        extends BeforeDeleteFromBuilder<FromBuilder<TableBuilder<WhereBuilder>>>,
-        FromBuilder<TableBuilder<AfterDeleteFromBuilder<WhereBuilder>>> {
+        extends
+        BeforeDeleteFromBuilder
+                <FromBuilder
+                        <TableBuilder
+                                <ReplaceDeleteWhereBBuilder>>>,
+
+        FromBuilder
+                <TableBuilder
+                        <ReplaceDeleteWhereABuilder>> {
 }
