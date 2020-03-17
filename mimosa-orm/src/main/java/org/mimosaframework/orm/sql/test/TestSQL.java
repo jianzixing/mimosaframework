@@ -5,8 +5,9 @@ import org.mimosaframework.orm.sql.test.select.SelectFactory;
 
 public class TestSQL {
     public static void main(String[] args) {
-        SelectFactory.select().fields().from().table().where();
-        DeleteFactory.delete().table().from().table().where();
-        DeleteFactory.delete().from().table().where();
+        SelectFactory.select().fields().from().table(TestSQL.class).where();
+        DeleteFactory.delete().table(TestSQL.class).from().table(TestSQL.class).where();
+        DeleteFactory.delete().from().table(TestSQL.class).where();
+        DeleteFactory.delete().from().table(TestSQL.class).using().where();
     }
 }
