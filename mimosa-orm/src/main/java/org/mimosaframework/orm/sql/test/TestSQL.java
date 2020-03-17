@@ -44,6 +44,7 @@ public class TestSQL {
                 .table(TestSQL.class)
                 .left().join().table(TestSQL.class)
                 .on()
-                .eq("", "");
+                .eq("", "").and().wrapper().and().eq("", "")
+                .where().eq("", "");
     }
 }
