@@ -51,4 +51,12 @@ public class FieldItem {
     public void setField(Object field) {
         this.field = field;
     }
+
+    public String getFieldAliasName() {
+        return fieldAliasName;
+    }
+
+    public void setFieldAliasName(String fieldAliasName) {
+        this.fieldAliasName = fieldAliasName;
+    }
 }

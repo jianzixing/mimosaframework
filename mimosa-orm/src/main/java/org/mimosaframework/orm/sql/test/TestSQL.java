@@ -42,9 +42,8 @@ public class TestSQL {
 
         SelectFactory.select().all().from()
                 .table(TestSQL.class)
-                .left().join().table(TestSQL.class)
-                .on()
-                .eq("", "").and().wrapper().and().eq("", "")
+                .left().join().table(TestSQL.class).on().eq("", "").and().wrapper().and().eq("", "")
+                .inner().join().table(TestSQL.class).on().eq("", "")
                 .where().eq("", "");
     }
 }
