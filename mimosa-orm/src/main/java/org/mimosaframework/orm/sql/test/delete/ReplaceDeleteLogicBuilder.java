@@ -4,5 +4,8 @@ import org.mimosaframework.orm.sql.test.LimitBuilder;
 import org.mimosaframework.orm.sql.test.LogicBuilder;
 import org.mimosaframework.orm.sql.test.OrderByBuilder;
 
-public interface ReplaceDeleteLogicBuilder<T> extends LogicBuilder<T>, OrderByBuilder<LimitBuilder<Void>> {
+public interface ReplaceDeleteLogicBuilder<T>
+        extends
+        LogicBuilder<T>,
+        OrderByBuilder<LimitBuilder<Void>> {
 }

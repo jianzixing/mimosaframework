@@ -7,9 +7,9 @@ public interface DeleteStartBuilder
         BeforeDeleteFromBuilder
                 <FromBuilder
                         <TablesBuilder
-                                <ReplaceDeleteWhereBBuilder>>>,
+                                <WhereBuilder<DeleteWhereBuilder>>>>,
 
         FromBuilder
                 <TablesBuilder
-                        <ReplaceDeleteWhereABuilder>> {
+                        <ReplaceDeleteWhereBuilder>> {
 }
