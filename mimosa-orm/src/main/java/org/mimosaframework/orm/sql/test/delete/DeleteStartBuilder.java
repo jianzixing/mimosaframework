@@ -6,10 +6,10 @@ public interface DeleteStartBuilder
         extends
         BeforeDeleteFromBuilder
                 <FromBuilder
-                        <TableBuilder
+                        <TablesBuilder
                                 <WhereBuilder<DeleteWhereBuilder>>>>,
 
         FromBuilder
-                <TableBuilder
+                <TablesBuilder
                         <ReplaceDeleteWhereBuilder>> {
 }

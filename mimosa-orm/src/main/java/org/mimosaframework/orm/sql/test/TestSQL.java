@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.test;
 
 import org.mimosaframework.orm.sql.test.delete.DeleteFactory;
+import org.mimosaframework.orm.sql.test.insert.InsertFactory;
 import org.mimosaframework.orm.sql.test.select.SelectFactory;
 import org.mimosaframework.orm.sql.test.update.UpdateFactory;
 
@@ -56,6 +57,17 @@ public class TestSQL {
                 .split().value("", "")
                 .where().eq("", "")
                 .orderBy().asc().limit();
+
+
+        ///
+
+        InsertFactory.insert().into().table(TestSQL.class)
+                .wrapper("", "").values()
+                .wrapper("", "")
+                .split()
+                .wrapper("", "")
+                .split()
+                .wrapper("", "");
 
     }
 }
