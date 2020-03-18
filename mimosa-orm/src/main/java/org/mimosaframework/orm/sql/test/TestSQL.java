@@ -41,9 +41,9 @@ public class TestSQL {
                 .where().eq("", "").and().eq("", "");
 
         SelectFactory.select().all().from()
-                .table(TestSQL.class)
+                .table(TableItems.build().table(TestSQL.class))
                 .left().join().table(TestSQL.class).on().eq("", "").and().wrapper().and().eq("", "")
                 .inner().join().table(TestSQL.class).on().eq("", "")
-                .where().eq("", "");
+                .where().eq("", "").groupBy().having().orderBy().asc().limit();
     }
 }
