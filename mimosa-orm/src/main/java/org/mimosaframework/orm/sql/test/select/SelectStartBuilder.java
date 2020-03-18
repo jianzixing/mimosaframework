@@ -4,5 +4,5 @@ import org.mimosaframework.orm.sql.test.*;
 
 public interface SelectStartBuilder
         extends
-        FieldBuilder<FromBuilder<TablesBuilder<ReplaceSelectWhereBuilder>>> {
+        AbsFieldBuilder<FromBuilder<AbsTablesBuilder<ReplaceSelectWhereBuilder>>> {
 }

@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.sql.test;
 
-public interface FieldBuilder<T> {
+public interface AbsFieldBuilder<T> {
     T all();
 
     T fields(Class table, Object... fields);

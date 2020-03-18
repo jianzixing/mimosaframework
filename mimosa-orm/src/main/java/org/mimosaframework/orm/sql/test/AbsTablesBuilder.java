@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.sql.test;
 
-public interface TablesBuilder<T> extends TableBuilder<T> {
+public interface AbsTablesBuilder<T> extends AbsTableBuilder<T> {
     T table(Class... table);
 
     T table(TableItem tableItem);
