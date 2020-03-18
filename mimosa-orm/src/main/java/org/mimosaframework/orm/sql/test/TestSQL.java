@@ -2,6 +2,7 @@ package org.mimosaframework.orm.sql.test;
 
 import org.mimosaframework.orm.sql.test.delete.DeleteFactory;
 import org.mimosaframework.orm.sql.test.select.SelectFactory;
+import org.mimosaframework.orm.sql.test.update.UpdateFactory;
 
 public class TestSQL {
     public static void main(String[] args) {
@@ -33,6 +34,7 @@ public class TestSQL {
                 .where()
                 .eq("", "");
 
+        ///
 
         SelectFactory.select()
                 .fields(FieldItems.build().field("", "").field("", ""))
@@ -45,5 +47,15 @@ public class TestSQL {
                 .left().join().table(TestSQL.class).on().eq("", "").and().wrapper().and().eq("", "")
                 .inner().join().table(TestSQL.class).on().eq("", "")
                 .where().eq("", "").groupBy().having().orderBy().asc().limit();
+
+
+        ///
+
+        UpdateFactory.update().table(TestSQL.class)
+                .set().value("", "")
+                .split().value("", "")
+                .where().eq("", "")
+                .orderBy().asc().limit();
+
     }
 }
