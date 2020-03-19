@@ -6,5 +6,6 @@ import org.mimosaframework.orm.sql.test.TableBuilder;
 public interface CreateAnyBuilder
         extends
         TableBuilder<CreateTableStartBuilder>,
-        DatabaseBuilder<CreateDatabaseStartBuilder> {
+        DatabaseBuilder<CreateDatabaseStartBuilder>,
+        CreateIndexBuilder {
 }

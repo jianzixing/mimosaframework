@@ -81,6 +81,8 @@ public class TestSQL {
                 TableColumn.name("id").intType().primary().key().autoIncrement().not().nullable()
         ).charset("").extra("");
 
+        CreateFactory.create().unique().index().name("").on().table(TestSQL.class).columns("", "");
+
 
         ///
 
