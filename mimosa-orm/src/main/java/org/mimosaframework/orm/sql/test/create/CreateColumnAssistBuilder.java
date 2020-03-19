@@ -14,7 +14,7 @@ import org.mimosaframework.orm.sql.test.*;
  */
 public interface CreateColumnAssistBuilder
         extends
-        TableColumnAbout,
+        AboutTableColumn,
 
         NotNullBuilder<CreateColumnAssistBuilder>,
         NullBuilder<CreateColumnAssistBuilder>,
