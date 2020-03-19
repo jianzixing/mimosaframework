@@ -1,5 +1,5 @@
 package org.mimosaframework.orm.sql.test.create;
 
 public interface CreateTableColumnBuilder<T> {
-    T columns();
+    T columns(TableColumnAbout... columns);
 }
