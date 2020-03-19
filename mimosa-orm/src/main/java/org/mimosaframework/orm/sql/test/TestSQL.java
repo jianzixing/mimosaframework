@@ -96,11 +96,23 @@ public class TestSQL {
                 .charset("").collate("");
 
         AlterFactory.alter().table(TestSQL.class).add().column().name("")
-                .intType().autoIncrement().after().name("");
+                .intType().autoIncrement().after().column("");
 
 
         AlterFactory.alter().table(TestSQL.class).add().index().name("").column("").comment("");
 
+        AlterFactory.alter().table(TestSQL.class).change().oldColumn("")
+                .newColumn("").intType().autoIncrement().after().column("");
 
+        AlterFactory.alter().table(TestSQL.class).modify().column("")
+                .intType().autoIncrement().after().column("");
+
+        AlterFactory.alter().table(TestSQL.class).drop().column().name("");
+        AlterFactory.alter().table(TestSQL.class).drop().index().name("");
+        AlterFactory.alter().table(TestSQL.class).drop().primary().key();
+
+        AlterFactory.alter().table(TestSQL.class).rename().column().oldColumn("").to().newColumn("");
+        AlterFactory.alter().table(TestSQL.class).rename().index().oldColumn("").to().newColumn("");
+        AlterFactory.alter().table(TestSQL.class).rename().name("");
     }
 }

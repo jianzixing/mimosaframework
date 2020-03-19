@@ -7,7 +7,7 @@ public interface AlterAddAnyBuilder
         extends
         ColumnBuilder<AbsNameBuilder<ColumnTypeBuilder<AlterColumnAssistBuilder>>>,
         IndexBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder>>>,
-        UniqueBuilder,
-        FullTextBuilder,
-        PrimaryKeyBuilder {
+        UniqueBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder>>>,
+        FullTextBuilder<IndexBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder>>>>,
+        PrimaryKeyBuilder<AlterColumnsBuilder<CommentBuilder>> {
 }
