@@ -2,10 +2,11 @@ package org.mimosaframework.orm.sql.test.create;
 
 import org.mimosaframework.orm.sql.test.CharsetBuilder;
 import org.mimosaframework.orm.sql.test.CollateBuilder;
-import org.mimosaframework.orm.sql.test.INFBuilder;
+import org.mimosaframework.orm.sql.test.AbsNameBuilder;
+import org.mimosaframework.orm.sql.test.INEBuilder;
 
 public interface CreateDatabaseStartBuilder
         extends
-        INFBuilder<CreateNameBuilder<CharsetBuilder<CollateBuilder>>>,
-        CreateNameBuilder<CharsetBuilder<CollateBuilder>> {
+        INEBuilder<AbsNameBuilder<CharsetBuilder<CollateBuilder>>>,
+        AbsNameBuilder<CharsetBuilder<CollateBuilder>> {
 }

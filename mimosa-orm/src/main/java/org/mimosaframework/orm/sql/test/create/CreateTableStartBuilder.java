@@ -1,9 +1,10 @@
 package org.mimosaframework.orm.sql.test.create;
 
-import org.mimosaframework.orm.sql.test.INFBuilder;
+import org.mimosaframework.orm.sql.test.AbsNameBuilder;
+import org.mimosaframework.orm.sql.test.INEBuilder;
 
 public interface CreateTableStartBuilder
         extends
-        INFBuilder<CreateNameBuilder<CreateTableColumnBuilder<CreateTableTailBuilder>>>,
-        CreateNameBuilder<CreateTableColumnBuilder<CreateTableTailBuilder>> {
+        INEBuilder<AbsNameBuilder<CreateTableColumnBuilder<CreateTableTailBuilder>>>,
+        AbsNameBuilder<CreateTableColumnBuilder<CreateTableTailBuilder>> {
 }

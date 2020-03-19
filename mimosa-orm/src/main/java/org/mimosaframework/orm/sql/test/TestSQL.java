@@ -3,6 +3,7 @@ package org.mimosaframework.orm.sql.test;
 import org.mimosaframework.orm.sql.test.create.CreateFactory;
 import org.mimosaframework.orm.sql.test.create.TableColumn;
 import org.mimosaframework.orm.sql.test.delete.DeleteFactory;
+import org.mimosaframework.orm.sql.test.drop.DropFactory;
 import org.mimosaframework.orm.sql.test.insert.InsertFactory;
 import org.mimosaframework.orm.sql.test.select.SelectFactory;
 import org.mimosaframework.orm.sql.test.update.UpdateFactory;
@@ -79,5 +80,12 @@ public class TestSQL {
         CreateFactory.create().table().ifNotExist().name("").columns(
                 TableColumn.name("id").intType().primary().key().autoIncrement().not().nullable()
         ).charset("").extra("");
+
+
+        ///
+
+        DropFactory.drop().database().ifExist().name("");
+        DropFactory.drop().table().ifExist().table(TestSQL.class);
+        DropFactory.drop().index().name("").on().table(TestSQL.class);
     }
 }

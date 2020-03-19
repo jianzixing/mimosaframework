@@ -1,5 +1,5 @@
 package org.mimosaframework.orm.sql.test;
 
-public interface INFBuilder<T> {
+public interface INEBuilder<T> {
     T ifNotExist();
 }
