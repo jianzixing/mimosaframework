@@ -65,7 +65,7 @@ public class TestSQL {
         ///
 
         InsertFactory.insert().into().table(TestSQL.class)
-                .wrapper("", "").values()
+                .columns("", "").values()
                 .wrapper("", "")
                 .split()
                 .wrapper("", "")
@@ -94,5 +94,13 @@ public class TestSQL {
         AlterFactory.alter().database()
                 .name("")
                 .charset("").collate("");
+
+        AlterFactory.alter().table(TestSQL.class).add().column().name("")
+                .intType().autoIncrement().after().name("");
+
+
+        AlterFactory.alter().table(TestSQL.class).add().index().name("").column("").comment("");
+
+
     }
 }
