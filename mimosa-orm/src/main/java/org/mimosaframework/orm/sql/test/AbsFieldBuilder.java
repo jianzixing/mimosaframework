@@ -7,5 +7,5 @@ public interface AbsFieldBuilder<T> {
 
     T fields(FieldItem... fieldItems);
 
-    T fields(FieldItems fieldItems);
+    T fields(Fields fieldItems);
 }

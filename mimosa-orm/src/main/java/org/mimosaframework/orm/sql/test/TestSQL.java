@@ -22,7 +22,7 @@ public class TestSQL {
                 .where()
                 .column("").gt().value("")
                 .and()
-                .wrapper().and().wrapper().and()
+                .wrapper(null).and().wrapper(null).and()
                 .column("").in().value("")
                 .orderBy().limit();
 
@@ -43,20 +43,21 @@ public class TestSQL {
 
         SelectFactory.select()
                 .fields(
-                        FieldItems.build()
+                        Fields.build()
                                 .field("", "")
                                 .field("", "")
-                                .fun(FieldItems.function().avg(new FieldItem(1)))
+                                .fun(Fields.function().avg(new FieldItem(1)))
                 )
                 .from()
                 .table(TestSQL.class, TestSQL.class)
                 .where()
                 .column("").eq().value("").and()
-                .column("").isNull("");
+                .column("").isNull("")
+                .and().wrapper(Wrapper.build().column("").eq().value("").and().wrapper(null));
 
         SelectFactory.select().all().from()
                 .table(TableItems.build().table(TestSQL.class))
-                .left().join().table(TestSQL.class).on().column("").eq().value("").and().wrapper().and().column("").eq().value("")
+                .left().join().table(TestSQL.class).on().column("").eq().value("").and().wrapper(null).and().column("").eq().value("")
                 .inner().join().table(TestSQL.class).on().column("").eq().value("")
                 .where().column("").eq().value("").groupBy()
                 .having().count(new FieldItem(1)).eq().value("")
