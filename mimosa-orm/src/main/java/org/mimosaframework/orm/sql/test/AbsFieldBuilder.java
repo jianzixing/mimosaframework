@@ -8,10 +8,4 @@ public interface AbsFieldBuilder<T> {
     T fields(FieldItem... fieldItems);
 
     T fields(FieldItems fieldItems);
-
-    T fun(FieldFunBuilder funBuilder);
-
-    T fun(FieldFunBuilder... funBuilder);
-
-    T fun(FieldFunItems fieldFunItems);
 }

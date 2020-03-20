@@ -42,7 +42,12 @@ public class TestSQL {
         ///
 
         SelectFactory.select()
-                .fields(FieldItems.build().field("", "").field("", ""))
+                .fields(
+                        FieldItems.build()
+                                .field("", "")
+                                .field("", "")
+                                .fun(FieldItems.function().avg(new FieldItem(1)))
+                )
                 .from()
                 .table(TestSQL.class, TestSQL.class)
                 .where()
@@ -51,11 +56,10 @@ public class TestSQL {
 
         SelectFactory.select().all().from()
                 .table(TableItems.build().table(TestSQL.class))
-                .left().join().table(TestSQL.class).on().column("").eq().value("").and().wrapper().and().column("")
-                .eq().value("")
+                .left().join().table(TestSQL.class).on().column("").eq().value("").and().wrapper().and().column("").eq().value("")
                 .inner().join().table(TestSQL.class).on().column("").eq().value("")
                 .where().column("").eq().value("").groupBy()
-                .having().count("").eq().value("")
+                .having().count(new FieldItem(1)).eq().value("")
                 .orderBy().asc().limit();
 
 

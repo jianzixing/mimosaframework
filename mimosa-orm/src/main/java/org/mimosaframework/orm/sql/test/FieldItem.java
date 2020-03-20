@@ -1,28 +1,40 @@
 package org.mimosaframework.orm.sql.test;
 
-public class FieldItem {
+import java.io.Serializable;
+
+public class FieldItem implements AboutFieldItem<FieldItem> {
     private Class table;
     private String tableAliasName;
-    private Object field;
+    private Serializable field;
     private String fieldAliasName;
 
-    public FieldItem(Class table, Object field) {
+    private FieldFunBuilder fun;
+
+    public FieldItem(FieldFunBuilder fun) {
+        this.fun = fun;
+    }
+
+    public FieldItem(Serializable field) {
+        this.field = field;
+    }
+
+    public FieldItem(Class table, Serializable field) {
         this.table = table;
         this.field = field;
     }
 
-    public FieldItem(String tableAliasName, Object field) {
+    public FieldItem(String tableAliasName, Serializable field) {
         this.tableAliasName = tableAliasName;
         this.field = field;
     }
 
-    public FieldItem(Class table, Object field, String fieldAliasName) {
+    public FieldItem(Class table, Serializable field, String fieldAliasName) {
         this.table = table;
         this.field = field;
         this.fieldAliasName = fieldAliasName;
     }
 
-    public FieldItem(String tableAliasName, Object field, String fieldAliasName) {
+    public FieldItem(String tableAliasName, Serializable field, String fieldAliasName) {
         this.tableAliasName = tableAliasName;
         this.field = field;
         this.fieldAliasName = fieldAliasName;
@@ -44,11 +56,11 @@ public class FieldItem {
         this.tableAliasName = tableAliasName;
     }
 
-    public Object getField() {
+    public Serializable getField() {
         return field;
     }
 
-    public void setField(Object field) {
+    public void setField(Serializable field) {
         this.field = field;
     }
 
@@ -58,5 +70,46 @@ public class FieldItem {
 
     public void setFieldAliasName(String fieldAliasName) {
         this.fieldAliasName = fieldAliasName;
+    }
+
+    @Override
+    public FieldItem field(Serializable field) {
+        this.field = field;
+        return this;
+    }
+
+    @Override
+    public FieldItem field(String tableAliasName, Serializable field) {
+        this.tableAliasName = tableAliasName;
+        this.field = field;
+        return this;
+    }
+
+    @Override
+    public FieldItem field(Class table, Serializable field) {
+        this.table = table;
+        this.field = field;
+        return this;
+    }
+
+    @Override
+    public FieldItem field(Class table, Serializable field, String fieldAliasName) {
+        this.table = table;
+        this.field = field;
+        this.fieldAliasName = fieldAliasName;
+        return this;
+    }
+
+    @Override
+    public FieldItem field(String tableAliasName, Serializable field, String fieldAliasName) {
+        this.tableAliasName = tableAliasName;
+        this.field = field;
+        this.fieldAliasName = fieldAliasName;
+        return this;
+    }
+
+    @Override
+    public FieldItem fun(FieldFunBuilder funBuilder) {
+        return this;
     }
 }

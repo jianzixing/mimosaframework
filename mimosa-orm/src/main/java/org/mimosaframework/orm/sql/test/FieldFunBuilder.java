@@ -1,20 +1,18 @@
 package org.mimosaframework.orm.sql.test;
 
-import java.io.Serializable;
-
 public interface FieldFunBuilder<T> {
 
-    T count(Serializable column);
+    T count(FieldItem fieldItem);
 
-    T max(Serializable column);
+    T max(FieldItem fieldItem);
 
-    T avg(Serializable column);
+    T avg(FieldItem fieldItem);
 
-    T sum(Serializable column);
+    T sum(FieldItem fieldItem);
 
-    T min(Serializable column);
+    T min(FieldItem fieldItem);
 
-    T concat(Serializable... columnOrStr);
+    T concat(FieldItem... fieldItem);
 
-    T substring(Serializable columnOrStr, int pos, int len);
+    T substring(FieldItem fieldItem, int pos, int len);
 }
