@@ -1,8 +1,8 @@
 package org.mimosaframework.orm.sql.test.update;
 
-import org.mimosaframework.orm.sql.test.AbsKValueBuilder;
+import org.mimosaframework.orm.sql.test.SetLinkBuilder;
 
 public interface ReplaceUpdateSetBuilder
         extends
-        AbsKValueBuilder<ReplaceUpdateValueBuilder> {
+        SetLinkBuilder<ReplaceUpdateValueBuilder> {
 }

@@ -4,7 +4,7 @@ import org.mimosaframework.orm.sql.test.*;
 
 public interface SelectHOLBuilder
         extends
-        HavingBuilder<SelectOLBuilder>,
+        HavingBuilder<FieldFunBuilder<SelectOLBuilder>>,
         OrderByBuilder<SortBuilder<LimitBuilder>>,
         LimitBuilder {
 

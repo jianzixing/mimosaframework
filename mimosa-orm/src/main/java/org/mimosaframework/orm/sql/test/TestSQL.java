@@ -15,28 +15,29 @@ public class TestSQL {
                 .from()
                 .table(TestSQL.class)
                 .where()
-                .eq("", "");
+                .column("")
+                .eq().value("");
 
         DeleteFactory.delete().from().table(TestSQL.class)
                 .where()
-                .gt("", "")
+                .column("").gt().value("")
                 .and()
                 .wrapper().and().wrapper().and()
-                .in("", "")
+                .column("").in().value("")
                 .orderBy().limit();
 
         DeleteFactory.delete().from()
                 .table(TestSQL.class)
                 .using(TestSQL.class)
                 .where()
-                .eq("", "");
+                .column("").eq().value("");
 
         DeleteFactory.delete()
                 .tables("")
                 .from()
                 .table(TestSQL.class)
                 .where()
-                .eq("", "");
+                .column("").eq().value("");
 
         ///
 
@@ -44,21 +45,26 @@ public class TestSQL {
                 .fields(FieldItems.build().field("", "").field("", ""))
                 .from()
                 .table(TestSQL.class, TestSQL.class)
-                .where().eq("", "").and().eq("", "");
+                .where()
+                .column("").eq().value("").and()
+                .column("").eq().value("");
 
         SelectFactory.select().all().from()
                 .table(TableItems.build().table(TestSQL.class))
-                .left().join().table(TestSQL.class).on().eq("", "").and().wrapper().and().eq("", "")
-                .inner().join().table(TestSQL.class).on().eq("", "")
-                .where().eq("", "").groupBy().having().orderBy().asc().limit();
+                .left().join().table(TestSQL.class).on().column("").eq().value("").and().wrapper().and().column("")
+                .eq().value("")
+                .inner().join().table(TestSQL.class).on().column("").eq().value("")
+                .where().column("").eq().value("").groupBy().having().count("").orderBy().asc().limit();
 
 
         ///
 
         UpdateFactory.update().table(TestSQL.class)
-                .set().value("", "")
-                .split().value("", "")
-                .where().eq("", "")
+                .set()
+                .column("").eq().value("")
+                .split()
+                .column("").eq().value("")
+                .where().column("").eq().value("")
                 .orderBy().asc().limit();
 
 
