@@ -14,7 +14,7 @@ public class TestSQL {
         DeleteFactory.delete()
                 .table(TestSQL.class)
                 .from()
-                .table(TestSQL.class)
+                .table(TestSQL.class, TestSQL.class)
                 .where()
                 .column("")
                 .eq().value("");

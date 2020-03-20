@@ -9,6 +9,8 @@ public class AbstractSQLDeleteBuilder
         implements
         DeleteBuilder,
         AbsTableBuilder,
+        AbsTablesBuilder,
+        BeforeDeleteFromBuilder,
         FromBuilder,
         WhereBuilder,
         AbsWhereColumnBuilder,
@@ -16,6 +18,8 @@ public class AbstractSQLDeleteBuilder
         AbsValueBuilder,
         BetweenValueBuilder,
         LogicBuilder,
+        UsingBuilder,
+        WrapperBuilder,
         OrderByBuilder,
         LimitBuilder {
 
@@ -131,6 +135,51 @@ public class AbstractSQLDeleteBuilder
 
     @Override
     public Object orderBy() {
+        return this;
+    }
+
+    @Override
+    public Object tables(Class... table) {
+        return this;
+    }
+
+    @Override
+    public Object tables(String... aliasNames) {
+        return this;
+    }
+
+    @Override
+    public Object using(Class[] tables) {
+        return this;
+    }
+
+    @Override
+    public Object using(TableItem... items) {
+        return this;
+    }
+
+    @Override
+    public Object wrapper(AboutWrapper wrapper) {
+        return this;
+    }
+
+    @Override
+    public Object table(Class[] table) {
+        return this;
+    }
+
+    @Override
+    public Object table(TableItem tableItem) {
+        return this;
+    }
+
+    @Override
+    public Object table(TableItem... tableItem) {
+        return this;
+    }
+
+    @Override
+    public Object table(TableItems tableItems) {
         return this;
     }
 }
