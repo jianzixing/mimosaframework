@@ -47,7 +47,7 @@ public class TestSQL {
                 .table(TestSQL.class, TestSQL.class)
                 .where()
                 .column("").eq().value("").and()
-                .column("").eq().value("");
+                .column("").isNull("");
 
         SelectFactory.select().all().from()
                 .table(TableItems.build().table(TestSQL.class))
