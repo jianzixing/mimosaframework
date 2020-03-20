@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.test;
 
 import org.mimosaframework.orm.sql.test.alter.AlterFactory;
+import org.mimosaframework.orm.sql.test.create.Columns;
 import org.mimosaframework.orm.sql.test.create.CreateFactory;
 import org.mimosaframework.orm.sql.test.delete.DeleteFactory;
 import org.mimosaframework.orm.sql.test.drop.DropFactory;
@@ -92,7 +93,7 @@ public class TestSQL {
         CreateFactory.create().database().ifNotExist().name("").charset("").collate("");
 
         CreateFactory.create().table().ifNotExist().name("").columns(
-                CreateFactory.column("id").intType().primary().key().autoIncrement().not().nullable()
+                Columns.column("id").intType().primary().key().autoIncrement().not().nullable()
         ).charset("").extra("");
 
         CreateFactory.create().unique().index().name("").on().table(TestSQL.class).columns("", "");

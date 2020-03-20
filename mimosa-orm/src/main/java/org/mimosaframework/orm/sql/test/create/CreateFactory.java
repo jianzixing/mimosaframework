@@ -7,8 +7,4 @@ public class CreateFactory {
         CreateBuilder<CreateAnyBuilder> createBuilder = null;
         return createBuilder.create();
     }
-
-    public static ColumnTypeBuilder<CreateColumnAssistBuilder> column(String fieldName) {
-        return null;
-    }
 }
