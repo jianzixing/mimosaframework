@@ -78,12 +78,13 @@ public class TestSQL {
         ///
 
         InsertFactory.insert().into().table(TestSQL.class)
-                .columns("", "").values()
-                .wrapper("", "")
+                .columns("", "")
+                .values()
+                .row("", "")
                 .split()
-                .wrapper("", "")
+                .row("", "")
                 .split()
-                .wrapper("", "");
+                .row("", "");
 
 
         ///
