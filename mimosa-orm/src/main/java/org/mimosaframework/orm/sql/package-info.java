@@ -1,7 +1,6 @@
 /**
- * 这个包可以组装跨平台SQL语句
- * 和platform不同，platform可以组装任意SQL不可以跨平台
+ * About开头的类用于独立的SQL链，比如 wrapper(AboutXXX... items)
  * <p>
- * 只提供select查询，其它操作请使用API
+ * Abs 开头的类属于自定义辅助添加值或者名称的类
  */
 package org.mimosaframework.orm.sql;
