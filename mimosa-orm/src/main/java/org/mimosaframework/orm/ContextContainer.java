@@ -6,7 +6,7 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
-import org.mimosaframework.orm.utils.DatabaseTypeEnum;
+import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -51,7 +51,7 @@ public interface ContextContainer {
 
     void matchWholeMappingDatabase() throws SQLException;
 
-    DatabaseTypeEnum getDatabaseType();
+    DatabaseTypes getDatabaseType();
 
     void clearMimosaDataSources();
 

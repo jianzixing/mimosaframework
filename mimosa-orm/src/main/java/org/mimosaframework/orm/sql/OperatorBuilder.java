@@ -17,5 +17,7 @@ public interface OperatorBuilder<T> extends OperatorEqualBuilder<T> {
 
     T lte();
 
+    BetweenValueBuilder<T> notBetween();
+
     BetweenValueBuilder<T> between();
 }

@@ -25,7 +25,10 @@ public class TestSQL {
                 .and()
                 .wrapper(null).and().wrapper(null).and()
                 .column("").in().value("")
-                .orderBy().limit();
+                .orderBy().column("").asc()
+                .orderBy().column("").desc()
+                .orderBy().column("").asc()
+                .limit(0, 10);
 
         DeleteFactory.delete().from()
                 .table(TestSQL.class)
@@ -34,7 +37,7 @@ public class TestSQL {
                 .column("").eq().value("");
 
         DeleteFactory.delete()
-                .tables("")
+                .table("")
                 .from()
                 .table(TestSQL.class)
                 .where()
@@ -62,7 +65,7 @@ public class TestSQL {
                 .inner().join().table(TestSQL.class).on().column("").eq().value("")
                 .where().column("").eq().value("").groupBy()
                 .having().count(new FieldItem(1)).eq().value("")
-                .orderBy().asc().limit();
+                .orderBy().asc().limit(0, 10);
 
 
         ///
@@ -73,7 +76,7 @@ public class TestSQL {
                 .split()
                 .column("").eq().value("")
                 .where().column("").eq().value("")
-                .orderBy().asc().limit();
+                .orderBy().asc().limit(0, 10);
 
 
         ///

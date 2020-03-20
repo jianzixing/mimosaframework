@@ -12,7 +12,7 @@ import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
-import org.mimosaframework.orm.utils.DatabaseTypeEnum;
+import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -350,7 +350,7 @@ public class NormalContextContainer implements ContextContainer {
     }
 
     @Override
-    public DatabaseTypeEnum getDatabaseType() {
+    public DatabaseTypes getDatabaseType() {
         MimosaDataSource mimosaDataSource = this.getAnyDataSource();
         if (mimosaDataSource != null) {
             return mimosaDataSource.getDatabaseTypeEnum();

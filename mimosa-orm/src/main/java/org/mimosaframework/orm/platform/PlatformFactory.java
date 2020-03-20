@@ -9,27 +9,27 @@ import org.mimosaframework.orm.platform.oracle.*;
 import org.mimosaframework.orm.platform.postgresql.*;
 import org.mimosaframework.orm.platform.sqlite.*;
 import org.mimosaframework.orm.platform.sqlserver.*;
-import org.mimosaframework.orm.utils.DatabaseTypeEnum;
+import org.mimosaframework.orm.utils.DatabaseTypes;
 
 public class PlatformFactory {
     public static DifferentColumn getDifferentColumn(MimosaDataSource dataSource) {
-        DatabaseTypeEnum typeEnum = dataSource.getDatabaseTypeEnum();
-        if (typeEnum.equals(DatabaseTypeEnum.MYSQL)) {
+        DatabaseTypes typeEnum = dataSource.getDatabaseTypeEnum();
+        if (typeEnum.equals(DatabaseTypes.MYSQL)) {
             return new MysqlDifferentColumn();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.ORACLE)) {
+        if (typeEnum.equals(DatabaseTypes.ORACLE)) {
             return new OracleDifferentColumn();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.SQL_SERVER)) {
+        if (typeEnum.equals(DatabaseTypes.SQL_SERVER)) {
             return new SQLServerDifferentColumn();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.POSTGRESQL)) {
+        if (typeEnum.equals(DatabaseTypes.POSTGRESQL)) {
             return new PostgreSQLDifferentColumn();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
+        if (typeEnum.equals(DatabaseTypes.DB2)) {
             return new DB2DifferentColumn();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.SQLITE)) {
+        if (typeEnum.equals(DatabaseTypes.SQLITE)) {
             return new SqliteDifferentColumn();
         }
         return null;
@@ -37,24 +37,24 @@ public class PlatformFactory {
 
     public static DatabasePorter getDatabasePorter(ActionDataSourceWrapper dswrapper) {
         MimosaDataSource dataSource = dswrapper.getDataSource();
-        DatabaseTypeEnum typeEnum = dataSource.getDatabaseTypeEnum();
+        DatabaseTypes typeEnum = dataSource.getDatabaseTypeEnum();
         DatabasePorter databasePorter = null;
-        if (typeEnum.equals(DatabaseTypeEnum.MYSQL)) {
+        if (typeEnum.equals(DatabaseTypes.MYSQL)) {
             databasePorter = new MysqlDatabasePorter();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.ORACLE)) {
+        if (typeEnum.equals(DatabaseTypes.ORACLE)) {
             databasePorter = new OracleDatabasePorter();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.SQL_SERVER)) {
+        if (typeEnum.equals(DatabaseTypes.SQL_SERVER)) {
             databasePorter = new SQLServerDatabasePorter();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.POSTGRESQL)) {
+        if (typeEnum.equals(DatabaseTypes.POSTGRESQL)) {
             databasePorter = new PostgreSQLDatabasePorter();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
+        if (typeEnum.equals(DatabaseTypes.DB2)) {
             databasePorter = new DB2DatabasePorter();
         }
-        if (typeEnum.equals(DatabaseTypeEnum.SQLITE)) {
+        if (typeEnum.equals(DatabaseTypes.SQLITE)) {
             databasePorter = new SqliteDatabasePorter();
         }
         if (databasePorter != null) {
@@ -65,23 +65,23 @@ public class PlatformFactory {
 
     public static CarryHandler getCarryHandler(ActionDataSourceWrapper dswrapper) {
         MimosaDataSource dataSource = dswrapper.getDataSource();
-        DatabaseTypeEnum typeEnum = dataSource.getDatabaseTypeEnum();
-        if (typeEnum.equals(DatabaseTypeEnum.MYSQL)) {
+        DatabaseTypes typeEnum = dataSource.getDatabaseTypeEnum();
+        if (typeEnum.equals(DatabaseTypes.MYSQL)) {
             return new MysqlCarryHandler(dswrapper);
         }
-        if (typeEnum.equals(DatabaseTypeEnum.ORACLE)) {
+        if (typeEnum.equals(DatabaseTypes.ORACLE)) {
             return new OracleCarryHandler(dswrapper);
         }
-        if (typeEnum.equals(DatabaseTypeEnum.SQL_SERVER)) {
+        if (typeEnum.equals(DatabaseTypes.SQL_SERVER)) {
             return new SQLServerCarryHandler(dswrapper);
         }
-        if (typeEnum.equals(DatabaseTypeEnum.POSTGRESQL)) {
+        if (typeEnum.equals(DatabaseTypes.POSTGRESQL)) {
             return new PostgreSQLCarryHandler(dswrapper);
         }
-        if (typeEnum.equals(DatabaseTypeEnum.DB2)) {
+        if (typeEnum.equals(DatabaseTypes.DB2)) {
             return new DB2CarryHandler(dswrapper);
         }
-        if (typeEnum.equals(DatabaseTypeEnum.SQLITE)) {
+        if (typeEnum.equals(DatabaseTypes.SQLITE)) {
             return new SqliteCarryHandler(dswrapper);
         }
         return null;
@@ -103,45 +103,45 @@ public class PlatformFactory {
         return getSymbolContrast(dataSource.getDatabaseTypeEnum());
     }
 
-    public static ObjectSymbolContrast getSymbolContrast(DatabaseTypeEnum type) {
-        if (type.equals(DatabaseTypeEnum.MYSQL)) {
+    public static ObjectSymbolContrast getSymbolContrast(DatabaseTypes type) {
+        if (type.equals(DatabaseTypes.MYSQL)) {
             return new MysqlObjectSymbolContrast();
         }
-        if (type.equals(DatabaseTypeEnum.ORACLE)) {
+        if (type.equals(DatabaseTypes.ORACLE)) {
             return new OracleObjectSymbolContrast();
         }
-        if (type.equals(DatabaseTypeEnum.SQL_SERVER)) {
+        if (type.equals(DatabaseTypes.SQL_SERVER)) {
             return new SQLServerObjectSymbolContrast();
         }
-        if (type.equals(DatabaseTypeEnum.POSTGRESQL)) {
+        if (type.equals(DatabaseTypes.POSTGRESQL)) {
             return new PostgreSQLObjectSymbolContrast();
         }
-        if (type.equals(DatabaseTypeEnum.DB2)) {
+        if (type.equals(DatabaseTypes.DB2)) {
             return new DB2ObjectSymbolContrast();
         }
-        if (type.equals(DatabaseTypeEnum.SQLITE)) {
+        if (type.equals(DatabaseTypes.SQLITE)) {
             return new SqliteObjectSymbolContrast();
         }
         return null;
     }
 
     public static DatabaseSpeciality getLocalSpeciality(MimosaDataSource dataSource) {
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.MYSQL)) {
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypes.MYSQL)) {
             return new MysqlDatabaseSpeciality();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.ORACLE)) {
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypes.ORACLE)) {
             return new OracleDatabaseSpeciality();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.SQL_SERVER)) {
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypes.SQL_SERVER)) {
             return new SQLServerDatabaseSpeciality();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.POSTGRESQL)) {
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypes.POSTGRESQL)) {
             return new PostgreSQLDatabaseSpeciality();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.DB2)) {
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypes.DB2)) {
             return new DB2DatabaseSpeciality();
         }
-        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypeEnum.SQLITE)) {
+        if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypes.SQLITE)) {
             return new SqliteDatabaseSpeciality();
         }
         return null;

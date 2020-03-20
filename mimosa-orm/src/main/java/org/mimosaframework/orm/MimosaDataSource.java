@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.utils.DatabaseTypeEnum;
+import org.mimosaframework.orm.utils.DatabaseTypes;
 import org.mimosaframework.orm.utils.SQLUtils;
 
 import javax.sql.DataSource;
@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MimosaDataSource implements Closeable {
     private static final Log logger = LogFactory.getLog(MimosaDataSource.class);
-    private static final Map<DataSource, DatabaseTypeEnum> dataSourceInfo = new ConcurrentHashMap<>();
+    private static final Map<DataSource, DatabaseTypes> dataSourceInfo = new ConcurrentHashMap<>();
     private String name;
     private DataSource master;
     private Map<String, DataSource> slaves;
-    private DatabaseTypeEnum databaseTypeEnum;
+    private DatabaseTypes databaseTypeEnum;
     private String destroyMethod; // 连接池关闭方法
 
     public static final String DEFAULT_DS_NAME = "default";
@@ -34,9 +34,9 @@ public class MimosaDataSource implements Closeable {
     }
 
     public static Set<DataSource> getAllDataSources() {
-        Set<Map.Entry<DataSource, DatabaseTypeEnum>> entries = dataSourceInfo.entrySet();
+        Set<Map.Entry<DataSource, DatabaseTypes>> entries = dataSourceInfo.entrySet();
         Set<DataSource> dataSources = new LinkedHashSet<>();
-        for (Map.Entry<DataSource, DatabaseTypeEnum> entry : entries) {
+        for (Map.Entry<DataSource, DatabaseTypes> entry : entries) {
             dataSources.add(entry.getKey());
         }
         return dataSources;
@@ -47,9 +47,9 @@ public class MimosaDataSource implements Closeable {
 
     public static void clearAllDataSources() {
         if (dataSourceInfo != null) {
-            Iterator<Map.Entry<DataSource, DatabaseTypeEnum>> iterator = dataSourceInfo.entrySet().iterator();
+            Iterator<Map.Entry<DataSource, DatabaseTypes>> iterator = dataSourceInfo.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<DataSource, DatabaseTypeEnum> entry = iterator.next();
+                Map.Entry<DataSource, DatabaseTypes> entry = iterator.next();
                 DataSource dataSource = entry.getKey();
                 if (dataSource instanceof Closeable) {
                     try {
@@ -66,7 +66,7 @@ public class MimosaDataSource implements Closeable {
 
     private void loadDatabaseType() throws SQLException {
         if (master != null) {
-            DatabaseTypeEnum dte = dataSourceInfo.get(master);
+            DatabaseTypes dte = dataSourceInfo.get(master);
             if (dte == null) {
                 this.databaseTypeEnum = SQLUtils.getDatabaseType(master);
                 dataSourceInfo.put(master, databaseTypeEnum);
@@ -230,7 +230,7 @@ public class MimosaDataSource implements Closeable {
         return false;
     }
 
-    public DatabaseTypeEnum getDatabaseTypeEnum() {
+    public DatabaseTypes getDatabaseTypeEnum() {
         return databaseTypeEnum;
     }
 

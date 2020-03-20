@@ -13,24 +13,24 @@ import java.util.Map;
 
 public class SQLUtils {
 
-    public static DatabaseTypeEnum getDatabaseType(Connection connection) throws SQLException {
+    public static DatabaseTypes getDatabaseType(Connection connection) throws SQLException {
         if (connection != null) {
             DatabaseMetaData metaData = connection.getMetaData();
             if (metaData.getDriverName().toUpperCase()
-                    .indexOf(DatabaseTypeEnum.MYSQL.name()) != -1) {
-                return DatabaseTypeEnum.MYSQL;
+                    .indexOf(DatabaseTypes.MYSQL.name()) != -1) {
+                return DatabaseTypes.MYSQL;
             } else if (metaData.getDriverName().toUpperCase()
-                    .indexOf(DatabaseTypeEnum.SQL_SERVER.name().replaceAll("_", " ")) != -1) {
-                return DatabaseTypeEnum.SQL_SERVER;
-            } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypeEnum.ORACLE.name()) != -1) {
-                return DatabaseTypeEnum.ORACLE;
-            } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypeEnum.POSTGRESQL.name()) != -1) {
-                return DatabaseTypeEnum.POSTGRESQL;
+                    .indexOf(DatabaseTypes.SQL_SERVER.name().replaceAll("_", " ")) != -1) {
+                return DatabaseTypes.SQL_SERVER;
+            } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypes.ORACLE.name()) != -1) {
+                return DatabaseTypes.ORACLE;
+            } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypes.POSTGRESQL.name()) != -1) {
+                return DatabaseTypes.POSTGRESQL;
             } else if (metaData.getDriverName().toUpperCase().indexOf("IBM") != -1
                     && metaData.getDriverName().toUpperCase().indexOf("SQLJ") != -1) {
-                return DatabaseTypeEnum.DB2;
-            } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypeEnum.SQLITE.name()) != -1) {
-                return DatabaseTypeEnum.SQLITE;
+                return DatabaseTypes.DB2;
+            } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypes.SQLITE.name()) != -1) {
+                return DatabaseTypes.SQLITE;
             }
             throw new SQLException(Messages.get(LanguageMessageFactory.PROJECT,
                     SQLUtils.class, "not_support_db", metaData.getDriverName()));
@@ -40,7 +40,7 @@ public class SQLUtils {
         }
     }
 
-    public static DatabaseTypeEnum getDatabaseType(DataSource dataSource) throws SQLException {
+    public static DatabaseTypes getDatabaseType(DataSource dataSource) throws SQLException {
         if (dataSource != null) {
             Connection connection = null;
             try {
