@@ -54,7 +54,9 @@ public class TestSQL {
                 .left().join().table(TestSQL.class).on().column("").eq().value("").and().wrapper().and().column("")
                 .eq().value("")
                 .inner().join().table(TestSQL.class).on().column("").eq().value("")
-                .where().column("").eq().value("").groupBy().having().count("").orderBy().asc().limit();
+                .where().column("").eq().value("").groupBy()
+                .having().count("").eq().value("")
+                .orderBy().asc().limit();
 
 
         ///
