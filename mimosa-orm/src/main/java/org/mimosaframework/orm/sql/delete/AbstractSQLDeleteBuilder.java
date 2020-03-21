@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.delete;
 
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilder;
 import org.mimosaframework.orm.platform.SQLBuilderFactory;
@@ -8,6 +9,7 @@ import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.io.Serializable;
+import java.util.List;
 
 public abstract class AbstractSQLDeleteBuilder
         implements
@@ -242,47 +244,108 @@ public abstract class AbstractSQLDeleteBuilder
 
     @Override
     public Object using(TableItem... items) {
+        int i = 0;
+        for (TableItem item : items) {
+            Class table = item.getTable();
+            String aliasName = item.getAliasName();
+            MappingTable mappingTable = this.getMappingTableByClass(table);
+            i++;
 
+            if (i == items.length) {
+                this.sqlBuilder.addString(mappingTable.getMappingTableName());
+                if (StringTools.isNotEmpty(item.getAliasName())) {
+                    this.sqlBuilder.AS().addString(aliasName);
+                }
+            } else {
+                this.sqlBuilder.addString(mappingTable.getMappingTableName());
+                if (StringTools.isNotEmpty(item.getAliasName())) {
+                    this.sqlBuilder.AS().addString(aliasName);
+                }
+                this.sqlBuilder.addSplit();
+            }
+        }
         return this;
     }
 
     @Override
-    public Object wrapper(AboutWrapper wrapper) {
+    public Object wrapper(LogicBuilder logicBuilder) {
+        if (logicBuilder instanceof SimpleCommonWhereBuilder) {
+            SQLBuilder sqlBuilder = ((SimpleCommonWhereBuilder) logicBuilder).getSqlBuilder();
+            sqlBuilder.setTableFieldReplaceRule(this.sqlBuilder.getRuleStart(), this.sqlBuilder.getRuleFinish());
+            this.sqlBuilder.addParenthesisStart();
+            this.sqlBuilder.addSQLBuilder(sqlBuilder);
+            this.sqlBuilder.addParenthesisEnd();
+        }
         return this;
     }
 
     @Override
     public Object table(Class... table) {
-        if (this.body == 0) {
-
-        } else {
-
+        // if (this.body == 0) {
+        int i = 0;
+        for (Class tb : table) {
+            MappingTable mappingTable = this.getMappingTableByClass(tb);
+            String tableName = mappingTable.getMappingTableName();
+            i++;
+            if (i == table.length) {
+                this.sqlBuilder.addString(tableName);
+            } else {
+                this.sqlBuilder.addString(tableName).addSplit();
+            }
         }
         return this;
     }
 
     @Override
     public Object table(TableItem tableItem) {
+        Class table = tableItem.getTable();
+        MappingTable mappingTable = this.getMappingTableByClass(table);
+        this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        if (StringTools.isNotEmpty(tableItem.getAliasName())) {
+            this.sqlBuilder.AS().addString(tableItem.getAliasName());
+        }
         return this;
     }
 
     @Override
     public Object table(TableItem... tableItem) {
+        int i = 0;
+        for (TableItem ti : tableItem) {
+            Class table = ti.getTable();
+            MappingTable mappingTable = this.getMappingTableByClass(table);
+            i++;
+            if (i == tableItem.length) {
+                this.sqlBuilder.addString(mappingTable.getMappingTableName());
+                if (StringTools.isNotEmpty(ti.getAliasName())) {
+                    this.sqlBuilder.AS().addString(ti.getAliasName());
+                }
+            } else {
+                this.sqlBuilder.addString(mappingTable.getMappingTableName());
+                if (StringTools.isNotEmpty(ti.getAliasName())) {
+                    this.sqlBuilder.AS().addString(ti.getAliasName());
+                }
+                this.sqlBuilder.addSplit();
+            }
+        }
         return this;
     }
 
     @Override
     public Object table(TableItems tableItems) {
+        List<TableItem> tis = tableItems.getTableItems();
+        this.table(tis.toArray(new TableItem[]{}));
         return this;
     }
 
     @Override
     public Object asc() {
+        this.sqlBuilder.ASC();
         return this;
     }
 
     @Override
     public Object desc() {
+        this.sqlBuilder.DESC();
         return this;
     }
 }

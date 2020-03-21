@@ -44,6 +44,10 @@ public interface SQLBuilder {
 
     void removeLast();
 
+    String getRuleStart();
+
+    String getRuleFinish();
+
     enum Command {
         CREATE, TABLE, IF, NOT, EXISTS, PRIMARY, KEY, AUTO_INCREMENT, NULL, DEFAULT,
         INDEX, ALTER, ADD, INSERT, INTO, VALUES, UPDATE, SET, WHERE, AND, OR, ENGINE,

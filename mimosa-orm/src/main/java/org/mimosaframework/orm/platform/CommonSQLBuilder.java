@@ -70,11 +70,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     @Override
     public SQLBuilder addTableField(String tableAliasName, String fieldName) {
         if (fieldName.equals("*")) {
-            sql.add(ruleStart + tableAliasName + ruleFinish + "." + fieldName);
+            sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, tableAliasName, SQLContinuous.RuleType.RULE_FINISH, ".", fieldName));
         } else if (StringTools.isNotEmpty(tableAliasName)) {
-            sql.add(ruleStart + tableAliasName + ruleFinish + "." + ruleStart + fieldName + ruleFinish);
+            sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, tableAliasName, SQLContinuous.RuleType.RULE_FINISH, ".",
+                    SQLContinuous.RuleType.RULE_START, fieldName, SQLContinuous.RuleType.RULE_FINISH));
         } else {
-            sql.add(ruleStart + fieldName + ruleFinish);
+            sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, fieldName, SQLContinuous.RuleType.RULE_FINISH));
         }
         return this;
     }
@@ -82,11 +83,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     @Override
     public SQLBuilder addTableWrapField(String tableAliasName, String fieldName) {
         if (fieldName.equals("*")) {
-            sql.add(ruleStart + tableAliasName + ruleFinish + "." + fieldName);
+            sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, tableAliasName, SQLContinuous.RuleType.RULE_FINISH, ".", fieldName));
         } else if (StringTools.isNotEmpty(tableAliasName)) {
-            sql.add(ruleStart + tableAliasName + ruleFinish + "." + ruleStart + fieldName + ruleFinish);
+            sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, tableAliasName, SQLContinuous.RuleType.RULE_FINISH,
+                    ".", SQLContinuous.RuleType.RULE_START, fieldName, SQLContinuous.RuleType.RULE_FINISH));
         } else {
-            sql.add(ruleStart + fieldName + ruleFinish);
+            sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, fieldName, SQLContinuous.RuleType.RULE_FINISH));
         }
         return this;
     }
@@ -136,6 +138,16 @@ public class CommonSQLBuilder implements SQLBuilder {
     @Override
     public void removeLast() {
         sql.remove(sql.size() - 1);
+    }
+
+    @Override
+    public String getRuleStart() {
+        return this.ruleStart;
+    }
+
+    @Override
+    public String getRuleFinish() {
+        return this.ruleFinish;
     }
 
     @Override
@@ -202,7 +214,7 @@ public class CommonSQLBuilder implements SQLBuilder {
     public SQLBuilder TABLE(String tableName) {
         sql.add(Command.TABLE);
         if (tableName != null)
-            sql.add(ruleStart + tableName + ruleFinish);
+            sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, tableName, SQLContinuous.RuleType.RULE_FINISH));
         return this;
     }
 
@@ -502,7 +514,7 @@ public class CommonSQLBuilder implements SQLBuilder {
 
     @Override
     public SQLBuilder addWrapString(String name) {
-        sql.add(ruleStart + name + ruleFinish);
+        sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, name, SQLContinuous.RuleType.RULE_FINISH));
         return this;
     }
 
@@ -542,7 +554,9 @@ public class CommonSQLBuilder implements SQLBuilder {
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for (Object o : sql) {
-            if (o instanceof Command) {
+            if (o instanceof SQLContinuous) {
+                sb.append(((SQLContinuous) o).toString(ruleStart, ruleFinish));
+            } else if (o instanceof Command) {
                 sb.append(((Command) o).name());
             } else if (o instanceof SQLField) {
                 sb.append(o.toString());

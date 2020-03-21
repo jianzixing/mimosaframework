@@ -21,4 +21,8 @@ public class TableItems {
         tableItems.add(new TableItem(table, aliasName));
         return this;
     }
+
+    public List<TableItem> getTableItems() {
+        return tableItems;
+    }
 }
