@@ -5,23 +5,15 @@ import org.junit.Test;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.orm.*;
-import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.exception.ContextException;
-import org.mimosaframework.orm.sql.Builder;
-import org.mimosaframework.orm.sql.FunType;
-import org.mimosaframework.orm.sql.SymbolType;
 import program.service.SessionTemplateServiceTesting;
 import tables.TableMultiKey1;
 import tables.TableMultiKey2;
 import tables.TableOrder;
 import tables.TableUser;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 
 public class SessionTemplateTesting {
@@ -315,10 +307,5 @@ public class SessionTemplateTesting {
     @Test
     public void testJavaTypes() throws SQLException {
         SessionTemplateServiceTesting.addJavaTypes(template);
-    }
-
-    @Test
-    public void testBuilder() throws Exception {
-        SessionTemplateServiceTesting.testSQLBuilder(template);
     }
 }

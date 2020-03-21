@@ -654,47 +654,4 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
     protected SQLBuilder buildSelectFromAs(SQLBuilder sqlBuilder) {
         return sqlBuilder;
     }
-
-    /**
-     * 处理分页
-     *
-     * @param builder
-     * @param mappingTables
-     * @return
-     * @throws SQLException
-     */
-    @Override
-    public List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException {
-        SQLBuilder sqlBuilder = this.createSQLBuilder();
-
-        List<Object> restricts = builder.getRestrict();
-        LimitBuilder limitBuilder = null;
-        List<Object> limitBuilders = new ArrayList<>();
-        if (restricts != null) {
-            for (Object restrict : restricts) {
-                if (restrict instanceof LimitBuilder) {
-                    limitBuilder = (LimitBuilder) restrict;
-                    limitBuilders.add(restrict);
-                }
-            }
-        }
-        restricts.removeAll(limitBuilders);
-
-
-        if (limitBuilder != null) {
-            sqlBuilder.SELECT().addString("*").FROM().addParenthesisStart();
-            sqlBuilder.SELECT().addString("TB.*, ROWNUM AS rowno").FROM().addParenthesisStart();
-            this.transformationSQLGroupByClear(builder);
-            this.transformationSQLSelect(builder, sqlBuilder, mappingTables);
-            sqlBuilder.addParenthesisEnd().addString("TB").WHERE().addString("ROWNUM <= " + (limitBuilder.getStart() + limitBuilder.getLimit()));
-            sqlBuilder.addParenthesisEnd().addWrapString("TA")
-                    .WHERE().addString("TA.rowno").addString(">= " + limitBuilder.getStart());
-        } else {
-            this.transformationSQLGroupByClear(builder);
-            this.transformationSQLSelect(builder, sqlBuilder, mappingTables);
-        }
-
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, sqlBuilder));
-        return objects;
-    }
 }

@@ -268,6 +268,14 @@ public class AutoResult {
             }
             return bigDecimal;
         }
+        if (this.value instanceof Integer
+                || this.value instanceof Long
+                || this.value instanceof Byte
+                || this.value instanceof Short
+                || this.value instanceof Double
+                || this.value instanceof Float) {
+            return new BigDecimal("" + this.value);
+        }
         return null;
     }
 

@@ -211,10 +211,4 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
     protected SQLBuilder createSQLBuilder() {
         return SQLBuilderFactory.createQMSQLBuilder();
     }
-
-    @Override
-    protected void transformationSQLLimit(LimitBuilder limitBuilder, SQLBuilder sqlBuilder) {
-        sqlBuilder.LIMIT().addString("" + limitBuilder.getLimit())
-                .addString("OFFSET").addString("" + limitBuilder.getStart());
-    }
 }

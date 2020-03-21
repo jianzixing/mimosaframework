@@ -33,6 +33,4 @@ public interface SelectDatabasePorter {
      * @return
      */
     List<ModelObject> selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
-
-    List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException;
 }

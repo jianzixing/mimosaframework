@@ -4,7 +4,7 @@ import org.mimosaframework.orm.sql.DeleteBuilder;
 
 public class DeleteFactory {
     public static DeleteStartBuilder delete() {
-        DeleteBuilder<DeleteStartBuilder> deleteBuilder = new AbstractSQLDeleteBuilder();
+        DeleteBuilder<DeleteStartBuilder> deleteBuilder = null;
         return deleteBuilder.delete();
     }
 }

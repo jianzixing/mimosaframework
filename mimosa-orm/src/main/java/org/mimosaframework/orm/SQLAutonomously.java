@@ -3,7 +3,7 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.sql.Builder;
+import org.mimosaframework.orm.sql.UnifyBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 public class SQLAutonomously implements Serializable {
     private List<LinkAutonomously> dataSourceLinks;
     private String sql;
-    private Builder builder;
+    private UnifyBuilder builder;
     private boolean isMaster = true;
     private String slaveName;
 
@@ -34,16 +34,16 @@ public class SQLAutonomously implements Serializable {
         this.slaveName = slaveName;
     }
 
-    public SQLAutonomously(Builder builder) {
+    public SQLAutonomously(UnifyBuilder builder) {
         this.builder = builder;
     }
 
-    public SQLAutonomously(Builder builder, boolean isMaster) {
+    public SQLAutonomously(UnifyBuilder builder, boolean isMaster) {
         this.builder = builder;
         this.isMaster = isMaster;
     }
 
-    public SQLAutonomously(Builder builder, String slaveName) {
+    public SQLAutonomously(UnifyBuilder builder, String slaveName) {
         this.builder = builder;
         this.isMaster = true;
         this.slaveName = slaveName;
@@ -65,15 +65,15 @@ public class SQLAutonomously implements Serializable {
         return new SQLAutonomously(sql, slaveName);
     }
 
-    public static SQLAutonomously newInstance(Builder builder) {
+    public static SQLAutonomously newInstance(UnifyBuilder builder) {
         return new SQLAutonomously(builder);
     }
 
-    public static SQLAutonomously newInstance(Builder builder, boolean isMaster) {
+    public static SQLAutonomously newInstance(UnifyBuilder builder, boolean isMaster) {
         return new SQLAutonomously(builder, isMaster);
     }
 
-    public static SQLAutonomously newInstance(Builder builder, String slaveName) {
+    public static SQLAutonomously newInstance(UnifyBuilder builder, String slaveName) {
         return new SQLAutonomously(builder, slaveName);
     }
 
@@ -121,7 +121,7 @@ public class SQLAutonomously implements Serializable {
         return sql;
     }
 
-    public Builder getBuilder() {
+    public UnifyBuilder getBuilder() {
         return builder;
     }
 
@@ -168,7 +168,7 @@ public class SQLAutonomously implements Serializable {
         private boolean master = true;
         private String slaveDataSourceName;
         private String sql;
-        private Builder builder;
+        private UnifyBuilder builder;
 
         public LinkAutonomously() {
         }
@@ -201,28 +201,28 @@ public class SQLAutonomously implements Serializable {
             this.master = false;
         }
 
-        public LinkAutonomously(Builder builder) {
+        public LinkAutonomously(UnifyBuilder builder) {
             this.builder = builder;
         }
 
-        public LinkAutonomously(Builder builder, boolean master) {
+        public LinkAutonomously(UnifyBuilder builder, boolean master) {
             this.master = master;
             this.builder = builder;
         }
 
 
-        public LinkAutonomously(String dataSourceName, Builder builder) {
+        public LinkAutonomously(String dataSourceName, UnifyBuilder builder) {
             this.dataSourceName = dataSourceName;
             this.builder = builder;
         }
 
-        public LinkAutonomously(String dataSourceName, Builder builder, boolean master) {
+        public LinkAutonomously(String dataSourceName, UnifyBuilder builder, boolean master) {
             this.dataSourceName = dataSourceName;
             this.master = master;
             this.builder = builder;
         }
 
-        public LinkAutonomously(String dataSourceName, Builder builder, String slaveDataSourceName) {
+        public LinkAutonomously(String dataSourceName, UnifyBuilder builder, String slaveDataSourceName) {
             this.dataSourceName = dataSourceName;
             this.slaveDataSourceName = slaveDataSourceName;
             this.builder = builder;
@@ -257,7 +257,7 @@ public class SQLAutonomously implements Serializable {
             return sql;
         }
 
-        public Builder getBuilder() {
+        public UnifyBuilder getBuilder() {
             return builder;
         }
     }

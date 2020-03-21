@@ -168,10 +168,4 @@ public class SqliteDatabasePorter extends AbstractDatabasePorter {
         List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
         return ids;
     }
-
-    @Override
-    protected void transformationSQLLimit(LimitBuilder limitBuilder, SQLBuilder sqlBuilder) {
-        sqlBuilder.LIMIT().addString("" + limitBuilder.getLimit())
-                .addString("OFFSET").addString("" + limitBuilder.getStart());
-    }
 }

@@ -7,12 +7,14 @@ import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
+import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.mapping.SpecificMappingTable;
 import org.mimosaframework.orm.merge.DefaultModelMerge;
 import org.mimosaframework.orm.merge.MergeTree;
 import org.mimosaframework.orm.merge.ModelMerge;
 import org.mimosaframework.orm.sql.SelectBuilder;
+import org.mimosaframework.orm.sql.UnifyBuilder;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -209,11 +211,6 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     }
 
     @Override
-    public List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException {
-        return this.databasePorter.select(builder, mappingTables);
-    }
-
-    @Override
     public long count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
         if (tables != null) {
             Set<Map.Entry<Object, MappingTable>> entries = tables.entrySet();
@@ -227,6 +224,11 @@ public class PlatformWrapperImpl implements PlatformWrapper {
             return objects.get(0).getLongValue("count");
         }
         return 0;
+    }
+
+    @Override
+    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, UnifyBuilder builder) {
+        return this.databasePorter.execute(mappingGlobalWrapper, builder);
     }
 
     private List<ModelObject> buildMergeObjects(Map<Object, List<SelectFieldAliasReference>> references,

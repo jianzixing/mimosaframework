@@ -14,9 +14,7 @@ import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.scripting.BoundSql;
 import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
-import org.mimosaframework.orm.sql.Builder;
-import org.mimosaframework.orm.sql.ResultMappingFieldUtils;
-import org.mimosaframework.orm.sql.SelectBuilder;
+import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
 import org.mimosaframework.orm.utils.Clone;
 import org.mimosaframework.orm.utils.SessionUtils;
@@ -489,7 +487,7 @@ public class DefaultSession implements Session {
     @Override
     public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
         String sql = autonomously.getSql();
-        Builder builder = autonomously.getBuilder();
+        UnifyBuilder builder = autonomously.getBuilder();
 
         boolean isMaster = autonomously.isMaster();
         String slaveName = autonomously.getSlaveName();
@@ -510,16 +508,8 @@ public class DefaultSession implements Session {
             PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
             List<ModelObject> objects = null;
             if (builder != null) {
-                if (builder instanceof SelectBuilder) {
-                    SelectBuilder selectBuilder = (SelectBuilder) builder;
-                    Set<Class> tables = selectBuilder.getAllTables();
-                    Map<Class, MappingTable> mappingTables = new HashMap<>();
-                    for (Class c : tables) {
-                        mappingTables.put(c, this.mappingGlobalWrapper.getMappingTable(c));
-                    }
-                    objects = platformWrapper.select(selectBuilder, mappingTables);
-                    ResultMappingFieldUtils.convert(selectBuilder, convert, objects, mappingTables);
-                }
+                Object r = platformWrapper.execute(this.mappingGlobalWrapper, builder);
+                return new AutoResult(r);
             } else {
                 objects = platformWrapper.select(sql);
             }

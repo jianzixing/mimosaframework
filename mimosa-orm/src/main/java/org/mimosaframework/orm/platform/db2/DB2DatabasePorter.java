@@ -10,9 +10,6 @@ import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.GroupBuilder;
-import org.mimosaframework.orm.sql.LimitBuilder;
-import org.mimosaframework.orm.sql.SelectBuilder;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -170,48 +167,5 @@ public class DB2DatabasePorter extends AbstractDatabasePorter {
 
         List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
         return ids;
-    }
-
-    /**
-     * 处理分页
-     *
-     * @param builder
-     * @param mappingTables
-     * @return
-     * @throws SQLException
-     */
-    @Override
-    public List<ModelObject> select(SelectBuilder builder, Map<Class, MappingTable> mappingTables) throws SQLException {
-        SQLBuilder sqlBuilder = this.createSQLBuilder();
-
-        List<Object> restricts = builder.getRestrict();
-        LimitBuilder limitBuilder = null;
-        List<Object> limitBuilders = new ArrayList<>();
-        if (restricts != null) {
-            for (Object restrict : restricts) {
-                if (restrict instanceof LimitBuilder) {
-                    limitBuilder = (LimitBuilder) restrict;
-                    limitBuilders.add(restrict);
-                }
-            }
-        }
-        restricts.removeAll(limitBuilders);
-
-        if (limitBuilder != null) {
-            sqlBuilder.SELECT().addString("*").FROM().addParenthesisStart();
-            sqlBuilder.SELECT().addString("TB.*, ROWNUMBER() OVER() AS TN").FROM().addParenthesisStart();
-            this.transformationSQLGroupByClear(builder);
-            this.transformationSQLSelect(builder, sqlBuilder, mappingTables);
-            sqlBuilder.addParenthesisEnd().AS().addString("TB");
-            sqlBuilder.addParenthesisEnd().AS().addWrapString("TA")
-                    .WHERE().addTableWrapField("TA", "TN")
-                    .BETWEEN().addString(limitBuilder.getStart() + " AND " + (limitBuilder.getStart() + limitBuilder.getLimit()));
-        } else {
-            this.transformationSQLGroupByClear(builder);
-            this.transformationSQLSelect(builder, sqlBuilder, mappingTables);
-        }
-
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, sqlBuilder));
-        return objects;
     }
 }
