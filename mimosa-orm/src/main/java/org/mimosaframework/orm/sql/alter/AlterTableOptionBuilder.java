@@ -6,7 +6,7 @@ public interface AlterTableOptionBuilder
         extends
         AlterTableAnyBuilder,
 
-        AutoIncrementBuilder<AbsIntBuilder>,
+        AutoIncrementBuilder<AbsIntBuilder<UnifyBuilder>>,
         CharsetBuilder,
         CollateBuilder,
         CommentBuilder,

@@ -11,7 +11,7 @@ import org.mimosaframework.orm.sql.update.UpdateFactory;
 
 public class TestSQL {
     public static void main(String[] args) {
-        DeleteFactory.delete()
+        UnifyBuilder unifyBuilder = DeleteFactory.delete()
                 .table(TestSQL.class)
                 .from()
                 .table(TestSQL.class, TestSQL.class)
@@ -19,7 +19,7 @@ public class TestSQL {
                 .column("")
                 .eq().value("");
 
-        DeleteFactory.delete().from().table(TestSQL.class)
+        unifyBuilder = DeleteFactory.delete().from().table(TestSQL.class)
                 .where()
                 .column("").gt().value("")
                 .and()
@@ -30,13 +30,13 @@ public class TestSQL {
                 .orderBy().column("").asc()
                 .limit(0, 10);
 
-        DeleteFactory.delete().from()
+        unifyBuilder = DeleteFactory.delete().from()
                 .table(TestSQL.class)
                 .using(TestSQL.class)
                 .where()
                 .column("").eq().value("");
 
-        DeleteFactory.delete()
+        unifyBuilder = DeleteFactory.delete()
                 .table("")
                 .from()
                 .table(TestSQL.class)
@@ -45,7 +45,7 @@ public class TestSQL {
 
         ///
 
-        SelectFactory.select()
+        unifyBuilder = SelectFactory.select()
                 .fields(
                         Fields.build()
                                 .field("", "")
@@ -59,7 +59,7 @@ public class TestSQL {
                 .column("").isNull("")
                 .and().wrapper(Wrapper.build().column("").eq().value("").and().wrapper(null));
 
-        SelectFactory.select().all().from()
+        unifyBuilder = SelectFactory.select().all().from()
                 .table(TableItems.build().table(TestSQL.class))
                 .left().join().table(TestSQL.class).on().column("").eq().value("").and().wrapper(null).and().column("").eq().value("")
                 .inner().join().table(TestSQL.class).on().column("").eq().value("")
@@ -70,7 +70,7 @@ public class TestSQL {
 
         ///
 
-        UpdateFactory.update().table(TestSQL.class)
+        unifyBuilder = UpdateFactory.update().table(TestSQL.class)
                 .set()
                 .column("").eq().value("")
                 .split()
@@ -81,7 +81,12 @@ public class TestSQL {
 
         ///
 
-        InsertFactory.insert().into().table(TestSQL.class)
+        unifyBuilder = InsertFactory.insert().into().table(TestSQL.class)
+                .columns("", "")
+                .values()
+                .row("", "");
+
+        unifyBuilder = InsertFactory.insert().into().table(TestSQL.class)
                 .columns("", "")
                 .values()
                 .row("", "")
@@ -93,44 +98,44 @@ public class TestSQL {
 
         ///
 
-        CreateFactory.create().database().ifNotExist().name("").charset("").collate("");
+        unifyBuilder = CreateFactory.create().database().ifNotExist().name("").charset("").collate("");
 
-        CreateFactory.create().table().ifNotExist().name("").columns(
+        unifyBuilder = CreateFactory.create().table().ifNotExist().name("").columns(
                 Columns.column("id").intType().primary().key().autoIncrement().not().nullable()
         ).charset("").extra("");
 
-        CreateFactory.create().unique().index().name("").on().table(TestSQL.class).columns("", "");
+        unifyBuilder = CreateFactory.create().unique().index().name("").on().table(TestSQL.class).columns("", "");
 
 
         ///
 
-        DropFactory.drop().database().ifExist().name("");
-        DropFactory.drop().table().ifExist().table(TestSQL.class);
-        DropFactory.drop().index().name("").on().table(TestSQL.class);
+        unifyBuilder = DropFactory.drop().database().ifExist().name("");
+        unifyBuilder = DropFactory.drop().table().ifExist().table(TestSQL.class);
+        unifyBuilder = DropFactory.drop().index().name("").on().table(TestSQL.class);
 
         ///
-        AlterFactory.alter().database()
+        unifyBuilder = AlterFactory.alter().database()
                 .name("")
                 .charset("").collate("");
 
-        AlterFactory.alter().table(TestSQL.class).add().column().name("")
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).add().column().name("")
                 .intType().autoIncrement().after().column("");
 
 
-        AlterFactory.alter().table(TestSQL.class).add().index().name("").column("").comment("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).add().index().name("").column("").comment("");
 
-        AlterFactory.alter().table(TestSQL.class).change().oldColumn("")
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).change().oldColumn("")
                 .newColumn("").intType().autoIncrement().after().column("");
 
-        AlterFactory.alter().table(TestSQL.class).modify().column("")
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).modify().column("")
                 .intType().autoIncrement().after().column("");
 
-        AlterFactory.alter().table(TestSQL.class).drop().column().name("");
-        AlterFactory.alter().table(TestSQL.class).drop().index().name("");
-        AlterFactory.alter().table(TestSQL.class).drop().primary().key();
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).drop().column().name("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).drop().index().name("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).drop().primary().key();
 
-        AlterFactory.alter().table(TestSQL.class).rename().column().oldColumn("").to().newColumn("");
-        AlterFactory.alter().table(TestSQL.class).rename().index().oldColumn("").to().newColumn("");
-        AlterFactory.alter().table(TestSQL.class).rename().name("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).rename().column().oldColumn("").to().newColumn("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).rename().index().oldColumn("").to().newColumn("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class).rename().name("");
     }
 }

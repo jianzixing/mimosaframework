@@ -4,7 +4,7 @@ import org.mimosaframework.orm.sql.*;
 
 public interface DropAnyBuilder
         extends
-        DatabaseBuilder<DropDatabaseBuilder>,
-        TableBuilder<DropTableBuilder>,
-        IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder>>> {
+        DatabaseBuilder<DropDatabaseBuilder<UnifyBuilder>>,
+        TableBuilder<DropTableBuilder<UnifyBuilder>>,
+        IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder<UnifyBuilder>>>> {
 }

@@ -6,7 +6,7 @@ public interface SelectGHOLBuilder
         extends
         GroupByBuilder<SelectHOLBuilder>,
         HavingBuilder<HavingOperatorFunctionBuilder>,
-        OrderByBuilder<SortBuilder<LimitBuilder>>,
-        LimitBuilder {
+        OrderByBuilder<SortBuilder<LimitBuilder<UnifyBuilder>>>,
+        LimitBuilder<UnifyBuilder> {
 
 }

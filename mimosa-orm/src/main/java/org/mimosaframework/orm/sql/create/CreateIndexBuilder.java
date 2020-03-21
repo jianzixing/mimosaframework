@@ -4,7 +4,7 @@ import org.mimosaframework.orm.sql.*;
 
 public interface CreateIndexBuilder
         extends
-        UniqueBuilder<IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder<CreateIndexColumnsBuilder>>>>>,
-        FullTextBuilder<IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder<CreateIndexColumnsBuilder>>>>>,
-        IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder<CreateIndexColumnsBuilder>>>> {
+        UniqueBuilder<IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder<CreateIndexColumnsBuilder<UnifyBuilder>>>>>>,
+        FullTextBuilder<IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder<CreateIndexColumnsBuilder<UnifyBuilder>>>>>>,
+        IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder<CreateIndexColumnsBuilder<UnifyBuilder>>>>> {
 }
