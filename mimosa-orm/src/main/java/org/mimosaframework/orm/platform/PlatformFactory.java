@@ -9,9 +9,7 @@ import org.mimosaframework.orm.platform.oracle.*;
 import org.mimosaframework.orm.platform.postgresql.*;
 import org.mimosaframework.orm.platform.sqlite.*;
 import org.mimosaframework.orm.platform.sqlserver.*;
-import org.mimosaframework.orm.sql.AboutBuilderAction;
-import org.mimosaframework.orm.sql.DeleteBuilder;
-import org.mimosaframework.orm.sql.SQLMappingChannel;
+import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 public class PlatformFactory {
@@ -152,7 +150,13 @@ public class PlatformFactory {
 
     public static SQLMappingChannel getSQLBuilder(DatabaseTypes type, AboutBuilderAction action) {
         if (type.equals(DatabaseTypes.MYSQL)) {
+            if (action instanceof AlterBuilder) return new MysqlSQLAlterBuilder();
+            if (action instanceof CreateBuilder) return new MysqlSQLCreateBuilder();
             if (action instanceof DeleteBuilder) return new MysqlSQLDeleteBuilder();
+            if (action instanceof DropBuilder) return new MysqlSQLDropBuilder();
+            if (action instanceof InsertBuilder) return new MysqlSQLInsertBuilder();
+            if (action instanceof SelectBuilder) return new MysqlSQLSelectBuilder();
+            if (action instanceof UpdateBuilder) return new MysqlSQLUpdateBuilder();
         }
         if (type.equals(DatabaseTypes.ORACLE)) {
         }

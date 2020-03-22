@@ -12,7 +12,9 @@ public interface FieldFunBuilder<T> {
 
     T min(FieldItem fieldItem);
 
-    T concat(FieldItem... fieldItem);
+    T concat(FieldItem... fieldItems);
+
+    T concat(String fieldAliasName, FieldItem... fieldItems);
 
     T substring(FieldItem fieldItem, int pos, int len);
 }

@@ -15,6 +15,10 @@ public class Fields implements AboutFieldItem<Fields> {
         return null;
     }
 
+    public List<FieldItem> getFieldItems() {
+        return fieldItems;
+    }
+
     private Fields field(FieldItem fieldItem) {
         if (this.fieldItems == null) this.fieldItems = new ArrayList<>();
         this.fieldItems.add(fieldItem);
