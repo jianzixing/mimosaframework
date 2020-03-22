@@ -28,8 +28,8 @@ public class TestSQL {
                 .wrapper(null).and().wrapper(null).and()
                 .column("").in().value("")
                 .orderBy().column("").asc()
-                .orderBy().column("").desc()
-                .orderBy().column("").asc()
+                .column("").desc()
+                .column("").asc()
                 .limit(0, 10);
 
         unifyBuilder = DeleteFactory.delete().from()
@@ -67,18 +67,25 @@ public class TestSQL {
                 .inner().join().table(TestSQL.class).on().column("").eq().value("")
                 .where().column("").eq().value("").groupBy()
                 .having().count(new FieldItem(1)).eq().value("")
-                .orderBy().asc().limit(0, 10);
+                .orderBy()
+                .column("").asc()
+                .column("").desc()
+                .limit(0, 10);
 
 
         ///
 
-        unifyBuilder = UpdateFactory.update().table(TestSQL.class)
+        unifyBuilder = UpdateFactory.update()
+                .table(TestSQL.class, TestSQL.class)
                 .set()
                 .column("").eq().value("")
                 .split()
                 .column("").eq().value("")
                 .where().column("").eq().value("")
-                .orderBy().asc().limit(0, 10);
+                .orderBy()
+                .column("").asc()
+                .column("").desc()
+                .limit(0, 10);
 
 
         ///

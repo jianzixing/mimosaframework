@@ -32,6 +32,8 @@ public abstract class AbstractSQLDeleteBuilder
         SortBuilder,
         LimitBuilder {
 
+    protected boolean hasLeastOneSort = false;
+
     @Override
     public Object delete() {
         this.sqlBuilder.DELETE();
@@ -66,6 +68,7 @@ public abstract class AbstractSQLDeleteBuilder
     @Override
     public Object column(Serializable field) {
         if (this.body == 2 || this.body == 3) {
+            if (this.hasLeastOneSort) this.sqlBuilder.addSplit();
             this.sqlBuilder.addWrapString(field.toString());
             this.lastPlaceholderName = field.toString();
         } else {
@@ -77,6 +80,7 @@ public abstract class AbstractSQLDeleteBuilder
     @Override
     public Object column(Class table, Serializable field) {
         if (this.body == 2 || this.body == 3) {
+            if (this.hasLeastOneSort) this.sqlBuilder.addSplit();
             MappingTable mappingTable = this.getMappingTableByClass(table);
             this.sqlBuilder.addTableWrapField(mappingTable.getMappingTableName(), field.toString());
             this.lastPlaceholderName = mappingTable.getMappingTableName() + "." + field.toString();
@@ -89,6 +93,7 @@ public abstract class AbstractSQLDeleteBuilder
     @Override
     public Object column(String aliasName, Serializable field) {
         if (this.body == 2 || this.body == 3) {
+            if (this.hasLeastOneSort) this.sqlBuilder.addSplit();
             this.sqlBuilder.addTableWrapField(aliasName, field.toString());
             this.lastPlaceholderName = aliasName + "." + field.toString();
         } else {
@@ -330,12 +335,14 @@ public abstract class AbstractSQLDeleteBuilder
     @Override
     public Object asc() {
         this.sqlBuilder.ASC();
+        this.hasLeastOneSort = true;
         return this;
     }
 
     @Override
     public Object desc() {
         this.sqlBuilder.DESC();
+        this.hasLeastOneSort = true;
         return this;
     }
 }
