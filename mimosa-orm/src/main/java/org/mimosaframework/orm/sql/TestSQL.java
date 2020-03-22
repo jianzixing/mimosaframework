@@ -11,7 +11,9 @@ import org.mimosaframework.orm.sql.update.UpdateFactory;
 
 public class TestSQL {
     public static void main(String[] args) {
-        UnifyBuilder unifyBuilder = DeleteFactory.delete()
+        UnifyBuilder unifyBuilder = null;
+
+        unifyBuilder = DeleteFactory.delete()
                 .table(TestSQL.class)
                 .from()
                 .table(TestSQL.class, TestSQL.class)

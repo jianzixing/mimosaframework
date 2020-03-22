@@ -1531,9 +1531,13 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, UnifyBuilder builder) {
-        if (builder instanceof AbstractSQLDeleteBuilder) {
+    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, UnifyBuilder builder) throws SQLException {
+        SQLMappingChannel realBuilder = PlatformFactory.getSQLBuilder(this.carryHandler.dswrapper.getDatabaseTypeEnum(),
+                (AbstractSQLDeleteBuilder) builder);
 
+        if (realBuilder instanceof AbstractSQLDeleteBuilder) {
+            SQLBuilderCombine combine = realBuilder.getPlanSql();
+            this.carryHandler.doHandler(new PorterStructure(combine.getSql(), combine.getPlaceholders()));
         }
         return null;
     }

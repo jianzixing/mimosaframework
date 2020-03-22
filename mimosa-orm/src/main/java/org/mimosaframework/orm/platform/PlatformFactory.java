@@ -9,6 +9,9 @@ import org.mimosaframework.orm.platform.oracle.*;
 import org.mimosaframework.orm.platform.postgresql.*;
 import org.mimosaframework.orm.platform.sqlite.*;
 import org.mimosaframework.orm.platform.sqlserver.*;
+import org.mimosaframework.orm.sql.AboutBuilderAction;
+import org.mimosaframework.orm.sql.DeleteBuilder;
+import org.mimosaframework.orm.sql.SQLMappingChannel;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 public class PlatformFactory {
@@ -143,6 +146,23 @@ public class PlatformFactory {
         }
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypes.SQLITE)) {
             return new SqliteDatabaseSpeciality();
+        }
+        return null;
+    }
+
+    public static SQLMappingChannel getSQLBuilder(DatabaseTypes type, AboutBuilderAction action) {
+        if (type.equals(DatabaseTypes.MYSQL)) {
+            if (action instanceof DeleteBuilder) return new MysqlSQLDeleteBuilder();
+        }
+        if (type.equals(DatabaseTypes.ORACLE)) {
+        }
+        if (type.equals(DatabaseTypes.SQL_SERVER)) {
+        }
+        if (type.equals(DatabaseTypes.POSTGRESQL)) {
+        }
+        if (type.equals(DatabaseTypes.DB2)) {
+        }
+        if (type.equals(DatabaseTypes.SQLITE)) {
         }
         return null;
     }
