@@ -1,10 +1,12 @@
 package org.mimosaframework.orm.sql.alter;
 
+import org.mimosaframework.orm.sql.SplitBuilder;
+
 public interface AlterTableAnyBuilder
         extends
-        AlterAddBuilder<AlterAddAnyBuilder>,
-        AlterChangeBuilder<AlterChangeNextBuilder>,
-        AlterModifyBuilder<AlterModifyNextBuilder>,
-        AlterDropBuilder<AlterDropAnyBuilder>,
-        AlterRenameBuilder<AlterRenameAnyBuilder> {
+        AlterAddBuilder<AlterAddAnyBuilder<SplitBuilder<AlterTableAnyBuilder>>>,
+        AlterChangeBuilder<AlterChangeNextBuilder<SplitBuilder<AlterTableAnyBuilder>>>,
+        AlterModifyBuilder<AlterModifyNextBuilder<SplitBuilder<AlterTableAnyBuilder>>>,
+        AlterDropBuilder<AlterDropAnyBuilder<SplitBuilder<AlterTableAnyBuilder>>>,
+        AlterRenameBuilder<AlterRenameAnyBuilder<SplitBuilder<AlterTableAnyBuilder>>> {
 }

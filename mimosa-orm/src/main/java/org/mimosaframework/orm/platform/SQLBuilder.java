@@ -53,10 +53,12 @@ public interface SQLBuilder {
         INDEX, ALTER, ADD, INSERT, INTO, VALUES, UPDATE, SET, WHERE, AND, OR, ENGINE,
         CHARSET, IN, LIKE, BY, ORDER, ASC, DESC, LIMIT, DELETE, FROM, SELECT, COUNT,
         ON, AS, LEFT, JOIN, FIRST, AFTER, COMMENT, SUM, MODIFY, DROP, IS, INNER, FULL,
-        COLUMN, UNIQUE, GROUP, BETWEEN, ALL, CHARACTER, COLLATE, OFF, HAVING,
-
+        COLUMN, UNIQUE, GROUP, BETWEEN, ALL, CHARACTER, COLLATE, OFF, HAVING, DATABASE,
+        TO, CHANGE, RENAME,
         CONSTRAINT
     }
+
+    SQLBuilder TO();
 
     SQLBuilder OFF();
 
@@ -80,11 +82,17 @@ public interface SQLBuilder {
 
     SQLBuilder TABLE(String tableName);
 
+    SQLBuilder DATABASE();
+
     SQLBuilder IF();
 
     SQLBuilder IS();
 
     SQLBuilder MODIFY();
+
+    SQLBuilder RENAME();
+
+    SQLBuilder CHANGE();
 
     SQLBuilder DROP();
 

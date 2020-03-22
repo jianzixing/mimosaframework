@@ -4,13 +4,14 @@ package org.mimosaframework.orm.sql.delete;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilder;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
 import java.util.List;
 
 public abstract class AbstractSQLDeleteBuilder
+        extends
+        AbstractSQLBuilder
         implements
         SQLMappingChannel,
 
@@ -30,20 +31,6 @@ public abstract class AbstractSQLDeleteBuilder
         OrderByBuilder,
         SortBuilder,
         LimitBuilder {
-
-    protected SQLBuilder sqlBuilder;
-    protected byte body = 0;
-    protected String lastPlaceholderName;
-
-    public AbstractSQLDeleteBuilder() {
-        this.sqlBuilder = this.createSQLBuilder();
-    }
-
-    protected abstract SQLBuilder createSQLBuilder();
-
-    public SQLBuilderCombine getPlanSql() {
-        return this.sqlBuilder.toSQLString();
-    }
 
     @Override
     public Object delete() {

@@ -120,17 +120,20 @@ public class TestSQL {
                 .name("")
                 .charset("").collate("");
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).add().column().name("")
-                .intType().autoIncrement().after().column("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class)
+                .add().column().name("").intType().autoIncrement().after().column("")
+                .split()
+                .drop().column().name("");
 
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).add().index().name("").column("").comment("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class)
+                .add().index().name("").column("").comment("");
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).change().oldColumn("")
-                .newColumn("").intType().autoIncrement().after().column("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class)
+                .change().oldColumn("").newColumn("").intType().autoIncrement().after().column("");
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).modify().column("")
-                .intType().autoIncrement().after().column("");
+        unifyBuilder = AlterFactory.alter().table(TestSQL.class)
+                .modify().column("").intType().autoIncrement().after().column("");
 
         unifyBuilder = AlterFactory.alter().table(TestSQL.class).drop().column().name("");
         unifyBuilder = AlterFactory.alter().table(TestSQL.class).drop().index().name("");

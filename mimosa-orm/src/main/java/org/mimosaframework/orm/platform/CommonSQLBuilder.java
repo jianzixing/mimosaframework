@@ -151,6 +151,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     @Override
+    public SQLBuilder TO() {
+        sql.add(Command.TO);
+        return this;
+    }
+
+    @Override
     public SQLBuilder OFF() {
         sql.add(Command.OFF);
         return this;
@@ -219,6 +225,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     @Override
+    public SQLBuilder DATABASE() {
+        sql.add(Command.DATABASE);
+        return this;
+    }
+
+    @Override
     public SQLBuilder IF() {
         sql.add(Command.IF);
         return this;
@@ -233,6 +245,18 @@ public class CommonSQLBuilder implements SQLBuilder {
     @Override
     public SQLBuilder MODIFY() {
         sql.add(Command.MODIFY);
+        return this;
+    }
+
+    @Override
+    public SQLBuilder RENAME() {
+        sql.add(Command.RENAME);
+        return this;
+    }
+
+    @Override
+    public SQLBuilder CHANGE() {
+        sql.add(Command.CHANGE);
         return this;
     }
 
