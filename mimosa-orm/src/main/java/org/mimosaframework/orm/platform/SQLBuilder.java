@@ -54,7 +54,7 @@ public interface SQLBuilder {
         CHARSET, IN, LIKE, BY, ORDER, ASC, DESC, LIMIT, DELETE, FROM, SELECT, COUNT,
         ON, AS, LEFT, JOIN, FIRST, AFTER, COMMENT, SUM, MODIFY, DROP, IS, INNER, FULL,
         COLUMN, UNIQUE, GROUP, BETWEEN, ALL, CHARACTER, COLLATE, OFF, HAVING, DATABASE,
-        TO, CHANGE, RENAME,
+        TO, CHANGE, RENAME, FULLTEXT,
         CONSTRAINT
     }
 
@@ -79,6 +79,8 @@ public interface SQLBuilder {
     SQLBuilder addEndMark();
 
     SQLBuilder CREATE();
+
+    SQLBuilder TABLE();
 
     SQLBuilder TABLE(String tableName);
 
@@ -117,6 +119,8 @@ public interface SQLBuilder {
     SQLBuilder ADD();
 
     SQLBuilder UNIQUE();
+
+    SQLBuilder FULLTEXT();
 
     SQLBuilder INSERT();
 

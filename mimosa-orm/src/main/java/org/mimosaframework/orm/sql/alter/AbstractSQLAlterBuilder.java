@@ -36,7 +36,9 @@ public abstract class AbstractSQLAlterBuilder
         PrimaryBuilder,
         KeyBuilder,
         AlterRenameBuilder,
-        ToBuilder {
+        ToBuilder,
+        FullTextBuilder,
+        UniqueBuilder {
 
     @Override
     public Object alter() {
@@ -79,6 +81,7 @@ public abstract class AbstractSQLAlterBuilder
     public Object table(Class table) {
         MappingTable mappingTable = this.getMappingTableByClass(table);
         this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        this.body = 1;
         return this;
     }
 
@@ -97,6 +100,7 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object column() {
         this.sqlBuilder.COLUMN();
+        this.body = 2;
         return this;
     }
 
@@ -229,18 +233,21 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object index() {
         this.sqlBuilder.INDEX();
+        this.body = 2;
         return this;
     }
 
     @Override
     public Object split() {
         this.sqlBuilder.addSplit();
+        this.body = 1;
         return this;
     }
 
     @Override
     public Object drop() {
         this.sqlBuilder.DROP();
+        this.body = 2;
         return this;
     }
 
@@ -265,12 +272,14 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object change() {
         this.sqlBuilder.CHANGE();
+        this.body = 2;
         return this;
     }
 
     @Override
     public Object modify() {
         this.sqlBuilder.MODIFY();
+        this.body = 2;
         return this;
     }
 
@@ -289,6 +298,18 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object rename() {
         this.sqlBuilder.RENAME();
+        return this;
+    }
+
+    @Override
+    public Object fullText() {
+        this.sqlBuilder.FULLTEXT();
+        return this;
+    }
+
+    @Override
+    public Object unique() {
+        this.sqlBuilder.UNIQUE();
         return this;
     }
 }

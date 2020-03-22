@@ -260,14 +260,12 @@ public abstract class AbstractSQLDeleteBuilder
     }
 
     @Override
-    public Object wrapper(LogicBuilder logicBuilder) {
-        if (logicBuilder instanceof SimpleCommonWhereBuilder) {
-            SQLBuilder sqlBuilder = ((SimpleCommonWhereBuilder) logicBuilder).getSqlBuilder();
-            sqlBuilder.setTableFieldReplaceRule(this.sqlBuilder.getRuleStart(), this.sqlBuilder.getRuleFinish());
-            this.sqlBuilder.addParenthesisStart();
-            this.sqlBuilder.addSQLBuilder(sqlBuilder);
-            this.sqlBuilder.addParenthesisEnd();
-        }
+    public Object wrapper(AboutChildBuilder builder) {
+        SQLBuilder sqlBuilder = builder.getSqlBuilder();
+        sqlBuilder.setTableFieldReplaceRule(this.sqlBuilder.getRuleStart(), this.sqlBuilder.getRuleFinish());
+        this.sqlBuilder.addParenthesisStart();
+        this.sqlBuilder.addSQLBuilder(sqlBuilder);
+        this.sqlBuilder.addParenthesisEnd();
         return this;
     }
 

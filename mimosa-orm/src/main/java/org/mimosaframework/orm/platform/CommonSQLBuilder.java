@@ -217,6 +217,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     @Override
+    public SQLBuilder TABLE() {
+        sql.add(Command.TABLE);
+        return this;
+    }
+
+    @Override
     public SQLBuilder TABLE(String tableName) {
         sql.add(Command.TABLE);
         if (tableName != null)
@@ -329,6 +335,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     @Override
     public SQLBuilder UNIQUE() {
         sql.add(Command.UNIQUE);
+        return this;
+    }
+
+    @Override
+    public SQLBuilder FULLTEXT() {
+        sql.add(Command.FULLTEXT);
         return this;
     }
 

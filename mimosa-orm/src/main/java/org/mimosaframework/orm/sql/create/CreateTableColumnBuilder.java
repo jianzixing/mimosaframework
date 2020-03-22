@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.sql.create;
 
-import org.mimosaframework.orm.sql.AboutTableColumn;
+import org.mimosaframework.orm.sql.AboutChildBuilder;
 
 public interface CreateTableColumnBuilder<T> {
-    T columns(AboutTableColumn... columns);
+    T columns(AboutChildBuilder... columns);
 }
