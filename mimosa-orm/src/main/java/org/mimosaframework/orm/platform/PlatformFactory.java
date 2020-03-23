@@ -148,15 +148,15 @@ public class PlatformFactory {
         return null;
     }
 
-    public static SQLMappingChannel getSQLBuilder(DatabaseTypes type, AboutBuilderAction action) {
+    public static <T> T getSQLBuilder(DatabaseTypes type, Class<T> action) {
         if (type.equals(DatabaseTypes.MYSQL)) {
-            if (action instanceof AlterBuilder) return new MysqlSQLAlterBuilder();
-            if (action instanceof CreateBuilder) return new MysqlSQLCreateBuilder();
-            if (action instanceof DeleteBuilder) return new MysqlSQLDeleteBuilder();
-            if (action instanceof DropBuilder) return new MysqlSQLDropBuilder();
-            if (action instanceof InsertBuilder) return new MysqlSQLInsertBuilder();
-            if (action instanceof SelectBuilder) return new MysqlSQLSelectBuilder();
-            if (action instanceof UpdateBuilder) return new MysqlSQLUpdateBuilder();
+            if (action == AlterBuilder.class) return (T) new MysqlSQLAlterBuilder();
+            if (action == CreateBuilder.class) return (T) new MysqlSQLCreateBuilder();
+            if (action == DeleteBuilder.class) return (T) new MysqlSQLDeleteBuilder();
+            if (action == DropBuilder.class) return (T) new MysqlSQLDropBuilder();
+            if (action == InsertBuilder.class) return (T) new MysqlSQLInsertBuilder();
+            if (action == SelectBuilder.class) return (T) new MysqlSQLSelectBuilder();
+            if (action == UpdateBuilder.class) return (T) new MysqlSQLUpdateBuilder();
         }
         if (type.equals(DatabaseTypes.ORACLE)) {
         }

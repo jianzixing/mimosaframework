@@ -350,6 +350,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         mapDefaultSession.put("not_found_file_sql", "没有发现配置文件SQL");
         mapDefaultSession.put("not_support_action", "不支持的动作标签,当前仅支持select,update,delete,insert");
         mapDefaultSession.put("close_db_fail", "关闭数据库连接出错");
+        mapDefaultSession.put("builder_must_sql_builder", "Builder必须是AbstractSQLBuilder的实现类");
         messageWords.add(new MessageWords(PROJECT, DefaultSession.class, mapDefaultSession));
 
         // MimosaConnection

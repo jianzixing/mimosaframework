@@ -3,7 +3,19 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.platform.PlatformFactory;
+import org.mimosaframework.orm.sql.AlterBuilder;
+import org.mimosaframework.orm.sql.SQLActionFactory;
 import org.mimosaframework.orm.sql.UnifyBuilder;
+import org.mimosaframework.orm.sql.alter.AlterAnyBuilder;
+import org.mimosaframework.orm.sql.alter.AlterFactory;
+import org.mimosaframework.orm.sql.create.CreateAnyBuilder;
+import org.mimosaframework.orm.sql.delete.DeleteStartBuilder;
+import org.mimosaframework.orm.sql.drop.DropAnyBuilder;
+import org.mimosaframework.orm.sql.insert.InsertStartBuilder;
+import org.mimosaframework.orm.sql.select.SelectStartBuilder;
+import org.mimosaframework.orm.sql.update.UpdateStartBuilder;
+import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -75,6 +87,34 @@ public class SQLAutonomously implements Serializable {
 
     public static SQLAutonomously newInstance(UnifyBuilder builder, String slaveName) {
         return new SQLAutonomously(builder, slaveName);
+    }
+
+    public static AlterAnyBuilder alter() {
+        return SQLActionFactory.alter();
+    }
+
+    public static CreateAnyBuilder create() {
+        return SQLActionFactory.create();
+    }
+
+    public static DeleteStartBuilder delete() {
+        return SQLActionFactory.delete();
+    }
+
+    public static DropAnyBuilder drop() {
+        return SQLActionFactory.drop();
+    }
+
+    public static InsertStartBuilder insert() {
+        return SQLActionFactory.insert();
+    }
+
+    public static SelectStartBuilder select() {
+        return SQLActionFactory.select();
+    }
+
+    public static UpdateStartBuilder update() {
+        return SQLActionFactory.update();
     }
 
     public void add(String sql) {

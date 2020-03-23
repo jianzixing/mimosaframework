@@ -1,5 +1,6 @@
-package org.mimosaframework.orm.sql;
+package sql;
 
+import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.alter.AlterFactory;
 import org.mimosaframework.orm.sql.create.Columns;
 import org.mimosaframework.orm.sql.create.CreateFactory;
@@ -9,19 +10,19 @@ import org.mimosaframework.orm.sql.insert.InsertFactory;
 import org.mimosaframework.orm.sql.select.SelectFactory;
 import org.mimosaframework.orm.sql.update.UpdateFactory;
 
-public class TestSQL {
+public class TestSQLGrammar {
     public static void main(String[] args) {
         UnifyBuilder unifyBuilder = null;
 
         unifyBuilder = DeleteFactory.delete()
-                .table(TestSQL.class)
+                .table(TestSQLGrammar.class)
                 .from()
-                .table(TestSQL.class, TestSQL.class)
+                .table(TestSQLGrammar.class, TestSQLGrammar.class)
                 .where()
                 .column("")
                 .eq().value("");
 
-        unifyBuilder = DeleteFactory.delete().from().table(TestSQL.class)
+        unifyBuilder = DeleteFactory.delete().from().table(TestSQLGrammar.class)
                 .where()
                 .column("").gt().value("")
                 .and()
@@ -33,15 +34,15 @@ public class TestSQL {
                 .limit(0, 10);
 
         unifyBuilder = DeleteFactory.delete().from()
-                .table(TestSQL.class)
-                .using(TestSQL.class)
+                .table(TestSQLGrammar.class)
+                .using(TestSQLGrammar.class)
                 .where()
                 .column("").eq().value("");
 
         unifyBuilder = DeleteFactory.delete()
                 .table("")
                 .from()
-                .table(TestSQL.class)
+                .table(TestSQLGrammar.class)
                 .where()
                 .column("").eq().value("");
 
@@ -55,16 +56,16 @@ public class TestSQL {
                                 .fun(Fields.function().avg(new FieldItem(1)))
                 )
                 .from()
-                .table(TestSQL.class, TestSQL.class)
+                .table(TestSQLGrammar.class, TestSQLGrammar.class)
                 .where()
                 .column("").eq().value("").and()
                 .column("").isNull("")
                 .and().wrapper(Wrapper.build().column("").eq().value("").and().wrapper(null));
 
         unifyBuilder = SelectFactory.select().all().from()
-                .table(TableItems.build().table(TestSQL.class))
-                .left().join().table(TestSQL.class).on().column("").eq().value("").and().wrapper(null).and().column("").eq().value("")
-                .inner().join().table(TestSQL.class).on().column("").eq().value("")
+                .table(TableItems.build().table(TestSQLGrammar.class))
+                .left().join().table(TestSQLGrammar.class).on().column("").eq().value("").and().wrapper(null).and().column("").eq().value("")
+                .inner().join().table(TestSQLGrammar.class).on().column("").eq().value("")
                 .where().column("").eq().value("").groupBy()
                 .having().count(new FieldItem(1)).eq().value("")
                 .orderBy()
@@ -76,7 +77,7 @@ public class TestSQL {
         ///
 
         unifyBuilder = UpdateFactory.update()
-                .table(TestSQL.class, TestSQL.class)
+                .table(TestSQLGrammar.class, TestSQLGrammar.class)
                 .set()
                 .column("").eq().value("")
                 .split()
@@ -90,12 +91,12 @@ public class TestSQL {
 
         ///
 
-        unifyBuilder = InsertFactory.insert().into().table(TestSQL.class)
+        unifyBuilder = InsertFactory.insert().into().table(TestSQLGrammar.class)
                 .columns("", "")
                 .values()
                 .row("", "");
 
-        unifyBuilder = InsertFactory.insert().into().table(TestSQL.class)
+        unifyBuilder = InsertFactory.insert().into().table(TestSQLGrammar.class)
                 .columns("", "")
                 .values()
                 .row("", "")
@@ -113,41 +114,41 @@ public class TestSQL {
                 Columns.column("id").intType().primary().key().autoIncrement().not().nullable()
         ).charset("").extra("");
 
-        unifyBuilder = CreateFactory.create().unique().index().name("").on().table(TestSQL.class).columns("", "");
+        unifyBuilder = CreateFactory.create().unique().index().name("").on().table(TestSQLGrammar.class).columns("", "");
 
 
         ///
 
         unifyBuilder = DropFactory.drop().database().ifExist().name("");
-        unifyBuilder = DropFactory.drop().table().ifExist().table(TestSQL.class);
-        unifyBuilder = DropFactory.drop().index().name("").on().table(TestSQL.class);
+        unifyBuilder = DropFactory.drop().table().ifExist().table(TestSQLGrammar.class);
+        unifyBuilder = DropFactory.drop().index().name("").on().table(TestSQLGrammar.class);
 
         ///
         unifyBuilder = AlterFactory.alter().database()
                 .name("")
                 .charset("").collate("");
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class)
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
                 .add().column().name("").intType().autoIncrement().after().column("")
                 .split()
                 .drop().column().name("");
 
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class)
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
                 .add().index().name("").column("").comment("");
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class)
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
                 .change().oldColumn("").newColumn("").intType().autoIncrement().after().column("");
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class)
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
                 .modify().column("").intType().autoIncrement().after().column("");
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).drop().column().name("");
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).drop().index().name("");
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).drop().primary().key();
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).drop().column().name("");
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).drop().index().name("");
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).drop().primary().key();
 
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).rename().column().oldColumn("").to().newColumn("");
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).rename().index().oldColumn("").to().newColumn("");
-        unifyBuilder = AlterFactory.alter().table(TestSQL.class).rename().name("");
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).rename().column().oldColumn("").to().newColumn("");
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).rename().index().oldColumn("").to().newColumn("");
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).rename().name("");
     }
 }

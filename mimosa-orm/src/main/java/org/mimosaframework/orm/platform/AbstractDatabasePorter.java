@@ -1537,35 +1537,30 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, UnifyBuilder builder) throws SQLException {
-        SQLMappingChannel realBuilder = PlatformFactory.getSQLBuilder(this.carryHandler.dswrapper.getDatabaseTypeEnum(),
-                (AbstractSQLDeleteBuilder) builder);
+    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, AbstractSQLBuilder builder) throws SQLException {
+        builder.setMappingGlobalWrapper(mappingGlobalWrapper);
 
-        if (realBuilder instanceof AbstractSQLBuilder) {
-            ((AbstractSQLBuilder) realBuilder).setMappingGlobalWrapper(mappingGlobalWrapper);
-        }
-
-        SQLBuilderCombine combine = realBuilder.getPlanSql();
+        SQLBuilderCombine combine = builder.getPlanSql();
         PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
-        if (realBuilder instanceof AbstractSQLDeleteBuilder) {
+        if (builder instanceof AbstractSQLDeleteBuilder) {
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (realBuilder instanceof AbstractSQLAlterBuilder) {
+        if (builder instanceof AbstractSQLAlterBuilder) {
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (realBuilder instanceof AbstractSQLCreateBuilder) {
+        if (builder instanceof AbstractSQLCreateBuilder) {
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (realBuilder instanceof AbstractSQLDropBuilder) {
+        if (builder instanceof AbstractSQLDropBuilder) {
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (realBuilder instanceof AbstractSQLInsertBuilder) {
+        if (builder instanceof AbstractSQLInsertBuilder) {
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (realBuilder instanceof AbstractSQLSelectBuilder) {
+        if (builder instanceof AbstractSQLSelectBuilder) {
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (realBuilder instanceof AbstractSQLUpdateBuilder) {
+        if (builder instanceof AbstractSQLUpdateBuilder) {
             return this.carryHandler.doHandler(porterStructure);
         }
         return null;
