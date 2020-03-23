@@ -56,5 +56,5 @@ public interface PlatformWrapper {
 
     long count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
 
-    Object execute(MappingGlobalWrapper mappingGlobalWrapper, UnifyBuilder builder);
+    Object execute(MappingGlobalWrapper mappingGlobalWrapper, UnifyBuilder builder) throws SQLException;
 }

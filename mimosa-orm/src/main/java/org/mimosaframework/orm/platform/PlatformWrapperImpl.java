@@ -227,7 +227,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     }
 
     @Override
-    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, UnifyBuilder builder) {
+    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, UnifyBuilder builder) throws SQLException {
         return this.databasePorter.execute(mappingGlobalWrapper, builder);
     }
 
