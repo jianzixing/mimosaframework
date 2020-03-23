@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.sql.drop.DropAnyBuilder;
+import org.mimosaframework.orm.sql.drop.DropFactory;
 import tables.TableUser;
 
 public class SessionTemplateTesting {

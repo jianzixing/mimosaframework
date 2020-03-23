@@ -14,8 +14,7 @@ import org.mimosaframework.orm.merge.DefaultModelMerge;
 import org.mimosaframework.orm.merge.MergeTree;
 import org.mimosaframework.orm.merge.ModelMerge;
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
-import org.mimosaframework.orm.sql.SelectBuilder;
-import org.mimosaframework.orm.sql.UnifyBuilder;
+import org.mimosaframework.orm.sql.SQLMappingChannel;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -228,7 +227,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     }
 
     @Override
-    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, AbstractSQLBuilder builder) throws SQLException {
+    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, SQLMappingChannel builder) throws SQLException {
         return this.databasePorter.execute(mappingGlobalWrapper, builder);
     }
 

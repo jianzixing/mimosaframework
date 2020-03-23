@@ -6,6 +6,9 @@ import org.mimosaframework.orm.sql.alter.AlterAnyBuilder;
 import org.mimosaframework.orm.sql.create.CreateAnyBuilder;
 import org.mimosaframework.orm.sql.delete.DeleteStartBuilder;
 import org.mimosaframework.orm.sql.drop.DropAnyBuilder;
+import org.mimosaframework.orm.sql.drop.DropDatabaseBuilder;
+import org.mimosaframework.orm.sql.drop.DropTableBuilder;
+import org.mimosaframework.orm.sql.drop.RedefineDropBuilder;
 import org.mimosaframework.orm.sql.insert.InsertStartBuilder;
 import org.mimosaframework.orm.sql.select.SelectStartBuilder;
 import org.mimosaframework.orm.sql.update.UpdateStartBuilder;
@@ -41,7 +44,18 @@ public class SQLActionFactory {
         DropBuilder<DropAnyBuilder> dropBuilder = PlatformFactory.getSQLBuilder(
                 databaseTypes, DropBuilder.class
         );
-        return dropBuilder.drop();
+
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        RedefineDropBuilder.class,
+                        DropAnyBuilder.class,
+                        DropDatabaseBuilder.class,
+                        DropTableBuilder.class
+                },
+                dropBuilder
+        );
+
+        return (DropAnyBuilder) invoker.getInterface(DropBuilder.class).drop();
     }
 
     public static InsertStartBuilder insert() {

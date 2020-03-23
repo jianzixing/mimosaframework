@@ -8,14 +8,7 @@ import java.io.Serializable;
 public abstract class AbstractSQLDropBuilder
         extends AbstractSQLBuilder
         implements
-        DropBuilder,
-        DatabaseBuilder,
-        IEBuilder,
-        AbsNameBuilder,
-        TableBuilder,
-        AbsTableBuilder,
-        IndexBuilder,
-        OnBuilder {
+        RedefineDropBuilder {
 
     @Override
     public Object drop() {
@@ -32,7 +25,9 @@ public abstract class AbstractSQLDropBuilder
     @Override
     public Object table(Class table) {
         MappingTable mappingTable = this.getMappingTableByClass(table);
-        this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        if (mappingTable != null) {
+            this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        }
         return this;
     }
 

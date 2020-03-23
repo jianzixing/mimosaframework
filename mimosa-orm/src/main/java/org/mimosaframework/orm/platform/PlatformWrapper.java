@@ -10,6 +10,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
+import org.mimosaframework.orm.sql.SQLMappingChannel;
 import org.mimosaframework.orm.sql.SelectBuilder;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 
@@ -57,5 +58,5 @@ public interface PlatformWrapper {
 
     long count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
 
-    Object execute(MappingGlobalWrapper mappingGlobalWrapper, AbstractSQLBuilder builder) throws SQLException;
+    Object execute(MappingGlobalWrapper mappingGlobalWrapper, SQLMappingChannel builder) throws SQLException;
 }

@@ -1537,7 +1537,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     @Override
-    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, AbstractSQLBuilder builder) throws SQLException {
+    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, SQLMappingChannel builder) throws SQLException {
         builder.setMappingGlobalWrapper(mappingGlobalWrapper);
 
         SQLBuilderCombine combine = builder.getPlanSql();
