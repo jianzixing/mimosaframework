@@ -1541,6 +1541,10 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         SQLMappingChannel realBuilder = PlatformFactory.getSQLBuilder(this.carryHandler.dswrapper.getDatabaseTypeEnum(),
                 (AbstractSQLDeleteBuilder) builder);
 
+        if (realBuilder instanceof AbstractSQLBuilder) {
+            ((AbstractSQLBuilder) realBuilder).setMappingGlobalWrapper(mappingGlobalWrapper);
+        }
+
         SQLBuilderCombine combine = realBuilder.getPlanSql();
         PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
         if (realBuilder instanceof AbstractSQLDeleteBuilder) {
