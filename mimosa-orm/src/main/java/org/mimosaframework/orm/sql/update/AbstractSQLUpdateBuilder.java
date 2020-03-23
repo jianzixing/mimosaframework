@@ -2,7 +2,6 @@ package org.mimosaframework.orm.sql.update;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.SQLBuilder;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
@@ -12,20 +11,10 @@ public abstract class AbstractSQLUpdateBuilder
         AbstractSQLBuilder
 
         implements
-        UpdateBuilder,
-        AbsTablesBuilder,
-        SetBuilder,
-        AbsWhereColumnBuilder,
-        OperatorEqualBuilder,
-        SplitBuilder,
-        WhereBuilder,
-        OrderByBuilder,
-        SortBuilder,
-        LimitBuilder,
-        AbsValueBuilder {
+        RedefineUpdateBuilder {
 
     protected boolean hasLeastOneSort = false;
-    
+
     @Override
     public Object update() {
         this.sqlBuilder.UPDATE();

@@ -1,9 +1,7 @@
 package org.mimosaframework.orm.sql.alter;
 
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.SQLBuilder;
 import org.mimosaframework.orm.sql.*;
-import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
 
 import java.io.Serializable;
 
@@ -11,34 +9,8 @@ public abstract class AbstractSQLAlterBuilder
         extends
         AbstractSQLBuilder
         implements
-        SQLMappingChannel,
 
-        AlterBuilder,
-        DatabaseBuilder,
-        AbsNameBuilder,
-        CharsetBuilder,
-        CollateBuilder,
-        AbsTableBuilder,
-        AlterAddBuilder,
-        ColumnBuilder,
-        ColumnTypeBuilder,
-        AutoIncrementBuilder,
-        AfterBuilder,
-        AbsColumnBuilder,
-        IndexBuilder,
-        CommentBuilder,
-        SplitBuilder,
-        AlterDropBuilder,
-        AlterModifyBuilder,
-        AlterChangeBuilder,
-        AlterOldColumnBuilder,
-        AlterNewColumnBuilder,
-        PrimaryBuilder,
-        KeyBuilder,
-        AlterRenameBuilder,
-        ToBuilder,
-        FullTextBuilder,
-        UniqueBuilder {
+        RedefineAlterBuilder {
 
     @Override
     public Object alter() {
@@ -80,7 +52,9 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object table(Class table) {
         MappingTable mappingTable = this.getMappingTableByClass(table);
-        this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        if (mappingTable != null) {
+            this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        }
         this.body = 1;
         return this;
     }

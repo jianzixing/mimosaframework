@@ -11,22 +11,8 @@ public abstract class AbstractSQLCreateBuilder
         AbstractSQLBuilder
 
         implements
-        CreateBuilder,
-        DatabaseBuilder,
-        INEBuilder,
-        AbsNameBuilder,
-        CharsetBuilder,
-        CollateBuilder,
-        TableBuilder,
-        CreateTableColumnBuilder,
-        AbsExtraBuilder,
-        UniqueBuilder,
-        FullTextBuilder,
-        IndexBuilder,
-        OnBuilder,
-        AbsTableBuilder,
-        CreateIndexColumnsBuilder {
-    
+        RedefineCreateBuilder {
+
     @Override
     public Object create() {
         this.sqlBuilder.CREATE();

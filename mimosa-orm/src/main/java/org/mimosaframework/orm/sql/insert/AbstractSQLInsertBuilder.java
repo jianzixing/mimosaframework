@@ -10,13 +10,7 @@ public abstract class AbstractSQLInsertBuilder
         AbstractSQLBuilder
 
         implements
-        InsertBuilder,
-        IntoBuilder,
-        AbsTableBuilder,
-        AbsColumnsBuilder,
-        ValuesBuilder,
-        InsertValuesBuilder,
-        SplitBuilder {
+        RedefineInsertBuilder {
 
     protected Serializable[] fields;
 

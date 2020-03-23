@@ -12,30 +12,7 @@ public class AbstractSQLSelectBuilder
         AbstractSQLBuilder
 
         implements
-        SelectBuilder,
-        AbsFieldBuilder,
-        FromBuilder,
-        AbsTablesBuilder,
-        WhereBuilder,
-        AbsWhereColumnBuilder,
-        OperatorFunctionBuilder,
-        LogicBuilder,
-        WrapperBuilder,
-        HavingBuilder,
-        FieldFunBuilder,
-        AbsValueBuilder,
-        OrderByBuilder,
-        SortBuilder,
-        LimitBuilder,
-        AbsColumnBuilder,
-        BetweenValueBuilder,
-        SplitBuilder,
-
-        LeftBuilder,
-        InnerBuilder,
-        JoinBuilder,
-        OnBuilder,
-        AbsTableBuilder {
+        RedefineSelectBuilder {
 
     protected boolean hasLeastOneSort = false;
 

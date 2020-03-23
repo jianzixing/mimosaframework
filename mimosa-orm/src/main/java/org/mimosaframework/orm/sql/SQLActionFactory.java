@@ -2,16 +2,16 @@ package org.mimosaframework.orm.sql;
 
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.platform.PlatformFactory;
-import org.mimosaframework.orm.sql.alter.AlterAnyBuilder;
-import org.mimosaframework.orm.sql.create.CreateAnyBuilder;
-import org.mimosaframework.orm.sql.delete.DeleteStartBuilder;
+import org.mimosaframework.orm.sql.alter.*;
+import org.mimosaframework.orm.sql.create.*;
+import org.mimosaframework.orm.sql.delete.*;
 import org.mimosaframework.orm.sql.drop.DropAnyBuilder;
 import org.mimosaframework.orm.sql.drop.DropDatabaseBuilder;
 import org.mimosaframework.orm.sql.drop.DropTableBuilder;
 import org.mimosaframework.orm.sql.drop.RedefineDropBuilder;
-import org.mimosaframework.orm.sql.insert.InsertStartBuilder;
-import org.mimosaframework.orm.sql.select.SelectStartBuilder;
-import org.mimosaframework.orm.sql.update.UpdateStartBuilder;
+import org.mimosaframework.orm.sql.insert.*;
+import org.mimosaframework.orm.sql.select.*;
+import org.mimosaframework.orm.sql.update.*;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 public class SQLActionFactory {
@@ -20,7 +20,33 @@ public class SQLActionFactory {
         AlterBuilder<AlterAnyBuilder> alterBuilder = PlatformFactory.getSQLBuilder(
                 databaseTypes, AlterBuilder.class
         );
-        return alterBuilder.alter();
+
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        RedefineAlterBuilder.class,
+                        AlterAddAnyBuilder.class,
+                        AlterAddBuilder.class,
+                        AlterAnyBuilder.class,
+                        AlterChangeBuilder.class,
+                        AlterChangeNextBuilder.class,
+                        AlterColumnAssistBuilder.class,
+                        AlterColumnsBuilder.class,
+                        AlterDatabaseBuilder.class,
+                        AlterDropAnyBuilder.class,
+                        AlterDropBuilder.class,
+                        AlterModifyBuilder.class,
+                        AlterModifyNextBuilder.class,
+                        AlterNewColumnBuilder.class,
+                        AlterOldColumnBuilder.class,
+                        AlterRenameAnyBuilder.class,
+                        AlterRenameBuilder.class,
+                        AlterTableAnyBuilder.class,
+                        AlterTableOptionBuilder.class
+                },
+                alterBuilder
+        );
+
+        return (AlterAnyBuilder) invoker.getInterface(AlterBuilder.class).alter();
     }
 
     public static CreateAnyBuilder create() {
@@ -28,7 +54,25 @@ public class SQLActionFactory {
         CreateBuilder<CreateAnyBuilder> createBuilder = PlatformFactory.getSQLBuilder(
                 databaseTypes, CreateBuilder.class
         );
-        return createBuilder.create();
+
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        RedefineCreateBuilder.class,
+                        ColumnAssistBuilder.class,
+                        ColumnTypeBuilder.class,
+                        CreateAnyBuilder.class,
+                        CreateColumnAssistBuilder.class,
+                        CreateDatabaseStartBuilder.class,
+                        CreateIndexBuilder.class,
+                        CreateIndexColumnsBuilder.class,
+                        CreateTableColumnBuilder.class,
+                        CreateTableStartBuilder.class,
+                        CreateTableTailBuilder.class
+                },
+                createBuilder
+        );
+
+        return (CreateAnyBuilder) invoker.getInterface(CreateBuilder.class).create();
     }
 
     public static DeleteStartBuilder delete() {
@@ -36,7 +80,22 @@ public class SQLActionFactory {
         DeleteBuilder<DeleteStartBuilder> deleteBuilder = PlatformFactory.getSQLBuilder(
                 databaseTypes, DeleteBuilder.class
         );
-        return deleteBuilder.delete();
+
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        RedefineDeleteBuilder.class,
+                        AfterDeleteFromBuilder.class,
+                        BeforeDeleteFromBuilder.class,
+                        DeleteStartBuilder.class,
+                        DeleteWhereBuilder.class,
+                        DeleteWhereOrderByBuilder.class,
+                        ReplaceDeleteLogicBuilder.class,
+                        ReplaceDeleteWhereBuilder.class
+                },
+                deleteBuilder
+        );
+
+        return (DeleteStartBuilder) invoker.getInterface(DeleteBuilder.class).delete();
     }
 
     public static DropAnyBuilder drop() {
@@ -63,7 +122,19 @@ public class SQLActionFactory {
         InsertBuilder<InsertStartBuilder> insertBuilder = PlatformFactory.getSQLBuilder(
                 databaseTypes, InsertBuilder.class
         );
-        return insertBuilder.insert();
+
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        RedefineInsertBuilder.class,
+                        InsertFieldBuilder.class,
+                        InsertStartBuilder.class,
+                        InsertValuesBuilder.class,
+                        ReplaceInsertValuesBuilder.class
+                },
+                insertBuilder
+        );
+
+        return (InsertStartBuilder) invoker.getInterface(InsertBuilder.class).insert();
     }
 
     public static SelectStartBuilder select() {
@@ -71,7 +142,25 @@ public class SQLActionFactory {
         SelectBuilder<SelectStartBuilder> selectBuilder = PlatformFactory.getSQLBuilder(
                 databaseTypes, SelectBuilder.class
         );
-        return selectBuilder.select();
+
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        RedefineSelectBuilder.class,
+                        SelectGHOLBuilder.class,
+                        SelectHOLBuilder.class,
+                        SelectOLBuilder.class,
+                        SelectOnBuilder.class,
+                        SelectStartBuilder.class,
+                        SelectWhereBuilder.class,
+                        SelectAfterOnBuilder.class,
+                        ReplaceSelectWhereBuilder.class,
+                        ReplaceSelectLogicBuilder.class,
+                        HavingOperatorFunctionBuilder.class
+                },
+                selectBuilder
+        );
+
+        return (SelectStartBuilder) invoker.getInterface(SelectBuilder.class).select();
     }
 
     public static UpdateStartBuilder update() {
@@ -79,6 +168,20 @@ public class SQLActionFactory {
         UpdateBuilder<UpdateStartBuilder> updateBuilder = PlatformFactory.getSQLBuilder(
                 databaseTypes, UpdateBuilder.class
         );
-        return updateBuilder.update();
+
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        RedefineUpdateBuilder.class,
+                        ReplaceUpdateSetBuilder.class,
+                        ReplaceUpdateValueBuilder.class,
+                        ReplaceUpdateWhereLogicBuilder.class,
+                        UpdateOLBuilder.class,
+                        UpdateStartBuilder.class,
+                        UpdateWhereBuilder.class
+                },
+                updateBuilder
+        );
+
+        return (UpdateStartBuilder) invoker.getInterface(UpdateBuilder.class).update();
     }
 }

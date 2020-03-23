@@ -13,24 +13,7 @@ public abstract class AbstractSQLDeleteBuilder
         extends
         AbstractSQLBuilder
         implements
-        SQLMappingChannel,
-
-        DeleteBuilder,
-        AbsTableBuilder,
-        AbsTablesBuilder,
-        BeforeDeleteFromBuilder,
-        FromBuilder,
-        WhereBuilder,
-        AbsWhereColumnBuilder,
-        OperatorBuilder,
-        AbsValueBuilder,
-        BetweenValueBuilder,
-        LogicBuilder,
-        UsingBuilder,
-        WrapperBuilder,
-        OrderByBuilder,
-        SortBuilder,
-        LimitBuilder {
+        RedefineDeleteBuilder {
 
     protected boolean hasLeastOneSort = false;
 

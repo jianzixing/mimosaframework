@@ -24,7 +24,8 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.drop().table().table(TableUser.class)
+                SQLAutonomously.alter().table(TableUser.class)
+                .modify().column("abc").intType().comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
