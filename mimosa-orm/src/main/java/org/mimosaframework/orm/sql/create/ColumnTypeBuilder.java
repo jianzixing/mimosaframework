@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.sql.create;
 
-import org.mimosaframework.orm.sql.AboutTableColumn;
 
 /**
  * 类型名称	    显示长度	    数据库类型	            JAVA类型	                JDBC类型索引(int)	描述
@@ -31,7 +30,7 @@ import org.mimosaframework.orm.sql.AboutTableColumn;
  *
  * @param <T>
  */
-public interface ColumnTypeBuilder<T> extends AboutTableColumn {
+public interface ColumnTypeBuilder<T> {
     T intType();
 
     T varchar(int len);

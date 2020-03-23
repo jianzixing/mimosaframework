@@ -66,7 +66,7 @@ public class MimosaDataSource implements Closeable {
 
     public static DatabaseTypes getDatabaseType() {
         if (dataSourceInfo != null && dataSourceInfo.size() > 0) {
-            return dataSourceInfo.get(0);
+            return dataSourceInfo.entrySet().iterator().next().getValue();
         }
         return null;
     }

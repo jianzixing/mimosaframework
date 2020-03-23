@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
+import tables.TableUser;
 
 public class SessionTemplateTesting {
     private static SessionTemplate template = null;
@@ -21,7 +22,7 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-
+                SQLAutonomously.drop().table().table(TableUser.class)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 

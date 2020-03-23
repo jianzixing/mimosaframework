@@ -33,7 +33,7 @@ public class SimpleCommonWhereBuilder implements CommonWhereBuilder {
     }
 
     @Override
-    public LogicBuilder<SelectWhereBuilder> wrapper(LogicBuilder wrapper) {
+    public LogicBuilder<SelectWhereBuilder> wrapper(AboutChildBuilder builder) {
         return null;
     }
 }
