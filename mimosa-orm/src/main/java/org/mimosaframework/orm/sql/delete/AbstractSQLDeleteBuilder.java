@@ -4,6 +4,8 @@ package org.mimosaframework.orm.sql.delete;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilder;
+import org.mimosaframework.orm.platform.SQLMappingField;
+import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
@@ -27,9 +29,9 @@ public abstract class AbstractSQLDeleteBuilder
     public Object table(Class table) {
         MappingTable mappingTable = this.getMappingTableByClass(table);
         if (this.body == 0) {
-            this.sqlBuilder.addString(mappingTable.getMappingTableName());
+            this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         } else {
-            this.sqlBuilder.addString(mappingTable.getMappingTableName());
+            this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         }
         return this;
     }
@@ -326,6 +328,42 @@ public abstract class AbstractSQLDeleteBuilder
     public Object desc() {
         this.sqlBuilder.DESC();
         this.hasLeastOneSort = true;
+        return this;
+    }
+
+    @Override
+    public Object isNull(Serializable field) {
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
+        return this;
+    }
+
+    @Override
+    public Object isNull(Class table, Serializable field) {
+        this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
+        return this;
+    }
+
+    @Override
+    public Object isNull(String aliasName, Serializable field) {
+        this.sqlBuilder.addMappingField(new SQLMappingField(aliasName, field));
+        return this;
+    }
+
+    @Override
+    public Object isNotNull(Serializable field) {
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
+        return this;
+    }
+
+    @Override
+    public Object isNotNull(Class table, Serializable field) {
+        this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
+        return this;
+    }
+
+    @Override
+    public Object isNotNull(String aliasName, Serializable field) {
+        this.sqlBuilder.addMappingField(new SQLMappingField(aliasName, field));
         return this;
     }
 }

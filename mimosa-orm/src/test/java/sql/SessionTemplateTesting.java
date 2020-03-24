@@ -67,4 +67,14 @@ public class SessionTemplateTesting {
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
     }
+
+    @Test
+    public void testDelete1() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.delete().table(TableUser.class).from().table(TableUser.class)
+                        .where().column(TableUser.id).eq().value(1)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
 }
