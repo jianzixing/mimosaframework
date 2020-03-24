@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.platform;
 
+import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+
 import java.util.List;
 import java.util.Map;
 
@@ -220,6 +222,12 @@ public interface SQLBuilder {
     List<SQLDataPlaceholder> getDataPlaceholders();
 
     SQLBuilderCombine toSQLString();
+
+    SQLBuilderCombine toSQLString(MappingGlobalWrapper mappingGlobalWrapper);
+
+    SQLBuilder addMappingTable(SQLMappingTable mappingTable);
+
+    SQLBuilder addMappingField(SQLMappingField mappingField);
 
     int size();
 }

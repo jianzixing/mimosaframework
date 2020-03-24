@@ -9,10 +9,7 @@ import org.mimosaframework.orm.criteria.DefaultFilter;
 import org.mimosaframework.orm.criteria.DefaultJoin;
 import org.mimosaframework.orm.criteria.DefaultQuery;
 import org.mimosaframework.orm.mapping.*;
-import org.mimosaframework.orm.platform.AbstractDatabasePorter;
-import org.mimosaframework.orm.platform.PlatformFactory;
-import org.mimosaframework.orm.platform.PlatformWrapperImpl;
-import org.mimosaframework.orm.platform.RelationDatabaseExecutor;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.platform.db2.DB2DatabasePorter;
 import org.mimosaframework.orm.platform.db2.DB2DifferentColumn;
 import org.mimosaframework.orm.platform.mysql.MysqlDifferentColumn;
@@ -435,6 +432,12 @@ public class LanguageMessageDefault implements MessagesRegister {
         Map<String, String> mapRelationDatabaseExecutor = new HashMap<>();
         mapRelationDatabaseExecutor.put("result_set_empty", "没有获取到ResultSet的结果集");
         messageWords.add(new MessageWords(PROJECT, RelationDatabaseExecutor.class, mapRelationDatabaseExecutor));
+
+        // CommonSQLBuilder
+        Map<String, String> mapCommonSQLBuilder = new HashMap<>();
+        mapCommonSQLBuilder.put("miss_table_mapping", "没有找到类 %s 的映射类,请检查是否是表映射类");
+        mapCommonSQLBuilder.put("miss_field_mapping", "映射类 %s 中没有找到 %s 映射字段");
+        messageWords.add(new MessageWords(PROJECT, CommonSQLBuilder.class, mapCommonSQLBuilder));
     }
 
     @Override

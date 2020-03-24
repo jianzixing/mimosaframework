@@ -21,7 +21,7 @@ public abstract class AbstractSQLBuilder
     protected abstract SQLBuilder createSQLBuilder();
 
     public SQLBuilderCombine getPlanSql() {
-        return this.sqlBuilder.toSQLString();
+        return this.sqlBuilder.toSQLString(mappingGlobalWrapper);
     }
 
     public void setMappingGlobalWrapper(MappingGlobalWrapper mappingGlobalWrapper) {

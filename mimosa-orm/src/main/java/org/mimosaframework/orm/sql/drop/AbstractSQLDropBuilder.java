@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.drop;
 
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
@@ -24,10 +25,7 @@ public abstract class AbstractSQLDropBuilder
 
     @Override
     public Object table(Class table) {
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        if (mappingTable != null) {
-            this.sqlBuilder.addString(mappingTable.getMappingTableName());
-        }
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         return this;
     }
 

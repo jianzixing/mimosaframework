@@ -1,7 +1,14 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.DefaultSession;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.mapping.MappingField;
+import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.mapping.MappingTable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -587,6 +594,10 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     public SQLBuilderCombine toSQLString() {
+        return this.toSQLString(null);
+    }
+
+    public SQLBuilderCombine toSQLString(MappingGlobalWrapper mappingGlobalWrapper) {
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for (Object o : sql) {
@@ -596,6 +607,45 @@ public class CommonSQLBuilder implements SQLBuilder {
                 sb.append(((Command) o).name());
             } else if (o instanceof SQLField) {
                 sb.append(o.toString());
+            } else if (o instanceof SQLMappingTable) {
+                Class table = ((SQLMappingTable) o).getTable();
+                MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(table);
+                if (mappingTable == null) {
+                    throw new IllegalArgumentException(
+                            Messages.get(LanguageMessageFactory.PROJECT,
+                                    CommonSQLBuilder.class, "miss_table_mapping", table.getName())
+                    );
+                }
+                sb.append(mappingTable.getMappingTableName());
+            } else if (o instanceof SQLMappingField) {
+                Class table = ((SQLMappingField) o).getTable();
+                Serializable field = ((SQLMappingField) o).getField();
+                String tableAliasName = ((SQLMappingField) o).getTableAliasName();
+
+                if (table != null) {
+                    MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(table);
+                    if (mappingTable == null) {
+                        throw new IllegalArgumentException(
+                                Messages.get(LanguageMessageFactory.PROJECT,
+                                        CommonSQLBuilder.class, "miss_table_mapping", table.getName())
+                        );
+                    }
+
+                    MappingField mappingField = mappingTable.getMappingFieldByName(field.toString());
+                    if (mappingField == null) {
+                        throw new IllegalArgumentException(
+                                Messages.get(LanguageMessageFactory.PROJECT,
+                                        CommonSQLBuilder.class, "miss_field_mapping", table.getName(), field.toString())
+                        );
+                    }
+                    field = mappingField.getMappingColumnName();
+                }
+
+                if (StringTools.isNotEmpty(tableAliasName)) {
+                    sb.append(ruleStart + tableAliasName + ruleFinish);
+                    sb.append(".");
+                    sb.append(ruleStart + field + ruleFinish);
+                }
             } else if (o instanceof SQLSymbol) {
                 SQLSymbol.Symbol symbol = ((SQLSymbol) o).getSymbol();
                 SQLBuilderCombine combine = ((SQLSymbol) o).getSqlBuilder().toSQLString();
@@ -663,6 +713,18 @@ public class CommonSQLBuilder implements SQLBuilder {
             }
         }
         return new SQLBuilderCombine(sb.toString(), placeholders);
+    }
+
+    @Override
+    public SQLBuilder addMappingTable(SQLMappingTable mappingTable) {
+        sql.add(mappingTable);
+        return this;
+    }
+
+    @Override
+    public SQLBuilder addMappingField(SQLMappingField mappingField) {
+        sql.add(mappingField);
+        return this;
     }
 
     @Override
