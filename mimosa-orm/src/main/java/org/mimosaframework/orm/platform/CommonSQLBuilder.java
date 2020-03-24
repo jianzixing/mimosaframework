@@ -601,100 +601,109 @@ public class CommonSQLBuilder implements SQLBuilder {
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for (Object o : sql) {
-            if (o instanceof SQLContinuous) {
-                sb.append(((SQLContinuous) o).toString(ruleStart, ruleFinish));
-            } else if (o instanceof Command) {
-                sb.append(((Command) o).name());
-            } else if (o instanceof SQLField) {
-                sb.append(o.toString());
-            } else if (o instanceof SQLMappingTable) {
-                String tableName = ((SQLMappingTable) o).getDatabaseTableName(mappingGlobalWrapper);
-                if (StringTools.isEmpty(tableName)) {
-                    throw new IllegalArgumentException(
-                            Messages.get(LanguageMessageFactory.PROJECT,
-                                    CommonSQLBuilder.class, "miss_table_mapping",
-                                    ((SQLMappingTable) o).getTable().getName())
-                    );
-                }
-                sb.append(tableName);
-            } else if (o instanceof SQLMappingField) {
-                String tableAliasName = ((SQLMappingField) o).getTableAliasName();
-                String field = ((SQLMappingField) o).getMayBeField(this.sql, mappingGlobalWrapper);
-
-                if (StringTools.isNotEmpty(tableAliasName)) {
-                    sb.append(ruleStart + tableAliasName + ruleFinish);
-                    sb.append(".");
-                    sb.append(ruleStart + field + ruleFinish);
-                } else {
-                    sb.append(ruleStart + field + ruleFinish);
-                }
-            } else if (o instanceof SQLSymbol) {
-                SQLSymbol.Symbol symbol = ((SQLSymbol) o).getSymbol();
-                SQLBuilderCombine combine = ((SQLSymbol) o).getSqlBuilder().toSQLString();
-                if (symbol == SQLSymbol.Symbol.Parenthesis) {
-                    sb.append("(");
-                    sb.append(combine.getSql());
-                    sb.append(")");
-                } else if (symbol == SQLSymbol.Symbol.Brace) {
-                    sb.append("{");
-                    sb.append(combine.getSql());
-                    sb.append("}");
-                }
-                if (combine.getPlaceholders() != null) {
-                    placeholders.addAll(combine.getPlaceholders());
-                }
-            } else if (o instanceof String) {
-                sb.append(String.valueOf(o));
-            } else if (o instanceof SQLBuilder) {
-                SQLBuilderCombine combine = ((SQLBuilder) o).toSQLString();
-                sb.append(combine.getSql().trim());
-                if (combine.getPlaceholders() != null) {
-                    placeholders.addAll(combine.getPlaceholders());
-                }
-            } else if (o instanceof SQLFunction) {
-                sb.append(((SQLFunction) o).getFunName());
-                String tableAliasName = ((SQLFunction) o).getTableAliasName();
-                Object f = ((SQLFunction) o).getField();
-                boolean isValue = ((SQLFunction) o).isValue();
-                if (isValue) {
-                    sb.append("(" + f + ")");
-                } else {
-                    if (f == null) {
-                        sb.append("(*)");
-                    } else if (f instanceof Integer) {
-                        sb.append("(" + f + ")");
-                    } else {
-                        if (StringTools.isNotEmpty(tableAliasName)) {
-                            sb.append("(" + ruleStart + tableAliasName + ruleFinish + "." + ruleStart + f + ruleFinish + ")");
-                        } else {
-                            sb.append("(" + ruleStart);
-                            sb.append(f);
-                            sb.append(ruleFinish + ")");
-                        }
-                    }
-                }
-
-                String alias = ((SQLFunction) o).getFieldAliasName();
-                if (alias != null) {
-                    sb.append(" ");
-                    sb.append("AS ");
-                    sb.append(ruleStart + alias + ruleFinish);
-                }
-                sb.append(" ");
-            } else if (o instanceof SQLDataPlaceholder) {
-                sb.append("?");
-                placeholders.add((SQLDataPlaceholder) o);
-            } else {
-                sb.append(o);
-            }
-
-            if (o instanceof SQLFunction) {
-
-            } else {
-                sb.append(" ");
-            }
+            this.toSQLString(sb, o, placeholders, mappingGlobalWrapper);
         }
         return new SQLBuilderCombine(sb.toString(), placeholders);
+    }
+
+    private void toSQLString(StringBuilder sb,
+                             Object o,
+                             List<SQLDataPlaceholder> placeholders,
+                             MappingGlobalWrapper mappingGlobalWrapper) {
+        if (o instanceof SQLContinuous) {
+            sb.append(((SQLContinuous) o).toString(ruleStart, ruleFinish));
+        } else if (o instanceof Command) {
+            sb.append(((Command) o).name());
+        } else if (o instanceof SQLField) {
+            sb.append(o.toString());
+        } else if (o instanceof SQLMappingTable) {
+            String tableName = ((SQLMappingTable) o).getDatabaseTableName(mappingGlobalWrapper);
+            if (StringTools.isEmpty(tableName)) {
+                throw new IllegalArgumentException(
+                        Messages.get(LanguageMessageFactory.PROJECT,
+                                CommonSQLBuilder.class, "miss_table_mapping",
+                                ((SQLMappingTable) o).getTable().getName())
+                );
+            }
+            sb.append(tableName);
+        } else if (o instanceof SQLMappingField) {
+            String tableAliasName = ((SQLMappingField) o).getTableAliasName();
+            String field = ((SQLMappingField) o).getMayBeField(this.sql, mappingGlobalWrapper);
+
+            if (StringTools.isNotEmpty(tableAliasName)) {
+                sb.append(ruleStart + tableAliasName + ruleFinish);
+                sb.append(".");
+                sb.append(ruleStart + field + ruleFinish);
+            } else {
+                sb.append(ruleStart + field + ruleFinish);
+            }
+        } else if (o instanceof SQLReplaceHolder) {
+            this.toSQLString(sb, ((SQLReplaceHolder) o).getHolder(), placeholders, mappingGlobalWrapper);
+        } else if (o instanceof SQLSymbol) {
+            SQLSymbol.Symbol symbol = ((SQLSymbol) o).getSymbol();
+            SQLBuilderCombine combine = ((SQLSymbol) o).getSqlBuilder().toSQLString();
+            if (symbol == SQLSymbol.Symbol.Parenthesis) {
+                sb.append("(");
+                sb.append(combine.getSql());
+                sb.append(")");
+            } else if (symbol == SQLSymbol.Symbol.Brace) {
+                sb.append("{");
+                sb.append(combine.getSql());
+                sb.append("}");
+            }
+            if (combine.getPlaceholders() != null) {
+                placeholders.addAll(combine.getPlaceholders());
+            }
+        } else if (o instanceof String) {
+            sb.append(String.valueOf(o));
+        } else if (o instanceof SQLBuilder) {
+            SQLBuilderCombine combine = ((SQLBuilder) o).toSQLString();
+            sb.append(combine.getSql().trim());
+            if (combine.getPlaceholders() != null) {
+                placeholders.addAll(combine.getPlaceholders());
+            }
+        } else if (o instanceof SQLFunction) {
+            sb.append(((SQLFunction) o).getFunName());
+            String tableAliasName = ((SQLFunction) o).getTableAliasName();
+            Object f = ((SQLFunction) o).getField();
+            boolean isValue = ((SQLFunction) o).isValue();
+            if (isValue) {
+                sb.append("(" + f + ")");
+            } else {
+                if (f == null) {
+                    sb.append("(*)");
+                } else if (f instanceof Integer) {
+                    sb.append("(" + f + ")");
+                } else {
+                    if (StringTools.isNotEmpty(tableAliasName)) {
+                        sb.append("(" + ruleStart + tableAliasName + ruleFinish + "." + ruleStart + f + ruleFinish + ")");
+                    } else {
+                        sb.append("(" + ruleStart);
+                        sb.append(f);
+                        sb.append(ruleFinish + ")");
+                    }
+                }
+            }
+
+            String alias = ((SQLFunction) o).getFieldAliasName();
+            if (alias != null) {
+                sb.append(" ");
+                sb.append("AS ");
+                sb.append(ruleStart + alias + ruleFinish);
+            }
+            sb.append(" ");
+        } else if (o instanceof SQLDataPlaceholder) {
+            sb.append("?");
+            placeholders.add((SQLDataPlaceholder) o);
+        } else {
+            sb.append(o);
+        }
+
+        if (o instanceof SQLFunction) {
+
+        } else {
+            sb.append(" ");
+        }
     }
 
     @Override
