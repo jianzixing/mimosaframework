@@ -33,15 +33,6 @@ public class SessionTemplateTesting {
     }
 
     @Test
-    public void testDrop1() throws Exception {
-        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.drop().table().table(TableUser.class)
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-        System.out.println(autoResult.getValue());
-    }
-
-    @Test
     public void testCreate1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.create().table().ifNotExist().name("t_tt")
@@ -73,6 +64,27 @@ public class SessionTemplateTesting {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.delete().table(TableUser.class).from().table(TableUser.class)
                         .where().column(TableUser.id).eq().value(1)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
+    public void testDrop1() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.drop().table().table(TableUser.class)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
+    public void testInsert1() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.insert().into().table(TableUser.class)
+                        .columns(TableUser.id, TableUser.createdTime)
+                        .values()
+                        .row(1, "2019-01-01 10:00:00")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());

@@ -1,6 +1,8 @@
 package org.mimosaframework.orm.sql.insert;
 
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.platform.SQLMappingField;
+import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
@@ -23,22 +25,23 @@ public abstract class AbstractSQLInsertBuilder
 
     @Override
     public Object columns(Serializable... fields) {
+        this.sqlBuilder.addParenthesisStart();
         if (fields != null) {
             int i = 0;
             for (Serializable f : fields) {
-                this.sqlBuilder.addWrapString(f.toString());
+                this.sqlBuilder.addMappingField(new SQLMappingField(f));
                 i++;
                 if (i != fields.length) this.sqlBuilder.addSplit();
             }
         }
+        this.sqlBuilder.addParenthesisEnd();
         this.fields = fields;
         return this;
     }
 
     @Override
     public Object table(Class table) {
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         return this;
     }
 
