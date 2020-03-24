@@ -6,8 +6,8 @@ public interface RedefineSelectBuilder
         extends
         SelectBuilder,
         SelectFieldBuilder,
+        AsBuilder,
         FromBuilder,
-        AbsTablesBuilder,
         WhereBuilder,
         AbsWhereColumnBuilder,
         OperatorFunctionBuilder,
@@ -22,6 +22,7 @@ public interface RedefineSelectBuilder
         AbsColumnBuilder,
         BetweenValueBuilder,
         SplitBuilder,
+        AbsWhereValueBuilder,
 
         LeftBuilder,
         InnerBuilder,

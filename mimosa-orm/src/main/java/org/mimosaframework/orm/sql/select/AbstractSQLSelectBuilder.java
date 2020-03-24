@@ -63,6 +63,19 @@ public class AbstractSQLSelectBuilder
     }
 
     @Override
+    public Object field(Serializable... fields) {
+        if (fields != null) {
+            int i = 0;
+            for (Serializable field : fields) {
+                this.sqlBuilder.addMappingField(new SQLMappingField(field));
+                i++;
+                if (i != fields.length) this.sqlBuilder.addSplit();
+            }
+        }
+        return this;
+    }
+
+    @Override
     public Object field(Class table, Serializable... fields) {
         if (table != null && fields != null) {
             this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
@@ -105,63 +118,14 @@ public class AbstractSQLSelectBuilder
     }
 
     @Override
-    public Object table(Class... tables) {
-        if (tables != null) {
-            int i = 0;
-            for (Class table : tables) {
-                MappingTable mappingTable = this.getMappingTableByClass(table);
-                i++;
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-                if (i != tables.length) this.sqlBuilder.addSplit();
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public Object table(TableItem tableItem) {
-        Class table = tableItem.getTable();
-        String aliasName = tableItem.getAliasName();
-
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        this.sqlBuilder.addString(mappingTable.getMappingTableName());
-        if (StringTools.isNotEmpty(aliasName)) this.sqlBuilder.AS().addString(aliasName);
-        return this;
-    }
-
-    @Override
-    public Object table(TableItem... tableItems) {
-        if (tableItems != null) {
-            int i = 0;
-            for (TableItem tableItem : tableItems) {
-                Class table = tableItem.getTable();
-                String aliasName = tableItem.getAliasName();
-                MappingTable mappingTable = this.getMappingTableByClass(table);
-                i++;
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-                if (StringTools.isNotEmpty(aliasName)) this.sqlBuilder.AS().addString(aliasName);
-                if (i != tableItems.length) this.sqlBuilder.addSplit();
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public Object table(TableItems tableItems) {
-        this.table(tableItems.getTableItems().toArray(new TableItem[]{}));
-        return this;
-    }
-
-    @Override
     public Object table(Class table) {
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         return this;
     }
 
     @Override
     public Object value(Object value) {
-
+        this.sqlBuilder.addDataPlaceholder(this.lastPlaceholderName, value);
         return this;
     }
 
@@ -490,6 +454,12 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object split() {
         this.sqlBuilder.addSplit();
+        return this;
+    }
+
+    @Override
+    public Object as(String tableAliasName) {
+        this.sqlBuilder.AS().addWrapString(tableAliasName);
         return this;
     }
 }

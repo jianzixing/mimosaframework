@@ -91,6 +91,20 @@ public class SessionTemplateTesting {
     }
 
     @Test
+    public void testSelect1() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.select()
+                        .field(TableUser.id)
+                        .field(TableUser.userName)
+                        .from().table(TableUser.class)
+                        .where()
+                        .column(TableUser.id).eq().value(1)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
     public void testUpdate1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.update().table(TableUser.class)
