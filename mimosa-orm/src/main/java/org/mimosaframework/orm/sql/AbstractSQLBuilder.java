@@ -12,6 +12,7 @@ public abstract class AbstractSQLBuilder
     protected MappingGlobalWrapper mappingGlobalWrapper;
     protected SQLBuilder sqlBuilder;
     protected byte body = 0;
+    protected boolean isMappingTable = false;
     protected String lastPlaceholderName;
 
     public AbstractSQLBuilder() {

@@ -1542,6 +1542,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
         SQLBuilderCombine combine = builder.getPlanSql();
         PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
+        System.out.println(combine.getSql());
         if (builder instanceof AbstractSQLDeleteBuilder) {
             return this.carryHandler.doHandler(porterStructure);
         }

@@ -1,6 +1,8 @@
 package org.mimosaframework.orm.sql.alter;
 
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.platform.SQLMappingField;
+import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
@@ -45,16 +47,18 @@ public abstract class AbstractSQLAlterBuilder
 
     @Override
     public Object column(Serializable field) {
-        this.sqlBuilder.addWrapString(field.toString());
+        if (this.isMappingTable) {
+            this.sqlBuilder.addMappingField(new SQLMappingField(field));
+        } else {
+            this.sqlBuilder.addWrapString(field.toString());
+        }
         return this;
     }
 
     @Override
     public Object table(Class table) {
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        if (mappingTable != null) {
-            this.sqlBuilder.addString(mappingTable.getMappingTableName());
-        }
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
+        this.isMappingTable = true;
         this.body = 1;
         return this;
     }

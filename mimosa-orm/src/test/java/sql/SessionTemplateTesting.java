@@ -25,9 +25,18 @@ public class SessionTemplateTesting {
     public void testAlter1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.alter().table(TableUser.class)
-                .modify().column("abc").intType().comment("aaa")
+                        .modify().column("abc").intType().comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
+    }
+
+    @Test
+    public void testDrop1() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.drop().table().table(TableUser.class)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
     }
 }

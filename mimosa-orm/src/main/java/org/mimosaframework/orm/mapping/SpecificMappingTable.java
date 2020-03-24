@@ -244,6 +244,14 @@ public class SpecificMappingTable implements MappingTable {
     }
 
     @Override
+    public MappingField getMappingFieldByJavaName(String fieldName) {
+        if (this.mappingFields != null) {
+            return this.mappingFields.get(fieldName);
+        }
+        return null;
+    }
+
+    @Override
     public MappingField getMappingFieldByDBName(String fieldName) {
         MappingField field = null;
         if (field == null && this.mappingColumns != null) {

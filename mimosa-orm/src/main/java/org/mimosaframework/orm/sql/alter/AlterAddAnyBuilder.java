@@ -5,7 +5,7 @@ import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
 
 public interface AlterAddAnyBuilder<T>
         extends
-        ColumnBuilder<AbsNameBuilder<ColumnTypeBuilder<AlterColumnAssistBuilder<T>>>>,
+        AbsColumnBuilder<ColumnTypeBuilder<AlterColumnAssistBuilder<T>>>,
         IndexBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder<UnifyBuilder>>>>,
         UniqueBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder<UnifyBuilder>>>>,
         FullTextBuilder<IndexBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder<UnifyBuilder>>>>>,

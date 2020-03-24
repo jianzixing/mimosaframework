@@ -53,6 +53,8 @@ public interface MappingTable {
      */
     MappingField getMappingFieldByName(String fieldName);
 
+    MappingField getMappingFieldByJavaName(String fieldName);
+
     /**
      * 通过数据库字段获取完整的信息
      *

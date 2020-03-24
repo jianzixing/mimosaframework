@@ -608,42 +608,24 @@ public class CommonSQLBuilder implements SQLBuilder {
             } else if (o instanceof SQLField) {
                 sb.append(o.toString());
             } else if (o instanceof SQLMappingTable) {
-                Class table = ((SQLMappingTable) o).getTable();
-                MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(table);
-                if (mappingTable == null) {
+                String tableName = ((SQLMappingTable) o).getDatabaseTableName(mappingGlobalWrapper);
+                if (StringTools.isEmpty(tableName)) {
                     throw new IllegalArgumentException(
                             Messages.get(LanguageMessageFactory.PROJECT,
-                                    CommonSQLBuilder.class, "miss_table_mapping", table.getName())
+                                    CommonSQLBuilder.class, "miss_table_mapping",
+                                    ((SQLMappingTable) o).getTable().getName())
                     );
                 }
-                sb.append(mappingTable.getMappingTableName());
+                sb.append(tableName);
             } else if (o instanceof SQLMappingField) {
-                Class table = ((SQLMappingField) o).getTable();
-                Serializable field = ((SQLMappingField) o).getField();
                 String tableAliasName = ((SQLMappingField) o).getTableAliasName();
-
-                if (table != null) {
-                    MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(table);
-                    if (mappingTable == null) {
-                        throw new IllegalArgumentException(
-                                Messages.get(LanguageMessageFactory.PROJECT,
-                                        CommonSQLBuilder.class, "miss_table_mapping", table.getName())
-                        );
-                    }
-
-                    MappingField mappingField = mappingTable.getMappingFieldByName(field.toString());
-                    if (mappingField == null) {
-                        throw new IllegalArgumentException(
-                                Messages.get(LanguageMessageFactory.PROJECT,
-                                        CommonSQLBuilder.class, "miss_field_mapping", table.getName(), field.toString())
-                        );
-                    }
-                    field = mappingField.getMappingColumnName();
-                }
+                String field = ((SQLMappingField) o).getMayBeField(this.sql, mappingGlobalWrapper);
 
                 if (StringTools.isNotEmpty(tableAliasName)) {
                     sb.append(ruleStart + tableAliasName + ruleFinish);
                     sb.append(".");
+                    sb.append(ruleStart + field + ruleFinish);
+                } else {
                     sb.append(ruleStart + field + ruleFinish);
                 }
             } else if (o instanceof SQLSymbol) {

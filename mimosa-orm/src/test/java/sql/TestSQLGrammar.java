@@ -129,9 +129,9 @@ public class TestSQLGrammar {
                 .charset("").collate("");
 
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
-                .add().column().name("").intType().autoIncrement().after().column("")
+                .add().column("").intType().autoIncrement().after().column("")
                 .split()
-                .drop().column().name("");
+                .drop().column("");
 
 
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
@@ -143,7 +143,7 @@ public class TestSQLGrammar {
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
                 .modify().column("").intType().autoIncrement().after().column("");
 
-        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).drop().column().name("");
+        unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).drop().column("");
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).drop().index().name("");
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class).drop().primary().key();
 

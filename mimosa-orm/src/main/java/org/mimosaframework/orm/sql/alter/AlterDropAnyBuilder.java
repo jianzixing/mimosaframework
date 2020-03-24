@@ -4,7 +4,7 @@ import org.mimosaframework.orm.sql.*;
 
 public interface AlterDropAnyBuilder<T>
         extends
-        ColumnBuilder<AbsNameBuilder<T>>,
+        AbsColumnBuilder<T>,
         IndexBuilder<AbsNameBuilder<T>>,
         PrimaryKeyBuilder<T> {
 }
