@@ -44,6 +44,8 @@ public interface SQLBuilder {
 
     SQLBuilder HAVING();
 
+    SQLBuilder USING();
+
     void removeLast();
 
     String getRuleStart();
@@ -56,7 +58,7 @@ public interface SQLBuilder {
         CHARSET, IN, LIKE, BY, ORDER, ASC, DESC, LIMIT, DELETE, FROM, SELECT, COUNT,
         ON, AS, LEFT, JOIN, FIRST, AFTER, COMMENT, SUM, MODIFY, DROP, IS, INNER, FULL,
         COLUMN, UNIQUE, GROUP, BETWEEN, ALL, CHARACTER, COLLATE, OFF, HAVING, DATABASE,
-        TO, CHANGE, RENAME, FULLTEXT,
+        TO, CHANGE, RENAME, FULLTEXT, USING,
         CONSTRAINT
     }
 

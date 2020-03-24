@@ -143,6 +143,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     @Override
+    public SQLBuilder USING() {
+        sql.add(Command.USING);
+        return this;
+    }
+
+    @Override
     public void removeLast() {
         sql.remove(sql.size() - 1);
     }

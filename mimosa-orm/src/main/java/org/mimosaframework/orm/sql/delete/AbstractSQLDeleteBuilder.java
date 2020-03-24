@@ -210,46 +210,6 @@ public abstract class AbstractSQLDeleteBuilder
     }
 
     @Override
-    public Object using(Class... tables) {
-        int i = 0;
-        for (Class table : tables) {
-            MappingTable mappingTable = this.getMappingTableByClass(table);
-            i++;
-            if (i == tables.length) {
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-            } else {
-                this.sqlBuilder.addString(mappingTable.getMappingTableName()).addSplit();
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public Object using(TableItem... items) {
-        int i = 0;
-        for (TableItem item : items) {
-            Class table = item.getTable();
-            String aliasName = item.getAliasName();
-            MappingTable mappingTable = this.getMappingTableByClass(table);
-            i++;
-
-            if (i == items.length) {
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-                if (StringTools.isNotEmpty(item.getAliasName())) {
-                    this.sqlBuilder.AS().addString(aliasName);
-                }
-            } else {
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-                if (StringTools.isNotEmpty(item.getAliasName())) {
-                    this.sqlBuilder.AS().addString(aliasName);
-                }
-                this.sqlBuilder.addSplit();
-            }
-        }
-        return this;
-    }
-
-    @Override
     public Object wrapper(AboutChildBuilder builder) {
         SQLBuilder sqlBuilder = builder.getSqlBuilder();
         sqlBuilder.setTableFieldReplaceRule(this.sqlBuilder.getRuleStart(), this.sqlBuilder.getRuleFinish());
@@ -364,6 +324,12 @@ public abstract class AbstractSQLDeleteBuilder
     @Override
     public Object isNotNull(String aliasName, Serializable field) {
         this.sqlBuilder.addMappingField(new SQLMappingField(aliasName, field));
+        return this;
+    }
+
+    @Override
+    public Object using() {
+        this.sqlBuilder.USING();
         return this;
     }
 }
