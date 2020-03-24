@@ -5,7 +5,7 @@ import org.mimosaframework.orm.sql.*;
 public interface RedefineSelectBuilder
         extends
         SelectBuilder,
-        AbsFieldBuilder,
+        SelectFieldBuilder,
         FromBuilder,
         AbsTablesBuilder,
         WhereBuilder,

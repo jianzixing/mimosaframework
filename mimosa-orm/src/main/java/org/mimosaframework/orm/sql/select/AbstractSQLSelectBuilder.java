@@ -3,6 +3,8 @@ package org.mimosaframework.orm.sql.select;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilder;
+import org.mimosaframework.orm.platform.SQLMappingField;
+import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
@@ -61,12 +63,12 @@ public class AbstractSQLSelectBuilder
     }
 
     @Override
-    public Object fields(Class table, Serializable... fields) {
+    public Object field(Class table, Serializable... fields) {
         if (table != null && fields != null) {
-            MappingTable mappingTable = this.getMappingTableByClass(table);
+            this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
             int i = 0;
-            for (Object field : fields) {
-                this.sqlBuilder.addTableWrapField(mappingTable.getMappingTableName(), field.toString());
+            for (Serializable field : fields) {
+                this.sqlBuilder.addMappingField(new SQLMappingField(field));
                 i++;
                 if (i != fields.length) this.sqlBuilder.addSplit();
             }
@@ -75,28 +77,35 @@ public class AbstractSQLSelectBuilder
     }
 
     @Override
-    public Object fields(FieldItem... fieldItems) {
-        if (fieldItems != null) {
+    public Object field(String tableAliasName, Serializable... fields) {
+        if (fields != null) {
+            this.sqlBuilder.addWrapString(tableAliasName);
             int i = 0;
-            for (FieldItem fieldItem : fieldItems) {
-                this.setFieldItemA(fieldItem);
-                this.setFieldItemB(fieldItem);
-
+            for (Serializable field : fields) {
+                this.sqlBuilder.addMappingField(new SQLMappingField(field));
                 i++;
-                if (i != fieldItems.length) this.sqlBuilder.addSplit();
+                if (i != fields.length) this.sqlBuilder.addSplit();
             }
         }
         return this;
     }
 
     @Override
-    public Object fields(Fields fieldItems) {
-        this.fields(fieldItems.getFieldItems().toArray(new FieldItem[]{}));
+    public Object field(Class table, Serializable field, String fieldAliasName) {
+        this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
+        this.sqlBuilder.AS().addWrapString(fieldAliasName);
         return this;
     }
 
     @Override
-    public Object table(Class[] tables) {
+    public Object field(String tableAliasName, Serializable field, String fieldAliasName) {
+        this.sqlBuilder.addMappingField(new SQLMappingField(tableAliasName, field));
+        this.sqlBuilder.AS().addWrapString(fieldAliasName);
+        return this;
+    }
+
+    @Override
+    public Object table(Class... tables) {
         if (tables != null) {
             int i = 0;
             for (Class table : tables) {

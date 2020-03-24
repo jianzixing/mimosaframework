@@ -49,22 +49,21 @@ public class TestSQLGrammar {
         ///
 
         unifyBuilder = SelectFactory.select()
-                .fields(
-                        Fields.build()
-                                .field("", "")
-                                .field("", "")
-                                .fun(Fields.function().avg(new FieldItem(1)))
-                )
+                .field("", "")
+                .avg(null)
+                .field("", "")
                 .from()
-                .table(TestSQLGrammar.class, TestSQLGrammar.class)
+                .table(TestSQLGrammar.class).as("")
+                .table(TestSQLGrammar.class)
                 .where()
                 .column("").eq().value("").and()
                 .column("").isNull("")
                 .and().wrapper(Wrapper.build().column("").eq().value("").and().wrapper(null));
 
         unifyBuilder = SelectFactory.select().all().from()
-                .table(TableItems.build().table(TestSQLGrammar.class))
-                .left().join().table(TestSQLGrammar.class).on().column("").eq().value("").and().wrapper(null).and().column("").eq().value("")
+                .table(TestSQLGrammar.class).as("")
+                .table(TestSQLGrammar.class)
+                .left().join().table(TestSQLGrammar.class).as("").on().column("").eq().value("").and().wrapper(null).and().column("").eq().value("")
                 .inner().join().table(TestSQLGrammar.class).on().column("").eq().value("")
                 .where().column("").eq().value("").groupBy()
                 .having().count(new FieldItem(1)).eq().value("")
