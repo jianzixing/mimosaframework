@@ -225,6 +225,9 @@ public interface SQLBuilder {
 
     SQLBuilderCombine toSQLString(MappingGlobalWrapper mappingGlobalWrapper);
 
+    SQLBuilderCombine toSQLString(MappingGlobalWrapper mappingGlobalWrapper,
+                                  List<SQLMappingTable> fromTables);
+
     SQLBuilder addMappingTable(SQLMappingTable mappingTable);
 
     SQLBuilder addMappingField(SQLMappingField mappingField);

@@ -53,4 +53,18 @@ public class SessionTemplateTesting {
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
     }
+
+    @Test
+    public void testCreate2() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.create().table().ifNotExist().name(TableUser.class)
+                        .columns(
+                                Columns.column("id").intType().autoIncrement().primary().key().comment("a"),
+                                Columns.column("name").varchar(50).not().nullable().comment("b"),
+                                Columns.column(TableUser.createdTime).datetime().not().nullable().comment("b")
+                        ).charset("utf8")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
 }

@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.sql.create;
 
-import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilder;
+import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
@@ -28,7 +28,13 @@ public abstract class AbstractSQLCreateBuilder
 
     @Override
     public Object name(Serializable value) {
-        this.sqlBuilder.addString(value.toString());
+        this.sqlBuilder.addWrapString(value.toString());
+        return this;
+    }
+
+    @Override
+    public Object name(Class table) {
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         return this;
     }
 
@@ -84,8 +90,7 @@ public abstract class AbstractSQLCreateBuilder
 
     @Override
     public Object table(Class table) {
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        this.sqlBuilder.addString(mappingTable.getMappingTableName());
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         return this;
     }
 
@@ -98,6 +103,7 @@ public abstract class AbstractSQLCreateBuilder
     @Override
     public Object index() {
         this.sqlBuilder.INDEX();
+        this.type = 3;
         return this;
     }
 
@@ -110,6 +116,7 @@ public abstract class AbstractSQLCreateBuilder
     @Override
     public Object unique() {
         this.sqlBuilder.UNIQUE();
+        this.type = 4;
         return this;
     }
 

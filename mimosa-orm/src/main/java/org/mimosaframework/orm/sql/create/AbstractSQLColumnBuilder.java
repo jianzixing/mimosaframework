@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.create;
 
 import org.mimosaframework.orm.platform.SQLBuilder;
+import org.mimosaframework.orm.platform.SQLMappingField;
 import org.mimosaframework.orm.sql.AbsColumnBuilder;
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
 import org.mimosaframework.orm.sql.KeyBuilder;
@@ -23,7 +24,7 @@ public abstract class AbstractSQLColumnBuilder
 
     @Override
     public Object column(Serializable field) {
-        this.sqlBuilder.addWrapString(field.toString());
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
         return this;
     }
 

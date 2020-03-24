@@ -52,7 +52,7 @@ public class SQLMappingField {
         this.field = field;
     }
 
-    public String getMayBeField(List sql, MappingGlobalWrapper mappingGlobalWrapper) {
+    public String getMayBeField(List<SQLMappingTable> sqlMappingTables, MappingGlobalWrapper mappingGlobalWrapper) {
         if (table != null) {
             MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(table);
             if (mappingTable == null) {
@@ -72,14 +72,12 @@ public class SQLMappingField {
             String field = mappingField.getMappingColumnName();
             return field;
         } else {
-            for (Object o : sql) {
-                if (o instanceof SQLMappingTable) {
-                    MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(((SQLMappingTable) o).getTable());
-                    if (mappingTable != null) {
-                        MappingField mappingField = mappingTable.getMappingFieldByJavaName(field.toString());
-                        if (mappingField != null) {
-                            return mappingField.getMappingColumnName();
-                        }
+            for (SQLMappingTable o : sqlMappingTables) {
+                MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(o.getTable());
+                if (mappingTable != null) {
+                    MappingField mappingField = mappingTable.getMappingFieldByJavaName(field.toString());
+                    if (mappingField != null) {
+                        return mappingField.getMappingColumnName();
                     }
                 }
             }

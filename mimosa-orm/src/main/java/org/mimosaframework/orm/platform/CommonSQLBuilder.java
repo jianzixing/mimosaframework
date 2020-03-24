@@ -598,10 +598,24 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     public SQLBuilderCombine toSQLString(MappingGlobalWrapper mappingGlobalWrapper) {
+        return this.toSQLString(mappingGlobalWrapper, null);
+    }
+
+    public SQLBuilderCombine toSQLString(MappingGlobalWrapper mappingGlobalWrapper,
+                                         List<SQLMappingTable> fromTables) {
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
+        List<SQLMappingTable> sqlMappingTables = fromTables;
         for (Object o : sql) {
-            this.toSQLString(sb, o, placeholders, mappingGlobalWrapper);
+            if (o instanceof SQLMappingTable) {
+                if (sqlMappingTables == null) {
+                    sqlMappingTables = new ArrayList<>();
+                }
+                sqlMappingTables.add((SQLMappingTable) o);
+            }
+        }
+        for (Object o : sql) {
+            this.toSQLString(sb, o, placeholders, mappingGlobalWrapper, sqlMappingTables);
         }
         return new SQLBuilderCombine(sb.toString(), placeholders);
     }
@@ -609,7 +623,8 @@ public class CommonSQLBuilder implements SQLBuilder {
     private void toSQLString(StringBuilder sb,
                              Object o,
                              List<SQLDataPlaceholder> placeholders,
-                             MappingGlobalWrapper mappingGlobalWrapper) {
+                             MappingGlobalWrapper mappingGlobalWrapper,
+                             List<SQLMappingTable> sqlMappingTables) {
         if (o instanceof SQLContinuous) {
             sb.append(((SQLContinuous) o).toString(ruleStart, ruleFinish));
         } else if (o instanceof Command) {
@@ -628,7 +643,7 @@ public class CommonSQLBuilder implements SQLBuilder {
             sb.append(tableName);
         } else if (o instanceof SQLMappingField) {
             String tableAliasName = ((SQLMappingField) o).getTableAliasName();
-            String field = ((SQLMappingField) o).getMayBeField(this.sql, mappingGlobalWrapper);
+            String field = ((SQLMappingField) o).getMayBeField(sqlMappingTables, mappingGlobalWrapper);
 
             if (StringTools.isNotEmpty(tableAliasName)) {
                 sb.append(ruleStart + tableAliasName + ruleFinish);
@@ -638,7 +653,7 @@ public class CommonSQLBuilder implements SQLBuilder {
                 sb.append(ruleStart + field + ruleFinish);
             }
         } else if (o instanceof SQLReplaceHolder) {
-            this.toSQLString(sb, ((SQLReplaceHolder) o).getHolder(), placeholders, mappingGlobalWrapper);
+            this.toSQLString(sb, ((SQLReplaceHolder) o).getHolder(), placeholders, mappingGlobalWrapper, sqlMappingTables);
         } else if (o instanceof SQLSymbol) {
             SQLSymbol.Symbol symbol = ((SQLSymbol) o).getSymbol();
             SQLBuilderCombine combine = ((SQLSymbol) o).getSqlBuilder().toSQLString();
@@ -657,7 +672,7 @@ public class CommonSQLBuilder implements SQLBuilder {
         } else if (o instanceof String) {
             sb.append(String.valueOf(o));
         } else if (o instanceof SQLBuilder) {
-            SQLBuilderCombine combine = ((SQLBuilder) o).toSQLString();
+            SQLBuilderCombine combine = ((SQLBuilder) o).toSQLString(mappingGlobalWrapper, sqlMappingTables);
             sb.append(combine.getSql().trim());
             if (combine.getPlaceholders() != null) {
                 placeholders.addAll(combine.getPlaceholders());

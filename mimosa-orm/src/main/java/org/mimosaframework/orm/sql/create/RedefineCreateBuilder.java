@@ -18,5 +18,6 @@ public interface RedefineCreateBuilder
         IndexBuilder,
         OnBuilder,
         AbsTableBuilder,
-        CreateIndexColumnsBuilder {
+        CreateIndexColumnsBuilder,
+        AbsTableNameBuilder {
 }
