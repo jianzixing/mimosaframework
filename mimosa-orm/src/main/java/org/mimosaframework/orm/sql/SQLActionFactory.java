@@ -75,6 +75,15 @@ public class SQLActionFactory {
         return (CreateAnyBuilder) invoker.getInterface(CreateBuilder.class).create();
     }
 
+    public static AbsColumnBuilder<ColumnTypeBuilder<CreateColumnAssistBuilder>> column() {
+        DatabaseTypes databaseTypes = MimosaDataSource.getDatabaseType();
+        AbsColumnBuilder<ColumnTypeBuilder<CreateColumnAssistBuilder>> columnBuilder =
+                PlatformFactory.getSQLBuilder(
+                        databaseTypes, AbsColumnBuilder.class
+                );
+        return columnBuilder;
+    }
+
     public static DeleteStartBuilder delete() {
         DatabaseTypes databaseTypes = MimosaDataSource.getDatabaseType();
         DeleteBuilder<DeleteStartBuilder> deleteBuilder = PlatformFactory.getSQLBuilder(

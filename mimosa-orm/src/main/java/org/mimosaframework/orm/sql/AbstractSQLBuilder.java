@@ -11,9 +11,28 @@ public abstract class AbstractSQLBuilder
 
     protected MappingGlobalWrapper mappingGlobalWrapper;
     protected SQLBuilder sqlBuilder;
+
+    /**
+     * 当前SQL体部分，比如SELECT ...  FROM ... WHERE ...
+     * SELECT 是第一部分
+     * FROM 是第二部分
+     * WHERE 是第三部分
+     */
     protected byte body = 0;
+
+    /**
+     * 判断当前SQL操作是否是映射类操作
+     * 如果是映射类操作，则字段使用映射类字段
+     */
     protected boolean isMappingTable = false;
+
     protected String lastPlaceholderName;
+
+    /**
+     * 自由使用当前语句是什么类型操作
+     * 比如 drop table 和 drop database 区分开
+     */
+    protected int type = 0;
 
     public AbstractSQLBuilder() {
         this.sqlBuilder = this.createSQLBuilder();

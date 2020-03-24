@@ -22,6 +22,7 @@ public abstract class AbstractSQLCreateBuilder
     @Override
     public Object database() {
         this.sqlBuilder.DATABASE();
+        this.type = 1;
         return this;
     }
 
@@ -58,11 +59,13 @@ public abstract class AbstractSQLCreateBuilder
     @Override
     public Object table() {
         this.sqlBuilder.TABLE();
+        this.type = 2;
         return this;
     }
 
     @Override
     public Object columns(AboutChildBuilder... columns) {
+        this.sqlBuilder.addParenthesisStart();
         if (columns != null) {
             int i = 0;
             for (AboutChildBuilder column : columns) {
@@ -75,6 +78,7 @@ public abstract class AbstractSQLCreateBuilder
                 }
             }
         }
+        this.sqlBuilder.addParenthesisEnd();
         return this;
     }
 

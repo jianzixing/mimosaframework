@@ -96,13 +96,13 @@ public abstract class AbstractSQLAlterBuilder
 
     @Override
     public Object varchar(int len) {
-        this.sqlBuilder.addString("VARCHAR").addString("" + len);
+        this.sqlBuilder.addString("VARCHAR(" + len + ")");
         return this;
     }
 
     @Override
     public Object charType(int len) {
-        this.sqlBuilder.addString("CHAR").addString("" + len);
+        this.sqlBuilder.addString("CHAR(" + len + ")");
         return this;
     }
 
@@ -204,7 +204,7 @@ public abstract class AbstractSQLAlterBuilder
 
     @Override
     public Object comment(String comment) {
-        this.sqlBuilder.addWrapString(comment);
+        this.sqlBuilder.COMMENT().addQuotesString(comment);
         return this;
     }
 
