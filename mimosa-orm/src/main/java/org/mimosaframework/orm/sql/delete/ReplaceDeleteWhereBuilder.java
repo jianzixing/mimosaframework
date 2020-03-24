@@ -6,6 +6,6 @@ import org.mimosaframework.orm.sql.UnifyBuilder;
 
 public interface ReplaceDeleteWhereBuilder
         extends
-        AfterDeleteFromBuilder<DeleteWhereBuilder, DeleteWhereOrderByBuilder>,
+        ReplaceDeleteFromBuilder<DeleteWhereBuilder, DeleteWhereOrderByBuilder>,
         OrderByBuilder<LimitBuilder<UnifyBuilder>> {
 }

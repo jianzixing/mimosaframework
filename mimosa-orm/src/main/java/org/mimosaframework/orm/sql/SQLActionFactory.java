@@ -93,13 +93,15 @@ public class SQLActionFactory {
         SQLProxyInvoker invoker = new SQLProxyInvoker(
                 new Class[]{
                         RedefineDeleteBuilder.class,
-                        AfterDeleteFromBuilder.class,
+                        ReplaceDeleteFromBuilder.class,
                         BeforeDeleteFromBuilder.class,
                         DeleteStartBuilder.class,
                         DeleteWhereBuilder.class,
                         DeleteWhereOrderByBuilder.class,
                         ReplaceDeleteLogicBuilder.class,
-                        ReplaceDeleteWhereBuilder.class
+                        ReplaceDeleteWhereBuilder.class,
+                        DeleteAsTableBuilder.class,
+                        DeleteTableAsBuilder.class
                 },
                 deleteBuilder
         );
