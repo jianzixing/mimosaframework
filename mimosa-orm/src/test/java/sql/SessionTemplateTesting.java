@@ -89,4 +89,18 @@ public class SessionTemplateTesting {
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
     }
+
+    @Test
+    public void testUpdate1() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.update().table(TableUser.class)
+                        .set()
+                        .column(TableUser.address).eq().value("b")
+                        .split()
+                        .column(TableUser.createdTime).eq().value("2019-01-01 10:00:00")
+                        .where().column(TableUser.id).eq().value(1)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
 }
