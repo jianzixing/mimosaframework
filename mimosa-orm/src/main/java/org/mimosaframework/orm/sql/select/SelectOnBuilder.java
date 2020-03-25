@@ -5,6 +5,6 @@ import org.mimosaframework.orm.sql.WrapperBuilder;
 
 public interface SelectOnBuilder
         extends
-        WrapperBuilder<SelectAfterOnBuilder>,
-        OperatorLinkBuilder<SelectAfterOnBuilder> {
+        OperatorLinkBuilder<SelectAfterOnBuilder>,
+        WrapperBuilder<SelectAfterOnBuilder> {
 }

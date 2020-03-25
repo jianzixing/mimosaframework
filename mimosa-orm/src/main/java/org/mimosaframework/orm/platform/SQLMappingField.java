@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.platform;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
@@ -72,6 +73,21 @@ public class SQLMappingField {
             String field = mappingField.getMappingColumnName();
             return field;
         } else {
+            if (StringTools.isNotEmpty(this.tableAliasName)) {
+                for (SQLMappingTable o : sqlMappingTables) {
+                    if (o.getTableAliasName() != null && o.getTableAliasName().equals(this.tableAliasName)) {
+                        MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(o.getTable());
+                        if (mappingTable != null) {
+                            MappingField mappingField = mappingTable.getMappingFieldByJavaName(field.toString());
+                            if (mappingField != null) {
+                                return mappingField.getMappingColumnName();
+                            }
+                        }
+                        // 如果设置了别名的表里没有则直接返回
+                        return this.field.toString();
+                    }
+                }
+            }
             for (SQLMappingTable o : sqlMappingTables) {
                 MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(o.getTable());
                 if (mappingTable != null) {

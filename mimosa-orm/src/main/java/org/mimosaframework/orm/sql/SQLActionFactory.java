@@ -162,15 +162,17 @@ public class SQLActionFactory {
                         SelectOLBuilder.class,
                         SelectOnBuilder.class,
                         SelectStartBuilder.class,
-                        SelectAsTableBuilder.class,
-                        SelectTableAsBuilder.class,
-                        SelectJoinAsTableBuilder.class,
                         SelectWhereBuilder.class,
                         ReplaceSelectFieldBuilder.class,
                         SelectAfterOnBuilder.class,
                         ReplaceSelectWhereBuilder.class,
+                        SelectTableAliasBuilder.class,
                         ReplaceSelectLogicBuilder.class,
-                        HavingOperatorFunctionBuilder.class
+                        HavingOperatorFunctionBuilder.class,
+                        SelectGroupByBuilder.class,
+                        SelectGroupByNextBuilder.class,
+                        OrderByNextBuilder.class,
+                        OrderBySealBuilder.class
                 },
                 selectBuilder
         );

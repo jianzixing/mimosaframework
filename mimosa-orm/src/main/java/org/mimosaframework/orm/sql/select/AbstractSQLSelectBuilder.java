@@ -18,6 +18,12 @@ public class AbstractSQLSelectBuilder
 
     protected boolean hasLeastOneSort = false;
 
+    /**
+     * sql 片段计数器
+     */
+    protected int columnCount = 0;
+    protected int fieldCount = 0;
+
     @Override
     protected SQLBuilder createSQLBuilder() {
         return null;
@@ -53,23 +59,28 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object select() {
         this.sqlBuilder.SELECT();
+        this.body = 1;
         return this;
     }
 
     @Override
     public Object all() {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
         this.sqlBuilder.addString("*");
+        this.fieldCount++;
         return this;
     }
 
     @Override
     public Object field(Serializable... fields) {
         if (fields != null) {
+            if (this.fieldCount > 0) this.sqlBuilder.addSplit();
             int i = 0;
             for (Serializable field : fields) {
                 this.sqlBuilder.addMappingField(new SQLMappingField(field));
                 i++;
                 if (i != fields.length) this.sqlBuilder.addSplit();
+                this.fieldCount++;
             }
         }
         return this;
@@ -78,12 +89,13 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object field(Class table, Serializable... fields) {
         if (table != null && fields != null) {
-            this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
+            if (this.fieldCount > 0) this.sqlBuilder.addSplit();
             int i = 0;
             for (Serializable field : fields) {
-                this.sqlBuilder.addMappingField(new SQLMappingField(field));
+                this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
                 i++;
                 if (i != fields.length) this.sqlBuilder.addSplit();
+                this.fieldCount++;
             }
         }
         return this;
@@ -92,12 +104,13 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object field(String tableAliasName, Serializable... fields) {
         if (fields != null) {
-            this.sqlBuilder.addWrapString(tableAliasName);
+            if (this.fieldCount > 0) this.sqlBuilder.addSplit();
             int i = 0;
             for (Serializable field : fields) {
-                this.sqlBuilder.addMappingField(new SQLMappingField(field));
+                this.sqlBuilder.addMappingField(new SQLMappingField(tableAliasName, field));
                 i++;
                 if (i != fields.length) this.sqlBuilder.addSplit();
+                this.fieldCount++;
             }
         }
         return this;
@@ -105,15 +118,19 @@ public class AbstractSQLSelectBuilder
 
     @Override
     public Object field(Class table, Serializable field, String fieldAliasName) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
         this.sqlBuilder.AS().addWrapString(fieldAliasName);
+        this.fieldCount++;
         return this;
     }
 
     @Override
     public Object field(String tableAliasName, Serializable field, String fieldAliasName) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingField(new SQLMappingField(tableAliasName, field));
         this.sqlBuilder.AS().addWrapString(fieldAliasName);
+        this.fieldCount++;
         return this;
     }
 
@@ -131,26 +148,38 @@ public class AbstractSQLSelectBuilder
 
     @Override
     public Object column(Serializable field) {
-        if (this.body == 3 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
-        this.sqlBuilder.addWrapString(field.toString());
+        if ((this.body == 12 || this.body == 13) && this.hasLeastOneSort && this.columnCount > 0) {
+            this.sqlBuilder.addSplit();
+        }
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
         this.lastPlaceholderName = field.toString();
+
+        this.columnCount++;
         return this;
     }
 
     @Override
     public Object column(Class table, Serializable field) {
-        if (this.body == 3 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
+        if ((this.body == 12 || this.body == 13) && this.hasLeastOneSort && this.columnCount > 0) {
+            this.sqlBuilder.addSplit();
+        }
         MappingTable mappingTable = this.getMappingTableByClass(table);
         this.sqlBuilder.addTableWrapField(mappingTable.getMappingTableName(), field.toString());
         this.lastPlaceholderName = mappingTable.getMappingTableName() + "." + field.toString();
+
+        this.columnCount++;
         return this;
     }
 
     @Override
     public Object column(String aliasName, Serializable field) {
-        if (this.body == 3 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
-        this.sqlBuilder.addTableWrapField(aliasName, field.toString());
+        if ((this.body == 12 || this.body == 13) && this.hasLeastOneSort && this.columnCount > 0) {
+            this.sqlBuilder.addSplit();
+        }
+        this.sqlBuilder.addMappingField(new SQLMappingField(aliasName, field));
         this.lastPlaceholderName = aliasName + "." + field.toString();
+
+        this.columnCount++;
         return this;
     }
 
@@ -249,6 +278,7 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object from() {
         this.sqlBuilder.FROM();
+        this.body = 2;
         return this;
     }
 
@@ -396,6 +426,9 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object orderBy() {
         this.sqlBuilder.ORDER().BY();
+        this.body = 12;
+        this.hasLeastOneSort = true;
+        this.columnCount = 0;
         return this;
     }
 
@@ -414,6 +447,7 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object where() {
         this.sqlBuilder.WHERE();
+        this.body = 11;
         return this;
     }
 
@@ -430,6 +464,7 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object inner() {
         this.sqlBuilder.INNER();
+        this.body = 4;
         return this;
     }
 
@@ -442,12 +477,14 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object left() {
         this.sqlBuilder.LEFT();
+        this.body = 3;
         return this;
     }
 
     @Override
     public Object on() {
         this.sqlBuilder.ON();
+        this.body = 10;
         return this;
     }
 
@@ -460,6 +497,21 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object as(String tableAliasName) {
         this.sqlBuilder.AS().addWrapString(tableAliasName);
+        return this;
+    }
+
+    @Override
+    public Object groupBy() {
+        this.sqlBuilder.GROUP().BY();
+        this.body = 13;
+        this.hasLeastOneSort = true;
+        this.columnCount = 0;
+        return this;
+    }
+
+    @Override
+    public Object table(Class table, String tableAliasName) {
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table, tableAliasName));
         return this;
     }
 }

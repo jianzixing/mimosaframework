@@ -1,8 +1,9 @@
 package org.mimosaframework.orm.sql.select;
 
-import org.mimosaframework.orm.sql.AbsTableBuilder;
+import org.mimosaframework.orm.sql.AbsTableAliasBuilder;
 
 public interface SelectStartBuilder
         extends
-        SelectFieldBuilder<ReplaceSelectFieldBuilder<AbsTableBuilder<SelectAsTableBuilder>>> {
+        SelectFieldBuilder<ReplaceSelectFieldBuilder<AbsTableAliasBuilder<
+                SelectTableAliasBuilder<ReplaceSelectWhereBuilder>>>> {
 }

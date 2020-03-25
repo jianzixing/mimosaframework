@@ -96,9 +96,18 @@ public class SessionTemplateTesting {
                 SQLAutonomously.select()
                         .field(TableUser.id)
                         .field(TableUser.userName)
-                        .from().table(TableUser.class)
+                        .from().table(TableUser.class, "t")
+                        .left().join().table(TableUser.class,"t1").on().column("t1", TableUser.id).eq().column("t", TableUser.address)
                         .where()
                         .column(TableUser.id).eq().value(1)
+                        .groupBy()
+                        .column("t1", TableUser.id)
+                        .column("t1", TableUser.age)
+                        .column("t1", TableUser.createdTime)
+                        .orderBy()
+                        .column("t1", TableUser.id).desc()
+                        .column("t1", TableUser.createdTime).asc()
+                        .limit(0, 10)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());

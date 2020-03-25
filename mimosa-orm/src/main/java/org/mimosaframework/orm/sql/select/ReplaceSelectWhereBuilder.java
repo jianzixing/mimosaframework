@@ -4,7 +4,7 @@ import org.mimosaframework.orm.sql.*;
 
 public interface ReplaceSelectWhereBuilder
         extends
-        LeftJoinBuilder<AbsTableBuilder<SelectJoinAsTableBuilder<SelectOnBuilder>>>,
-        InnerJoinBuilder<AbsTableBuilder<SelectJoinAsTableBuilder<SelectOnBuilder>>>,
+        LeftJoinBuilder<AbsTableAliasBuilder<OnBuilder<SelectOnBuilder>>>,
+        InnerJoinBuilder<AbsTableAliasBuilder<OnBuilder<SelectOnBuilder>>>,
         WhereBuilder<SelectWhereBuilder> {
 }

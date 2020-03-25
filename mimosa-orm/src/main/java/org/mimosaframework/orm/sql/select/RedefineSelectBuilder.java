@@ -23,10 +23,12 @@ public interface RedefineSelectBuilder
         BetweenValueBuilder,
         SplitBuilder,
         AbsWhereValueBuilder,
+        GroupByBuilder,
 
         LeftBuilder,
         InnerBuilder,
         JoinBuilder,
         OnBuilder,
-        AbsTableBuilder {
+        AbsTableBuilder,
+        AbsTableAliasBuilder {
 }

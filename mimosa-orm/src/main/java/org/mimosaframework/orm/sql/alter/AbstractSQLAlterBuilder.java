@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.sql.alter;
 
-import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLMappingField;
 import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;

@@ -1,15 +1,19 @@
 package org.mimosaframework.orm.platform;
 
-import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 
 public class SQLMappingTable {
     private Class table;
+    private String tableAliasName;
 
     public SQLMappingTable(Class table) {
         this.table = table;
+    }
+
+    public SQLMappingTable(Class table, String tableAliasName) {
+        this.table = table;
+        this.tableAliasName = tableAliasName;
     }
 
     public Class getTable() {
@@ -26,5 +30,13 @@ public class SQLMappingTable {
             return mappingTable.getMappingTableName();
         }
         return null;
+    }
+
+    public String getTableAliasName() {
+        return tableAliasName;
+    }
+
+    public void setTableAliasName(String tableAliasName) {
+        this.tableAliasName = tableAliasName;
     }
 }
