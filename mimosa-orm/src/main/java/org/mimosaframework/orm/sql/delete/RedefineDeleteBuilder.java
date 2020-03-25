@@ -6,7 +6,7 @@ public interface RedefineDeleteBuilder
         extends
         DeleteBuilder,
         AbsTableBuilder,
-        AbsTablesBuilder,
+        AbsTableAliasBuilder,
         BeforeDeleteFromBuilder,
         FromBuilder,
         WhereBuilder,

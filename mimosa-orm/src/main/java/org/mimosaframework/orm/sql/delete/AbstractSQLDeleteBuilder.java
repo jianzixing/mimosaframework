@@ -1,7 +1,5 @@
 package org.mimosaframework.orm.sql.delete;
 
-
-import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilder;
 import org.mimosaframework.orm.platform.SQLMappingField;
@@ -9,7 +7,6 @@ import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
 
 import java.io.Serializable;
-import java.util.List;
 
 public abstract class AbstractSQLDeleteBuilder
         extends
@@ -27,12 +24,13 @@ public abstract class AbstractSQLDeleteBuilder
 
     @Override
     public Object table(Class table) {
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        if (this.body == 0) {
-            this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
-        } else {
-            this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
-        }
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
+        return this;
+    }
+
+    @Override
+    public Object table(Class table, String tableAliasName) {
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table, tableAliasName));
         return this;
     }
 
@@ -224,56 +222,14 @@ public abstract class AbstractSQLDeleteBuilder
         // if (this.body == 0) {
         int i = 0;
         for (Class tb : table) {
-            MappingTable mappingTable = this.getMappingTableByClass(tb);
-            String tableName = mappingTable.getMappingTableName();
             i++;
             if (i == table.length) {
-                this.sqlBuilder.addString(tableName);
+                this.sqlBuilder.addMappingTable(new SQLMappingTable(tb));
             } else {
-                this.sqlBuilder.addString(tableName).addSplit();
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public Object table(TableItem tableItem) {
-        Class table = tableItem.getTable();
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        this.sqlBuilder.addString(mappingTable.getMappingTableName());
-        if (StringTools.isNotEmpty(tableItem.getAliasName())) {
-            this.sqlBuilder.AS().addString(tableItem.getAliasName());
-        }
-        return this;
-    }
-
-    @Override
-    public Object table(TableItem... tableItem) {
-        int i = 0;
-        for (TableItem ti : tableItem) {
-            Class table = ti.getTable();
-            MappingTable mappingTable = this.getMappingTableByClass(table);
-            i++;
-            if (i == tableItem.length) {
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-                if (StringTools.isNotEmpty(ti.getAliasName())) {
-                    this.sqlBuilder.AS().addString(ti.getAliasName());
-                }
-            } else {
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-                if (StringTools.isNotEmpty(ti.getAliasName())) {
-                    this.sqlBuilder.AS().addString(ti.getAliasName());
-                }
+                this.sqlBuilder.addMappingTable(new SQLMappingTable(tb));
                 this.sqlBuilder.addSplit();
             }
         }
-        return this;
-    }
-
-    @Override
-    public Object table(TableItems tableItems) {
-        List<TableItem> tis = tableItems.getTableItems();
-        this.table(tis.toArray(new TableItem[]{}));
         return this;
     }
 
