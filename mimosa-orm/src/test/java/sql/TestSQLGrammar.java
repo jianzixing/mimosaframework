@@ -17,8 +17,8 @@ public class TestSQLGrammar {
         unifyBuilder = DeleteFactory.delete()
                 .table(TestSQLGrammar.class)
                 .from()
-                .table(TestSQLGrammar.class).as("")
-                .table(TestSQLGrammar.class).as("")
+                .table(TestSQLGrammar.class, "t1")
+                .table(TestSQLGrammar.class, "t2")
                 .where()
                 .column("")
                 .eq().value("");
@@ -37,15 +37,16 @@ public class TestSQLGrammar {
         unifyBuilder = DeleteFactory.delete().from()
                 .table(TestSQLGrammar.class)
                 .using()
-                .table(TestSQLGrammar.class).as("")
-                .table(TestSQLGrammar.class)
+                .table(TestSQLGrammar.class, "t1")
+                .table(TestSQLGrammar.class, "t2")
                 .where()
                 .column("").eq().value("");
 
         unifyBuilder = DeleteFactory.delete()
-                .table("")
+                .table("t1")
                 .from()
-                .table(TestSQLGrammar.class)
+                .table(TestSQLGrammar.class, "t1")
+                .table(TestSQLGrammar.class, "t2")
                 .where()
                 .column("").eq().value("");
 
