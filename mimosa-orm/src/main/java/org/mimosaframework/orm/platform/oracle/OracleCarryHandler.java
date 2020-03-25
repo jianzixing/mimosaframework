@@ -29,7 +29,9 @@ public class OracleCarryHandler extends CarryHandler {
                     || changerClassify == ChangerClassify.CREATE_FIELD
                     || changerClassify == ChangerClassify.DROP_TABLE
                     || changerClassify == ChangerClassify.DROP_FIELD
-                    || changerClassify == ChangerClassify.SILENT) {
+                    || changerClassify == ChangerClassify.SILENT
+                    || changerClassify == ChangerClassify.CREATE
+                    || changerClassify == ChangerClassify.DROP) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do oracle carry handler action " + changerClassify.name());
                 }
@@ -42,7 +44,8 @@ public class OracleCarryHandler extends CarryHandler {
                 } else {
                     dbSession.execute(structure);
                 }
-            } else if (changerClassify == ChangerClassify.ADD_OBJECT) {
+            } else if (changerClassify == ChangerClassify.ADD_OBJECT
+                    || changerClassify == ChangerClassify.INSERT) {
                 SQLBuilder sqlBuilder = structure.getSqlBuilder();
                 Object autoIncrementId = null; // 自增列只允许有一个
                 List<SQLDataPlaceholder> placeholders = sqlBuilder.getDataPlaceholders();

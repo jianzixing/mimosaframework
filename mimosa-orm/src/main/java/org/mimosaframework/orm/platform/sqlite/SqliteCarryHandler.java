@@ -22,12 +22,15 @@ public class SqliteCarryHandler extends CarryHandler {
             if (changerClassify == ChangerClassify.CREATE_TABLE
                     || changerClassify == ChangerClassify.CREATE_FIELD
                     || changerClassify == ChangerClassify.DROP_TABLE
-                    || changerClassify == ChangerClassify.DROP_FIELD) {
+                    || changerClassify == ChangerClassify.DROP_FIELD
+                    || changerClassify == ChangerClassify.CREATE
+                    || changerClassify == ChangerClassify.DROP) {
                 dbSession.execute(structure);
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());
                 }
-            } else if (changerClassify == ChangerClassify.ADD_OBJECT) {
+            } else if (changerClassify == ChangerClassify.ADD_OBJECT
+                    || changerClassify == ChangerClassify.INSERT) {
                 List<Long> backObjects = dbSession.insert(structure);
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());

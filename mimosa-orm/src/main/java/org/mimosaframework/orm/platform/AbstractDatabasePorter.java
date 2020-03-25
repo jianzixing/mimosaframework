@@ -1544,24 +1544,31 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
         System.out.println(combine.getSql());
         if (builder instanceof AbstractSQLDeleteBuilder) {
+            porterStructure.setChangerClassify(ChangerClassify.DELETE);
             return this.carryHandler.doHandler(porterStructure);
         }
         if (builder instanceof AbstractSQLAlterBuilder) {
+            porterStructure.setChangerClassify(ChangerClassify.ALTER);
             return this.carryHandler.doHandler(porterStructure);
         }
         if (builder instanceof AbstractSQLCreateBuilder) {
+            porterStructure.setChangerClassify(ChangerClassify.CREATE);
             return this.carryHandler.doHandler(porterStructure);
         }
         if (builder instanceof AbstractSQLDropBuilder) {
+            porterStructure.setChangerClassify(ChangerClassify.DROP);
             return this.carryHandler.doHandler(porterStructure);
         }
         if (builder instanceof AbstractSQLInsertBuilder) {
+            porterStructure.setChangerClassify(ChangerClassify.INSERT);
             return this.carryHandler.doHandler(porterStructure);
         }
         if (builder instanceof AbstractSQLSelectBuilder) {
+            porterStructure.setChangerClassify(ChangerClassify.SELECT);
             return this.carryHandler.doHandler(porterStructure);
         }
         if (builder instanceof AbstractSQLUpdateBuilder) {
+            porterStructure.setChangerClassify(ChangerClassify.UPDATE);
             return this.carryHandler.doHandler(porterStructure);
         }
         return null;
