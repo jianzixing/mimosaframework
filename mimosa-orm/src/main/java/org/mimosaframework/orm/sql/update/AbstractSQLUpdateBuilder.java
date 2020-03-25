@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.sql.update;
 
-import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLMappingField;
 import org.mimosaframework.orm.platform.SQLMappingTable;
@@ -16,6 +15,7 @@ public abstract class AbstractSQLUpdateBuilder
         RedefineUpdateBuilder {
 
     protected boolean hasLeastOneSort = false;
+    protected boolean hasSetValue = false;
 
     @Override
     public Object update() {
@@ -40,6 +40,7 @@ public abstract class AbstractSQLUpdateBuilder
     @Override
     public Object column(Serializable field) {
         if (this.body == 3 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
+        if (this.body == 1 && this.hasSetValue) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingField(new SQLMappingField(field));
         this.lastPlaceholderName = field.toString();
         return this;
@@ -48,6 +49,7 @@ public abstract class AbstractSQLUpdateBuilder
     @Override
     public Object column(Class table, Serializable field) {
         if (this.body == 3 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
+        if (this.body == 1 && this.hasSetValue) this.sqlBuilder.addSplit();
         MappingTable mappingTable = this.getMappingTableByClass(table);
         this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
         this.lastPlaceholderName = mappingTable.getMappingTableName() + "." + field.toString();
@@ -102,12 +104,6 @@ public abstract class AbstractSQLUpdateBuilder
     }
 
     @Override
-    public Object split() {
-        this.sqlBuilder.addSplit();
-        return this;
-    }
-
-    @Override
     public Object where() {
         this.sqlBuilder.WHERE();
         this.body = 2;
@@ -117,6 +113,9 @@ public abstract class AbstractSQLUpdateBuilder
     @Override
     public Object value(Object value) {
         this.sqlBuilder.addDataPlaceholder(this.lastPlaceholderName, value);
+        if (this.body == 1) {
+            this.hasSetValue = true;
+        }
         return this;
     }
 

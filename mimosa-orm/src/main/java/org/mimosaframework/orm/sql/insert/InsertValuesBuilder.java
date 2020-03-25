@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.sql.insert;
 
-public interface InsertValuesBuilder<T> {
+import org.mimosaframework.orm.sql.UnifyBuilder;
+
+public interface InsertValuesBuilder<T> extends UnifyBuilder {
     T row(Object... values);
 }

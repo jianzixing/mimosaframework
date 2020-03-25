@@ -20,8 +20,7 @@ public class TestSQLGrammar {
                 .table(TestSQLGrammar.class, "t1")
                 .table(TestSQLGrammar.class, "t2")
                 .where()
-                .column("")
-                .eq().value("");
+                .column("").eq().value("");
 
         unifyBuilder = DeleteFactory.delete().from().table(TestSQLGrammar.class)
                 .where()
@@ -29,7 +28,8 @@ public class TestSQLGrammar {
                 .and()
                 .wrapper(null).and().wrapper(null).and()
                 .column("").in().value("")
-                .orderBy().column("").asc()
+                .orderBy()
+                .column("").asc()
                 .column("").desc()
                 .column("").asc()
                 .limit(0, 10);
@@ -103,9 +103,7 @@ public class TestSQLGrammar {
                 .columns("", "")
                 .values()
                 .row("", "")
-                .split()
                 .row("", "")
-                .split()
                 .row("", "");
 
 

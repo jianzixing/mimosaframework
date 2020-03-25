@@ -12,7 +12,6 @@ public interface RedefineUpdateBuilder
         OperatorEqualBuilder,
         OperatorFunctionBuilder,
         BetweenValueBuilder,
-        SplitBuilder,
         WhereBuilder,
         OrderByBuilder,
         SortBuilder,

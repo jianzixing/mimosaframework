@@ -9,6 +9,5 @@ public interface RedefineInsertBuilder
         AbsTableBuilder,
         AbsColumnsBuilder,
         ValuesBuilder,
-        InsertValuesBuilder,
-        SplitBuilder {
+        InsertValuesBuilder {
 }

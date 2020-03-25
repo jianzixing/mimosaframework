@@ -21,7 +21,6 @@ public interface RedefineSelectBuilder
         LimitBuilder,
         AbsColumnBuilder,
         BetweenValueBuilder,
-        SplitBuilder,
         AbsWhereValueBuilder,
         GroupByBuilder,
 

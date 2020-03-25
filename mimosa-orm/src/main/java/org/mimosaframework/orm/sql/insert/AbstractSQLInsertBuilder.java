@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.sql.insert;
 
-import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLMappingField;
 import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
@@ -15,6 +14,7 @@ public abstract class AbstractSQLInsertBuilder
         RedefineInsertBuilder {
 
     protected Serializable[] fields;
+    protected boolean hasRow = false;
 
     @Override
     public Object insert() {
@@ -52,12 +52,6 @@ public abstract class AbstractSQLInsertBuilder
     }
 
     @Override
-    public Object split() {
-        this.sqlBuilder.addSplit();
-        return this;
-    }
-
-    @Override
     public Object values() {
         this.sqlBuilder.VALUES();
         return this;
@@ -66,6 +60,7 @@ public abstract class AbstractSQLInsertBuilder
     @Override
     public Object row(Object... values) {
         if (values != null) {
+            if (this.hasRow) this.sqlBuilder.addSplit();
             int i = 0;
             this.sqlBuilder.addParenthesisStart();
             for (Object v : values) {
@@ -75,6 +70,8 @@ public abstract class AbstractSQLInsertBuilder
                 if (i != values.length) this.sqlBuilder.addSplit();
             }
             this.sqlBuilder.addParenthesisEnd();
+
+            this.hasRow = true;
         }
         return this;
     }

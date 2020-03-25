@@ -489,12 +489,6 @@ public class AbstractSQLSelectBuilder
     }
 
     @Override
-    public Object split() {
-        this.sqlBuilder.addSplit();
-        return this;
-    }
-
-    @Override
     public Object as(String tableAliasName) {
         this.sqlBuilder.AS().addWrapString(tableAliasName);
         return this;
