@@ -24,60 +24,15 @@ public abstract class AbstractSQLUpdateBuilder
     }
 
     @Override
-    public Object table(Class... tables) {
-        if (tables != null) {
-            int i = 0;
-            for (Class table : tables) {
-                MappingTable mappingTable = this.getMappingTableByClass(table);
-                i++;
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-                if (i != tables.length) this.sqlBuilder.addSplit();
-            }
-        }
-        this.body = 1;
-        return this;
-    }
-
-    @Override
-    public Object table(TableItem tableItem) {
-        Class table = tableItem.getTable();
-        String aliasName = tableItem.getAliasName();
-
-        MappingTable mappingTable = this.getMappingTableByClass(table);
-        this.sqlBuilder.addString(mappingTable.getMappingTableName());
-        if (StringTools.isNotEmpty(aliasName)) this.sqlBuilder.AS().addString(aliasName);
-        this.body = 1;
-        return this;
-    }
-
-    @Override
-    public Object table(TableItem... tableItems) {
-        if (tableItems != null) {
-            int i = 0;
-            for (TableItem tableItem : tableItems) {
-                Class table = tableItem.getTable();
-                String aliasName = tableItem.getAliasName();
-                MappingTable mappingTable = this.getMappingTableByClass(table);
-                i++;
-                this.sqlBuilder.addString(mappingTable.getMappingTableName());
-                if (StringTools.isNotEmpty(aliasName)) this.sqlBuilder.AS().addString(aliasName);
-                if (i != tableItems.length) this.sqlBuilder.addSplit();
-            }
-        }
-        this.body = 1;
-        return this;
-    }
-
-    @Override
-    public Object table(TableItems tableItems) {
-        this.table(tableItems.getTableItems().toArray(new TableItem[]{}));
-        this.body = 1;
-        return this;
-    }
-
-    @Override
     public Object table(Class table) {
         this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
+        this.body = 1;
+        return this;
+    }
+
+    @Override
+    public Object table(Class table, String tableAliasName) {
+        this.sqlBuilder.addMappingTable(new SQLMappingTable(table, tableAliasName));
         this.body = 1;
         return this;
     }

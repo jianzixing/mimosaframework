@@ -194,7 +194,8 @@ public class SQLActionFactory {
                         ReplaceUpdateWhereLogicBuilder.class,
                         UpdateOLBuilder.class,
                         UpdateStartBuilder.class,
-                        UpdateWhereBuilder.class
+                        UpdateWhereBuilder.class,
+                        UpdateTableAliasBuilder.class
                 },
                 updateBuilder
         );

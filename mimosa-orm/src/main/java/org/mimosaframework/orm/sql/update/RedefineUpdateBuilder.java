@@ -5,7 +5,7 @@ import org.mimosaframework.orm.sql.*;
 public interface RedefineUpdateBuilder
         extends
         UpdateBuilder,
-        AbsTablesBuilder,
+        AbsTableAliasBuilder,
         SetBuilder,
         AbsWhereColumnBuilder,
         AbsWhereValueBuilder,

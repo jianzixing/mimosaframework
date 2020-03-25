@@ -97,7 +97,7 @@ public class SessionTemplateTesting {
                         .field(TableUser.id)
                         .field(TableUser.userName)
                         .from().table(TableUser.class, "t")
-                        .left().join().table(TableUser.class,"t1").on().column("t1", TableUser.id).eq().column("t", TableUser.address)
+                        .left().join().table(TableUser.class, "t1").on().column("t1", TableUser.id).eq().column("t", TableUser.address)
                         .where()
                         .column(TableUser.id).eq().value(1)
                         .groupBy()
@@ -119,7 +119,21 @@ public class SessionTemplateTesting {
                 SQLAutonomously.update().table(TableUser.class)
                         .set()
                         .column(TableUser.address).eq().value("b")
-                        .split()
+                        .column(TableUser.createdTime).eq().value("2019-01-01 10:00:00")
+                        .where().column(TableUser.id).eq().value(1)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
+    public void testUpdate2() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.update()
+                        .table(TableUser.class, "t1")
+                        .table(TableUser.class, "t2")
+                        .set()
+                        .column("t1", TableUser.address).eq().value("b")
                         .column(TableUser.createdTime).eq().value("2019-01-01 10:00:00")
                         .where().column(TableUser.id).eq().value(1)
         );
