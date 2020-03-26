@@ -9,13 +9,14 @@ import java.io.Serializable;
 
 public abstract class AbstractSQLUpdateBuilder
         extends
-        AbstractSQLBuilder
+        AbstractValueSQLBuilder
 
         implements
         RedefineUpdateBuilder {
 
     protected boolean hasLeastOneSort = false;
     protected boolean hasSetValue = false;
+    protected boolean hasTable = false;
 
     @Override
     public Object update() {
@@ -25,14 +26,19 @@ public abstract class AbstractSQLUpdateBuilder
 
     @Override
     public Object table(Class table) {
+        if (this.hasTable) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         this.body = 1;
+        this.hasTable = true;
         return this;
     }
 
     @Override
     public Object table(Class table, String tableAliasName) {
+        if (this.hasTable) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingTable(new SQLMappingTable(table, tableAliasName));
+        this.sqlBuilder.AS().addWrapString(tableAliasName);
+        this.hasTable = true;
         this.body = 1;
         return this;
     }
@@ -40,7 +46,7 @@ public abstract class AbstractSQLUpdateBuilder
     @Override
     public Object column(Serializable field) {
         if (this.body == 3 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
-        if (this.body == 1 && this.hasSetValue) this.sqlBuilder.addSplit();
+        if (this.body == 2 && this.hasSetValue) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingField(new SQLMappingField(field));
         this.lastPlaceholderName = field.toString();
         return this;
@@ -48,8 +54,8 @@ public abstract class AbstractSQLUpdateBuilder
 
     @Override
     public Object column(Class table, Serializable field) {
-        if (this.body == 3 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
-        if (this.body == 1 && this.hasSetValue) this.sqlBuilder.addSplit();
+        if (this.body == 4 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
+        if (this.body == 2 && this.hasSetValue) this.sqlBuilder.addSplit();
         MappingTable mappingTable = this.getMappingTableByClass(table);
         this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
         this.lastPlaceholderName = mappingTable.getMappingTableName() + "." + field.toString();
@@ -58,7 +64,8 @@ public abstract class AbstractSQLUpdateBuilder
 
     @Override
     public Object column(String aliasName, Serializable field) {
-        if (this.body == 3 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
+        if (this.body == 4 && this.hasLeastOneSort) this.sqlBuilder.addSplit();
+        if (this.body == 2 && this.hasSetValue) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingField(new SQLMappingField(aliasName, field));
         this.lastPlaceholderName = aliasName + "." + field.toString();
         return this;
@@ -79,13 +86,14 @@ public abstract class AbstractSQLUpdateBuilder
     @Override
     public Object orderBy() {
         this.sqlBuilder.ORDER().BY();
-        this.body = 3;
+        this.body = 4;
         return this;
     }
 
     @Override
     public Object set() {
         this.sqlBuilder.SET();
+        this.body = 2;
         return this;
     }
 
@@ -106,14 +114,14 @@ public abstract class AbstractSQLUpdateBuilder
     @Override
     public Object where() {
         this.sqlBuilder.WHERE();
-        this.body = 2;
+        this.body = 3;
         return this;
     }
 
     @Override
     public Object value(Object value) {
-        this.sqlBuilder.addDataPlaceholder(this.lastPlaceholderName, value);
-        if (this.body == 1) {
+        super.value(value);
+        if (this.body == 2) {
             this.hasSetValue = true;
         }
         return this;

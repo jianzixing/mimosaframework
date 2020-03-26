@@ -506,6 +506,7 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object table(Class table, String tableAliasName) {
         this.sqlBuilder.addMappingTable(new SQLMappingTable(table, tableAliasName));
+        this.sqlBuilder.AS().addWrapString(tableAliasName);
         return this;
     }
 }

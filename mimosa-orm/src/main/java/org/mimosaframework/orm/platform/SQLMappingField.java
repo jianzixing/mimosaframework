@@ -88,12 +88,14 @@ public class SQLMappingField {
                     }
                 }
             }
-            for (SQLMappingTable o : sqlMappingTables) {
-                MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(o.getTable());
-                if (mappingTable != null) {
-                    MappingField mappingField = mappingTable.getMappingFieldByJavaName(field.toString());
-                    if (mappingField != null) {
-                        return mappingField.getMappingColumnName();
+            if (sqlMappingTables != null) {
+                for (SQLMappingTable o : sqlMappingTables) {
+                    MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(o.getTable());
+                    if (mappingTable != null) {
+                        MappingField mappingField = mappingTable.getMappingFieldByJavaName(field.toString());
+                        if (mappingField != null) {
+                            return mappingField.getMappingColumnName();
+                        }
                     }
                 }
             }

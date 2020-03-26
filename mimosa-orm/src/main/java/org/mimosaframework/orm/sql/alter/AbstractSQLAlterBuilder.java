@@ -56,6 +56,7 @@ public abstract class AbstractSQLAlterBuilder
 
     @Override
     public Object table(Class table) {
+        this.sqlBuilder.TABLE();
         this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         this.isMappingTable = true;
         this.body = 1;

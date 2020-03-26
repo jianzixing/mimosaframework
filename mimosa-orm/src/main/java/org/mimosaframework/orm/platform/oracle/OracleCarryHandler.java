@@ -31,7 +31,8 @@ public class OracleCarryHandler extends CarryHandler {
                     || changerClassify == ChangerClassify.DROP_FIELD
                     || changerClassify == ChangerClassify.SILENT
                     || changerClassify == ChangerClassify.CREATE
-                    || changerClassify == ChangerClassify.DROP) {
+                    || changerClassify == ChangerClassify.DROP
+                    || changerClassify == ChangerClassify.ALTER) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do oracle carry handler action " + changerClassify.name());
                 }

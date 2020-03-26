@@ -24,7 +24,8 @@ public class PostgreSQLCarryHandler extends CarryHandler {
                     || changerClassify == ChangerClassify.DROP_TABLE
                     || changerClassify == ChangerClassify.DROP_FIELD
                     || changerClassify == ChangerClassify.CREATE
-                    || changerClassify == ChangerClassify.DROP) {
+                    || changerClassify == ChangerClassify.DROP
+                    || changerClassify == ChangerClassify.ALTER) {
                 dbSession.execute(structure);
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());

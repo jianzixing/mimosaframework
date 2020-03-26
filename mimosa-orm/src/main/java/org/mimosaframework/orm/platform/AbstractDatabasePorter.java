@@ -1542,32 +1542,31 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
         SQLBuilderCombine combine = builder.getPlanSql();
         PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
-        System.out.println(combine.getSql());
-        if (builder instanceof AbstractSQLDeleteBuilder) {
+        if (builder instanceof DeleteBuilder) {
             porterStructure.setChangerClassify(ChangerClassify.DELETE);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof AbstractSQLAlterBuilder) {
+        if (builder instanceof AlterBuilder) {
             porterStructure.setChangerClassify(ChangerClassify.ALTER);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof AbstractSQLCreateBuilder) {
+        if (builder instanceof CreateBuilder) {
             porterStructure.setChangerClassify(ChangerClassify.CREATE);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof AbstractSQLDropBuilder) {
+        if (builder instanceof DropBuilder) {
             porterStructure.setChangerClassify(ChangerClassify.DROP);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof AbstractSQLInsertBuilder) {
+        if (builder instanceof InsertBuilder) {
             porterStructure.setChangerClassify(ChangerClassify.INSERT);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof AbstractSQLSelectBuilder) {
+        if (builder instanceof SelectBuilder) {
             porterStructure.setChangerClassify(ChangerClassify.SELECT);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof AbstractSQLUpdateBuilder) {
+        if (builder instanceof UpdateBuilder) {
             porterStructure.setChangerClassify(ChangerClassify.UPDATE);
             return this.carryHandler.doHandler(porterStructure);
         }

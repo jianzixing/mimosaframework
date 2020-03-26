@@ -32,6 +32,10 @@ public class CalcNumber {
         return new CalcNumber(i);
     }
 
+    public static CalcNumber as(CalcNumber i) {
+        return i;
+    }
+
     private BigDecimal objectToBigDecimal(Object o) {
         if (o.getClass().isAssignableFrom(Integer.class)) {
             return new BigDecimal((int) o);
@@ -57,6 +61,9 @@ public class CalcNumber {
         if (o.getClass().isAssignableFrom(BigDecimal.class)) {
             return (BigDecimal) o;
         }
+        if (o.getClass().isAssignableFrom(CalcNumber.class)) {
+            return ((CalcNumber) o).toBigDecimal();
+        }
         throw new IllegalArgumentException("不支持的计算类型");
     }
 
@@ -66,17 +73,29 @@ public class CalcNumber {
     }
 
     public CalcNumber divide(Object o) {
-        bg = bg.divide(objectToBigDecimal(o));
+        BigDecimal to = objectToBigDecimal(o);
+        if (to.compareTo(new BigDecimal(0)) == 0) {
+            bg = new BigDecimal(0);
+        }
+        bg = bg.divide(to);
         return this;
     }
 
     public CalcNumber divide(Object o, RoundingMode roundingMode) {
-        bg = bg.divide(objectToBigDecimal(o), roundingMode);
+        BigDecimal to = objectToBigDecimal(o);
+        if (to.compareTo(new BigDecimal(0)) == 0) {
+            bg = new BigDecimal(0);
+        }
+        bg = bg.divide(to, roundingMode);
         return this;
     }
 
     public CalcNumber divide(Object o, int scale, RoundingMode roundingMode) {
-        bg = bg.divide(objectToBigDecimal(o), scale, roundingMode);
+        BigDecimal to = objectToBigDecimal(o);
+        if (to.compareTo(new BigDecimal(0)) == 0) {
+            bg = new BigDecimal(0);
+        }
+        bg = bg.divide(to, scale, roundingMode);
         return this;
     }
 
