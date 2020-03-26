@@ -138,4 +138,10 @@ public class SessionTemplateTesting {
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
     }
+
+    @Test
+    public void t() {
+        Object i = 1;
+        System.out.println(i instanceof Number);
+    }
 }

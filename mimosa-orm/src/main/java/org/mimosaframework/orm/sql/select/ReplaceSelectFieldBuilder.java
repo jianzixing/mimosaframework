@@ -4,6 +4,6 @@ import org.mimosaframework.orm.sql.FromBuilder;
 
 public interface ReplaceSelectFieldBuilder<T>
         extends
-        SelectFieldBuilder<ReplaceSelectFieldBuilder<T>>,
+        SelectFieldBuilder<SelectFieldFunBuilder<T>>,
         FromBuilder<T> {
 }

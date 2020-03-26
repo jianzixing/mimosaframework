@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.sql.select;
 
-import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilder;
 import org.mimosaframework.orm.platform.SQLMappingField;
@@ -11,7 +10,7 @@ import java.io.Serializable;
 
 public class AbstractSQLSelectBuilder
         extends
-        AbstractSQLBuilder
+        AbstractFunSQLBuilder
 
         implements
         RedefineSelectBuilder {
@@ -32,28 +31,6 @@ public class AbstractSQLSelectBuilder
     @Override
     public MappingTable getMappingTableByClass(Class table) {
         return null;
-    }
-
-    private void setFieldItemA(FieldItem fieldItem) {
-        Class table = fieldItem.getTable();
-        String tableAliasName = fieldItem.getTableAliasName();
-        Serializable field = fieldItem.getField();
-
-        if (StringTools.isNotEmpty(tableAliasName)) {
-            this.sqlBuilder.addTableWrapField(tableAliasName, field.toString());
-        } else {
-            if (table != null) {
-                MappingTable mappingTable = this.getMappingTableByClass(table);
-                this.sqlBuilder.addTableWrapField(mappingTable.getMappingTableName(), field.toString());
-            }
-        }
-    }
-
-    private void setFieldItemB(FieldItem fieldItem) {
-        String fieldAliasName = fieldItem.getFieldAliasName();
-        if (StringTools.isNotEmpty(fieldAliasName)) {
-            this.sqlBuilder.AS().addWrapString(fieldAliasName);
-        }
     }
 
     @Override
@@ -117,6 +94,15 @@ public class AbstractSQLSelectBuilder
     }
 
     @Override
+    public Object field(Serializable field, String fieldAliasName) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
+        this.sqlBuilder.AS().addWrapString(fieldAliasName);
+        this.fieldCount++;
+        return this;
+    }
+
+    @Override
     public Object field(Class table, Serializable field, String fieldAliasName) {
         if (this.fieldCount > 0) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
@@ -129,6 +115,63 @@ public class AbstractSQLSelectBuilder
     public Object field(String tableAliasName, Serializable field, String fieldAliasName) {
         if (this.fieldCount > 0) this.sqlBuilder.addSplit();
         this.sqlBuilder.addMappingField(new SQLMappingField(tableAliasName, field));
+        this.sqlBuilder.AS().addWrapString(fieldAliasName);
+        this.fieldCount++;
+        return this;
+    }
+
+    @Override
+    public Object distinct(Serializable field) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
+        this.sqlBuilder.DISTINCT();
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
+        this.fieldCount++;
+        return this;
+    }
+
+    @Override
+    public Object distinct(String tableAliasName, Serializable field) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
+        this.sqlBuilder.DISTINCT();
+        this.sqlBuilder.addMappingField(new SQLMappingField(tableAliasName, field));
+        this.fieldCount++;
+        return this;
+    }
+
+    @Override
+    public Object distinct(Class table, Serializable field) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
+        this.sqlBuilder.DISTINCT();
+        this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
+        this.fieldCount++;
+        return this;
+    }
+
+    @Override
+    public Object distinct(Serializable field, String fieldAliasName) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
+        this.sqlBuilder.DISTINCT();
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
+        this.sqlBuilder.AS().addWrapString(fieldAliasName);
+        this.fieldCount++;
+        return this;
+    }
+
+    @Override
+    public Object distinct(String tableAliasName, Serializable field, String fieldAliasName) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
+        this.sqlBuilder.DISTINCT();
+        this.sqlBuilder.addMappingField(new SQLMappingField(tableAliasName, field));
+        this.sqlBuilder.AS().addWrapString(fieldAliasName);
+        this.fieldCount++;
+        return this;
+    }
+
+    @Override
+    public Object distinct(Class table, Serializable field, String fieldAliasName) {
+        if (this.fieldCount > 0) this.sqlBuilder.addSplit();
+        this.sqlBuilder.DISTINCT();
+        this.sqlBuilder.addMappingField(new SQLMappingField(table, field));
         this.sqlBuilder.AS().addWrapString(fieldAliasName);
         this.fieldCount++;
         return this;
@@ -186,92 +229,6 @@ public class AbstractSQLSelectBuilder
     @Override
     public Object and() {
         this.sqlBuilder.AND();
-        return this;
-    }
-
-    @Override
-    public Object count(FieldItem fieldItem) {
-        this.sqlBuilder.addString("COUNT");
-        this.sqlBuilder.addParenthesisStart();
-        this.setFieldItemA(fieldItem);
-        this.sqlBuilder.addParenthesisEnd();
-        this.setFieldItemB(fieldItem);
-        return this;
-    }
-
-    @Override
-    public Object max(FieldItem fieldItem) {
-        this.sqlBuilder.addString("MAX");
-        this.sqlBuilder.addParenthesisStart();
-        this.setFieldItemA(fieldItem);
-        this.sqlBuilder.addParenthesisEnd();
-        this.setFieldItemB(fieldItem);
-        return this;
-    }
-
-    @Override
-    public Object avg(FieldItem fieldItem) {
-        this.sqlBuilder.addString("AVG");
-        this.sqlBuilder.addParenthesisStart();
-        this.setFieldItemA(fieldItem);
-        this.sqlBuilder.addParenthesisEnd();
-        this.setFieldItemB(fieldItem);
-        return this;
-    }
-
-    @Override
-    public Object sum(FieldItem fieldItem) {
-        this.sqlBuilder.addString("SUM");
-        this.sqlBuilder.addParenthesisStart();
-        this.setFieldItemA(fieldItem);
-        this.sqlBuilder.addParenthesisEnd();
-        this.setFieldItemB(fieldItem);
-        return this;
-    }
-
-    @Override
-    public Object min(FieldItem fieldItem) {
-        this.sqlBuilder.addString("MIN");
-        this.sqlBuilder.addParenthesisStart();
-        this.setFieldItemA(fieldItem);
-        this.sqlBuilder.addParenthesisEnd();
-        this.setFieldItemB(fieldItem);
-        return this;
-    }
-
-    @Override
-    public Object concat(FieldItem... fieldItems) {
-        this.concat(null, fieldItems);
-        return this;
-    }
-
-    @Override
-    public Object concat(String fieldAliasName, FieldItem... fieldItems) {
-        if (fieldItems != null) {
-            this.sqlBuilder.addString("CONCAT");
-            this.sqlBuilder.addParenthesisStart();
-            int i = 0;
-            for (FieldItem fieldItem : fieldItems) {
-                this.setFieldItemA(fieldItem);
-                i++;
-                if (i != fieldItems.length) this.sqlBuilder.addSplit();
-            }
-            this.sqlBuilder.addParenthesisEnd();
-            if (StringTools.isNotEmpty(fieldAliasName)) {
-                this.sqlBuilder.AS().addWrapString(fieldAliasName);
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public Object substring(FieldItem fieldItem, int pos, int len) {
-        this.sqlBuilder.addString("SUBSTRING");
-        this.sqlBuilder.addParenthesisStart();
-        this.setFieldItemA(fieldItem);
-        this.sqlBuilder.addSplit().addString("" + pos).addSplit().addString("" + len);
-        this.sqlBuilder.addParenthesisEnd();
-        this.setFieldItemB(fieldItem);
         return this;
     }
 
@@ -485,12 +442,6 @@ public class AbstractSQLSelectBuilder
     public Object on() {
         this.sqlBuilder.ON();
         this.body = 10;
-        return this;
-    }
-
-    @Override
-    public Object as(String tableAliasName) {
-        this.sqlBuilder.AS().addWrapString(tableAliasName);
         return this;
     }
 

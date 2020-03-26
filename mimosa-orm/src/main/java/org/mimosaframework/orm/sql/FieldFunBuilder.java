@@ -1,20 +1,23 @@
 package org.mimosaframework.orm.sql;
 
+import java.io.Serializable;
+
 public interface FieldFunBuilder<T> {
+    enum Support {
+        COUNT, MAX, AVG, SUM, MIN, CONCAT, SUBSTRING
+    }
 
-    T count(FieldItem fieldItem);
+    T count(Serializable... param);
 
-    T max(FieldItem fieldItem);
+    T max(Serializable... params);
 
-    T avg(FieldItem fieldItem);
+    T avg(Serializable... params);
 
-    T sum(FieldItem fieldItem);
+    T sum(Serializable... params);
 
-    T min(FieldItem fieldItem);
+    T min(Serializable... params);
 
-    T concat(FieldItem... fieldItems);
+    T concat(Serializable... params);
 
-    T concat(String fieldAliasName, FieldItem... fieldItems);
-
-    T substring(FieldItem fieldItem, int pos, int len);
+    T substring(Serializable param, int pos, int len);
 }

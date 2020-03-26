@@ -172,7 +172,8 @@ public class SQLActionFactory {
                         SelectGroupByBuilder.class,
                         SelectGroupByNextBuilder.class,
                         OrderByNextBuilder.class,
-                        OrderBySealBuilder.class
+                        OrderBySealBuilder.class,
+                        SelectFieldFunBuilder.class
                 },
                 selectBuilder
         );

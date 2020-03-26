@@ -149,6 +149,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     @Override
+    public SQLBuilder DISTINCT() {
+        sql.add(Command.DISTINCT);
+        return this;
+    }
+
+    @Override
     public void removeLast() {
         sql.remove(sql.size() - 1);
     }

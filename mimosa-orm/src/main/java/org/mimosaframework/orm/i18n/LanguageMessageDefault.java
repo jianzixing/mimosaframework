@@ -22,6 +22,7 @@ import org.mimosaframework.orm.platform.sqlite.SqliteDatabasePorter;
 import org.mimosaframework.orm.platform.sqlserver.SQLServerDifferentColumn;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.spring.SpringMimosaSessionFactory;
+import org.mimosaframework.orm.sql.AbstractFunSQLBuilder;
 import org.mimosaframework.orm.sql.SelectBuilder;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 import org.mimosaframework.orm.strategy.StrategyFactory;
@@ -438,6 +439,11 @@ public class LanguageMessageDefault implements MessagesRegister {
         mapCommonSQLBuilder.put("miss_table_mapping", "没有找到类 %s 的映射类,请检查是否是表映射类");
         mapCommonSQLBuilder.put("miss_field_mapping", "映射类 %s 中没有找到 %s 映射字段");
         messageWords.add(new MessageWords(PROJECT, CommonSQLBuilder.class, mapCommonSQLBuilder));
+
+        // AbstractFunSQLBuilder
+        Map<String, String> mapAbstractFunSQLBuilder = new HashMap<>();
+        mapAbstractFunSQLBuilder.put("not_allow_fun", "%s 函数不允许有子函数");
+        messageWords.add(new MessageWords(PROJECT, AbstractFunSQLBuilder.class, mapAbstractFunSQLBuilder));
     }
 
     @Override

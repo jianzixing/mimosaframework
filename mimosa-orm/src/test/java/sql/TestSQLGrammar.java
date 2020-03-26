@@ -54,7 +54,9 @@ public class TestSQLGrammar {
 
         unifyBuilder = SelectFactory.select()
                 .field("", "")
-                .avg(null)
+                .distinct("")
+                .avg(null).as("")
+                .max(null).as("")
                 .field("", "")
                 .from()
                 .table(TestSQLGrammar.class, "")

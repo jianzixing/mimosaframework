@@ -46,6 +46,8 @@ public interface SQLBuilder {
 
     SQLBuilder USING();
 
+    SQLBuilder DISTINCT();
+
     void removeLast();
 
     String getRuleStart();
@@ -58,7 +60,7 @@ public interface SQLBuilder {
         CHARSET, IN, LIKE, BY, ORDER, ASC, DESC, LIMIT, DELETE, FROM, SELECT, COUNT,
         ON, AS, LEFT, JOIN, FIRST, AFTER, COMMENT, SUM, MODIFY, DROP, IS, INNER, FULL,
         COLUMN, UNIQUE, GROUP, BETWEEN, ALL, CHARACTER, COLLATE, OFF, HAVING, DATABASE,
-        TO, CHANGE, RENAME, FULLTEXT, USING,
+        TO, CHANGE, RENAME, FULLTEXT, USING, DISTINCT,
         CONSTRAINT
     }
 
