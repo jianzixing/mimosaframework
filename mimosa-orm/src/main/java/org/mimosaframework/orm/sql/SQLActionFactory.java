@@ -65,8 +65,8 @@ public class SQLActionFactory {
                         CreateColumnAssistBuilder.class,
                         CreateDatabaseStartBuilder.class,
                         CreateIndexBuilder.class,
+                        CreateCollateExtraBuilder.class,
                         CreateIndexColumnsBuilder.class,
-                        CreateTableColumnBuilder.class,
                         CreateTableStartBuilder.class,
                         CreateTableTailBuilder.class
                 },

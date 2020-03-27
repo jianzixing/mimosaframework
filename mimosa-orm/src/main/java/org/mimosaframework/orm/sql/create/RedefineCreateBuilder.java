@@ -11,7 +11,7 @@ public interface RedefineCreateBuilder
         CharsetBuilder,
         CollateBuilder,
         TableBuilder,
-        CreateTableColumnBuilder,
+        AbsColumnBuilder,
         AbsExtraBuilder,
         UniqueBuilder,
         FullTextBuilder,
@@ -19,5 +19,7 @@ public interface RedefineCreateBuilder
         OnBuilder,
         AbsTableBuilder,
         CreateIndexColumnsBuilder,
-        AbsTableNameBuilder {
+        AbsTableNameBuilder,
+        ColumnTypeBuilder,
+        ColumnAssistBuilder {
 }

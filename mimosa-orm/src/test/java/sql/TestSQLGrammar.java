@@ -2,7 +2,6 @@ package sql;
 
 import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.alter.AlterFactory;
-import org.mimosaframework.orm.sql.create.Columns;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.delete.DeleteFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
@@ -113,9 +112,10 @@ public class TestSQLGrammar {
 
         unifyBuilder = CreateFactory.create().database().ifNotExist().name("").charset("").collate("");
 
-        unifyBuilder = CreateFactory.create().table().ifNotExist().name("").columns(
-                Columns.column("id").intType().primary().key().autoIncrement().not().nullable()
-        ).charset("").extra("");
+        unifyBuilder = CreateFactory.create().table().ifNotExist().name("")
+                .column("").intType().autoIncrement()
+                .column("").intType().autoIncrement()
+                .charset("").extra("");
 
         unifyBuilder = CreateFactory.create().unique().index().name("").on().table(TestSQLGrammar.class).columns("", "");
 

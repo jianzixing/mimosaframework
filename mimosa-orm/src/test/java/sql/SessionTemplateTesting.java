@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.sql.FieldItem;
-import org.mimosaframework.orm.sql.create.Columns;
 import tables.TableUser;
 
 public class SessionTemplateTesting {
@@ -146,10 +145,9 @@ public class SessionTemplateTesting {
     public void testCreate1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.create().table().ifNotExist().name("t_tt")
-                        .columns(
-                                Columns.column("id").intType().autoIncrement().primary().key().comment("a"),
-                                Columns.column("name").varchar(50).not().nullable().comment("b")
-                        ).charset("utf8")
+                        .column("id").intType().autoIncrement().primary().key().comment("a")
+                        .column("name").varchar(50).not().nullable().comment("b")
+                        .charset("utf8")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
@@ -159,11 +157,24 @@ public class SessionTemplateTesting {
     public void testCreate2() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.create().table().ifNotExist().name(TableUser.class)
-                        .columns(
-                                Columns.column("id").intType().autoIncrement().primary().key().comment("a"),
-                                Columns.column("name").varchar(50).not().nullable().comment("b"),
-                                Columns.column(TableUser.createdTime).datetime().not().nullable().comment("b")
-                        ).charset("utf8")
+                        .column("id").intType().autoIncrement().primary().key().comment("a")
+                        .column("name").varchar(50).not().nullable().comment("b")
+                        .column(TableUser.createdTime).datetime().not().nullable().comment("b")
+                        .charset("utf8")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
+    public void testCreate3() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.create().table().ifNotExist().name("t_user_2")
+                        .column("id").intType().autoIncrement().primary().key().comment("a")
+                        .column("name").varchar(50).not().nullable().comment("b")
+                        .column(TableUser.userName).varchar(50).not().nullable().unique().comment("b")
+                        .column(TableUser.createdTime).datetime().not().nullable().comment("b")
+                        .charset("utf8")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());

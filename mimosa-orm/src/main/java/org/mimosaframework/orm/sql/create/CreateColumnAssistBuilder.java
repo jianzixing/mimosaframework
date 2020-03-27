@@ -1,9 +1,11 @@
 package org.mimosaframework.orm.sql.create;
 
-import org.mimosaframework.orm.sql.AboutChildBuilder;
 
-public interface CreateColumnAssistBuilder
+import org.mimosaframework.orm.sql.AbsColumnBuilder;
+
+public interface CreateColumnAssistBuilder<T>
         extends
-        AboutChildBuilder,
-        ColumnAssistBuilder<CreateColumnAssistBuilder> {
+        ColumnAssistBuilder<CreateColumnAssistBuilder<T>>,
+        AbsColumnBuilder<ColumnTypeBuilder<CreateColumnAssistBuilder<T>>>,
+        CreateTableTailBuilder {
 }

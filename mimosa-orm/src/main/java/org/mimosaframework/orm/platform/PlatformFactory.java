@@ -157,8 +157,6 @@ public class PlatformFactory {
             if (action == InsertBuilder.class) return (T) new MysqlSQLInsertBuilder();
             if (action == SelectBuilder.class) return (T) new MysqlSQLSelectBuilder();
             if (action == UpdateBuilder.class) return (T) new MysqlSQLUpdateBuilder();
-
-            if (action == AbsColumnBuilder.class) return (T) new MysqlSQLColumnBuilder();
         }
         if (type.equals(DatabaseTypes.ORACLE)) {
         }

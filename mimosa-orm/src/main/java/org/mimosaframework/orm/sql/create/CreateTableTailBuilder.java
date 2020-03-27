@@ -6,6 +6,6 @@ import org.mimosaframework.orm.sql.UnifyBuilder;
 
 public interface CreateTableTailBuilder
         extends
-        CharsetBuilder<AbsExtraBuilder<UnifyBuilder>>,
+        CharsetBuilder<CreateCollateExtraBuilder<UnifyBuilder>>,
         AbsExtraBuilder<UnifyBuilder> {
 }
