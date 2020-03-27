@@ -68,6 +68,81 @@ public class SessionTemplateTesting {
     }
 
     @Test
+    public void testAlter6() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .charset("utf8")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter7() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .add().index().name("a").columns(TableUser.address, TableUser.age)
+                        .comment("aaa")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter8() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .add().fullText().index().name("b").columns(TableUser.address, TableUser.userName)
+                        .comment("aaa")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+
+    @Test
+    public void testAlter9() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .add().unique().name("c").columns(TableUser.address, TableUser.userName)
+                        .comment("aaa")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter10() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .add().index().name("pk").column(TableUser.id)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter11() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .drop().primary().key()
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter12() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .add().primary().key().column(TableUser.id)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter13() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().database().name("mimosa").charset("utf8")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
     public void testCreate1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.create().table().ifNotExist().name("t_tt")

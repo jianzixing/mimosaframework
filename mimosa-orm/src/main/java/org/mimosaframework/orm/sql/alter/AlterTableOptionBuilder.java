@@ -7,8 +7,8 @@ public interface AlterTableOptionBuilder
         AlterTableAnyBuilder,
 
         AutoIncrementBuilder<AbsIntBuilder<UnifyBuilder>>,
-        CharsetBuilder,
-        CollateBuilder,
-        CommentBuilder,
-        AbsExtraBuilder {
+        CharsetBuilder<UnifyBuilder>,
+        CollateBuilder<UnifyBuilder>,
+        CommentBuilder<UnifyBuilder>,
+        AbsExtraBuilder<UnifyBuilder> {
 }

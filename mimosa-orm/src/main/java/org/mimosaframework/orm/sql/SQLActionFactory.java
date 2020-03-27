@@ -41,7 +41,8 @@ public class SQLActionFactory {
                         AlterRenameAnyBuilder.class,
                         AlterRenameBuilder.class,
                         AlterTableAnyBuilder.class,
-                        AlterTableOptionBuilder.class
+                        AlterTableOptionBuilder.class,
+                        AlterPKColumnBuilder.class
                 },
                 alterBuilder
         );

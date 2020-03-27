@@ -14,6 +14,7 @@ public abstract class AbstractSQLAlterBuilder
         RedefineAlterBuilder {
 
     protected boolean isAutoNumber = false;
+    protected int isColumnNeedWrap = 0;
 
     @Override
     public Object alter() {
@@ -24,6 +25,7 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object name(Serializable value) {
         this.sqlBuilder.addString(value.toString());
+        if (this.isColumnNeedWrap == 2) this.isColumnNeedWrap = 3;
         return this;
     }
 
@@ -48,11 +50,30 @@ public abstract class AbstractSQLAlterBuilder
 
     @Override
     public Object column(Serializable field) {
+        if (this.isColumnNeedWrap == 2 || this.isColumnNeedWrap == 3) {
+            this.sqlBuilder.addParenthesisStart();
+        }
         if (this.isMappingTable) {
             this.sqlBuilder.addMappingField(new SQLMappingField(field));
         } else {
             this.sqlBuilder.addWrapString(field.toString());
         }
+        if (this.isColumnNeedWrap == 2 || this.isColumnNeedWrap == 3) {
+            this.sqlBuilder.addParenthesisEnd();
+        }
+        return this;
+    }
+
+    @Override
+    public Object columns(Serializable... fields) {
+        int i = 0;
+        this.sqlBuilder.addParenthesisStart();
+        for (Serializable field : fields) {
+            this.sqlBuilder.addMappingField(new SQLMappingField(field));
+            i++;
+            if (i != fields.length) this.sqlBuilder.addSplit();
+        }
+        this.sqlBuilder.addParenthesisEnd();
         return this;
     }
 
@@ -89,6 +110,7 @@ public abstract class AbstractSQLAlterBuilder
     public Object add() {
         this.sqlBuilder.ADD();
         this.isAutoNumber = false;
+        this.isColumnNeedWrap = 0;
         return this;
     }
 
@@ -216,6 +238,7 @@ public abstract class AbstractSQLAlterBuilder
     public Object index() {
         this.sqlBuilder.INDEX();
         this.body = 2;
+        this.isColumnNeedWrap = 2;
         return this;
     }
 
@@ -231,18 +254,21 @@ public abstract class AbstractSQLAlterBuilder
         this.sqlBuilder.DROP();
         this.body = 2;
         this.isAutoNumber = false;
+        this.isColumnNeedWrap = 0;
         return this;
     }
 
     @Override
     public Object key() {
         this.sqlBuilder.KEY();
+        if (this.isColumnNeedWrap == 1) this.isColumnNeedWrap = 2;
         return this;
     }
 
     @Override
     public Object primary() {
         this.sqlBuilder.PRIMARY();
+        this.isColumnNeedWrap = 1;
         return this;
     }
 
@@ -257,6 +283,7 @@ public abstract class AbstractSQLAlterBuilder
         this.sqlBuilder.CHANGE();
         this.body = 2;
         this.isAutoNumber = false;
+        this.isColumnNeedWrap = 0;
         return this;
     }
 
@@ -265,6 +292,7 @@ public abstract class AbstractSQLAlterBuilder
         this.sqlBuilder.MODIFY();
         this.body = 2;
         this.isAutoNumber = false;
+        this.isColumnNeedWrap = 0;
         return this;
     }
 
@@ -284,6 +312,7 @@ public abstract class AbstractSQLAlterBuilder
     public Object rename() {
         this.sqlBuilder.RENAME();
         this.isAutoNumber = false;
+        this.isColumnNeedWrap = 0;
         return this;
     }
 
@@ -296,6 +325,7 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object unique() {
         this.sqlBuilder.UNIQUE();
+        this.isColumnNeedWrap = 2;
         return this;
     }
 

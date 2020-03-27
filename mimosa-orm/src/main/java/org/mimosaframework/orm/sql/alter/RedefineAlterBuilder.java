@@ -31,5 +31,6 @@ public interface RedefineAlterBuilder
         ToBuilder,
         FullTextBuilder,
         UniqueBuilder,
-        AbsIntBuilder {
+        AbsIntBuilder,
+        AbsColumnsBuilder {
 }
