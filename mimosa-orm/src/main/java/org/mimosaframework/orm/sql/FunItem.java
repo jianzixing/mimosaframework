@@ -11,8 +11,8 @@ public class FunItem implements FieldFunBuilder {
     private Support type;
 
     @Override
-    public Object count(Serializable param) {
-        this.param = param;
+    public Object count(Serializable... params) {
+        this.params = params;
         this.type = Support.COUNT;
         return this;
     }

@@ -209,6 +209,8 @@ public interface SQLBuilder {
 
     SQLBuilder addString(String name);
 
+    SQLBuilder addBlankHolder(SkipBlankPlaceholder skipBlankPlaceholder);
+
     SQLBuilder addWrapString(String name);
 
     SQLBuilder addParenthesisString(String name);

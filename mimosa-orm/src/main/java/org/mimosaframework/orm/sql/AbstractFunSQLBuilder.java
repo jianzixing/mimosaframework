@@ -4,6 +4,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.SQLMappingField;
+import org.mimosaframework.orm.platform.SkipBlankPlaceholder;
 
 import java.io.Serializable;
 
@@ -17,11 +18,18 @@ public abstract class AbstractFunSQLBuilder
         return this;
     }
 
+    protected void funStart() {
+    }
+
+    protected void funEnd() {
+    }
+
     @Override
     public Object count(Serializable... params) {
+        this.funStart();
         if (params.length > 0) {
             Serializable param = params[0];
-            this.sqlBuilder.addString("COUNT");
+            this.sqlBuilder.addBlankHolder(new SkipBlankPlaceholder("COUNT"));
             this.sqlBuilder.addParenthesisStart();
             if ("distinct".equalsIgnoreCase((param + "").trim()) && params.length > 1) {
                 this.sqlBuilder.addString("DISTINCT");
@@ -33,6 +41,7 @@ public abstract class AbstractFunSQLBuilder
         } else {
             this.sqlBuilder.addString("COUNT(1)");
         }
+        this.funEnd();
         return this;
     }
 
@@ -55,9 +64,10 @@ public abstract class AbstractFunSQLBuilder
 
     @Override
     public Object max(Serializable... params) {
+        this.funStart();
         if (params.length > 0) {
             Serializable param = params[0];
-            this.sqlBuilder.addString("MAX");
+            this.sqlBuilder.addBlankHolder(new SkipBlankPlaceholder("MAX"));
             this.sqlBuilder.addParenthesisStart();
             if ("distinct".equalsIgnoreCase((param + "").trim()) && params.length > 1) {
                 this.sqlBuilder.addString("DISTINCT");
@@ -69,14 +79,16 @@ public abstract class AbstractFunSQLBuilder
         } else {
             this.sqlBuilder.addString("MAX(1)");
         }
+        this.funEnd();
         return this;
     }
 
     @Override
     public Object avg(Serializable... params) {
+        this.funStart();
         if (params.length > 0) {
             Serializable param = params[0];
-            this.sqlBuilder.addString("AVG");
+            this.sqlBuilder.addBlankHolder(new SkipBlankPlaceholder("AVG"));
             this.sqlBuilder.addParenthesisStart();
             if ("distinct".equalsIgnoreCase((param + "").trim()) && params.length > 1) {
                 this.sqlBuilder.addString("DISTINCT");
@@ -88,20 +100,37 @@ public abstract class AbstractFunSQLBuilder
         } else {
             this.sqlBuilder.addString("AVG(1)");
         }
+        this.funEnd();
         return this;
     }
 
     @Override
     public Object sum(Serializable... params) {
-        this.sqlBuilder.addString("SUM");
+        this.funStart();
+        if (params.length > 0) {
+            Serializable param = params[0];
+            this.sqlBuilder.addBlankHolder(new SkipBlankPlaceholder("SUM"));
+            this.sqlBuilder.addParenthesisStart();
+            if ("distinct".equalsIgnoreCase((param + "").trim()) && params.length > 1) {
+                this.sqlBuilder.addString("DISTINCT");
+                this.setCountItem(params[1]);
+            } else {
+                this.setCountItem(param);
+            }
+            this.sqlBuilder.addParenthesisEnd();
+        } else {
+            this.sqlBuilder.addString("SUM(1)");
+        }
+        this.funEnd();
         return this;
     }
 
     @Override
     public Object min(Serializable... params) {
+        this.funStart();
         if (params.length > 0) {
             Serializable param = params[0];
-            this.sqlBuilder.addString("MIN");
+            this.sqlBuilder.addBlankHolder(new SkipBlankPlaceholder("MIN"));
             this.sqlBuilder.addParenthesisStart();
             if ("distinct".equalsIgnoreCase((param + "").trim()) && params.length > 1) {
                 this.sqlBuilder.addString("DISTINCT");
@@ -113,12 +142,14 @@ public abstract class AbstractFunSQLBuilder
         } else {
             this.sqlBuilder.addString("MIN(1)");
         }
+        this.funEnd();
         return this;
     }
 
     @Override
     public Object concat(Serializable... params) {
-        this.sqlBuilder.addString("CONCAT");
+        this.funStart();
+        this.sqlBuilder.addBlankHolder(new SkipBlankPlaceholder("CONCAT"));
         this.sqlBuilder.addParenthesisStart();
         int i = 0;
         for (Serializable param : params) {
@@ -132,18 +163,21 @@ public abstract class AbstractFunSQLBuilder
             if (i != params.length) this.sqlBuilder.addSplit();
         }
         this.sqlBuilder.addParenthesisEnd();
+        this.funEnd();
         return this;
     }
 
     @Override
     public Object substring(Serializable param, int pos, int len) {
-        this.sqlBuilder.addString("SUBSTRING");
+        this.funStart();
+        this.sqlBuilder.addBlankHolder(new SkipBlankPlaceholder("SUBSTRING"));
         this.sqlBuilder.addParenthesisStart();
         if (param instanceof FieldItem) {
             this.setSQLMappingField((FieldItem) param);
         }
         this.sqlBuilder.addSplit().addString("" + pos).addSplit().addString("" + len);
         this.sqlBuilder.addParenthesisEnd();
+        this.funEnd();
         return this;
     }
 

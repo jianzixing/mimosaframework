@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.sql.FieldItem;
 import org.mimosaframework.orm.sql.create.Columns;
 import tables.TableUser;
 
@@ -94,6 +95,7 @@ public class SessionTemplateTesting {
                 SQLAutonomously.select()
                         .field("t", TableUser.id)
                         .field("t", TableUser.userName)
+                        .count(new FieldItem("t", TableUser.id))
                         .from().table(TableUser.class, "t")
                         .left().join().table(TableUser.class, "t1").on().column("t1", TableUser.id).eq().column("t", TableUser.id)
                         .where()

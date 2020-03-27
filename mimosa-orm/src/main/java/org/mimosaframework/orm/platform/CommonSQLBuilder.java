@@ -568,6 +568,12 @@ public class CommonSQLBuilder implements SQLBuilder {
     }
 
     @Override
+    public SQLBuilder addBlankHolder(SkipBlankPlaceholder skipBlankPlaceholder) {
+        sql.add(skipBlankPlaceholder);
+        return this;
+    }
+
+    @Override
     public SQLBuilder addWrapString(String name) {
         sql.add(new SQLContinuous(SQLContinuous.RuleType.RULE_START, name, SQLContinuous.RuleType.RULE_FINISH));
         return this;
@@ -627,7 +633,7 @@ public class CommonSQLBuilder implements SQLBuilder {
             }
         }
         for (Object o : sql) {
-            this.toSQLString(sb, o, placeholders, mappingGlobalWrapper, sqlMappingTables);
+            this.toSQLString(sb, o, placeholders, mappingGlobalWrapper, sqlMappingTables, 0);
         }
         return new SQLBuilderCombine(sb.toString(), placeholders);
     }
@@ -636,7 +642,9 @@ public class CommonSQLBuilder implements SQLBuilder {
                              Object o,
                              List<SQLDataPlaceholder> placeholders,
                              MappingGlobalWrapper mappingGlobalWrapper,
-                             List<SQLMappingTable> sqlMappingTables) {
+                             List<SQLMappingTable> sqlMappingTables,
+                             int fromType) {
+        boolean skipBlank = false;
         if (o instanceof SQLContinuous) {
             sb.append(((SQLContinuous) o).toString(ruleStart, ruleFinish));
         } else if (o instanceof Command) {
@@ -665,7 +673,7 @@ public class CommonSQLBuilder implements SQLBuilder {
                 sb.append(ruleStart + field + ruleFinish);
             }
         } else if (o instanceof SQLReplaceHolder) {
-            this.toSQLString(sb, ((SQLReplaceHolder) o).getHolder(), placeholders, mappingGlobalWrapper, sqlMappingTables);
+            this.toSQLString(sb, ((SQLReplaceHolder) o).getHolder(), placeholders, mappingGlobalWrapper, sqlMappingTables, 1);
         } else if (o instanceof SQLSymbol) {
             SQLSymbol.Symbol symbol = ((SQLSymbol) o).getSymbol();
             SQLBuilderCombine combine = ((SQLSymbol) o).getSqlBuilder().toSQLString();
@@ -722,14 +730,15 @@ public class CommonSQLBuilder implements SQLBuilder {
         } else if (o instanceof SQLDataPlaceholder) {
             sb.append("?");
             placeholders.add((SQLDataPlaceholder) o);
+        } else if (o instanceof SkipBlankPlaceholder) {
+            this.toSQLString(sb, ((SkipBlankPlaceholder) o).getHolder(), placeholders, mappingGlobalWrapper, sqlMappingTables, 1);
+            skipBlank = true;
         } else {
             sb.append(o);
         }
 
-        if (o instanceof SQLFunction) {
-
-        } else {
-            sb.append(" ");
+        if (!(o instanceof SQLFunction) && !skipBlank && fromType != 1) {
+            if (!skipBlank) sb.append(" ");
         }
     }
 

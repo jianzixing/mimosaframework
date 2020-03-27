@@ -34,6 +34,17 @@ public class AbstractSQLSelectBuilder
     }
 
     @Override
+    protected void funStart() {
+        super.funStart();
+        if (this.body == 1 && this.fieldCount > 0) this.sqlBuilder.addSplit();
+    }
+
+    @Override
+    protected void funEnd() {
+        super.funEnd();
+    }
+
+    @Override
     public Object select() {
         this.sqlBuilder.SELECT();
         this.body = 1;
