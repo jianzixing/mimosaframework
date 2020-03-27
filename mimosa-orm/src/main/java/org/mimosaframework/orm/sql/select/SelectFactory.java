@@ -1,10 +1,9 @@
 package org.mimosaframework.orm.sql.select;
 
-import org.mimosaframework.orm.sql.SelectBuilder;
+import org.mimosaframework.orm.sql.SQLActionFactory;
 
 public class SelectFactory {
     public static SelectStartBuilder select() {
-        SelectBuilder<SelectStartBuilder> selectBuilder = null;
-        return selectBuilder.select();
+        return SQLActionFactory.select();
     }
 }

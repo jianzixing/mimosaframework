@@ -1,10 +1,9 @@
 package org.mimosaframework.orm.sql.update;
 
-import org.mimosaframework.orm.sql.UpdateBuilder;
+import org.mimosaframework.orm.sql.SQLActionFactory;
 
 public class UpdateFactory {
     public static UpdateStartBuilder update() {
-        UpdateBuilder<UpdateStartBuilder> updateBuilder = null;
-        return updateBuilder.update();
+        return SQLActionFactory.update();
     }
 }

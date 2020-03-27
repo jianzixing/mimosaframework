@@ -1,10 +1,9 @@
 package org.mimosaframework.orm.sql.alter;
 
-import org.mimosaframework.orm.sql.AlterBuilder;
+import org.mimosaframework.orm.sql.SQLActionFactory;
 
 public class AlterFactory {
     public static AlterAnyBuilder alter() {
-        AlterBuilder<AlterAnyBuilder> alterBuilder = null;
-        return alterBuilder.alter();
+        return SQLActionFactory.alter();
     }
 }

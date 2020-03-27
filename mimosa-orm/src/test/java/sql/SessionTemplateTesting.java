@@ -23,7 +23,7 @@ public class SessionTemplateTesting {
 
     @Test
     public void testAlter1() throws Exception {
-        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
                         .modify().column(TableUser.createdTime).datetime().comment("aaa")
         );
