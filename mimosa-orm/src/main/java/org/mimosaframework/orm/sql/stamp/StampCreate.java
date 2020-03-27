@@ -1,0 +1,16 @@
+package org.mimosaframework.orm.sql.stamp;
+
+public class StampCreate {
+    public KeyTarget target;
+    public boolean checkExist = false;
+
+    public String name;
+    public Class table;
+
+    public StampCreateColumn[] columns;
+    public StampCreateIndex[] indices;
+
+    public String charset;
+    public String collate;
+    public String extra;
+}
