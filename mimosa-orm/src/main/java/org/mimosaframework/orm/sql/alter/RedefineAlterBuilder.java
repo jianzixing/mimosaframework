@@ -30,5 +30,6 @@ public interface RedefineAlterBuilder
         AlterRenameBuilder,
         ToBuilder,
         FullTextBuilder,
-        UniqueBuilder {
+        UniqueBuilder,
+        AbsIntBuilder {
 }

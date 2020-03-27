@@ -13,6 +13,8 @@ public abstract class AbstractSQLAlterBuilder
 
         RedefineAlterBuilder {
 
+    protected boolean isAutoNumber = false;
+
     @Override
     public Object alter() {
         this.sqlBuilder.ALTER();
@@ -60,6 +62,7 @@ public abstract class AbstractSQLAlterBuilder
         this.sqlBuilder.addMappingTable(new SQLMappingTable(table));
         this.isMappingTable = true;
         this.body = 1;
+        this.isAutoNumber = true;
         return this;
     }
 
@@ -85,6 +88,7 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object add() {
         this.sqlBuilder.ADD();
+        this.isAutoNumber = false;
         return this;
     }
 
@@ -226,6 +230,7 @@ public abstract class AbstractSQLAlterBuilder
     public Object drop() {
         this.sqlBuilder.DROP();
         this.body = 2;
+        this.isAutoNumber = false;
         return this;
     }
 
@@ -251,6 +256,7 @@ public abstract class AbstractSQLAlterBuilder
     public Object change() {
         this.sqlBuilder.CHANGE();
         this.body = 2;
+        this.isAutoNumber = false;
         return this;
     }
 
@@ -258,24 +264,26 @@ public abstract class AbstractSQLAlterBuilder
     public Object modify() {
         this.sqlBuilder.MODIFY();
         this.body = 2;
+        this.isAutoNumber = false;
         return this;
     }
 
     @Override
     public Object newColumn(Serializable field) {
-        this.sqlBuilder.addWrapString(field.toString());
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
         return this;
     }
 
     @Override
     public Object oldColumn(Serializable field) {
-        this.sqlBuilder.addWrapString(field.toString());
+        this.sqlBuilder.addMappingField(new SQLMappingField(field));
         return this;
     }
 
     @Override
     public Object rename() {
         this.sqlBuilder.RENAME();
+        this.isAutoNumber = false;
         return this;
     }
 
@@ -288,6 +296,16 @@ public abstract class AbstractSQLAlterBuilder
     @Override
     public Object unique() {
         this.sqlBuilder.UNIQUE();
+        return this;
+    }
+
+    @Override
+    public Object value(int number) {
+        if (this.isAutoNumber) {
+            this.sqlBuilder.addEqualMark();
+            this.isAutoNumber = false;
+        }
+        this.sqlBuilder.addString(number + "");
         return this;
     }
 }

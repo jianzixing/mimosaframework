@@ -28,7 +28,43 @@ public class SessionTemplateTesting {
                         .modify().column(TableUser.createdTime).datetime().comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
 
+    @Test
+    public void testAlter2() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .change().oldColumn(TableUser.createdTime)
+                        .newColumn(TableUser.createdTime).datetime().comment("aaa")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter3() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .add().column("t1").intType().unique().comment("t+t1")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter4() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .drop().column("t1")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+    }
+
+    @Test
+    public void testAlter5() throws Exception {
+        SQLAutonomously sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
+                        .autoIncrement().value(20)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
     }
 
     @Test
