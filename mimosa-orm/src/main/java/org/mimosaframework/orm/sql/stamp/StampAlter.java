@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.sql.stamp;
 
-public class StampAlter {
+public class StampAlter implements StampTables {
     public KeyTarget target;
 
     public String name;
@@ -12,4 +12,8 @@ public class StampAlter {
     public String charset;
     public String collate;
 
+    @Override
+    public Class[] getTables() {
+        return new Class[0];
+    }
 }

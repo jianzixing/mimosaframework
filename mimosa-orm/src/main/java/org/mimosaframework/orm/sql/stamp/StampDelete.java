@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.sql.stamp;
 
-public class StampDelete {
+public class StampDelete implements StampTables {
     public Class tables[];
     public String aliasNames[];
 
@@ -13,4 +13,9 @@ public class StampDelete {
     public StampOrderBy[] orderBy;
 
     public StampLimit limit;
+
+    @Override
+    public Class[] getTables() {
+        return new Class[0];
+    }
 }

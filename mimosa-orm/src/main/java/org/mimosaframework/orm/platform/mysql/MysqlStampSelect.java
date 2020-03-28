@@ -5,7 +5,7 @@ import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.StampSelect;
 import org.mimosaframework.orm.sql.stamp.StampSelectBuilder;
 
-public class MysqlStampSelect implements StampSelectBuilder {
+public class MysqlStampSelect extends MysqlAbstractStamp implements StampSelectBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampSelect select) {
         return null;

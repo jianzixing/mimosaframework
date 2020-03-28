@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.sql.stamp;
 
-public class StampCreate {
+public class StampCreate implements StampTables {
     public KeyTarget target;
     public boolean checkExist = false;
 
@@ -13,4 +13,9 @@ public class StampCreate {
     public String charset;
     public String collate;
     public String extra;
+
+    @Override
+    public Class[] getTables() {
+        return new Class[0];
+    }
 }

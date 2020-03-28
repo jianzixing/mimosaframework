@@ -1,50 +1,11 @@
 package org.mimosaframework.orm.platform.mysql;
 
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class MysqlStampAlter implements StampAlterBuilder {
-    private static final String RS = "`";
-    private static final String RE = "`";
-
-    private String getTableName(MappingGlobalWrapper wrapper,
-                                Class table,
-                                String tableName) {
-        if (table != null) {
-            MappingTable mappingTable = wrapper.getMappingTable(table);
-            if (mappingTable != null) {
-                return mappingTable.getMappingTableName();
-            }
-        } else {
-            return tableName;
-        }
-        return null;
-    }
-
-    private String getColumnName(MappingGlobalWrapper wrapper,
-                                 StampAlter alter,
-                                 StampColumn column) {
-
-        if (column != null && column.column != null) {
-            Class table = alter.table;
-            if (table != null) {
-                MappingTable mappingTable = wrapper.getMappingTable(table);
-                if (mappingTable != null) {
-                    MappingField mappingField = mappingTable.getMappingFieldByName(column.column.toString());
-                    if (mappingField != null) {
-                        return mappingField.getMappingColumnName();
-                    }
-                }
-            }
-
-            return column.column.toString();
-        }
-        return null;
-    }
+public class MysqlStampAlter extends MysqlAbstractStamp implements StampAlterBuilder {
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
