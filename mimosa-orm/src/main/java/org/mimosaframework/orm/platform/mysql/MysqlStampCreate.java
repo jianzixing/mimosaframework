@@ -48,6 +48,21 @@ public class MysqlStampCreate extends MysqlAbstractStamp implements StampCreateB
                 sb.append(" " + create.extra);
             }
         }
+        if (create.target == KeyTarget.INDEX) {
+            sb.append(" INDEX");
+            sb.append(" " + create.indexName);
+            sb.append(" ON");
+            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+
+            int i = 0;
+            sb.append(" (");
+            for (StampColumn column : create.indexColumns) {
+                sb.append(this.getColumnName(wrapper, create, column));
+                i++;
+                if (i != create.indexColumns.length) sb.append(",");
+            }
+            sb.append(")");
+        }
         return null;
     }
 

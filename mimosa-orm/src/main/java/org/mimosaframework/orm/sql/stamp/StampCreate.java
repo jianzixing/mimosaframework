@@ -14,6 +14,9 @@ public class StampCreate implements StampTables {
     public String collate;
     public String extra;
 
+    public String indexName;
+    public StampColumn[] indexColumns;
+
     @Override
     public Class[] getTables() {
         return new Class[0];
