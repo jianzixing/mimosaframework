@@ -7,6 +7,8 @@ public class StampDrop implements StampTables {
     public String name;
     public Class table;
 
+    public String tableName;
+
     @Override
     public Class[] getTables() {
         return new Class[0];
