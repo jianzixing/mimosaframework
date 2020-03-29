@@ -6,9 +6,6 @@ import org.mimosaframework.orm.sql.stamp.StampAction;
 import java.io.Serializable;
 
 public class DefaultSQLUpdateBuilder
-        extends
-        AbstractSQLBuilder
-
         implements
         RedefineUpdateBuilder {
 

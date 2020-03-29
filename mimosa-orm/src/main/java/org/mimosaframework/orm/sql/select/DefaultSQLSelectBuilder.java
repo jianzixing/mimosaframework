@@ -6,9 +6,6 @@ import org.mimosaframework.orm.sql.stamp.StampAction;
 import java.io.Serializable;
 
 public class DefaultSQLSelectBuilder
-        extends
-        AbstractSQLBuilder
-
         implements
         RedefineSelectBuilder {
 
@@ -239,7 +236,6 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public Object where() {
-        this.body = 11;
         return this;
     }
 

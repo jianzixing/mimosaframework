@@ -1,12 +1,10 @@
 package org.mimosaframework.orm.sql.drop;
 
-import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
 public class DefaultSQLDropBuilder
-        extends AbstractSQLBuilder
         implements
         RedefineDropBuilder {
 

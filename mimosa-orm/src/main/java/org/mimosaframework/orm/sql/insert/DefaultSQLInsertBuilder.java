@@ -1,14 +1,10 @@
 package org.mimosaframework.orm.sql.insert;
 
-import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
 public class DefaultSQLInsertBuilder
-        extends
-        AbstractSQLBuilder
-
         implements
         RedefineInsertBuilder {
 

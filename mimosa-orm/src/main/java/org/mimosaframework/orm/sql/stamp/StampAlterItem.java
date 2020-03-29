@@ -7,6 +7,8 @@ public class StampAlterItem {
     // column & drop column
     public StampColumn column;
     public KeyColumnType columnType;
+    public int len;
+    public int scale;
     public boolean nullable = true;
     public String defaultValue;
     public boolean autoIncrement = false;
