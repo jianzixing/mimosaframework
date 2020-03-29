@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.alter;
 
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.create.ColumnAssistBuilder;
 import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
 
 public interface RedefineAlterBuilder
@@ -32,5 +33,6 @@ public interface RedefineAlterBuilder
         FullTextBuilder,
         UniqueBuilder,
         AbsIntBuilder,
-        AbsColumnsBuilder {
+        AbsColumnsBuilder,
+        ColumnAssistBuilder {
 }

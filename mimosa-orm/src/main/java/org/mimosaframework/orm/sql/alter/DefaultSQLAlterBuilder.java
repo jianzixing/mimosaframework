@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.sql.alter;
 
-import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.io.Serializable;
@@ -8,8 +7,23 @@ import java.util.List;
 
 public class DefaultSQLAlterBuilder
         implements
-
         RedefineAlterBuilder {
+
+    protected KeyTarget target;
+    /**
+     * 10 add ~
+     * 11 change ~
+     * 12 drop ~
+     * 13 modify ~
+     * 14 rename ~
+     * <p>
+     * 20 after ~
+     * 21 before ~
+     */
+    protected int body = 0;
+    protected boolean isNot = false;
+    protected boolean isPrimary = false;
+    protected KeyIndexType indexType;
 
     protected StampAlter stampAlter = new StampAlter();
     protected List<StampAlterItem> lastItems = null;
@@ -44,31 +58,51 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object database() {
-        this.stampAlter.target = KeyTarget.DATABASE;
+        this.target = KeyTarget.DATABASE;
+        this.stampAlter.target = this.target;
         return this;
     }
 
     @Override
     public Object column(Serializable field) {
         StampAlterItem item = this.getItem();
-        item.column = new StampColumn(field);
+        if (this.body == 20 || this.body == 21) {
+            item.after = new StampColumn(field);
+        } else {
+            item.column = new StampColumn(field);
+            item.struct = KeyAlterStruct.COLUMN;
+
+            if (this.body == 12) {
+                item.dropType = KeyAlterDropType.COLUMN;
+            }
+        }
         return this;
     }
 
     @Override
     public Object columns(Serializable... fields) {
+        StampColumn[] columns = new StampColumn[fields.length];
+        int i = 0;
+        for (Serializable field : fields) {
+            columns[i] = new StampColumn(field);
+            i++;
+        }
+        StampAlterItem item = this.getItem();
+        item.columns = columns;
         return this;
     }
 
     @Override
     public Object table(Class table) {
-        this.stampAlter.target = KeyTarget.TABLE;
+        this.target = KeyTarget.TABLE;
+        this.stampAlter.target = this.target;
         this.stampAlter.table = table;
         return this;
     }
 
     @Override
     public Object after() {
+        this.body = 20;
         return this;
     }
 
@@ -88,6 +122,7 @@ public class DefaultSQLAlterBuilder
     public Object add() {
         StampAlterItem item = new StampAlterItem();
         lastItems.add(item);
+        this.body = 10;
         return this;
     }
 
@@ -237,6 +272,11 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object index() {
+        StampAlterItem item = this.getItem();
+        item.struct = KeyAlterStruct.INDEX;
+        if (this.body == 12) {
+            item.dropType = KeyAlterDropType.INDEX;
+        }
         return this;
     }
 
@@ -249,16 +289,29 @@ public class DefaultSQLAlterBuilder
     public Object drop() {
         StampAlterItem item = new StampAlterItem();
         lastItems.add(item);
+        this.body = 12;
         return this;
     }
 
     @Override
     public Object key() {
+        if (isPrimary) {
+            this.isPrimary = false;
+            StampAlterItem item = this.getItem();
+            item.pk = true;
+            if (this.body == 12) {
+                item.dropType = KeyAlterDropType.PRIMARY_KEY;
+            }
+        } else {
+            StampAlterItem item = this.getItem();
+            item.key = true;
+        }
         return this;
     }
 
     @Override
     public Object primary() {
+        this.isPrimary = true;
         return this;
     }
 
@@ -271,6 +324,7 @@ public class DefaultSQLAlterBuilder
     public Object change() {
         StampAlterItem item = new StampAlterItem();
         lastItems.add(item);
+        this.body = 11;
         return this;
     }
 
@@ -278,16 +332,21 @@ public class DefaultSQLAlterBuilder
     public Object modify() {
         StampAlterItem item = new StampAlterItem();
         lastItems.add(item);
+        this.body = 13;
         return this;
     }
 
     @Override
     public Object newColumn(Serializable field) {
+        StampAlterItem item = this.getItem();
+        item.column = new StampColumn(field);
         return this;
     }
 
     @Override
     public Object oldColumn(Serializable field) {
+        StampAlterItem item = this.getItem();
+        item.oldColumn = new StampColumn(field);
         return this;
     }
 
@@ -295,16 +354,21 @@ public class DefaultSQLAlterBuilder
     public Object rename() {
         StampAlterItem item = new StampAlterItem();
         lastItems.add(item);
+        this.body = 14;
         return this;
     }
 
     @Override
     public Object fullText() {
+        StampAlterItem item = this.getItem();
+        item.indexType = KeyIndexType.FULLTEXT;
         return this;
     }
 
     @Override
     public Object unique() {
+        StampAlterItem item = this.getItem();
+        item.indexType = KeyIndexType.UNIQUE;
         return this;
     }
 
@@ -316,5 +380,28 @@ public class DefaultSQLAlterBuilder
     @Override
     public StampAction compile() {
         return this.stampAlter;
+    }
+
+    @Override
+    public Object not() {
+        this.isNot = true;
+        return this;
+    }
+
+    @Override
+    public Object nullable() {
+        if (this.isNot) {
+            this.isNot = false;
+            StampAlterItem item = this.getItem();
+            item.nullable = false;
+        }
+        return this;
+    }
+
+    @Override
+    public Object defaultValue(String value) {
+        StampAlterItem item = this.getItem();
+        item.defaultValue = value;
+        return this;
     }
 }

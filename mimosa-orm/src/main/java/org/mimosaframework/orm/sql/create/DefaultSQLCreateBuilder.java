@@ -102,7 +102,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object defaults() {
+    public Object defaultValue(String value) {
         return this;
     }
 
