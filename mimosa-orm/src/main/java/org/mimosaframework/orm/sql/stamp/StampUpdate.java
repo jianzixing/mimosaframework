@@ -1,8 +1,7 @@
 package org.mimosaframework.orm.sql.stamp;
 
 public class StampUpdate implements StampTables {
-    public Class[] tables;
-    public String tableNames;
+    public StampFrom[] tables;
 
     public StampUpdateItem[] items;
 
