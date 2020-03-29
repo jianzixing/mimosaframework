@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.sql.stamp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StampUpdate implements StampTables {
     public StampFrom[] tables;
 
@@ -10,7 +13,15 @@ public class StampUpdate implements StampTables {
     public StampLimit limit;
 
     @Override
-    public Class[] getTables() {
-        return new Class[0];
+    public List<STItem> getTables() {
+        List<STItem> items = new ArrayList<>();
+        if (tables != null) {
+            for (StampFrom table : tables) {
+                if (table.table != null) {
+                    items.add(new STItem(table.table, table.aliasName));
+                }
+            }
+        }
+        return items;
     }
 }

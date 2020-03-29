@@ -10,13 +10,6 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.sql.*;
-import org.mimosaframework.orm.sql.alter.AbstractSQLAlterBuilder;
-import org.mimosaframework.orm.sql.create.AbstractSQLCreateBuilder;
-import org.mimosaframework.orm.sql.delete.AbstractSQLDeleteBuilder;
-import org.mimosaframework.orm.sql.drop.AbstractSQLDropBuilder;
-import org.mimosaframework.orm.sql.insert.AbstractSQLInsertBuilder;
-import org.mimosaframework.orm.sql.select.AbstractSQLSelectBuilder;
-import org.mimosaframework.orm.sql.update.AbstractSQLUpdateBuilder;
 
 import java.sql.Blob;
 import java.sql.SQLException;

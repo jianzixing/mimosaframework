@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.sql.stamp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StampInsert implements StampTables {
     public String name;
     public Class table;
@@ -8,7 +11,11 @@ public class StampInsert implements StampTables {
     public Object[][] values;
 
     @Override
-    public Class[] getTables() {
-        return new Class[0];
+    public List<STItem> getTables() {
+        List<STItem> items = new ArrayList<>();
+        if (table != null) {
+            items.add(new STItem(table));
+        }
+        return items;
     }
 }

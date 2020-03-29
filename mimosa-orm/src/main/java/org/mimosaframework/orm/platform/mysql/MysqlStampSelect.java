@@ -65,6 +65,24 @@ public class MysqlStampSelect extends MysqlAbstractStamp implements StampSelectB
             if (i != froms.length) sb.append(",");
         }
 
+        StampSelectJoin[] joins = select.joins;
+        if (joins != null) {
+            for (StampSelectJoin join : joins) {
+                if (join.joinType == KeyJoinType.LEFT) {
+                    sb.append(" LEFT JOIN");
+                }
+                if (join.joinType == KeyJoinType.INNER) {
+                    sb.append(" INNER JOIN");
+                }
+                sb.append(" " + this.getTableName(wrapper, join.table, join.name));
+                if (StringTools.isNotEmpty(join.tableAliasName)) {
+                    sb.append(" AS " + RS + join.tableAliasName + RE);
+                }
+                sb.append(" ");
+                this.buildWhere(wrapper, placeholders, select, join.on, sb);
+            }
+        }
+
         sb.append(" ");
         if (select.where != null) {
             this.buildWhere(wrapper, placeholders, select, select.where, sb);

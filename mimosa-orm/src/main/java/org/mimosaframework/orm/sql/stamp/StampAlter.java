@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.sql.stamp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StampAlter implements StampTables {
     public KeyTarget target;
 
@@ -8,12 +11,15 @@ public class StampAlter implements StampTables {
 
     public StampAlterItem[] items;
 
-
     public String charset;
     public String collate;
 
     @Override
-    public Class[] getTables() {
-        return new Class[0];
+    public List<STItem> getTables() {
+        List<STItem> items = new ArrayList<>();
+        if (table != null) {
+            items.add(new STItem(table));
+        }
+        return items;
     }
 }

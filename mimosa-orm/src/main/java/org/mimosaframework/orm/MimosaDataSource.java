@@ -64,13 +64,6 @@ public class MimosaDataSource implements Closeable {
         }
     }
 
-    public static DatabaseTypes getDatabaseType() {
-        if (dataSourceInfo != null && dataSourceInfo.size() > 0) {
-            return dataSourceInfo.entrySet().iterator().next().getValue();
-        }
-        return null;
-    }
-
     private void loadDatabaseType() throws SQLException {
         if (master != null) {
             DatabaseTypes dte = dataSourceInfo.get(master);

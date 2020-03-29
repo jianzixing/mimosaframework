@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.sql.stamp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StampDelete implements StampTables {
     public Class tables[];
     public String aliasNames[];
@@ -15,7 +18,22 @@ public class StampDelete implements StampTables {
     public StampLimit limit;
 
     @Override
-    public Class[] getTables() {
-        return new Class[0];
+    public List<STItem> getTables() {
+        List<STItem> items = new ArrayList<>();
+        if (froms != null) {
+            for (StampFrom from : froms) {
+                if (from.table != null) {
+                    items.add(new STItem(from.table, from.aliasName));
+                }
+            }
+        }
+        if (using != null) {
+            for (StampFrom ui : using) {
+                if (ui.table != null) {
+                    items.add(new STItem(ui.table, ui.aliasName));
+                }
+            }
+        }
+        return items;
     }
 }

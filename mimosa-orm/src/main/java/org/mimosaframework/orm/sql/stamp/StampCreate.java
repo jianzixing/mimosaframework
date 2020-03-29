@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.sql.stamp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StampCreate implements StampTables {
     public KeyTarget target;
     public boolean checkExist = false;
@@ -18,7 +21,11 @@ public class StampCreate implements StampTables {
     public StampColumn[] indexColumns;
 
     @Override
-    public Class[] getTables() {
-        return new Class[0];
+    public List<STItem> getTables() {
+        List<STItem> items = new ArrayList<>();
+        if (table != null) {
+            items.add(new STItem(table));
+        }
+        return items;
     }
 }

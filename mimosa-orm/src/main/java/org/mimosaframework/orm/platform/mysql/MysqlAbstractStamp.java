@@ -53,8 +53,8 @@ public abstract class MysqlAbstractStamp {
             if (tables != null) {
                 if (StringTools.isNotEmpty(tableAliasName)) {
                     for (StampTables.STItem stItem : tables) {
-                        if (tableAliasName.equals(stItem.tableAliasName)) {
-                            MappingTable mappingTable = wrapper.getMappingTable(stItem.table);
+                        if (tableAliasName.equals(stItem.getTableAliasName())) {
+                            MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
                             if (mappingTable != null) {
                                 MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                                 if (mappingField != null) {
@@ -66,7 +66,7 @@ public abstract class MysqlAbstractStamp {
                 }
 
                 for (StampTables.STItem stItem : tables) {
-                    MappingTable mappingTable = wrapper.getMappingTable(stItem.table);
+                    MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
                     if (mappingTable != null) {
                         MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                         if (mappingField != null) {
