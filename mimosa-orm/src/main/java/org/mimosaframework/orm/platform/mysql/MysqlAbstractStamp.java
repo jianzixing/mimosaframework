@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.platform.mysql;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -28,30 +29,54 @@ public abstract class MysqlAbstractStamp {
 
     protected String getColumnName(MappingGlobalWrapper wrapper, StampTables stampTables, StampColumn column) {
         if (column != null && column.column != null) {
+            String columnName = column.column.toString();
+            String tableAliasName = column.tableAliasName;
+
+            if (columnName.equals("*")) {
+                if (StringTools.isNotEmpty(tableAliasName)) {
+                    return RS + tableAliasName + RE + "." + columnName;
+                } else {
+                    return columnName;
+                }
+            }
             if (column.table != null) {
                 MappingTable mappingTable = wrapper.getMappingTable(column.table);
                 if (mappingTable != null) {
-                    MappingField mappingField = mappingTable.getMappingFieldByName(column.column.toString());
+                    MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                     if (mappingField != null) {
-                        return mappingField.getMappingColumnName();
+                        return RS + mappingField.getMappingColumnName() + RE;
                     }
                 }
             }
 
-            Class[] tables = stampTables.getTables();
+            List<StampTables.STItem> tables = stampTables.getTables();
             if (tables != null) {
-                for (Class table : tables) {
-                    MappingTable mappingTable = wrapper.getMappingTable(table);
+                if (StringTools.isNotEmpty(tableAliasName)) {
+                    for (StampTables.STItem stItem : tables) {
+                        if (tableAliasName.equals(stItem.tableAliasName)) {
+                            MappingTable mappingTable = wrapper.getMappingTable(stItem.table);
+                            if (mappingTable != null) {
+                                MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
+                                if (mappingField != null) {
+                                    return RS + tableAliasName + RE + "." + RS + mappingField.getMappingColumnName() + RE;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for (StampTables.STItem stItem : tables) {
+                    MappingTable mappingTable = wrapper.getMappingTable(stItem.table);
                     if (mappingTable != null) {
-                        MappingField mappingField = mappingTable.getMappingFieldByName(column.column.toString());
+                        MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                         if (mappingField != null) {
-                            return mappingField.getMappingColumnName();
+                            return RS + mappingField.getMappingColumnName() + RE;
                         }
                     }
                 }
             }
 
-            return column.column.toString();
+            return columnName;
         }
         return null;
     }
@@ -61,12 +86,22 @@ public abstract class MysqlAbstractStamp {
                               StampTables stampTables,
                               StampWhere where,
                               StringBuilder sb) {
+        StampSelectFieldFun compareFun = null;
+        if (where instanceof StampHaving) {
+            compareFun = ((StampHaving) where).compareFun;
+        }
         StampColumn column = where.column;
         StampWhere next = where.next;
         StampWhere wrapWhere = where.wrapWhere;
         if (column != null) {
-            String key = this.getColumnName(wrapper, stampTables, column);
-            sb.append(key);
+            String key = null;
+            if (compareFun != null) {
+                this.buildSelectFieldFun(wrapper, stampTables, compareFun, sb);
+                key = "HAVING&" + compareFun.funName;
+            } else {
+                key = this.getColumnName(wrapper, stampTables, column);
+                sb.append(key);
+            }
             sb.append(" " + where.operator + " ");
             if (where.compareColumn != null) {
                 sb.append(this.getColumnName(wrapper, stampTables, where.compareColumn));
@@ -77,7 +112,6 @@ public abstract class MysqlAbstractStamp {
                 placeholder.setValue(where.value);
                 placeholders.add(placeholder);
             }
-
         } else if (wrapWhere != null) {
             sb.append("(");
             this.buildWhere(wrapper, placeholders, stampTables, wrapWhere, sb);
@@ -89,6 +123,35 @@ public abstract class MysqlAbstractStamp {
                 sb.append(" AND ");
             else if (where.nextLogic == KeyLogic.OR)
                 sb.append(" OR ");
+        }
+    }
+
+    protected void buildSelectFieldFun(MappingGlobalWrapper wrapper,
+                                       StampTables stampTables,
+                                       StampSelectFieldFun fun,
+                                       StringBuilder sb) {
+        String funName = fun.funName;
+        Object[] params = fun.params;
+
+        sb.append(funName);
+        if (params != null) {
+            sb.append("(");
+            for (Object param : params) {
+                if (param instanceof StampColumn) {
+                    sb.append(this.getColumnName(wrapper, stampTables, (StampColumn) param));
+                }
+                if (param instanceof Number) {
+                    sb.append(param);
+                }
+                if (param instanceof String) {
+                    sb.append(param);
+                }
+                if (param instanceof StampSelectFieldFun) {
+                    this.buildSelectFieldFun(wrapper, stampTables,
+                            (StampSelectFieldFun) param, sb);
+                }
+            }
+            sb.append(")");
         }
     }
 }
