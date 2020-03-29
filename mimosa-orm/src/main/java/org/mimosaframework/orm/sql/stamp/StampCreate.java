@@ -3,7 +3,7 @@ package org.mimosaframework.orm.sql.stamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StampCreate implements StampTables {
+public class StampCreate implements StampAction {
     public KeyTarget target;
     public boolean checkExist = false;
 

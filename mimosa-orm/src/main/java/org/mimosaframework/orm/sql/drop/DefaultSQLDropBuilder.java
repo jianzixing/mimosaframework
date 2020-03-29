@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.sql.drop;
 
-import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
@@ -48,5 +48,10 @@ public class DefaultSQLDropBuilder
     @Override
     public Object table() {
         return this;
+    }
+
+    @Override
+    public StampAction compile() {
+        return null;
     }
 }

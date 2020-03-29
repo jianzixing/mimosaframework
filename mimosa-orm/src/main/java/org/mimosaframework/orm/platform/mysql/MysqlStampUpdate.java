@@ -9,9 +9,10 @@ import org.mimosaframework.orm.sql.stamp.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MysqlStampUpdate extends MysqlAbstractStamp implements StampUpdateBuilder {
+public class MysqlStampUpdate extends MysqlAbstractStamp implements StampCombineBuilder {
     @Override
-    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampUpdate update) {
+    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
+        StampUpdate update = (StampUpdate) action;
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         sb.append("UPDATE ");

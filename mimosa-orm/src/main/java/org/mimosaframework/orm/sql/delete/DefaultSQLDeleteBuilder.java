@@ -1,10 +1,7 @@
 package org.mimosaframework.orm.sql.delete;
 
-import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.SQLBuilder;
-import org.mimosaframework.orm.platform.SQLMappingField;
-import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
@@ -199,5 +196,10 @@ public class DefaultSQLDeleteBuilder
     @Override
     public Object using() {
         return this;
+    }
+
+    @Override
+    public StampAction compile() {
+        return null;
     }
 }

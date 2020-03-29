@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.alter;
 
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
@@ -241,5 +242,10 @@ public class DefaultSQLAlterBuilder
     @Override
     public Object value(int number) {
         return this;
+    }
+
+    @Override
+    public StampAction compile() {
+        return null;
     }
 }

@@ -10,6 +10,8 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -1529,37 +1531,39 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         return !(query.getInnerJoin() == null || query.getInnerJoin().size() == 0);
     }
 
-    @Override
-    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, SQLMappingChannel builder) throws SQLException {
-        builder.setMappingGlobalWrapper(mappingGlobalWrapper);
+    protected abstract DatabaseTypes getDatabaseType();
 
-        SQLBuilderCombine combine = builder.getPlanSql();
+    @Override
+    public Object execute(MappingGlobalWrapper mappingGlobalWrapper, StampAction stampAction) throws SQLException {
+        StampCombineBuilder builder = PlatformFactory.getStampAlterBuilder(this.getDatabaseType(), stampAction);
+
+        SQLBuilderCombine combine = builder.getSqlBuilder(mappingGlobalWrapper, stampAction);
         PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
-        if (builder instanceof DeleteBuilder) {
+        if (stampAction instanceof StampDelete) {
             porterStructure.setChangerClassify(ChangerClassify.DELETE);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof AlterBuilder) {
+        if (stampAction instanceof StampAlter) {
             porterStructure.setChangerClassify(ChangerClassify.ALTER);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof CreateBuilder) {
+        if (stampAction instanceof StampCreate) {
             porterStructure.setChangerClassify(ChangerClassify.CREATE);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof DropBuilder) {
+        if (stampAction instanceof StampDrop) {
             porterStructure.setChangerClassify(ChangerClassify.DROP);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof InsertBuilder) {
+        if (stampAction instanceof StampInsert) {
             porterStructure.setChangerClassify(ChangerClassify.INSERT);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof SelectBuilder) {
+        if (stampAction instanceof StampSelect) {
             porterStructure.setChangerClassify(ChangerClassify.SELECT);
             return this.carryHandler.doHandler(porterStructure);
         }
-        if (builder instanceof UpdateBuilder) {
+        if (stampAction instanceof StampUpdate) {
             porterStructure.setChangerClassify(ChangerClassify.UPDATE);
             return this.carryHandler.doHandler(porterStructure);
         }

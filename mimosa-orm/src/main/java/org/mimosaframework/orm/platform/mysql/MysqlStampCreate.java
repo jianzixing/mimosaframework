@@ -5,9 +5,10 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class MysqlStampCreate extends MysqlAbstractStamp implements StampCreateBuilder {
+public class MysqlStampCreate extends MysqlAbstractStamp implements StampCombineBuilder {
     @Override
-    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampCreate create) {
+    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
+        StampCreate create = (StampCreate) action;
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE");
         if (create.target == KeyTarget.DATABASE) {

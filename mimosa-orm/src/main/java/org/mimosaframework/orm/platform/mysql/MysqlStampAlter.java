@@ -5,11 +5,12 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class MysqlStampAlter extends MysqlAbstractStamp implements StampAlterBuilder {
+public class MysqlStampAlter extends MysqlAbstractStamp implements StampCombineBuilder {
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
-                                           StampAlter alter) {
+                                           StampAction action) {
+        StampAlter alter = (StampAlter) action;
         StringBuilder sb = new StringBuilder();
         sb.append("ALTER");
         if (alter.target == KeyTarget.DATABASE) {

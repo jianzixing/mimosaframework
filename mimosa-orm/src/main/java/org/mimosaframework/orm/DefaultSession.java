@@ -14,8 +14,6 @@ import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.scripting.BoundSql;
 import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
-import org.mimosaframework.orm.sql.AbstractSQLBuilder;
-import org.mimosaframework.orm.sql.SQLMappingChannel;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
 import org.mimosaframework.orm.utils.Clone;
@@ -510,13 +508,8 @@ public class DefaultSession implements Session {
             PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
             List<ModelObject> objects = null;
             if (builder != null) {
-                if (builder instanceof SQLMappingChannel) {
-                    Object r = platformWrapper.execute(this.mappingGlobalWrapper, (SQLMappingChannel) builder);
-                    return new AutoResult(r);
-                } else {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            DefaultSession.class, "builder_must_sql_builder"));
-                }
+                Object r = platformWrapper.execute(this.mappingGlobalWrapper, builder.compile());
+                return new AutoResult(r);
             } else {
                 objects = platformWrapper.select(sql);
             }

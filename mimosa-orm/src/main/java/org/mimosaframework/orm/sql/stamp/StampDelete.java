@@ -3,7 +3,7 @@ package org.mimosaframework.orm.sql.stamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StampDelete implements StampTables {
+public class StampDelete implements StampAction {
     public Class tables[];
     public String aliasNames[];
 

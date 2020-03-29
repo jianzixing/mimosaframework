@@ -9,10 +9,8 @@ import org.mimosaframework.orm.criteria.DefaultUpdate;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.sql.AbstractSQLBuilder;
-import org.mimosaframework.orm.sql.SQLMappingChannel;
-import org.mimosaframework.orm.sql.SelectBuilder;
-import org.mimosaframework.orm.sql.UnifyBuilder;
+import org.mimosaframework.orm.sql.stamp.StampAction;
+import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -58,5 +56,5 @@ public interface PlatformWrapper {
 
     long count(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException;
 
-    Object execute(MappingGlobalWrapper mappingGlobalWrapper, SQLMappingChannel builder) throws SQLException;
+    Object execute(MappingGlobalWrapper mappingGlobalWrapper, StampAction stampAction) throws SQLException;
 }

@@ -9,9 +9,10 @@ import org.mimosaframework.orm.sql.stamp.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MysqlStampSelect extends MysqlAbstractStamp implements StampSelectBuilder {
+public class MysqlStampSelect extends MysqlAbstractStamp implements StampCombineBuilder {
     @Override
-    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampSelect select) {
+    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
+        StampSelect select = (StampSelect) action;
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
 

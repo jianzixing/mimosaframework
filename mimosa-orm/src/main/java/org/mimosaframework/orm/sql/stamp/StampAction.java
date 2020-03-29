@@ -2,7 +2,7 @@ package org.mimosaframework.orm.sql.stamp;
 
 import java.util.List;
 
-public interface StampTables {
+public interface StampAction {
     List<STItem> getTables();
 
     class STItem {

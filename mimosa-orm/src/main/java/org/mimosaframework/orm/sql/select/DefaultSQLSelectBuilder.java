@@ -1,10 +1,7 @@
 package org.mimosaframework.orm.sql.select;
 
-import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.SQLBuilder;
-import org.mimosaframework.orm.platform.SQLMappingField;
-import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
@@ -319,5 +316,10 @@ public class DefaultSQLSelectBuilder
     @Override
     public Object substring(Serializable param, int pos, int len) {
         return this;
+    }
+
+    @Override
+    public StampAction compile() {
+        return null;
     }
 }

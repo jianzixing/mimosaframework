@@ -3,7 +3,7 @@ package org.mimosaframework.orm.sql.stamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StampSelect implements StampTables {
+public class StampSelect implements StampAction {
     public StampSelectField[] columns;
     public StampFrom[] froms;
     public StampSelectJoin[] joins;

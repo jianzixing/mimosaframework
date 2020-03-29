@@ -1,8 +1,7 @@
 package org.mimosaframework.orm.sql.create;
 
-import org.mimosaframework.orm.platform.SQLMappingField;
-import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
@@ -223,5 +222,10 @@ public class DefaultSQLCreateBuilder
     @Override
     public Object year() {
         return this;
+    }
+
+    @Override
+    public StampAction compile() {
+        return null;
     }
 }

@@ -22,7 +22,6 @@ import org.mimosaframework.orm.platform.sqlite.SqliteDatabasePorter;
 import org.mimosaframework.orm.platform.sqlserver.SQLServerDifferentColumn;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.spring.SpringMimosaSessionFactory;
-import org.mimosaframework.orm.sql.AbstractFunSQLBuilder;
 import org.mimosaframework.orm.sql.SelectBuilder;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 import org.mimosaframework.orm.strategy.StrategyFactory;
@@ -348,7 +347,6 @@ public class LanguageMessageDefault implements MessagesRegister {
         mapDefaultSession.put("not_found_file_sql", "没有发现配置文件SQL");
         mapDefaultSession.put("not_support_action", "不支持的动作标签,当前仅支持select,update,delete,insert");
         mapDefaultSession.put("close_db_fail", "关闭数据库连接出错");
-        mapDefaultSession.put("builder_must_sql_builder", "Builder必须是AbstractSQLBuilder的实现类");
         messageWords.add(new MessageWords(PROJECT, DefaultSession.class, mapDefaultSession));
 
         // MimosaConnection
@@ -440,10 +438,6 @@ public class LanguageMessageDefault implements MessagesRegister {
         mapCommonSQLBuilder.put("miss_field_mapping", "映射类 %s 中没有找到 %s 映射字段");
         messageWords.add(new MessageWords(PROJECT, CommonSQLBuilder.class, mapCommonSQLBuilder));
 
-        // AbstractFunSQLBuilder
-        Map<String, String> mapAbstractFunSQLBuilder = new HashMap<>();
-        mapAbstractFunSQLBuilder.put("not_allow_fun", "%s 函数不允许有子函数");
-        messageWords.add(new MessageWords(PROJECT, AbstractFunSQLBuilder.class, mapAbstractFunSQLBuilder));
     }
 
     @Override

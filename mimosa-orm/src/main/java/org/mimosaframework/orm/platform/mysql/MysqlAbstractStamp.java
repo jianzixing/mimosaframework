@@ -27,7 +27,7 @@ public abstract class MysqlAbstractStamp {
         return null;
     }
 
-    protected String getColumnName(MappingGlobalWrapper wrapper, StampTables stampTables, StampColumn column) {
+    protected String getColumnName(MappingGlobalWrapper wrapper, StampAction stampTables, StampColumn column) {
         if (column != null && column.column != null) {
             String columnName = column.column.toString();
             String tableAliasName = column.tableAliasName;
@@ -49,10 +49,10 @@ public abstract class MysqlAbstractStamp {
                 }
             }
 
-            List<StampTables.STItem> tables = stampTables.getTables();
+            List<StampAction.STItem> tables = stampTables.getTables();
             if (tables != null) {
                 if (StringTools.isNotEmpty(tableAliasName)) {
-                    for (StampTables.STItem stItem : tables) {
+                    for (StampAction.STItem stItem : tables) {
                         if (tableAliasName.equals(stItem.getTableAliasName())) {
                             MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
                             if (mappingTable != null) {
@@ -65,7 +65,7 @@ public abstract class MysqlAbstractStamp {
                     }
                 }
 
-                for (StampTables.STItem stItem : tables) {
+                for (StampAction.STItem stItem : tables) {
                     MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
                     if (mappingTable != null) {
                         MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
@@ -83,7 +83,7 @@ public abstract class MysqlAbstractStamp {
 
     protected void buildWhere(MappingGlobalWrapper wrapper,
                               List<SQLDataPlaceholder> placeholders,
-                              StampTables stampTables,
+                              StampAction stampTables,
                               StampWhere where,
                               StringBuilder sb) {
         StampSelectFieldFun compareFun = null;
@@ -127,7 +127,7 @@ public abstract class MysqlAbstractStamp {
     }
 
     protected void buildSelectFieldFun(MappingGlobalWrapper wrapper,
-                                       StampTables stampTables,
+                                       StampAction stampTables,
                                        StampSelectFieldFun fun,
                                        StringBuilder sb) {
         String funName = fun.funName;

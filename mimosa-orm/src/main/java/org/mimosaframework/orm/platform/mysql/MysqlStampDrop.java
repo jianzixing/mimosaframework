@@ -2,13 +2,12 @@ package org.mimosaframework.orm.platform.mysql;
 
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.sql.stamp.KeyTarget;
-import org.mimosaframework.orm.sql.stamp.StampDrop;
-import org.mimosaframework.orm.sql.stamp.StampDropBuilder;
+import org.mimosaframework.orm.sql.stamp.*;
 
-public class MysqlStampDrop extends MysqlAbstractStamp implements StampDropBuilder {
+public class MysqlStampDrop extends MysqlAbstractStamp implements StampCombineBuilder {
     @Override
-    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampDrop drop) {
+    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
+        StampDrop drop = (StampDrop) action;
         StringBuilder sb = new StringBuilder();
         sb.append("DROP");
         if (drop.target == KeyTarget.DATABASE) {

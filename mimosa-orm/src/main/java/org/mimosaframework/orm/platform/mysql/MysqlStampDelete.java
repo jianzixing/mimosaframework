@@ -8,9 +8,10 @@ import org.mimosaframework.orm.sql.stamp.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MysqlStampDelete extends MysqlAbstractStamp implements StampDeleteBuilder {
+public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombineBuilder {
     @Override
-    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampDelete delete) {
+    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
+        StampDelete delete = (StampDelete) action;
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE ");

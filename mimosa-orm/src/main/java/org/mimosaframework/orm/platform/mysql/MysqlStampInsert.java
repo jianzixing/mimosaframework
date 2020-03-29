@@ -3,16 +3,15 @@ package org.mimosaframework.orm.platform.mysql;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
-import org.mimosaframework.orm.sql.stamp.StampColumn;
-import org.mimosaframework.orm.sql.stamp.StampInsert;
-import org.mimosaframework.orm.sql.stamp.StampInsertBuilder;
+import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MysqlStampInsert extends MysqlAbstractStamp implements StampInsertBuilder {
+public class MysqlStampInsert extends MysqlAbstractStamp implements StampCombineBuilder {
     @Override
-    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampInsert insert) {
+    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
+        StampInsert insert = (StampInsert) action;
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT");

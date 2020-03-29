@@ -9,6 +9,7 @@ import org.mimosaframework.orm.platform.oracle.*;
 import org.mimosaframework.orm.platform.postgresql.*;
 import org.mimosaframework.orm.platform.sqlite.*;
 import org.mimosaframework.orm.platform.sqlserver.*;
+import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 public class PlatformFactory {
@@ -143,6 +144,19 @@ public class PlatformFactory {
         }
         if (dataSource.getDatabaseTypeEnum().equals(DatabaseTypes.SQLITE)) {
             return new SqliteDatabaseSpeciality();
+        }
+        return null;
+    }
+
+    public static StampCombineBuilder getStampAlterBuilder(DatabaseTypes databaseTypes, StampAction stampAction) {
+        if (databaseTypes == DatabaseTypes.MYSQL) {
+            if (stampAction instanceof StampAlter) return new MysqlStampAlter();
+            if (stampAction instanceof StampCreate) return new MysqlStampCreate();
+            if (stampAction instanceof StampDelete) return new MysqlStampDelete();
+            if (stampAction instanceof StampDrop) return new MysqlStampDrop();
+            if (stampAction instanceof StampInsert) return new MysqlStampInsert();
+            if (stampAction instanceof StampSelect) return new MysqlStampSelect();
+            if (stampAction instanceof StampUpdate) return new MysqlStampUpdate();
         }
         return null;
     }

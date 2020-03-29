@@ -1,9 +1,7 @@
 package org.mimosaframework.orm.sql.update;
 
-import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.SQLMappingField;
-import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
@@ -168,5 +166,10 @@ public class DefaultSQLUpdateBuilder
     @Override
     public Object section(Object valueA, Object valueB) {
         return this;
+    }
+
+    @Override
+    public StampAction compile() {
+        return null;
     }
 }

@@ -1,8 +1,7 @@
 package org.mimosaframework.orm.sql.insert;
 
-import org.mimosaframework.orm.platform.SQLMappingField;
-import org.mimosaframework.orm.platform.SQLMappingTable;
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
@@ -42,5 +41,10 @@ public class DefaultSQLInsertBuilder
     @Override
     public Object row(Object... values) {
         return this;
+    }
+
+    @Override
+    public StampAction compile() {
+        return null;
     }
 }
