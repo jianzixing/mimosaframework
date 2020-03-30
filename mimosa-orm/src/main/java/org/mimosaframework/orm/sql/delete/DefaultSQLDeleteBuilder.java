@@ -6,6 +6,8 @@ import org.mimosaframework.orm.sql.stamp.StampAction;
 import java.io.Serializable;
 
 public class DefaultSQLDeleteBuilder
+        extends
+        AbstractSQLBuilder
         implements
         RedefineDeleteBuilder {
 

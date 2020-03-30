@@ -6,6 +6,8 @@ import org.mimosaframework.orm.sql.stamp.StampAction;
 import java.io.Serializable;
 
 public class DefaultSQLSelectBuilder
+        extends
+        AbstractSQLBuilder
         implements
         RedefineSelectBuilder {
 

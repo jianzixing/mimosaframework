@@ -1,11 +1,13 @@
 package org.mimosaframework.orm.sql.create;
 
+import org.mimosaframework.orm.sql.AbstractSQLBuilder;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 
 import java.io.Serializable;
 
 public class DefaultSQLCreateBuilder
-
+        extends
+        AbstractSQLBuilder
         implements
         RedefineCreateBuilder {
 
