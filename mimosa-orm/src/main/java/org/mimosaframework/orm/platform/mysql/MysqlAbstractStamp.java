@@ -86,24 +86,23 @@ public abstract class MysqlAbstractStamp {
                               StampAction stampTables,
                               StampWhere where,
                               StringBuilder sb) {
-        StampSelectFieldFun compareFun = null;
-        if (where instanceof StampHaving) {
-            compareFun = ((StampHaving) where).compareFun;
-        }
+        StampFieldFun fun = where.fun;
         StampColumn column = where.column;
         StampWhere next = where.next;
         StampWhere wrapWhere = where.wrapWhere;
         if (column != null) {
             String key = null;
-            if (compareFun != null) {
-                this.buildSelectFieldFun(wrapper, stampTables, compareFun, sb);
-                key = "HAVING&" + compareFun.funName;
+            if (fun != null) {
+                this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+                key = "HAVING&" + fun.funName;
             } else {
                 key = this.getColumnName(wrapper, stampTables, column);
                 sb.append(key);
             }
             sb.append(" " + where.operator + " ");
-            if (where.compareColumn != null) {
+            if (where.compareFun != null) {
+                this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+            } else if (where.compareColumn != null) {
                 sb.append(this.getColumnName(wrapper, stampTables, where.compareColumn));
             } else if (where.value != null) {
                 sb.append("?");
@@ -128,7 +127,7 @@ public abstract class MysqlAbstractStamp {
 
     protected void buildSelectFieldFun(MappingGlobalWrapper wrapper,
                                        StampAction stampTables,
-                                       StampSelectFieldFun fun,
+                                       StampFieldFun fun,
                                        StringBuilder sb) {
         String funName = fun.funName;
         Object[] params = fun.params;
@@ -146,9 +145,9 @@ public abstract class MysqlAbstractStamp {
                 if (param instanceof String) {
                     sb.append(param);
                 }
-                if (param instanceof StampSelectFieldFun) {
+                if (param instanceof StampFieldFun) {
                     this.buildSelectFieldFun(wrapper, stampTables,
-                            (StampSelectFieldFun) param, sb);
+                            (StampFieldFun) param, sb);
                 }
             }
             sb.append(")");

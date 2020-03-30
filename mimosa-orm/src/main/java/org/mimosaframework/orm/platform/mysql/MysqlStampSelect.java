@@ -33,7 +33,7 @@ public class MysqlStampSelect extends MysqlAbstractStamp implements StampCombine
                                   StringBuilder sb,
                                   List<SQLDataPlaceholder> placeholders) {
         StampColumn column = field.column;
-        StampSelectFieldFun fun = field.fun;
+        StampFieldFun fun = field.fun;
         String aliasName = field.aliasName;
         String tableAliasName = field.tableAliasName;
 
