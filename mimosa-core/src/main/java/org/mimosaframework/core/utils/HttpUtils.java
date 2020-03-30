@@ -59,6 +59,10 @@ public class HttpUtils {
     }
 
     public static String mapToParams(Map<String, Object> params) {
+        return mapToParams(params, true);
+    }
+
+    public static String mapToParams(Map<String, Object> params, boolean encode) {
         if (params != null) {
             StringBuilder sb = new StringBuilder();
             Iterator iterator = params.entrySet().iterator();
@@ -67,10 +71,14 @@ public class HttpUtils {
                 sb.append(String.valueOf(entry.getKey()));
                 sb.append("=");
                 String value = String.valueOf(entry.getValue());
-                try {
-                    sb.append(URLEncoder.encode(value, "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                if (encode) {
+                    try {
+                        sb.append(URLEncoder.encode(value, "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    sb.append(value);
                 }
                 if (iterator.hasNext()) {
                     sb.append("&");

@@ -10,4 +10,6 @@ public class StampCreateColumn {
     public boolean pk = false;
     public boolean key = false;
     public String comment;
+    public int len;
+    public int scale;
 }

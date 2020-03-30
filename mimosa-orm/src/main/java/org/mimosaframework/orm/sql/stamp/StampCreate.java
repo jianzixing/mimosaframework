@@ -17,6 +17,7 @@ public class StampCreate implements StampAction {
     public String collate;
     public String extra;
 
+    public KeyIndexType indexType;
     public String indexName;
     public StampColumn[] indexColumns;
 
