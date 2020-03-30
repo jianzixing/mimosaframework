@@ -32,7 +32,7 @@ public class DefaultSQLDeleteBuilder
         this.gammars.add("table");
         if (this.hasPreviousStop("from", "from")
                 || this.hasPreviousStop("using", "using")) {
-            StampFrom stampFrom = new StampFrom();
+            StampFrom stampFrom = new StampFrom(table);
             stampFrom.table = table;
             stampFroms.add(stampFrom);
         } else {
@@ -44,7 +44,7 @@ public class DefaultSQLDeleteBuilder
     @Override
     public Object table(Class table, String tableAliasName) {
         this.gammars.add("table");
-        StampFrom stampFrom = new StampFrom();
+        StampFrom stampFrom = new StampFrom(table, tableAliasName);
         stampFrom.table = table;
         stampFrom.aliasName = tableAliasName;
         stampFroms.add(stampFrom);

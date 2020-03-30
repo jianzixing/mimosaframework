@@ -2,14 +2,21 @@ package org.mimosaframework.orm.sql.insert;
 
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
 import org.mimosaframework.orm.sql.stamp.StampAction;
+import org.mimosaframework.orm.sql.stamp.StampColumn;
+import org.mimosaframework.orm.sql.stamp.StampInsert;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultSQLInsertBuilder
         extends
         AbstractSQLBuilder
         implements
         RedefineInsertBuilder {
+
+    protected StampInsert stampInsert = new StampInsert();
+    protected List<Object[]> values = new ArrayList<>();
 
     @Override
     public Object insert() {
@@ -20,12 +27,19 @@ public class DefaultSQLInsertBuilder
     @Override
     public Object columns(Serializable... fields) {
         this.gammars.add("columns");
+        StampColumn[] columns = new StampColumn[fields.length];
+        int i = 0;
+        for (Serializable field : fields) {
+            columns[i] = new StampColumn(field);
+            i++;
+        }
         return this;
     }
 
     @Override
     public Object table(Class table) {
         this.gammars.add("table");
+        stampInsert.table = table;
         return this;
     }
 
@@ -44,11 +58,13 @@ public class DefaultSQLInsertBuilder
     @Override
     public Object row(Object... values) {
         this.gammars.add("row");
+        this.values.add(values);
         return this;
     }
 
     @Override
     public StampAction compile() {
-        return null;
+        this.stampInsert.values = values.toArray(new Object[][]{});
+        return this.stampInsert;
     }
 }
