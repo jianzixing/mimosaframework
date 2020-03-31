@@ -81,6 +81,7 @@ public class DefaultSQLCreateBuilder
     @Override
     public Object table() {
         this.gammars.add("table");
+        stampCreate.target = KeyTarget.TABLE;
         return this;
     }
 
@@ -131,9 +132,11 @@ public class DefaultSQLCreateBuilder
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");
-        StampCreateColumn column = new StampCreateColumn();
-        column.column = new StampColumn(field);
-        this.stampCreateColumns.add(column);
+        if (this.isAfter("create", -1, "table")) {
+            StampCreateColumn column = new StampCreateColumn();
+            column.column = new StampColumn(field);
+            this.stampCreateColumns.add(column);
+        }
         return this;
     }
 
@@ -349,6 +352,9 @@ public class DefaultSQLCreateBuilder
 
     @Override
     public StampAction compile() {
+        if (this.stampCreateColumns != null && this.stampCreateColumns.size() > 0) {
+            this.stampCreate.columns = this.stampCreateColumns.toArray(new StampCreateColumn[]{});
+        }
         return this.stampCreate;
     }
 }

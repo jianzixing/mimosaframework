@@ -14,7 +14,7 @@ public class MysqlStampCreate extends MysqlAbstractStamp implements StampCombine
         if (create.target == KeyTarget.DATABASE) {
             sb.append(" DATABASE");
             if (create.checkExist) {
-                sb.append(" IF NOT EXIST");
+                sb.append(" IF NOT EXISTS");
             }
             if (StringTools.isNotEmpty(create.name)) {
                 sb.append(" " + create.name);
@@ -29,7 +29,7 @@ public class MysqlStampCreate extends MysqlAbstractStamp implements StampCombine
         if (create.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
             if (create.checkExist) {
-                sb.append(" IF NOT EXIST");
+                sb.append(" IF NOT EXISTS");
             }
             sb.append(" " + this.getTableName(wrapper, create.table, create.name));
 
@@ -69,26 +69,28 @@ public class MysqlStampCreate extends MysqlAbstractStamp implements StampCombine
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateIndex[] indices = create.indices;
-        int i = 0;
-        for (StampCreateIndex index : indices) {
-            if (index.indexType == KeyIndexType.PRIMARY_KEY) {
-                sb.append("PRIMARY KEY");
-                this.setTableIndexColumn(index, sb, wrapper, create);
+        if (indices != null && indices.length > 0) {
+            int i = 0;
+            for (StampCreateIndex index : indices) {
+                if (index.indexType == KeyIndexType.PRIMARY_KEY) {
+                    sb.append("PRIMARY KEY");
+                    this.setTableIndexColumn(index, sb, wrapper, create);
+                }
+                if (index.indexType == KeyIndexType.INDEX) {
+                    sb.append("INDEX");
+                    this.setTableIndexColumn(index, sb, wrapper, create);
+                }
+                if (index.indexType == KeyIndexType.FULLTEXT) {
+                    sb.append("FULLTEXT INDEX");
+                    this.setTableIndexColumn(index, sb, wrapper, create);
+                }
+                if (index.indexType == KeyIndexType.UNIQUE) {
+                    sb.append("UNIQUE");
+                    this.setTableIndexColumn(index, sb, wrapper, create);
+                }
+                i++;
+                if (i != indices.length) sb.append(",");
             }
-            if (index.indexType == KeyIndexType.INDEX) {
-                sb.append("INDEX");
-                this.setTableIndexColumn(index, sb, wrapper, create);
-            }
-            if (index.indexType == KeyIndexType.FULLTEXT) {
-                sb.append("FULLTEXT INDEX");
-                this.setTableIndexColumn(index, sb, wrapper, create);
-            }
-            if (index.indexType == KeyIndexType.UNIQUE) {
-                sb.append("UNIQUE");
-                this.setTableIndexColumn(index, sb, wrapper, create);
-            }
-            i++;
-            if (i != indices.length) sb.append(",");
         }
     }
 
@@ -112,91 +114,38 @@ public class MysqlStampCreate extends MysqlAbstractStamp implements StampCombine
 
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateColumn[] columns = create.columns;
-        int i = 0;
-        for (StampCreateColumn column : columns) {
-            sb.append(" " + this.RS + this.getColumnName(wrapper, create, column.column) + this.RE);
-            if (column.columnType == KeyColumnType.INT) {
-                sb.append(" INT");
-            }
-            if (column.columnType == KeyColumnType.VARCHAR) {
-                sb.append(" VARCHAR");
-            }
-            if (column.columnType == KeyColumnType.CHAR) {
-                sb.append(" CHAR");
-            }
-            if (column.columnType == KeyColumnType.BLOB) {
-                sb.append(" BLOB");
-            }
-            if (column.columnType == KeyColumnType.TEXT) {
-                sb.append(" TEXT");
-            }
-            if (column.columnType == KeyColumnType.TINYINT) {
-                sb.append(" TINYINT");
-            }
-            if (column.columnType == KeyColumnType.SMALLINT) {
-                sb.append(" SMALLINT");
-            }
-            if (column.columnType == KeyColumnType.MEDIUMINT) {
-                sb.append(" MEDIUMINT");
-            }
-            if (column.columnType == KeyColumnType.BIT) {
-                sb.append(" BIT");
-            }
-            if (column.columnType == KeyColumnType.BIGINT) {
-                sb.append(" BIGINT");
-            }
-            if (column.columnType == KeyColumnType.FLOAT) {
-                sb.append(" FLOAT");
-            }
-            if (column.columnType == KeyColumnType.DOUBLE) {
-                sb.append(" DOUBLE");
-            }
-            if (column.columnType == KeyColumnType.DECIMAL) {
-                sb.append(" DECIMAL");
-            }
-            if (column.columnType == KeyColumnType.BOOLEAN) {
-                sb.append(" BOOLEAN");
-            }
-            if (column.columnType == KeyColumnType.DATE) {
-                sb.append(" DATE");
-            }
-            if (column.columnType == KeyColumnType.TIME) {
-                sb.append(" TIME");
-            }
-            if (column.columnType == KeyColumnType.DATETIME) {
-                sb.append(" DATETIME");
-            }
-            if (column.columnType == KeyColumnType.TIMESTAMP) {
-                sb.append(" TIMESTAMP");
-            }
-            if (column.columnType == KeyColumnType.YEAR) {
-                sb.append(" YEAR");
-            }
+        if (columns != null && columns.length > 0) {
+            int i = 0;
+            for (StampCreateColumn column : columns) {
+                sb.append(" " + this.getColumnName(wrapper, create, column.column));
 
-            if (!column.nullable) {
-                sb.append(" NOT NULL");
-            }
-            if (column.autoIncrement) {
-                sb.append(" AUTO_INCREMENT");
-            }
-            if (column.pk) {
-                sb.append(" PRIMARY KEY");
-            }
-            if (column.unique) {
-                sb.append(" UNIQUE");
-            }
-            if (column.key) {
-                sb.append(" KEY");
-            }
-            if (StringTools.isNotEmpty(column.defaultValue)) {
-                sb.append(" DEFAULT \"" + column.defaultValue + "\"");
-            }
-            if (StringTools.isNotEmpty(column.comment)) {
-                sb.append(" COMMENT \"" + column.comment + "\"");
-            }
+                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
 
-            i++;
-            if (i != columns.length) sb.append(",");
+                if (!column.nullable) {
+                    sb.append(" NOT NULL");
+                }
+                if (column.autoIncrement) {
+                    sb.append(" AUTO_INCREMENT");
+                }
+                if (column.pk) {
+                    sb.append(" PRIMARY KEY");
+                }
+                if (column.unique) {
+                    sb.append(" UNIQUE");
+                }
+                if (column.key) {
+                    sb.append(" KEY");
+                }
+                if (StringTools.isNotEmpty(column.defaultValue)) {
+                    sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+                }
+                if (StringTools.isNotEmpty(column.comment)) {
+                    sb.append(" COMMENT \"" + column.comment + "\"");
+                }
+
+                i++;
+                if (i != columns.length) sb.append(",");
+            }
         }
     }
 }

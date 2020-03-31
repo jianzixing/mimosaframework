@@ -153,4 +153,65 @@ public abstract class MysqlAbstractStamp {
             sb.append(")");
         }
     }
+
+    protected String getColumnType(KeyColumnType columnType, int len, int scale) {
+        if (columnType == KeyColumnType.INT) {
+            return "INT";
+        }
+        if (columnType == KeyColumnType.VARCHAR) {
+            return "VARCHAR(" + len + ")";
+        }
+        if (columnType == KeyColumnType.CHAR) {
+            return "CHAR(" + len + ")";
+        }
+        if (columnType == KeyColumnType.BLOB) {
+            return "BLOB";
+        }
+        if (columnType == KeyColumnType.TEXT) {
+            return "TEXT";
+        }
+        if (columnType == KeyColumnType.TINYINT) {
+            return "TINYINT";
+        }
+        if (columnType == KeyColumnType.SMALLINT) {
+            return "SMALLINT";
+        }
+        if (columnType == KeyColumnType.MEDIUMINT) {
+            return "MEDIUMINT";
+        }
+        if (columnType == KeyColumnType.BIT) {
+            return "BIT";
+        }
+        if (columnType == KeyColumnType.BIGINT) {
+            return "BIGINT";
+        }
+        if (columnType == KeyColumnType.FLOAT) {
+            return "FLOAT";
+        }
+        if (columnType == KeyColumnType.DOUBLE) {
+            return "DOUBLE";
+        }
+        if (columnType == KeyColumnType.DECIMAL) {
+            return "DECIMAL(" + len + "," + scale + ")";
+        }
+        if (columnType == KeyColumnType.BOOLEAN) {
+            return "BOOLEAN";
+        }
+        if (columnType == KeyColumnType.DATE) {
+            return "DATE";
+        }
+        if (columnType == KeyColumnType.TIME) {
+            return "TIME";
+        }
+        if (columnType == KeyColumnType.DATETIME) {
+            return "DATETIME";
+        }
+        if (columnType == KeyColumnType.TIMESTAMP) {
+            return "TIMESTAMP";
+        }
+        if (columnType == KeyColumnType.YEAR) {
+            return "YEAR";
+        }
+        return null;
+    }
 }

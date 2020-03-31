@@ -1,21 +1,8 @@
 package org.mimosaframework.orm.sql.stamp;
 
-public class StampAlterItem {
+public class StampAlterItem extends StampTableColumn {
     public KeyAction action;
     public KeyAlterStruct struct;
-
-    // column & drop column
-    public StampColumn column;
-    public KeyColumnType columnType;
-    public int len;
-    public int scale;
-    public boolean nullable = true;
-    public String defaultValue;
-    public boolean autoIncrement = false;
-    public boolean unique = false;
-    public boolean pk = false;
-    public boolean key = false;
-    public String comment;
 
     public StampColumn after;
     public StampColumn before;

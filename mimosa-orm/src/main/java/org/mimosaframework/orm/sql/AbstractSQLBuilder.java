@@ -71,9 +71,11 @@ public abstract class AbstractSQLBuilder {
             if (k.equals(keyword)) {
                 int j = 1;
                 for (Object s : is) {
-                    if ((i + j) < gammars.size() && gammars.get(i + j).equals(s)) {
-                    } else {
-                        return false;
+                    if (!s.equals("*")) {
+                        if ((i + j) < gammars.size() && gammars.get(i + j).equals(s)) {
+                        } else {
+                            return false;
+                        }
                     }
                     j++;
                 }

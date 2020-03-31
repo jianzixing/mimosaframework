@@ -162,7 +162,7 @@ public class MysqlStampAlter extends MysqlAbstractStamp implements StampCombineB
                                   StampAlterItem column) {
         sb.append(" " + this.getColumnName(wrapper, alter, column.column));
         if (column.columnType != null) {
-            sb.append(" " + column.columnType);
+            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
         }
         if (!column.nullable) {
             sb.append(" NOT NULL");
