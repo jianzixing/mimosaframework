@@ -41,4 +41,22 @@ public abstract class AbstractSQLBuilder {
         }
         return false;
     }
+
+    protected boolean hasPreviousStops(Object[] keyword, Object[] stops) {
+        for (int j = 0; j < keyword.length; j++) {
+            for (int i = gammars.size() - 1; i >= 0; i--) {
+                Object k = gammars.get(i);
+                if (k.equals(keyword)) return true;
+                boolean has = false;
+                for (Object stop : stops) {
+                    if (stop.equals(k)) {
+                        has = true;
+                        break;
+                    }
+                }
+                if (has) break;
+            }
+        }
+        return false;
+    }
 }

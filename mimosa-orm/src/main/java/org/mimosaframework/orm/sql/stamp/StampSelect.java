@@ -9,7 +9,7 @@ public class StampSelect implements StampAction {
     public StampSelectJoin[] joins;
     public StampWhere where;
     public StampColumn[] groupBy;
-    public StampHaving having;
+    public StampWhere having;
     public StampOrderBy[] orderBy;
     public StampLimit limit;
 

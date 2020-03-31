@@ -7,6 +7,9 @@ public class StampColumn {
     public String tableAliasName;
     public Serializable column;
 
+    public StampColumn() {
+    }
+
     public StampColumn(Serializable column) {
         this.column = column;
     }
