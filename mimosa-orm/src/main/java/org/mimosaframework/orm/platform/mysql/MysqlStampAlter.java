@@ -35,7 +35,7 @@ public class MysqlStampAlter extends MysqlAbstractStamp implements StampCombineB
             }
 
         }
-        return null;
+        return new SQLBuilderCombine(sb.toString(), null);
     }
 
     private void buildAlterItem(MappingGlobalWrapper wrapper,
@@ -131,37 +131,37 @@ public class MysqlStampAlter extends MysqlAbstractStamp implements StampCombineB
     private void buildAlterColumn(StringBuilder sb,
                                   MappingGlobalWrapper wrapper,
                                   StampAlter alter,
-                                  StampAlterItem item) {
-        sb.append(" " + this.getColumnName(wrapper, alter, item.column));
-        if (item.columnType != null) {
-            sb.append(" " + item.columnType);
+                                  StampAlterItem column) {
+        sb.append(" " + this.getColumnName(wrapper, alter, column.column));
+        if (column.columnType != null) {
+            sb.append(" " + column.columnType);
         }
-        if (!item.nullable) {
+        if (!column.nullable) {
             sb.append(" NOT NULL");
         }
-        if (!item.autoIncrement) {
+        if (column.autoIncrement) {
             sb.append(" AUTO_INCREMENT");
         }
-        if (!item.pk) {
+        if (column.pk) {
             sb.append(" PRIMARY KEY");
         }
-        if (!item.unique) {
+        if (column.unique) {
             sb.append(" UNIQUE");
         }
-        if (!item.key) {
+        if (column.key) {
             sb.append(" KEY");
         }
-        if (StringTools.isNotEmpty(item.defaultValue)) {
-            sb.append(" DEFAULT \"" + item.defaultValue + "\"");
+        if (StringTools.isNotEmpty(column.defaultValue)) {
+            sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }
-        if (StringTools.isNotEmpty(item.comment)) {
-            sb.append(" COMMENT \"" + item.comment + "\"");
+        if (StringTools.isNotEmpty(column.comment)) {
+            sb.append(" COMMENT \"" + column.comment + "\"");
         }
-        if (item.after != null) {
-            sb.append(" AFTER " + this.getColumnName(wrapper, alter, item.after));
+        if (column.after != null) {
+            sb.append(" AFTER " + this.getColumnName(wrapper, alter, column.after));
         }
-        if (item.before != null) {
-            sb.append(" BEFORE " + this.getColumnName(wrapper, alter, item.before));
+        if (column.before != null) {
+            sb.append(" BEFORE " + this.getColumnName(wrapper, alter, column.before));
         }
     }
 }

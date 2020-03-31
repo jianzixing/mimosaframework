@@ -64,7 +64,7 @@ public class MysqlStampCreate extends MysqlAbstractStamp implements StampCombine
             }
             sb.append(")");
         }
-        return null;
+        return new SQLBuilderCombine(sb.toString(), null);
     }
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
@@ -176,16 +176,16 @@ public class MysqlStampCreate extends MysqlAbstractStamp implements StampCombine
             if (!column.nullable) {
                 sb.append(" NOT NULL");
             }
-            if (!column.autoIncrement) {
+            if (column.autoIncrement) {
                 sb.append(" AUTO_INCREMENT");
             }
-            if (!column.pk) {
+            if (column.pk) {
                 sb.append(" PRIMARY KEY");
             }
-            if (!column.unique) {
+            if (column.unique) {
                 sb.append(" UNIQUE");
             }
-            if (!column.key) {
+            if (column.key) {
                 sb.append(" KEY");
             }
             if (StringTools.isNotEmpty(column.defaultValue)) {

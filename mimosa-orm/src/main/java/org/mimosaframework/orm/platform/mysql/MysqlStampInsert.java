@@ -49,6 +49,6 @@ public class MysqlStampInsert extends MysqlAbstractStamp implements StampCombine
             if (j != values.length) sb.append(",");
         }
 
-        return null;
+        return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 }

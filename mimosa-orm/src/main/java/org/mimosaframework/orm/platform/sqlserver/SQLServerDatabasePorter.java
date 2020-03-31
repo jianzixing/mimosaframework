@@ -9,6 +9,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -188,6 +189,11 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
 
     protected String getSelectCountSymbol() {
         return "1 as count";
+    }
+
+    @Override
+    protected DatabaseTypes getDatabaseType() {
+        return DatabaseTypes.SQL_SERVER;
     }
 
     public SQLBuilder buildSingleSelect(DefaultQuery query, MappingTable mappingTable, boolean isSelectPrimaryKey) {

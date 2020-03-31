@@ -11,6 +11,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.LimitBuilder;
+import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -30,6 +31,11 @@ public class SqliteDatabasePorter extends AbstractDatabasePorter {
     protected SQLBuilder createSQLBuilder() {
         SQLBuilder builder = SQLBuilderFactory.createQMSQLBuilder();
         return builder;
+    }
+
+    @Override
+    protected DatabaseTypes getDatabaseType() {
+        return DatabaseTypes.SQLITE;
     }
 
     @Override

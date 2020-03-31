@@ -78,6 +78,6 @@ public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombine
             sb.append(" LIMIT " + delete.limit.start + "," + delete.limit.limit);
         }
 
-        return null;
+        return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 }

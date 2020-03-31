@@ -24,7 +24,7 @@ public class MysqlStampSelect extends MysqlAbstractStamp implements StampCombine
             i++;
             if (i != columns.length) sb.append(",");
         }
-        return null;
+        return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,

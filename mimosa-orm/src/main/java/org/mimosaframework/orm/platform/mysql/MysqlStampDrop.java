@@ -30,6 +30,6 @@ public class MysqlStampDrop extends MysqlAbstractStamp implements StampCombineBu
             sb.append(" ON");
             sb.append(" " + this.getTableName(wrapper, drop.table, drop.tableName));
         }
-        return null;
+        return new SQLBuilderCombine(sb.toString(), null);
     }
 }

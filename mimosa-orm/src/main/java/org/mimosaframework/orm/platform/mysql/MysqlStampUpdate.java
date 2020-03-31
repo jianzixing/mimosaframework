@@ -60,7 +60,7 @@ public class MysqlStampUpdate extends MysqlAbstractStamp implements StampCombine
             sb.append(" LIMIT " + update.limit.start + "," + update.limit.limit);
         }
 
-        return null;
+        return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 
     private void buildUpdateItem(MappingGlobalWrapper wrapper,

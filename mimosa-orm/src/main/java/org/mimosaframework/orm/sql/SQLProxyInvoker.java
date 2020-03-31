@@ -33,15 +33,6 @@ public class SQLProxyInvoker implements InvocationHandler {
     }
 
     private void buildProxy() {
-        Class<?>[] interfaces = new Class[this.interfaces.length + 1];
-        int i = 0;
-        for (Class c : this.interfaces) {
-            interfaces[i] = c;
-            i++;
-        }
-        interfaces[i] = SQLMappingChannel.class;
-        this.interfaces = interfaces;
-
         proxyObject = Proxy.newProxyInstance(
                 this.loader,
                 this.interfaces,
@@ -57,7 +48,7 @@ public class SQLProxyInvoker implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         if (this.methods != null) {
-            if (method.getDeclaringClass().equals(SQLMappingChannel.class)) {
+            if (method.getDeclaringClass().equals(UnifyBuilder.class)) {
                 Method invoker = this.invoker.getClass().getMethod(method.getName(), method.getParameterTypes());
                 return invoker.invoke(this.invoker, args);
             }
