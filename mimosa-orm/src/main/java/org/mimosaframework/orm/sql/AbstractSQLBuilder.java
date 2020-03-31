@@ -1,7 +1,5 @@
 package org.mimosaframework.orm.sql;
 
-import org.mimosaframework.core.utils.StringTools;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +12,6 @@ public abstract class AbstractSQLBuilder {
             if (p != null && p.equals(is)) return true;
         }
         return false;
-    }
-
-    protected boolean hasPrevious(Object keyword, String stop) {
-        return hasPreviousStop(new Object[]{keyword, stop});
     }
 
     protected boolean hasPrevious(Object... keyword) {
@@ -35,7 +29,7 @@ public abstract class AbstractSQLBuilder {
         for (int j = 0; j < keyword.length - 1; j++) {
             for (int i = gammars.size() - 1; i >= 0; i--) {
                 Object k = gammars.get(i);
-                if (k.equals(keyword)) return true;
+                if (k.equals(keyword[j])) return true;
                 if (stop.equals(k)) break;
             }
         }
@@ -58,5 +52,38 @@ public abstract class AbstractSQLBuilder {
             }
         }
         return false;
+    }
+
+    protected Object previous(Object... keywords) {
+        for (int i = gammars.size() - 1; i >= 0; i--) {
+            Object k = gammars.get(i);
+            for (int j = 0; j < keywords.length; j++) {
+                if (k.equals(keywords[j])) return keywords[j];
+            }
+        }
+        return null;
+    }
+
+    protected boolean isAfter(Object keyword, int start, Object... is) {
+        for (int i = gammars.size() - 1; i >= 0; i--) {
+            if (i <= start) break;
+            Object k = gammars.get(i);
+            if (k.equals(keyword)) {
+                int j = 1;
+                for (Object s : is) {
+                    if ((i + j) < gammars.size() && gammars.get(i + j).equals(s)) {
+                    } else {
+                        return false;
+                    }
+                    j++;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected int indexOf(Object keyword) {
+        return this.gammars.lastIndexOf(keyword);
     }
 }

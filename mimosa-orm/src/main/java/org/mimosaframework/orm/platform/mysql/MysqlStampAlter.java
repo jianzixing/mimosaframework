@@ -1,6 +1,9 @@
 package org.mimosaframework.orm.platform.mysql;
 
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.core.utils.i18n.Messages;
+import org.mimosaframework.orm.DefaultSession;
+import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
@@ -30,10 +33,17 @@ public class MysqlStampAlter extends MysqlAbstractStamp implements StampCombineB
 
             sb.append(" " + this.getTableName(wrapper, alter.table, alter.name));
 
-            for (StampAlterItem item : alter.items) {
-                this.buildAlterItem(wrapper, sb, alter, item);
+            if (alter.items != null) {
+                for (StampAlterItem item : alter.items) {
+                    this.buildAlterItem(wrapper, sb, alter, item);
+                }
             }
-
+            if (StringTools.isNotEmpty(alter.charset)) {
+                sb.append(" CHARSET " + alter.charset);
+            }
+            if (StringTools.isNotEmpty(alter.collate)) {
+                sb.append(" COLLATE " + alter.collate);
+            }
         }
         return new SQLBuilderCombine(sb.toString(), null);
     }
@@ -112,16 +122,34 @@ public class MysqlStampAlter extends MysqlAbstractStamp implements StampCombineB
                                  MappingGlobalWrapper wrapper,
                                  StampAlter alter,
                                  StampAlterItem item) {
-        sb.append(" INDEX");
-        sb.append(" " + item.name);
-        sb.append(" (");
-        int i = 0;
-        for (StampColumn column : item.columns) {
-            sb.append(this.getColumnName(wrapper, alter, column));
-            i++;
-            if (i != item.columns.length) sb.append(",");
+        if (item.indexType == KeyIndexType.FULLTEXT) {
+            sb.append(" FULLTEXT");
+            sb.append(" INDEX");
+        } else if (item.indexType == KeyIndexType.UNIQUE) {
+            sb.append(" UNIQUE");
+        } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
+            sb.append(" PRIMARY KEY");
+        } else {
+            sb.append(" INDEX");
         }
-        sb.append(")");
+
+        if (StringTools.isNotEmpty(item.name)) {
+            sb.append(" " + item.name);
+        }
+
+        if (item.columns != null) {
+            sb.append(" (");
+            int i = 0;
+            for (StampColumn column : item.columns) {
+                sb.append(this.getColumnName(wrapper, alter, column));
+                i++;
+                if (i != item.columns.length) sb.append(",");
+            }
+            sb.append(")");
+        } else {
+            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
+                    StampAction.class, "miss_index_columns"));
+        }
 
         if (StringTools.isNotEmpty(item.comment)) {
             sb.append(" COMMENT \"" + item.comment + "\"");

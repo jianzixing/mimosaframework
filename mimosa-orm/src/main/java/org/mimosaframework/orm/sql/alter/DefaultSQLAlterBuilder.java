@@ -30,7 +30,12 @@ public class DefaultSQLAlterBuilder
     @Override
     public Object name(Serializable value) {
         this.gammars.add("name");
-        this.stampAlter.name = value.toString();
+        if (this.previous("index") || this.previous("unique")) {
+            StampAlterItem item = this.getLastItem();
+            item.name = value.toString();
+        } else {
+            this.stampAlter.name = value.toString();
+        }
         return this;
     }
 
@@ -59,8 +64,11 @@ public class DefaultSQLAlterBuilder
     public Object column(Serializable field) {
         this.gammars.add("column");
         StampAlterItem item = this.getLastItem();
-        if (this.hasPreviousStop("add", "change", "modify", ",")) {
+        if (this.previous("after")) {
             item.after = new StampColumn(field);
+        } else if (this.hasPreviousStop("index", ",")
+                || this.isAfter("add", this.indexOf(","), "primary", "key")) {
+            item.columns = new StampColumn[]{new StampColumn(field)};
         } else {
             item.column = new StampColumn(field);
             item.struct = KeyAlterStruct.COLUMN;
@@ -287,7 +295,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object comment(String comment) {
-        this.gammars.add("type");
+        this.gammars.add("comment");
         StampAlterItem item = this.getLastItem();
         item.comment = comment;
         return this;
@@ -295,9 +303,16 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object index() {
-        this.gammars.add("type");
+        this.gammars.add("index");
         StampAlterItem item = this.getLastItem();
         item.struct = KeyAlterStruct.INDEX;
+        if (this.previous("fullText")) {
+            item.indexType = KeyIndexType.FULLTEXT;
+        }
+        if (this.previous("unique")) {
+            item.indexType = KeyIndexType.UNIQUE;
+        }
+
         if (this.hasPreviousStop("drop", ",")) {
             item.dropType = KeyAlterDropType.INDEX;
         }
@@ -324,7 +339,12 @@ public class DefaultSQLAlterBuilder
         this.gammars.add("key");
         if (this.previous("primary")) {
             StampAlterItem item = this.getLastItem();
-            item.pk = true;
+            if (this.hasPreviousStop("column", ",")) {
+                item.pk = true;
+            } else if (this.hasPreviousStop("add", ",") && !this.hasPreviousStop("column", ",")) {
+                item.struct = KeyAlterStruct.INDEX;
+                item.indexType = KeyIndexType.PRIMARY_KEY;
+            }
             if (this.hasPreviousStop("drop", ",")) {
                 item.dropType = KeyAlterDropType.PRIMARY_KEY;
             }
@@ -401,6 +421,7 @@ public class DefaultSQLAlterBuilder
     public Object unique() {
         this.gammars.add("unique");
         StampAlterItem item = this.getLastItem();
+        item.struct = KeyAlterStruct.INDEX;
         item.indexType = KeyIndexType.UNIQUE;
         return this;
     }
@@ -408,6 +429,10 @@ public class DefaultSQLAlterBuilder
     @Override
     public Object value(int number) {
         this.gammars.add("value");
+        if (this.hasPreviousStop("autoIncrement", ",")) {
+            StampAlterItem item = this.getLastItem();
+            item.value = number;
+        }
         return this;
     }
 

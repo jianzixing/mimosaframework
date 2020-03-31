@@ -23,6 +23,7 @@ import org.mimosaframework.orm.platform.sqlserver.SQLServerDifferentColumn;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.spring.SpringMimosaSessionFactory;
 import org.mimosaframework.orm.sql.SelectBuilder;
+import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 import org.mimosaframework.orm.strategy.StrategyFactory;
 import org.mimosaframework.orm.transaction.*;
@@ -437,6 +438,11 @@ public class LanguageMessageDefault implements MessagesRegister {
         mapCommonSQLBuilder.put("miss_table_mapping", "没有找到类 %s 的映射类,请检查是否是表映射类");
         mapCommonSQLBuilder.put("miss_field_mapping", "映射类 %s 中没有找到 %s 映射字段");
         messageWords.add(new MessageWords(PROJECT, CommonSQLBuilder.class, mapCommonSQLBuilder));
+
+        // StampAction
+        Map<String, String> mapStampAction = new HashMap<>();
+        mapStampAction.put("miss_index_columns", "缺少索引的列");
+        messageWords.add(new MessageWords(PROJECT, StampAction.class, mapStampAction));
 
     }
 
