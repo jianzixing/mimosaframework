@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.sql;
 
-import org.mimosaframework.orm.platform.SQLBuilder;
+import org.mimosaframework.orm.sql.stamp.StampWhere;
 
 public interface AboutChildBuilder {
-    SQLBuilder getSqlBuilder();
+    StampWhere getStampWhere();
 }

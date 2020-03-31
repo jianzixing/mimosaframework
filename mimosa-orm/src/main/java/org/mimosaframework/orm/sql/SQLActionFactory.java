@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.sql;
 
-import org.mimosaframework.orm.platform.PlatformFactory;
 import org.mimosaframework.orm.sql.alter.*;
 import org.mimosaframework.orm.sql.create.*;
 import org.mimosaframework.orm.sql.delete.*;
@@ -168,5 +167,26 @@ public class SQLActionFactory {
         );
 
         return (UpdateStartBuilder) invoker.getInterface(UpdateBuilder.class).update();
+    }
+
+    public static CommonWhereBuilder wrapperBuilder() {
+        WrapperBuilder wrapperBuilder = new SimpleCommonWhereBuilder();
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        AboutChildBuilder.class,
+                        WrapperBuilder.class,
+                        LogicBuilder.class,
+                        OperatorLinkBuilder.class,
+                        CommonWhereBuilder.class,
+                        BetweenValueBuilder.class,
+                        OperatorFunctionBuilder.class,
+                        AbsValueBuilder.class,
+                        AbsWhereValueBuilder.class,
+                        AbsWhereColumnBuilder.class
+                },
+                wrapperBuilder
+        );
+
+        return invoker.getInterface(CommonWhereBuilder.class);
     }
 }

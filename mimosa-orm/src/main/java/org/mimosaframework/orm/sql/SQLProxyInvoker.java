@@ -48,7 +48,8 @@ public class SQLProxyInvoker implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         if (this.methods != null) {
-            if (method.getDeclaringClass().equals(UnifyBuilder.class)) {
+            if (method.getDeclaringClass().equals(UnifyBuilder.class)
+                    || method.getDeclaringClass().equals(AboutChildBuilder.class)) {
                 Method invoker = this.invoker.getClass().getMethod(method.getName(), method.getParameterTypes());
                 return invoker.invoke(this.invoker, args);
             }

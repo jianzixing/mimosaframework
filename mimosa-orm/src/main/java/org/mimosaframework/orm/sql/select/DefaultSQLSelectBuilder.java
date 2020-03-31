@@ -473,7 +473,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object wrapper(AboutChildBuilder builder) {
+    public Object wrapper(UnifyBuilder builder) {
         this.gammars.add("wrapper");
 
         return this;

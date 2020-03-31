@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.platform.mysql;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
@@ -23,7 +24,7 @@ public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombine
             for (Class table : tables) {
                 sb.append(this.getTableName(wrapper, table, null));
                 i++;
-                if (i == tables.length) {
+                if (i != tables.length) {
                     sb.append(",");
                 }
             }
@@ -38,7 +39,7 @@ public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombine
             for (String aliasName : aliasNames) {
                 sb.append(aliasName);
                 i++;
-                if (i == tables.length) {
+                if (i != aliasNames.length) {
                     sb.append(",");
                 }
             }
@@ -50,7 +51,9 @@ public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombine
         int i = 0;
         for (StampFrom from : froms) {
             sb.append(this.getTableName(wrapper, from.table, from.name));
-            sb.append(" AS " + from.aliasName);
+            if (StringTools.isNotEmpty(from.aliasName)) {
+                sb.append(" AS " + from.aliasName);
+            }
             i++;
             if (i != froms.length) sb.append(",");
         }
@@ -59,7 +62,7 @@ public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombine
             sb.append(" WHERE ");
             this.buildWhere(wrapper, placeholders, delete, delete.where, sb);
         }
-        if (delete.orderBy != null) {
+        if (delete.orderBy != null && delete.orderBy.length > 0) {
             StampOrderBy[] orderBy = delete.orderBy;
             sb.append(" ORDER BY ");
             int j = 0;

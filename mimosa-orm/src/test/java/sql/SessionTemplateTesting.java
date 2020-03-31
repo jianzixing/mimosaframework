@@ -6,6 +6,8 @@ import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.sql.FieldItem;
+import org.mimosaframework.orm.sql.Wrapper;
+import tables.TablePay;
 import tables.TableUser;
 
 public class SessionTemplateTesting {
@@ -243,6 +245,41 @@ public class SessionTemplateTesting {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.delete().table(TableUser.class).from().table(TableUser.class)
                         .where().column(TableUser.id).eq().value(1)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
+    public void testDelete2() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.delete().table("t1").from()
+                        .table(TableUser.class, "t1")
+                        .table(TablePay.class, "t2")
+                        .where()
+                        .column("t1", TableUser.id).eq().value(1)
+                        .and()
+                        .column("t1", TableUser.id).eq().column("t2", TablePay.userId)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
+    public void testDelete3() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.delete().table("t1").from()
+                        .table(TableUser.class, "t1")
+                        .table(TablePay.class, "t2")
+                        .where()
+                        .column("t1", TableUser.id).eq().value(1)
+                        .and()
+                        .column("t1", TableUser.id).eq().column("t2", TablePay.userId)
+                        .or()
+                        .wrapper(Wrapper.build()
+                                .column("t1", TableUser.id)
+                                .eq()
+                                .column("t2", TablePay.userId))
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());

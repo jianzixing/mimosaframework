@@ -72,12 +72,16 @@ public class DefaultSQLDeleteBuilder
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
         } else {
-            StampWhere where = new StampWhere();
-            where.column = new StampColumn(field);
+            if (this.previous("operator")) {
+                this.lastWhere.compareColumn = new StampColumn(field);
+            } else {
+                StampWhere where = new StampWhere();
+                where.column = new StampColumn(field);
 
-            if (this.lastWhere != null) this.lastWhere.next = where;
-            this.lastWhere = where;
-            if (this.where == null) this.where = where;
+                if (this.lastWhere != null) this.lastWhere.next = where;
+                this.lastWhere = where;
+                if (this.where == null) this.where = where;
+            }
         }
         return this;
     }
@@ -91,12 +95,16 @@ public class DefaultSQLDeleteBuilder
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
         } else {
-            StampWhere where = new StampWhere();
-            where.column = new StampColumn(table, field);
+            if (this.previous("operator")) {
+                this.lastWhere.compareColumn = new StampColumn(table, field);
+            } else {
+                StampWhere where = new StampWhere();
+                where.column = new StampColumn(table, field);
 
-            if (this.lastWhere != null) this.lastWhere.next = where;
-            this.lastWhere = where;
-            if (this.where == null) this.where = where;
+                if (this.lastWhere != null) this.lastWhere.next = where;
+                this.lastWhere = where;
+                if (this.where == null) this.where = where;
+            }
         }
         return this;
     }
@@ -110,12 +118,16 @@ public class DefaultSQLDeleteBuilder
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
         } else {
-            StampWhere where = new StampWhere();
-            where.column = new StampColumn(aliasName, field);
+            if (this.previous("operator")) {
+                this.lastWhere.compareColumn = new StampColumn(aliasName, field);
+            } else {
+                StampWhere where = new StampWhere();
+                where.column = new StampColumn(aliasName, field);
 
-            if (this.lastWhere != null) this.lastWhere.next = where;
-            this.lastWhere = where;
-            if (this.where == null) this.where = where;
+                if (this.lastWhere != null) this.lastWhere.next = where;
+                this.lastWhere = where;
+                if (this.where == null) this.where = where;
+            }
         }
         return this;
     }
@@ -242,18 +254,28 @@ public class DefaultSQLDeleteBuilder
     @Override
     public Object table(String... aliasNames) {
         this.gammars.add("table");
+        this.stampDelete.aliasNames = aliasNames;
         return this;
     }
 
     @Override
-    public Object wrapper(AboutChildBuilder builder) {
+    public Object wrapper(UnifyBuilder builder) {
         this.gammars.add("wrapper");
+        if (builder instanceof AboutChildBuilder) {
+            StampWhere where = new StampWhere();
+            this.lastWhere.next = where;
+            this.lastWhere = where;
+            this.lastWhere.wrapWhere = ((AboutChildBuilder) builder).getStampWhere();
+        }
         return this;
     }
 
     @Override
     public Object table(Class... table) {
         this.gammars.add("table");
+        if (this.previous("delete")) {
+            this.stampDelete.tables = table;
+        }
         return this;
     }
 

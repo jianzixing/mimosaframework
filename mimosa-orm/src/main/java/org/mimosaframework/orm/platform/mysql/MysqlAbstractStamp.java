@@ -122,6 +122,8 @@ public abstract class MysqlAbstractStamp {
                 sb.append(" AND ");
             else if (where.nextLogic == KeyLogic.OR)
                 sb.append(" OR ");
+
+            this.buildWhere(wrapper, placeholders, stampTables, next, sb);
         }
     }
 
