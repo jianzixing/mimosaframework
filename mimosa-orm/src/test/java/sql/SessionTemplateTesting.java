@@ -280,6 +280,8 @@ public class SessionTemplateTesting {
                                 .column("t1", TableUser.id)
                                 .eq()
                                 .column("t2", TablePay.userId))
+                        .and()
+                        .column("t1", TableUser.id).isNotNull("")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());

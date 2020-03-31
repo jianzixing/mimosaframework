@@ -432,7 +432,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object section(Object valueA, Object valueB) {
+    public Object section(Serializable valueA, Serializable valueB) {
         this.gammars.add("section");
         this.lastWhere.value = valueA;
         this.lastWhere.value2 = valueB;
