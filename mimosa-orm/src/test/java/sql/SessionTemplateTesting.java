@@ -210,6 +210,35 @@ public class SessionTemplateTesting {
     }
 
     @Test
+    public void testCreate4() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.create().database().name("bb")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+
+        sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.drop().database().name("bb")
+        );
+        template.getAutonomously(sqlAutonomously);
+
+    }
+
+    @Test
+    public void testCreate5() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.create().fullText().index().name("bb").on()
+                        .table(TableUser.class).columns(TableUser.id)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+
+        sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.drop().index().name("bb").on().table(TableUser.class)
+        );
+        template.getAutonomously(sqlAutonomously);
+
+    }
+
+    @Test
     public void testDelete1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.delete().table(TableUser.class).from().table(TableUser.class)

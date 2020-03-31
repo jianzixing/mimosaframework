@@ -39,7 +39,11 @@ public class DefaultSQLCreateBuilder
     @Override
     public Object name(Serializable value) {
         this.gammars.add("name");
-        stampCreate.name = value.toString();
+        if (this.previous("index") || this.previous("unique")) {
+            stampCreate.indexName = value.toString();
+        } else {
+            stampCreate.name = value.toString();
+        }
         return this;
     }
 
@@ -102,7 +106,7 @@ public class DefaultSQLCreateBuilder
     @Override
     public Object index() {
         this.gammars.add("index");
-        stampCreate.indexType = KeyIndexType.INDEX;
+        stampCreate.target = KeyTarget.INDEX;
         return this;
     }
 
