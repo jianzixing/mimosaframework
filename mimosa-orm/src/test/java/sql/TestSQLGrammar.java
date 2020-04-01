@@ -23,15 +23,20 @@ public class TestSQLGrammar {
 
         unifyBuilder = DeleteFactory.delete().from().table(TestSQLGrammar.class)
                 .where()
-                .column("").gt().value("")
+                .column("")
+                .gt()
+                .value("")
                 .and()
-                .wrapper(null).and().wrapper(null).and()
+                .wrapper(null)
+                .and()
+                .wrapper(null).and()
                 .column("").in().value("")
                 .orderBy()
                 .column("").asc()
                 .column("").desc()
                 .column("").asc()
-                .limit(0, 10);
+                .limit(0, 10)
+        ;
 
         unifyBuilder = DeleteFactory.delete().from()
                 .table(TestSQLGrammar.class)
@@ -39,7 +44,7 @@ public class TestSQLGrammar {
                 .table(TestSQLGrammar.class, "t1")
                 .table(TestSQLGrammar.class, "t2")
                 .where()
-                .column("").eq().value("");
+                .column("").eq().value("").orderBy().column("").desc().limit(0, 10);
 
         unifyBuilder = DeleteFactory.delete()
                 .table("t1")
@@ -47,7 +52,7 @@ public class TestSQLGrammar {
                 .table(TestSQLGrammar.class, "t1")
                 .table(TestSQLGrammar.class, "t2")
                 .where()
-                .column("").eq().value("");
+                .column("").eq().value("").orderBy().column("").desc().limit(0, 10);
 
         ///
 
@@ -62,7 +67,7 @@ public class TestSQLGrammar {
                 .table(TestSQLGrammar.class)
                 .where()
                 .column("").eq().value("").and()
-                .column("").isNull("")
+                .isNull("")
                 .and().wrapper(Wrapper.build().column("").eq().value("").and().wrapper(null));
 
         unifyBuilder = SelectFactory.select().all().from()

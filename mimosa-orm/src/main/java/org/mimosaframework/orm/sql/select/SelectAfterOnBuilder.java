@@ -6,6 +6,6 @@ import org.mimosaframework.orm.sql.WhereBuilder;
 public interface SelectAfterOnBuilder
         extends
         WhereBuilder<SelectWhereBuilder>,
-        ReplaceSelectWhereBuilder,
+        SelectJoinsBuilder,
         LogicBuilder<SelectOnBuilder> {
 }

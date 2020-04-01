@@ -5,5 +5,5 @@ import org.mimosaframework.orm.sql.AbsTableAliasBuilder;
 public interface SelectStartBuilder
         extends
         SelectFieldBuilder<ReplaceSelectFieldBuilder<AbsTableAliasBuilder<
-                SelectTableAliasBuilder<ReplaceSelectWhereBuilder>>>> {
+                SelectTableAliasBuilder<SelectJoinsBuilder>>>> {
 }

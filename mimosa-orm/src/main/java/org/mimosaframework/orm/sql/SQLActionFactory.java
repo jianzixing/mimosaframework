@@ -70,15 +70,14 @@ public class SQLActionFactory {
         SQLProxyInvoker invoker = new SQLProxyInvoker(
                 new Class[]{
                         RedefineDeleteBuilder.class,
-                        ReplaceDeleteFromBuilder.class,
+                        DeleteUsingBuilder.class,
                         BeforeDeleteFromBuilder.class,
                         DeleteStartBuilder.class,
-                        DeleteWhereBuilder.class,
                         DeleteWhereOrderByBuilder.class,
                         ReplaceDeleteLogicBuilder.class,
-                        ReplaceDeleteWhereBuilder.class,
                         DeleteAsTableBuilder.class,
-                        DeleteTableAsBuilder.class
+                        DeleteTableAsBuilder.class,
+                        DeleteWhereNextBuilder.class
                 },
                 deleteBuilder
         );
@@ -133,7 +132,7 @@ public class SQLActionFactory {
                         SelectWhereBuilder.class,
                         ReplaceSelectFieldBuilder.class,
                         SelectAfterOnBuilder.class,
-                        ReplaceSelectWhereBuilder.class,
+                        SelectJoinsBuilder.class,
                         SelectTableAliasBuilder.class,
                         ReplaceSelectLogicBuilder.class,
                         HavingOperatorFunctionBuilder.class,
@@ -157,7 +156,7 @@ public class SQLActionFactory {
                         RedefineUpdateBuilder.class,
                         ReplaceUpdateSetBuilder.class,
                         ReplaceUpdateValueBuilder.class,
-                        ReplaceUpdateWhereLogicBuilder.class,
+                        UpdateWhereNextBuilder.class,
                         UpdateOLBuilder.class,
                         UpdateStartBuilder.class,
                         UpdateWhereBuilder.class,
@@ -179,10 +178,12 @@ public class SQLActionFactory {
                         OperatorLinkBuilder.class,
                         CommonWhereBuilder.class,
                         BetweenValueBuilder.class,
+                        OperatorBuilder.class,
                         OperatorFunctionBuilder.class,
                         AbsValueBuilder.class,
                         AbsWhereValueBuilder.class,
-                        AbsWhereColumnBuilder.class
+                        AbsWhereColumnBuilder.class,
+                        CommonWhereCompareBuilder.class
                 },
                 wrapperBuilder
         );

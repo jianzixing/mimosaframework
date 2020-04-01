@@ -1,8 +1,9 @@
 package org.mimosaframework.orm.sql;
 
-public interface CommonWhereBuilder
+public interface CommonWhereBuilder<T extends CommonWhereNextBuilder>
         extends
         AboutChildBuilder,
-        WrapperBuilder<LogicBuilder<CommonWhereBuilder>>,
-        OperatorLinkBuilder<LogicBuilder<CommonWhereBuilder>> {
+        WrapperBuilder<T>,
+        OperatorLinkBuilder<CommonWhereCompareBuilder<T>>,
+        OperatorFunctionBuilder<T> {
 }

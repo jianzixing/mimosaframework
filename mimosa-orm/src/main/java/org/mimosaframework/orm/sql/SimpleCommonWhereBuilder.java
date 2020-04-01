@@ -11,6 +11,7 @@ public class SimpleCommonWhereBuilder
         AboutChildBuilder,
         WrapperBuilder,
         LogicBuilder,
+        OperatorBuilder,
         OperatorLinkBuilder,
         OperatorFunctionBuilder,
         BetweenValueBuilder,

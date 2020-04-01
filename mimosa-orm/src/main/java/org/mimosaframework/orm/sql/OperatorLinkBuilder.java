@@ -7,5 +7,5 @@ package org.mimosaframework.orm.sql;
  */
 public interface OperatorLinkBuilder<T>
         extends
-        AbsWhereColumnBuilder<OperatorFunctionBuilder<T>> {
+        AbsWhereColumnBuilder<OperatorBuilder<T>> {
 }

@@ -19,10 +19,10 @@ public abstract class MysqlAbstractStamp {
         if (table != null) {
             MappingTable mappingTable = wrapper.getMappingTable(table);
             if (mappingTable != null) {
-                return mappingTable.getMappingTableName();
+                return RS + mappingTable.getMappingTableName() + RE;
             }
         } else {
-            return tableName;
+            return RS + tableName + RE;
         }
         return null;
     }
