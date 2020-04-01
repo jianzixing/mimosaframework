@@ -77,7 +77,8 @@ public class SQLActionFactory {
                         DeleteTableAsBuilder.class,
                         DeleteWhereNextBuilder.class,
                         CommonWhereBuilder.class,
-                        CommonWhereCompareBuilder.class
+                        CommonWhereCompareBuilder.class,
+                        CommonWhereNextImplBuilder.class
                 },
                 deleteBuilder
         );
@@ -171,14 +172,16 @@ public class SQLActionFactory {
                         WrapperBuilder.class,
                         LogicBuilder.class,
                         OperatorLinkBuilder.class,
-                        CommonWhereBuilder.class,
                         BetweenValueBuilder.class,
                         OperatorBuilder.class,
                         OperatorFunctionBuilder.class,
                         AbsValueBuilder.class,
                         AbsWhereValueBuilder.class,
                         AbsWhereColumnBuilder.class,
-                        CommonWhereCompareBuilder.class
+                        CommonWhereCompareBuilder.class,
+                        CommonWhereBuilder.class,
+                        CommonWhereNextBuilder.class,
+                        CommonWhereNextImplBuilder.class
                 },
                 wrapperBuilder
         );

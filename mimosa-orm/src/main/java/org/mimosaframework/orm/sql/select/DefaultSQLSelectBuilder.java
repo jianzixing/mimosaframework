@@ -249,7 +249,7 @@ public class DefaultSQLSelectBuilder
             this.groupBy.add(column);
         } else if (this.hasPreviousStops(new String[]{"having"}, skips)) {
             StampWhere where = new StampWhere();
-            where.column = column;
+            where.leftColumn = column;
 
             if (this.having == null) {
                 this.having = where;
@@ -260,7 +260,7 @@ public class DefaultSQLSelectBuilder
             }
         } else {
             StampWhere where = new StampWhere();
-            where.column = column;
+            where.leftColumn = column;
 
             if (this.lastWhere != null) this.lastWhere.next = where;
             this.lastWhere = where;
@@ -303,7 +303,7 @@ public class DefaultSQLSelectBuilder
     public Object isNull(Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNull";
-        this.lastWhere.compareFun = new StampFieldFun("isNull", new StampColumn(field));
+        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(field));
         return this;
     }
 
@@ -311,7 +311,7 @@ public class DefaultSQLSelectBuilder
     public Object isNull(Class table, Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNull";
-        this.lastWhere.compareFun = new StampFieldFun("isNull", new StampColumn(table, field));
+        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(table, field));
         return this;
     }
 
@@ -319,7 +319,7 @@ public class DefaultSQLSelectBuilder
     public Object isNull(String aliasName, Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNull";
-        this.lastWhere.compareFun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
+        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
         return this;
     }
 
@@ -327,7 +327,7 @@ public class DefaultSQLSelectBuilder
     public Object isNotNull(Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNotNull";
-        this.lastWhere.compareFun = new StampFieldFun("not isNull", new StampColumn(field));
+        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(field));
         return this;
     }
 
@@ -335,7 +335,7 @@ public class DefaultSQLSelectBuilder
     public Object isNotNull(Class table, Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNotNull";
-        this.lastWhere.compareFun = new StampFieldFun("not isNull", new StampColumn(table, field));
+        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(table, field));
         return this;
     }
 
@@ -343,7 +343,7 @@ public class DefaultSQLSelectBuilder
     public Object isNotNull(String aliasName, Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNotNull";
-        this.lastWhere.compareFun = new StampFieldFun("not isNull", new StampColumn(aliasName, field));
+        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(aliasName, field));
         return this;
     }
 
@@ -357,7 +357,7 @@ public class DefaultSQLSelectBuilder
     @Override
     public Object value(Object value) {
         this.gammars.add("value");
-        this.lastWhere.value = value;
+        this.lastWhere.rightValue = value;
         return this;
     }
 
@@ -434,8 +434,8 @@ public class DefaultSQLSelectBuilder
     @Override
     public Object section(Serializable valueA, Serializable valueB) {
         this.gammars.add("section");
-        this.lastWhere.value = valueA;
-        this.lastWhere.value2 = valueB;
+        this.lastWhere.rightValue = valueA;
+        this.lastWhere.rightValueEnd = valueB;
         return this;
     }
 

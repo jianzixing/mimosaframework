@@ -1,19 +1,24 @@
 package org.mimosaframework.orm.sql.stamp;
 
 public class StampWhere {
+    public KeyWhereType whereType;
+
     public StampWhere next;
     public KeyLogic nextLogic;
 
-    // c = 1 or c = b
-    public StampColumn column;              // c
-    public String operator;                 // =
-    public StampColumn compareColumn;       // b
-    public Object value;                    // 1
-    public Object value2;                   // between A B
+    public StampColumn leftColumn;
+    public StampFieldFun leftFun;
+    public Object leftValue;
 
-    public StampWhere wrapWhere;            // (a = b ... )
+    public String operator;
+    public boolean not = false;
 
-    // count(a)>0 or isNull(b)
-    public StampFieldFun fun;         // count(a)>0
-    public StampFieldFun compareFun;  // isNull(b)
+    public StampColumn rightColumn;
+    public StampFieldFun rightFun;
+    public Object rightValue;
+    public Object rightValueEnd;
+
+    public StampFieldFun fun;           // isNull(b)
+
+    public StampWhere wrapWhere;        // (a = b ... )
 }

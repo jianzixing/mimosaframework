@@ -86,35 +86,105 @@ public abstract class MysqlAbstractStamp {
                               StampAction stampTables,
                               StampWhere where,
                               StringBuilder sb) {
-        StampFieldFun fun = where.fun;
-        StampColumn column = where.column;
+        KeyWhereType whereType = where.whereType;
         StampWhere next = where.next;
-        StampWhere wrapWhere = where.wrapWhere;
-        if (column != null) {
-            String key = null;
-            if (fun != null) {
-                this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
-                key = "HAVING&" + fun.funName;
-            } else {
-                key = this.getColumnName(wrapper, stampTables, column);
-                sb.append(key);
-            }
-            sb.append(" " + where.operator + " ");
-            if (where.compareFun != null) {
-                this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
-            } else if (where.compareColumn != null) {
-                sb.append(this.getColumnName(wrapper, stampTables, where.compareColumn));
-            } else if (where.value != null) {
-                sb.append("?");
-                SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                placeholder.setName(key);
-                placeholder.setValue(where.value);
-                placeholders.add(placeholder);
-            }
-        } else if (wrapWhere != null) {
+
+        if (whereType == KeyWhereType.WRAP) {
+            StampWhere wrapWhere = where.wrapWhere;
             sb.append("(");
             this.buildWhere(wrapper, placeholders, stampTables, wrapWhere, sb);
             sb.append(")");
+        } else {
+            StampFieldFun fun = where.fun;
+            StampColumn leftColumn = where.leftColumn;
+            StampFieldFun leftFun = where.leftFun;
+            Object leftValue = where.leftValue;
+            StampColumn rightColumn = where.rightColumn;
+            StampFieldFun rightFun = where.rightFun;
+            Object rightValue = where.rightValue;
+            Object rightValueEnd = where.rightValueEnd;
+
+            String key = null;
+            if (whereType == KeyWhereType.NORMAL) {
+                if (leftColumn != null) {
+                    key = this.getColumnName(wrapper, stampTables, leftColumn);
+                    sb.append(key);
+                } else if (leftFun != null) {
+                    this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
+                    key = fun.funName;
+                } else if (leftValue != null) {
+                    sb.append("?");
+
+                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
+                    placeholder.setName("Unknown");
+                    placeholder.setValue(leftValue);
+                    placeholders.add(placeholder);
+                }
+
+                if (where.not) sb.append(" NOT");
+                sb.append(" " + where.operator + " ");
+
+                if (rightColumn != null) {
+                    String columnName = this.getColumnName(wrapper, stampTables, rightColumn);
+                    sb.append(columnName);
+                } else if (rightFun != null) {
+                    this.buildSelectFieldFun(wrapper, stampTables, rightFun, sb);
+                } else if (rightValue != null) {
+                    sb.append("?");
+
+                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
+                    placeholder.setName(key);
+                    placeholder.setValue(rightValue);
+                    placeholders.add(placeholder);
+                }
+            }
+            if (whereType == KeyWhereType.KEY_AND) {
+                if (leftColumn != null) {
+                    key = this.getColumnName(wrapper, stampTables, leftColumn);
+                    sb.append(key);
+                } else if (leftFun != null) {
+                    this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
+                    key = fun.funName;
+                } else if (leftValue != null) {
+                    sb.append("?");
+
+                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
+                    placeholder.setName("Unknown");
+                    placeholder.setValue(leftValue);
+                    placeholders.add(placeholder);
+                }
+                if (where.not) sb.append(" NOT");
+                sb.append(" " + where.operator + " ");
+
+                sb.append("?");
+
+                SQLDataPlaceholder placeholder1 = new SQLDataPlaceholder();
+                if (StringTools.isEmpty(key)) {
+                    placeholder1.setName("Unknown&Start");
+                } else {
+                    placeholder1.setName(key + "&Start");
+                }
+                placeholder1.setValue(rightValue);
+                placeholders.add(placeholder1);
+
+                sb.append(" AND ");
+
+                sb.append("?");
+
+                SQLDataPlaceholder placeholder2 = new SQLDataPlaceholder();
+                if (StringTools.isEmpty(key)) {
+                    placeholder2.setName("Unknown&End");
+                } else {
+                    placeholder1.setName(key + "&End");
+                }
+                placeholder2.setValue(rightValueEnd);
+                placeholders.add(placeholder2);
+            }
+
+            if (whereType == KeyWhereType.FUN) {
+                if (where.not) sb.append("NOT ");
+                this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+            }
         }
 
         if (next != null) {
@@ -131,7 +201,7 @@ public abstract class MysqlAbstractStamp {
                                        StampAction stampTables,
                                        StampFieldFun fun,
                                        StringBuilder sb) {
-        String funName = fun.funName;
+        String funName = fun.funName.toUpperCase();
         Object[] params = fun.params;
 
         sb.append(funName);

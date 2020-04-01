@@ -59,7 +59,7 @@ public class DefaultSQLUpdateBuilder
             this.orderBys.add(stampOrderBy);
         } else if (this.hasPreviousStop("where", "where")) {
             StampWhere where = new StampWhere();
-            where.column = new StampColumn(field);
+            where.leftColumn = new StampColumn(field);
 
             if (this.lastWhere != null) this.lastWhere.next = where;
             this.lastWhere = where;
@@ -82,7 +82,7 @@ public class DefaultSQLUpdateBuilder
             this.orderBys.add(stampOrderBy);
         } else if (this.hasPreviousStop("where", "where")) {
             StampWhere where = new StampWhere();
-            where.column = new StampColumn(table, field);
+            where.leftColumn = new StampColumn(table, field);
 
             if (this.lastWhere != null) this.lastWhere.next = where;
             this.lastWhere = where;
@@ -105,7 +105,7 @@ public class DefaultSQLUpdateBuilder
             this.orderBys.add(stampOrderBy);
         } else if (this.hasPreviousStop("where", "where")) {
             StampWhere where = new StampWhere();
-            where.column = new StampColumn(aliasName, field);
+            where.leftColumn = new StampColumn(aliasName, field);
 
             if (this.lastWhere != null) this.lastWhere.next = where;
             this.lastWhere = where;
@@ -179,7 +179,7 @@ public class DefaultSQLUpdateBuilder
     public Object isNull(Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNull";
-        this.lastWhere.compareFun = new StampFieldFun("isNull", new StampColumn(field));
+        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(field));
         return this;
     }
 
@@ -187,7 +187,7 @@ public class DefaultSQLUpdateBuilder
     public Object isNull(Class table, Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNull";
-        this.lastWhere.compareFun = new StampFieldFun("isNull", new StampColumn(table, field));
+        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(table, field));
         return this;
     }
 
@@ -195,7 +195,7 @@ public class DefaultSQLUpdateBuilder
     public Object isNull(String aliasName, Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNull";
-        this.lastWhere.compareFun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
+        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
         return this;
     }
 
@@ -203,7 +203,7 @@ public class DefaultSQLUpdateBuilder
     public Object isNotNull(Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNotNull";
-        this.lastWhere.compareFun = new StampFieldFun("not isNull", new StampColumn(field));
+        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(field));
         return this;
     }
 
@@ -211,7 +211,7 @@ public class DefaultSQLUpdateBuilder
     public Object isNotNull(Class table, Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNotNull";
-        this.lastWhere.compareFun = new StampFieldFun("not isNull", new StampColumn(table, field));
+        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(table, field));
         return this;
     }
 
@@ -219,7 +219,7 @@ public class DefaultSQLUpdateBuilder
     public Object isNotNull(String aliasName, Serializable field) {
         this.gammars.add("operator");
         this.lastWhere.operator = "isNotNull";
-        this.lastWhere.compareFun = new StampFieldFun("not isNull", new StampColumn(aliasName, field));
+        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(aliasName, field));
         return this;
     }
 
@@ -296,8 +296,8 @@ public class DefaultSQLUpdateBuilder
     @Override
     public Object section(Serializable valueA, Serializable valueB) {
         this.gammars.add("section");
-        this.lastWhere.value = valueA;
-        this.lastWhere.value2 = valueB;
+        this.lastWhere.rightValue = valueA;
+        this.lastWhere.rightValueEnd = valueB;
         return this;
     }
 
