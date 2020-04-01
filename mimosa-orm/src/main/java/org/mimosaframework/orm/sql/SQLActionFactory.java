@@ -73,11 +73,11 @@ public class SQLActionFactory {
                         DeleteUsingBuilder.class,
                         BeforeDeleteFromBuilder.class,
                         DeleteStartBuilder.class,
-                        DeleteWhereOrderByBuilder.class,
-                        ReplaceDeleteLogicBuilder.class,
                         DeleteAsTableBuilder.class,
                         DeleteTableAsBuilder.class,
-                        DeleteWhereNextBuilder.class
+                        DeleteWhereNextBuilder.class,
+                        CommonWhereBuilder.class,
+                        CommonWhereCompareBuilder.class
                 },
                 deleteBuilder
         );
@@ -127,14 +127,10 @@ public class SQLActionFactory {
                         SelectGHOLBuilder.class,
                         SelectHOLBuilder.class,
                         SelectOLBuilder.class,
-                        SelectOnBuilder.class,
                         SelectStartBuilder.class,
-                        SelectWhereBuilder.class,
                         ReplaceSelectFieldBuilder.class,
-                        SelectAfterOnBuilder.class,
                         SelectJoinsBuilder.class,
                         SelectTableAliasBuilder.class,
-                        ReplaceSelectLogicBuilder.class,
                         HavingOperatorFunctionBuilder.class,
                         SelectGroupByBuilder.class,
                         SelectGroupByNextBuilder.class,
@@ -159,7 +155,6 @@ public class SQLActionFactory {
                         UpdateWhereNextBuilder.class,
                         UpdateOLBuilder.class,
                         UpdateStartBuilder.class,
-                        UpdateWhereBuilder.class,
                         UpdateTableAliasBuilder.class
                 },
                 updateBuilder

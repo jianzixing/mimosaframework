@@ -9,6 +9,7 @@ public interface RedefineUpdateBuilder
         SetBuilder,
         AbsWhereColumnBuilder,
         AbsWhereValueBuilder,
+        OperatorBuilder,
         OperatorEqualBuilder,
         OperatorFunctionBuilder,
         BetweenValueBuilder,

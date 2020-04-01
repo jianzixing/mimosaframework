@@ -10,6 +10,7 @@ public interface RedefineSelectBuilder
         FromBuilder,
         WhereBuilder,
         AbsWhereColumnBuilder,
+        OperatorBuilder,
         OperatorFunctionBuilder,
         LogicBuilder,
         WrapperBuilder,
