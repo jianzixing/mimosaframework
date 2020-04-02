@@ -3,8 +3,8 @@ package org.mimosaframework.orm.sql.update;
 import org.mimosaframework.orm.sql.AbsTableAliasBuilder;
 import org.mimosaframework.orm.sql.SetBuilder;
 
-public interface UpdateTableAliasBuilder
+public interface UpdateTableAliasBuilder<T>
         extends
-        AbsTableAliasBuilder<UpdateTableAliasBuilder>,
-        SetBuilder<ReplaceUpdateSetBuilder> {
+        AbsTableAliasBuilder<UpdateTableAliasBuilder<ReplaceUpdateOnlySetBuilder>>,
+        SetBuilder<T> {
 }

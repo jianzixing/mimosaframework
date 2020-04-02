@@ -25,15 +25,14 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object delete() {
-        this.gammars.add("delete");
+        this.setPoint("delete");
         return this;
     }
 
     @Override
     public Object table(Class table) {
         this.gammars.add("table");
-        if (this.hasPreviousStop("from", "from")
-                || this.hasPreviousStop("using", "using")) {
+        if (this.point.equals("from") || this.point.equals("using")) {
             StampFrom stampFrom = new StampFrom(table);
             stampFrom.table = table;
             stampFroms.add(stampFrom);
@@ -55,20 +54,20 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object from() {
-        this.gammars.add("from");
+        this.setPoint("from");
         return this;
     }
 
     @Override
     public Object where() {
-        this.gammars.add("where");
+        this.setPoint("where");
         return this;
     }
 
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");
-        if (this.hasPreviousStop("orderBy", "orderBy")) {
+        if (this.point.equals("orderBy")) {
             StampOrderBy stampOrderBy = new StampOrderBy();
             stampOrderBy.column = new StampColumn(field);
             this.lastOrderBy = stampOrderBy;
@@ -92,7 +91,7 @@ public class DefaultSQLDeleteBuilder
     @Override
     public Object column(Class table, Serializable field) {
         this.gammars.add("column");
-        if (this.hasPreviousStop("orderBy", "orderBy")) {
+        if (this.point.equals("orderBy")) {
             StampOrderBy stampOrderBy = new StampOrderBy();
             stampOrderBy.column = new StampColumn(table, field);
             this.lastOrderBy = stampOrderBy;
@@ -116,7 +115,7 @@ public class DefaultSQLDeleteBuilder
     @Override
     public Object column(String aliasName, Serializable field) {
         this.gammars.add("column");
-        if (this.hasPreviousStop("orderBy", "orderBy")) {
+        if (this.point.equals("orderBy")) {
             StampOrderBy stampOrderBy = new StampOrderBy();
             stampOrderBy.column = new StampColumn(aliasName, field);
             this.lastOrderBy = stampOrderBy;
@@ -146,7 +145,7 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object limit(int len) {
-        this.gammars.add("limit");
+        this.setPoint("limit");
         this.stampDelete.limit = new StampLimit(0, len);
         return this;
     }
@@ -160,7 +159,7 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object orderBy() {
-        this.gammars.add("orderBy");
+        this.setPoint("orderBy");
         return this;
     }
 
@@ -196,7 +195,7 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object using() {
-        this.gammars.add("using");
+        this.setPoint("using");
         this.isUsing = true;
         if (stampFroms.size() > 0) {
             StampFrom from = stampFroms.get(stampFroms.size() - 1);

@@ -5,6 +5,14 @@ import java.util.List;
 
 public abstract class AbstractSQLBuilder {
     protected List gammars = new ArrayList<>();
+    protected Object point = null;
+    protected int posPoint = -1;
+
+    protected void setPoint(Object point) {
+        gammars.add(point);
+        this.point = point;
+        this.posPoint = gammars.size() - 1;
+    }
 
     protected boolean previous(Object is) {
         if (gammars.size() > 1) {
@@ -81,6 +89,13 @@ public abstract class AbstractSQLBuilder {
                 }
                 return true;
             }
+        }
+        return false;
+    }
+
+    protected boolean has(Object keyword) {
+        for (int i = 0; i < gammars.size(); i++) {
+            if (gammars.get(i).equals(keyword)) return true;
         }
         return false;
     }

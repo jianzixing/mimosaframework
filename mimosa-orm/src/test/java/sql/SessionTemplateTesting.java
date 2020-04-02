@@ -358,6 +358,18 @@ public class SessionTemplateTesting {
     }
 
     @Test
+    public void testInsert2() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.insert().into().table(TableUser.class)
+                        .columns(TableUser.id, TableUser.createdTime)
+                        .values()
+                        .row(1, "2019-01-01 10:00:00")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
     public void testSelect1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.select()
@@ -389,6 +401,10 @@ public class SessionTemplateTesting {
                         .column(TableUser.address).eq().value("b")
                         .column(TableUser.createdTime).eq().value("2019-01-01 10:00:00")
                         .where().column(TableUser.id).eq().value(1)
+                        .orderBy()
+                        .column(TableUser.id).desc()
+                        .column(TableUser.age).asc()
+                        .limit(20)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
@@ -410,8 +426,18 @@ public class SessionTemplateTesting {
     }
 
     @Test
-    public void t() {
-        Object i = 1;
-        System.out.println(i instanceof Number);
+    public void testUpdate3() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.update()
+                        .table(TableUser.class, "t1")
+                        .table(TableUser.class, "t2")
+                        .set()
+                        .column("t1", TableUser.address).eq().value("b")
+                        .column("t1", TableUser.createdTime).eq().value("2019-01-01 10:00:00")
+                        .where()
+                        .column("t1", TableUser.id).eq().value(1)
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
     }
 }

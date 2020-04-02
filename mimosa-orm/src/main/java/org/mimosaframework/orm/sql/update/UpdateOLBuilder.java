@@ -4,6 +4,6 @@ import org.mimosaframework.orm.sql.*;
 
 public interface UpdateOLBuilder
         extends
-        OrderByBuilder<OrderByNextBuilder>,
-        LimitBuilder<UnifyBuilder> {
+        OrderByBuilder<OrderByNextCountBuilder>,
+        LimitCountBuilder<UnifyBuilder> {
 }

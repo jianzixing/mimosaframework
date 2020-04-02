@@ -4,8 +4,8 @@ import org.mimosaframework.orm.sql.CommonWhereBuilder;
 import org.mimosaframework.orm.sql.CommonWhereNextBuilder;
 import org.mimosaframework.orm.sql.WhereBuilder;
 
-public interface ReplaceUpdateValueBuilder<T extends CommonWhereNextBuilder>
+public interface ReplaceUpdateOnlyValueBuilder<T extends CommonWhereNextBuilder>
         extends
-        ReplaceUpdateSetBuilder,
+        ReplaceUpdateOnlySetBuilder,
         WhereBuilder<CommonWhereBuilder<T>> {
 }

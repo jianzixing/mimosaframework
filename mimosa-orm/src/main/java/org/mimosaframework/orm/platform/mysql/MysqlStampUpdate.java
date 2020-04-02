@@ -41,7 +41,7 @@ public class MysqlStampUpdate extends MysqlAbstractStamp implements StampCombine
             this.buildWhere(wrapper, placeholders, update, update.where, sb);
         }
 
-        if (update.orderBy != null) {
+        if (update.orderBy != null && update.orderBy.length > 0) {
             StampOrderBy[] orderBy = update.orderBy;
             sb.append(" ORDER BY ");
             int j = 0;
@@ -57,7 +57,7 @@ public class MysqlStampUpdate extends MysqlAbstractStamp implements StampCombine
         }
 
         if (update.limit != null) {
-            sb.append(" LIMIT " + update.limit.start + "," + update.limit.limit);
+            sb.append(" LIMIT " + update.limit.limit);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);
@@ -70,7 +70,7 @@ public class MysqlStampUpdate extends MysqlAbstractStamp implements StampCombine
                                  List<SQLDataPlaceholder> placeholders) {
         String name = this.getColumnName(wrapper, update, item.column);
         sb.append(name);
-        sb.append("=");
+        sb.append(" = ");
         sb.append("?");
         placeholders.add(new SQLDataPlaceholder(name, item.value));
     }

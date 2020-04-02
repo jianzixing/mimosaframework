@@ -4,5 +4,5 @@ import org.mimosaframework.orm.sql.SetLinkBuilder;
 
 public interface ReplaceUpdateSetBuilder
         extends
-        SetLinkBuilder<ReplaceUpdateValueBuilder> {
+        SetLinkBuilder<ReplaceUpdateValueBuilder<UpdateWhereNextBuilder>> {
 }

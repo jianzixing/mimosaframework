@@ -87,7 +87,6 @@ public class TestSQLGrammar {
 
         unifyBuilder = UpdateFactory.update()
                 .table(TestSQLGrammar.class, "t1")
-                .table(TestSQLGrammar.class, "t2")
                 .set()
                 .column("").eq().value("")
                 .column("").eq().value("")
@@ -95,8 +94,15 @@ public class TestSQLGrammar {
                 .orderBy()
                 .column("").asc()
                 .column("").desc()
-                .limit(0, 10);
+                .limit(10);
 
+        unifyBuilder = UpdateFactory.update()
+                .table(TestSQLGrammar.class, "t1")
+                .table(TestSQLGrammar.class, "t2")
+                .set()
+                .column("").eq().value("")
+                .column("").eq().value("")
+                .where().column("").eq().value("");
 
         ///
 

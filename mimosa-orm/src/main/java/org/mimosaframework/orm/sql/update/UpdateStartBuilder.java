@@ -4,5 +4,5 @@ import org.mimosaframework.orm.sql.AbsTableAliasBuilder;
 
 public interface UpdateStartBuilder
         extends
-        AbsTableAliasBuilder<UpdateTableAliasBuilder> {
+        AbsTableAliasBuilder<UpdateTableAliasBuilder<ReplaceUpdateSetBuilder>> {
 }

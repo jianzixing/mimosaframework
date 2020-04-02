@@ -16,6 +16,6 @@ public interface RedefineUpdateBuilder
         WhereBuilder,
         OrderByBuilder,
         SortBuilder,
-        LimitBuilder,
+        LimitCountBuilder,
         AbsValueBuilder {
 }

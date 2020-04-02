@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DefaultSQLUpdateBuilder
         extends
-        AbstractSQLBuilder
+        CommonOperatorSQLBuilder
         implements
         RedefineUpdateBuilder {
 
@@ -17,7 +17,6 @@ public class DefaultSQLUpdateBuilder
     protected List<StampFrom> stampFroms = new ArrayList<>();
 
     protected StampWhere where = null;
-    protected StampWhere lastWhere = null;
     protected List<StampOrderBy> orderBys = new ArrayList<>();
     protected StampOrderBy lastOrderBy = null;
     protected List<StampUpdateItem> items = new ArrayList<>();
@@ -31,20 +30,20 @@ public class DefaultSQLUpdateBuilder
 
     @Override
     public Object update() {
-        this.gammars.add("update");
+        this.setPoint("update");
         return this;
     }
 
     @Override
     public Object table(Class table) {
-        this.gammars.add("table");
+        this.setPoint("table");
         stampFroms.add(new StampFrom(table));
         return this;
     }
 
     @Override
     public Object table(Class table, String tableAliasName) {
-        this.gammars.add("table");
+        this.setPoint("table");
         stampFroms.add(new StampFrom(table, tableAliasName));
         return this;
     }
@@ -58,12 +57,17 @@ public class DefaultSQLUpdateBuilder
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
         } else if (this.hasPreviousStop("where", "where")) {
-            StampWhere where = new StampWhere();
-            where.leftColumn = new StampColumn(field);
+            if (this.previous("operator")) {
+                this.lastWhere.whereType = KeyWhereType.NORMAL;
+                this.lastWhere.rightColumn = new StampColumn(field);
+            } else {
+                StampWhere where = new StampWhere();
+                where.leftColumn = new StampColumn(field);
 
-            if (this.lastWhere != null) this.lastWhere.next = where;
-            this.lastWhere = where;
-            if (this.where == null) this.where = where;
+                if (this.lastWhere != null) this.lastWhere.next = where;
+                this.lastWhere = where;
+                if (this.where == null) this.where = where;
+            }
         } else if (this.hasPreviousStop("set", "set")) {
             StampUpdateItem item = new StampUpdateItem();
             item.column = new StampColumn(field);
@@ -81,12 +85,17 @@ public class DefaultSQLUpdateBuilder
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
         } else if (this.hasPreviousStop("where", "where")) {
-            StampWhere where = new StampWhere();
-            where.leftColumn = new StampColumn(table, field);
+            if (this.previous("operator")) {
+                this.lastWhere.whereType = KeyWhereType.NORMAL;
+                this.lastWhere.rightColumn = new StampColumn(table, field);
+            } else {
+                StampWhere where = new StampWhere();
+                where.leftColumn = new StampColumn(table, field);
 
-            if (this.lastWhere != null) this.lastWhere.next = where;
-            this.lastWhere = where;
-            if (this.where == null) this.where = where;
+                if (this.lastWhere != null) this.lastWhere.next = where;
+                this.lastWhere = where;
+                if (this.where == null) this.where = where;
+            }
         } else if (this.hasPreviousStop("set", "set")) {
             StampUpdateItem item = new StampUpdateItem();
             item.column = new StampColumn(table, field);
@@ -104,12 +113,17 @@ public class DefaultSQLUpdateBuilder
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
         } else if (this.hasPreviousStop("where", "where")) {
-            StampWhere where = new StampWhere();
-            where.leftColumn = new StampColumn(aliasName, field);
+            if (this.previous("operator")) {
+                this.lastWhere.whereType = KeyWhereType.NORMAL;
+                this.lastWhere.rightColumn = new StampColumn(aliasName, field);
+            } else {
+                StampWhere where = new StampWhere();
+                where.leftColumn = new StampColumn(aliasName, field);
 
-            if (this.lastWhere != null) this.lastWhere.next = where;
-            this.lastWhere = where;
-            if (this.where == null) this.where = where;
+                if (this.lastWhere != null) this.lastWhere.next = where;
+                this.lastWhere = where;
+                if (this.where == null) this.where = where;
+            }
         } else if (this.hasPreviousStop("set", "set")) {
             StampUpdateItem item = new StampUpdateItem();
             item.column = new StampColumn(aliasName, field);
@@ -119,32 +133,41 @@ public class DefaultSQLUpdateBuilder
     }
 
     @Override
-    public Object limit(int pos, int len) {
-        this.gammars.add("limit");
-        stampUpdate.limit = new StampLimit(pos, len);
-        return this;
+    public Object eq() {
+        if (this.point.equals("set")) {
+            return this;
+        } else {
+            return super.eq();
+        }
     }
 
     @Override
-    public Object eq() {
-        this.gammars.add("operator");
-        if (this.hasPreviousStop("where", "where")) {
-            this.lastWhere.operator = "=";
-        } else if (this.hasPreviousStop("set", "set")) {
-
+    public Object value(Object value) {
+        if (this.point.equals("set")) {
+            StampUpdateItem item = this.getLastItem();
+            item.value = value;
+            return this;
+        } else {
+            return super.value(value);
         }
+    }
+
+    @Override
+    public Object limit(int len) {
+        this.gammars.add("limit");
+        stampUpdate.limit = new StampLimit(0, len);
         return this;
     }
 
     @Override
     public Object orderBy() {
-        this.gammars.add("orderBy");
+        this.setPoint("orderBy");
         return this;
     }
 
     @Override
     public Object set() {
-        this.gammars.add("set");
+        this.setPoint("set");
         return this;
     }
 
@@ -164,140 +187,7 @@ public class DefaultSQLUpdateBuilder
 
     @Override
     public Object where() {
-        this.gammars.add("where");
-        return this;
-    }
-
-    @Override
-    public Object value(Object value) {
-        this.gammars.add("value");
-        this.getLastItem().value = value;
-        return this;
-    }
-
-    @Override
-    public Object isNull(Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNull";
-        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(field));
-        return this;
-    }
-
-    @Override
-    public Object isNull(Class table, Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNull";
-        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(table, field));
-        return this;
-    }
-
-    @Override
-    public Object isNull(String aliasName, Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNull";
-        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
-        return this;
-    }
-
-    @Override
-    public Object isNotNull(Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNotNull";
-        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(field));
-        return this;
-    }
-
-    @Override
-    public Object isNotNull(Class table, Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNotNull";
-        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(table, field));
-        return this;
-    }
-
-    @Override
-    public Object isNotNull(String aliasName, Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNotNull";
-        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(aliasName, field));
-        return this;
-    }
-
-    @Override
-    public Object in() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "in";
-        return this;
-    }
-
-    @Override
-    public Object nin() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "not in";
-        return this;
-    }
-
-    @Override
-    public Object like() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "like";
-        return this;
-    }
-
-    @Override
-    public Object ne() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "!=";
-        return this;
-    }
-
-    @Override
-    public Object gt() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = ">";
-        return this;
-    }
-
-    @Override
-    public Object gte() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = ">=";
-        return this;
-    }
-
-    @Override
-    public Object lt() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "<";
-        return this;
-    }
-
-    @Override
-    public Object lte() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "<=";
-        return this;
-    }
-
-    @Override
-    public BetweenValueBuilder between() {
-        this.gammars.add("between");
-        this.lastWhere.operator = "between";
-        return this;
-    }
-
-    @Override
-    public BetweenValueBuilder notBetween() {
-        this.gammars.add("notBetween");
-        this.lastWhere.operator = "not between";
-        return this;
-    }
-
-    @Override
-    public Object section(Serializable valueA, Serializable valueB) {
-        this.gammars.add("section");
-        this.lastWhere.rightValue = valueA;
-        this.lastWhere.rightValueEnd = valueB;
+        this.setPoint("where");
         return this;
     }
 
