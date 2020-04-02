@@ -5,29 +5,36 @@ import java.util.List;
 
 public abstract class AbstractSQLBuilder {
     protected List gammars = new ArrayList<>();
+    protected List points = null;
     protected Object point = null;
     protected int posPoint = -1;
 
-    protected void setPoint(Object point) {
-        gammars.add(point);
+    protected void addPoint(Object point) {
+        this.gammars.add(point);
+        if (this.points == null) this.points = new ArrayList();
+        this.points.add(point);
         this.point = point;
         this.posPoint = gammars.size() - 1;
+    }
+
+    protected Object getPoint(int i) {
+        if (this.points != null) {
+            int index = this.points.size() - i - 1;
+            if (index >= 0) {
+                return this.points.get(index);
+            }
+        }
+        return null;
+    }
+
+    protected Object getPrePoint() {
+        return this.getPoint(1);
     }
 
     protected boolean previous(Object is) {
         if (gammars.size() > 1) {
             Object p = gammars.get(gammars.size() - 2);
             if (p != null && p.equals(is)) return true;
-        }
-        return false;
-    }
-
-    protected boolean hasPrevious(Object... keyword) {
-        for (int j = 0; j < keyword.length; j++) {
-            for (int i = gammars.size() - 1; i >= 0; i--) {
-                Object k = gammars.get(i);
-                if (k.equals(keyword)) return true;
-            }
         }
         return false;
     }
@@ -39,24 +46,6 @@ public abstract class AbstractSQLBuilder {
                 Object k = gammars.get(i);
                 if (k.equals(keyword[j])) return true;
                 if (stop.equals(k)) break;
-            }
-        }
-        return false;
-    }
-
-    protected boolean hasPreviousStops(Object[] keyword, Object[] stops) {
-        for (int j = 0; j < keyword.length; j++) {
-            for (int i = gammars.size() - 1; i >= 0; i--) {
-                Object k = gammars.get(i);
-                if (k.equals(keyword)) return true;
-                boolean has = false;
-                for (Object stop : stops) {
-                    if (stop.equals(k)) {
-                        has = true;
-                        break;
-                    }
-                }
-                if (has) break;
             }
         }
         return false;

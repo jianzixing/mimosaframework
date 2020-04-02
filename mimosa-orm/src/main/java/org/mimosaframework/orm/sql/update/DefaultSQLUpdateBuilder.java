@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.sql.update;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
@@ -30,20 +31,20 @@ public class DefaultSQLUpdateBuilder
 
     @Override
     public Object update() {
-        this.setPoint("update");
+        this.addPoint("update");
         return this;
     }
 
     @Override
     public Object table(Class table) {
-        this.setPoint("table");
+        this.addPoint("table");
         stampFroms.add(new StampFrom(table));
         return this;
     }
 
     @Override
     public Object table(Class table, String tableAliasName) {
-        this.setPoint("table");
+        this.addPoint("table");
         stampFroms.add(new StampFrom(table, tableAliasName));
         return this;
     }
@@ -51,74 +52,45 @@ public class DefaultSQLUpdateBuilder
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");
-        if (this.hasPreviousStop("orderBy", "orderBy")) {
-            StampOrderBy stampOrderBy = new StampOrderBy();
-            stampOrderBy.column = new StampColumn(field);
-            this.lastOrderBy = stampOrderBy;
-            this.orderBys.add(stampOrderBy);
-        } else if (this.hasPreviousStop("where", "where")) {
-            if (this.previous("operator")) {
-                this.lastWhere.whereType = KeyWhereType.NORMAL;
-                this.lastWhere.rightColumn = new StampColumn(field);
-            } else {
-                StampWhere where = new StampWhere();
-                where.leftColumn = new StampColumn(field);
-
-                if (this.lastWhere != null) this.lastWhere.next = where;
-                this.lastWhere = where;
-                if (this.where == null) this.where = where;
-            }
-        } else if (this.hasPreviousStop("set", "set")) {
-            StampUpdateItem item = new StampUpdateItem();
-            item.column = new StampColumn(field);
-            items.add(item);
-        }
+        this.column(null, null, field);
         return this;
     }
 
     @Override
     public Object column(Class table, Serializable field) {
         this.gammars.add("column");
-        if (this.hasPreviousStop("orderBy", "orderBy")) {
-            StampOrderBy stampOrderBy = new StampOrderBy();
-            stampOrderBy.column = new StampColumn(table, field);
-            this.lastOrderBy = stampOrderBy;
-            this.orderBys.add(stampOrderBy);
-        } else if (this.hasPreviousStop("where", "where")) {
-            if (this.previous("operator")) {
-                this.lastWhere.whereType = KeyWhereType.NORMAL;
-                this.lastWhere.rightColumn = new StampColumn(table, field);
-            } else {
-                StampWhere where = new StampWhere();
-                where.leftColumn = new StampColumn(table, field);
-
-                if (this.lastWhere != null) this.lastWhere.next = where;
-                this.lastWhere = where;
-                if (this.where == null) this.where = where;
-            }
-        } else if (this.hasPreviousStop("set", "set")) {
-            StampUpdateItem item = new StampUpdateItem();
-            item.column = new StampColumn(table, field);
-            items.add(item);
-        }
+        this.column(null, table, field);
         return this;
     }
 
     @Override
     public Object column(String aliasName, Serializable field) {
         this.gammars.add("column");
+        this.column(aliasName, null, field);
+        return this;
+    }
+
+    protected void column(String aliasName, Class table, Serializable field) {
+        StampColumn column = null;
+        if (StringTools.isNotEmpty(aliasName)) {
+            column = new StampColumn(aliasName, field);
+        } else if (table != null) {
+            column = new StampColumn(table, field);
+        } else {
+            column = new StampColumn(field);
+        }
         if (this.hasPreviousStop("orderBy", "orderBy")) {
             StampOrderBy stampOrderBy = new StampOrderBy();
-            stampOrderBy.column = new StampColumn(aliasName, field);
+            stampOrderBy.column = column;
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
         } else if (this.hasPreviousStop("where", "where")) {
             if (this.previous("operator")) {
                 this.lastWhere.whereType = KeyWhereType.NORMAL;
-                this.lastWhere.rightColumn = new StampColumn(aliasName, field);
+                this.lastWhere.rightColumn = column;
             } else {
                 StampWhere where = new StampWhere();
-                where.leftColumn = new StampColumn(aliasName, field);
+                where.leftColumn = column;
 
                 if (this.lastWhere != null) this.lastWhere.next = where;
                 this.lastWhere = where;
@@ -126,10 +98,9 @@ public class DefaultSQLUpdateBuilder
             }
         } else if (this.hasPreviousStop("set", "set")) {
             StampUpdateItem item = new StampUpdateItem();
-            item.column = new StampColumn(aliasName, field);
+            item.column = column;
             items.add(item);
         }
-        return this;
     }
 
     @Override
@@ -161,13 +132,13 @@ public class DefaultSQLUpdateBuilder
 
     @Override
     public Object orderBy() {
-        this.setPoint("orderBy");
+        this.addPoint("orderBy");
         return this;
     }
 
     @Override
     public Object set() {
-        this.setPoint("set");
+        this.addPoint("set");
         return this;
     }
 
@@ -187,7 +158,7 @@ public class DefaultSQLUpdateBuilder
 
     @Override
     public Object where() {
-        this.setPoint("where");
+        this.addPoint("where");
         return this;
     }
 

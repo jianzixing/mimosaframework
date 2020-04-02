@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DefaultSQLSelectBuilder
         extends
-        AbstractSQLBuilder
+        CommonOperatorSQLBuilder
         implements
         RedefineSelectBuilder {
 
@@ -22,7 +22,6 @@ public class DefaultSQLSelectBuilder
 
     protected StampWhere where = null;
     protected StampWhere having = null;
-    protected StampWhere lastWhere = null;
     protected List<StampOrderBy> orderBys = new ArrayList<>();
     protected StampOrderBy lastOrderBy = null;
     protected List<StampColumn> groupBy = new ArrayList<>();
@@ -36,7 +35,7 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public Object select() {
-        this.gammars.add("select");
+        this.addPoint("select");
         return this;
     }
 
@@ -211,8 +210,6 @@ public class DefaultSQLSelectBuilder
         return this;
     }
 
-    protected String[] skips = new String[]{"orderBy", "groupBy", "having", "from", "where", "join"};
-
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");
@@ -223,52 +220,56 @@ public class DefaultSQLSelectBuilder
     @Override
     public Object column(Class table, Serializable field) {
         this.gammars.add("column");
-        this.column(table, null, field);
+        this.column(null, table, field);
         return this;
     }
 
     @Override
     public Object column(String aliasName, Serializable field) {
         this.gammars.add("column");
-        this.column(null, aliasName, field);
+        this.column(aliasName, null, field);
         return this;
     }
 
-    protected void column(Class table, String aliasName, Serializable field) {
+    protected void column(String aliasName, Class table, Serializable field) {
         StampColumn column = null;
         if (table != null) column = new StampColumn(table, field);
         else if (aliasName != null) column = new StampColumn(aliasName, field);
         else column = new StampColumn(field);
 
-        if (this.hasPreviousStops(new String[]{"orderBy"}, skips)) {
+        if (this.point.equals("orderBy")) {
             StampOrderBy stampOrderBy = new StampOrderBy();
             stampOrderBy.column = column;
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
-        } else if (this.hasPreviousStops(new String[]{"groupBy"}, skips)) {
+        } else if (this.point.equals("groupBy")) {
             this.groupBy.add(column);
-        } else if (this.hasPreviousStops(new String[]{"having"}, skips)) {
-            StampWhere where = new StampWhere();
-            where.leftColumn = column;
-
-            if (this.having == null) {
-                this.having = where;
-                this.lastWhere = where;
+        } else if (this.point.equals("having")) {
+            if (this.previous("operator")) {
+                this.lastWhere.whereType = KeyWhereType.NORMAL;
+                this.lastWhere.rightColumn = column;
             } else {
-                if (this.lastWhere != null) this.lastWhere.next = where;
-                this.lastWhere = where;
+                StampWhere where = new StampWhere();
+                where.leftColumn = column;
+
+                if (this.having == null) {
+                    this.having = where;
+                    this.lastWhere = where;
+                } else {
+                    if (this.lastWhere != null) this.lastWhere.next = where;
+                    this.lastWhere = where;
+                }
             }
         } else {
-            StampWhere where = new StampWhere();
-            where.leftColumn = column;
-
-            if (this.lastWhere != null) this.lastWhere.next = where;
-            this.lastWhere = where;
-            if (this.hasPreviousStops(new String[]{"join"}, skips)) {
+            if (this.previous("operator")) {
+                this.lastWhere.whereType = KeyWhereType.NORMAL;
+                this.lastWhere.rightColumn = column;
             } else {
-                if (this.where == null) {
-                    this.where = where;
-                }
+                StampWhere where = new StampWhere();
+                where.leftColumn = column;
+
+                if (this.lastWhere != null) this.lastWhere.next = where;
+                this.lastWhere = where;
             }
         }
     }
@@ -282,160 +283,20 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public Object from() {
-        this.gammars.add("from");
+        this.addPoint("from");
         return this;
     }
 
     @Override
     public Object having() {
-        this.gammars.add("having");
+        this.addPoint("having");
         return this;
     }
 
     @Override
     public Object limit(int pos, int len) {
-        this.gammars.add("limit");
+        this.addPoint("limit");
         this.stampSelect.limit = new StampLimit(pos, len);
-        return this;
-    }
-
-    @Override
-    public Object isNull(Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNull";
-        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(field));
-        return this;
-    }
-
-    @Override
-    public Object isNull(Class table, Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNull";
-        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(table, field));
-        return this;
-    }
-
-    @Override
-    public Object isNull(String aliasName, Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNull";
-        this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
-        return this;
-    }
-
-    @Override
-    public Object isNotNull(Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNotNull";
-        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(field));
-        return this;
-    }
-
-    @Override
-    public Object isNotNull(Class table, Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNotNull";
-        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(table, field));
-        return this;
-    }
-
-    @Override
-    public Object isNotNull(String aliasName, Serializable field) {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "isNotNull";
-        this.lastWhere.fun = new StampFieldFun("not isNull", new StampColumn(aliasName, field));
-        return this;
-    }
-
-    @Override
-    public Object eq() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "=";
-        return this;
-    }
-
-    @Override
-    public Object value(Object value) {
-        this.gammars.add("value");
-        this.lastWhere.rightValue = value;
-        return this;
-    }
-
-    @Override
-    public Object in() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "in";
-        return this;
-    }
-
-    @Override
-    public Object nin() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "not in";
-        return this;
-    }
-
-    @Override
-    public Object like() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "like";
-        return this;
-    }
-
-    @Override
-    public Object ne() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "!=";
-        return this;
-    }
-
-    @Override
-    public Object gt() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = ">";
-        return this;
-    }
-
-    @Override
-    public Object gte() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = ">=";
-        return this;
-    }
-
-    @Override
-    public Object lt() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "<";
-        return this;
-    }
-
-    @Override
-    public Object lte() {
-        this.gammars.add("operator");
-        this.lastWhere.operator = "<=";
-        return this;
-    }
-
-    @Override
-    public BetweenValueBuilder between() {
-        this.gammars.add("between");
-        this.lastWhere.operator = "between";
-        return this;
-    }
-
-    @Override
-    public BetweenValueBuilder notBetween() {
-        this.gammars.add("notBetween");
-        this.lastWhere.operator = "not between";
-        return this;
-    }
-
-    @Override
-    public Object section(Serializable valueA, Serializable valueB) {
-        this.gammars.add("section");
-        this.lastWhere.rightValue = valueA;
-        this.lastWhere.rightValueEnd = valueB;
         return this;
     }
 
@@ -448,7 +309,7 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public Object orderBy() {
-        this.gammars.add("orderBy");
+        this.addPoint("orderBy");
         return this;
     }
 
@@ -468,14 +329,10 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public Object where() {
-        this.gammars.add("where");
-        return this;
-    }
-
-    @Override
-    public Object wrapper(UnifyBuilder builder) {
-        this.gammars.add("wrapper");
-
+        this.addPoint("where");
+        StampWhere where = new StampWhere();
+        this.where = where;
+        this.lastWhere = where;
         return this;
     }
 
@@ -487,7 +344,7 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public Object join() {
-        this.gammars.add("join");
+        this.addPoint("join");
         if (this.previous("inner")) {
             this.lastJoin = new StampSelectJoin();
             this.lastJoin.joinType = KeyJoinType.INNER;
@@ -509,8 +366,8 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public Object on() {
-        this.gammars.add("on");
-        if (this.hasPreviousStops(new String[]{"join"}, new String[]{"join"})) {
+        this.addPoint("on");
+        if (this.getPrePoint().equals("join")) {
             this.lastWhere = new StampWhere();
             if (this.lastJoin.on == null) this.lastJoin.on = this.lastWhere;
         }
@@ -519,16 +376,16 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public Object groupBy() {
-        this.gammars.add("groupBy");
+        this.addPoint("groupBy");
         return this;
     }
 
     @Override
     public Object table(Class table) {
         this.gammars.add("table");
-        if (this.hasPreviousStops(new String[]{"inner"}, new String[]{"join"})) {
+        if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
             this.lastJoin.table = table;
-        } else if (this.hasPreviousStops(new String[]{"left"}, new String[]{"join"})) {
+        } else if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("left")) {
             this.lastJoin.table = table;
         } else {
             this.stampFroms.add(new StampFrom(table));
@@ -539,10 +396,10 @@ public class DefaultSQLSelectBuilder
     @Override
     public Object table(Class table, String tableAliasName) {
         this.gammars.add("table");
-        if (this.hasPreviousStops(new String[]{"inner"}, new String[]{"join"})) {
+        if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
             this.lastJoin.table = table;
             this.lastJoin.tableAliasName = tableAliasName;
-        } else if (this.hasPreviousStops(new String[]{"left"}, new String[]{"join"})) {
+        } else if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("left")) {
             this.lastJoin.table = table;
             this.lastJoin.tableAliasName = tableAliasName;
         } else {

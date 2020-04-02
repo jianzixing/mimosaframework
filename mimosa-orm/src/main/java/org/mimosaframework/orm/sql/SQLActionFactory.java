@@ -141,7 +141,11 @@ public class SQLActionFactory {
                         SelectGroupByNextBuilder.class,
                         OrderByNextBuilder.class,
                         OrderBySealBuilder.class,
-                        SelectFieldFunBuilder.class
+                        SelectFieldFunBuilder.class,
+                        CommonWhereBuilder.class,
+                        CommonWhereCompareBuilder.class,
+                        SelectJoinWhereNextBuilder.class,
+                        SelectWhereNextBuilder.class
                 },
                 selectBuilder
         );

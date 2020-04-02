@@ -25,7 +25,7 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object delete() {
-        this.setPoint("delete");
+        this.addPoint("delete");
         return this;
     }
 
@@ -54,86 +54,64 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object from() {
-        this.setPoint("from");
+        this.addPoint("from");
         return this;
     }
 
     @Override
     public Object where() {
-        this.setPoint("where");
+        this.addPoint("where");
         return this;
     }
 
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");
-        if (this.point.equals("orderBy")) {
-            StampOrderBy stampOrderBy = new StampOrderBy();
-            stampOrderBy.column = new StampColumn(field);
-            this.lastOrderBy = stampOrderBy;
-            this.orderBys.add(stampOrderBy);
-        } else {
-            if (this.previous("operator")) {
-                this.lastWhere.whereType = KeyWhereType.NORMAL;
-                this.lastWhere.rightColumn = new StampColumn(field);
-            } else {
-                StampWhere where = new StampWhere();
-                where.leftColumn = new StampColumn(field);
-
-                if (this.lastWhere != null) this.lastWhere.next = where;
-                this.lastWhere = where;
-                if (this.where == null) this.where = where;
-            }
-        }
+        this.column(null, null, field);
         return this;
     }
 
     @Override
     public Object column(Class table, Serializable field) {
         this.gammars.add("column");
-        if (this.point.equals("orderBy")) {
-            StampOrderBy stampOrderBy = new StampOrderBy();
-            stampOrderBy.column = new StampColumn(table, field);
-            this.lastOrderBy = stampOrderBy;
-            this.orderBys.add(stampOrderBy);
-        } else {
-            if (this.previous("operator")) {
-                this.lastWhere.whereType = KeyWhereType.NORMAL;
-                this.lastWhere.rightColumn = new StampColumn(table, field);
-            } else {
-                StampWhere where = new StampWhere();
-                where.leftColumn = new StampColumn(table, field);
-
-                if (this.lastWhere != null) this.lastWhere.next = where;
-                this.lastWhere = where;
-                if (this.where == null) this.where = where;
-            }
-        }
+        this.column(null, table, field);
         return this;
     }
 
     @Override
     public Object column(String aliasName, Serializable field) {
         this.gammars.add("column");
+        this.column(aliasName, null, field);
+        return this;
+    }
+
+    private void column(String aliasName, Class table, Serializable field) {
+        StampColumn column = null;
+        if (StringTools.isNotEmpty(aliasName)) {
+            column = new StampColumn(aliasName, field);
+        } else if (table != null) {
+            column = new StampColumn(table, field);
+        } else {
+            column = new StampColumn(field);
+        }
         if (this.point.equals("orderBy")) {
             StampOrderBy stampOrderBy = new StampOrderBy();
-            stampOrderBy.column = new StampColumn(aliasName, field);
+            stampOrderBy.column = column;
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
         } else {
             if (this.previous("operator")) {
                 this.lastWhere.whereType = KeyWhereType.NORMAL;
-                this.lastWhere.rightColumn = new StampColumn(aliasName, field);
+                this.lastWhere.rightColumn = column;
             } else {
                 StampWhere where = new StampWhere();
-                where.leftColumn = new StampColumn(aliasName, field);
+                where.leftColumn = column;
 
                 if (this.lastWhere != null) this.lastWhere.next = where;
                 this.lastWhere = where;
                 if (this.where == null) this.where = where;
             }
         }
-        return this;
     }
 
     @Override
@@ -145,7 +123,7 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object limit(int len) {
-        this.setPoint("limit");
+        this.addPoint("limit");
         this.stampDelete.limit = new StampLimit(0, len);
         return this;
     }
@@ -159,7 +137,7 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object orderBy() {
-        this.setPoint("orderBy");
+        this.addPoint("orderBy");
         return this;
     }
 
@@ -195,7 +173,7 @@ public class DefaultSQLDeleteBuilder
 
     @Override
     public Object using() {
-        this.setPoint("using");
+        this.addPoint("using");
         this.isUsing = true;
         if (stampFroms.size() > 0) {
             StampFrom from = stampFroms.get(stampFroms.size() - 1);

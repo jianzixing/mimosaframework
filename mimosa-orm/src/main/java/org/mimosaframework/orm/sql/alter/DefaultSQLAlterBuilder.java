@@ -23,7 +23,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object alter() {
-        this.gammars.add("alter");
+        this.addPoint("alter");
         return this;
     }
 
@@ -55,7 +55,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object database() {
-        this.gammars.add("database");
+        this.addPoint("database");
         this.stampAlter.target = KeyTarget.DATABASE;
         return this;
     }
@@ -96,7 +96,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object table(Class table) {
-        this.gammars.add("table");
+        this.addPoint("table");
         this.stampAlter.target = KeyTarget.TABLE;
         this.stampAlter.table = table;
         return this;
@@ -303,7 +303,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object index() {
-        this.gammars.add("index");
+        this.addPoint("index");
         StampAlterItem item = this.getLastItem();
         item.struct = KeyAlterStruct.INDEX;
         if (this.previous("fullText")) {
