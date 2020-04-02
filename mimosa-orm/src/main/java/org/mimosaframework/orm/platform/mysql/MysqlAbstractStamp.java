@@ -44,7 +44,9 @@ public abstract class MysqlAbstractStamp {
                 if (mappingTable != null) {
                     MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                     if (mappingField != null) {
-                        return RS + mappingField.getMappingColumnName() + RE;
+                        return RS + mappingTable.getMappingTableName() + RE
+                                + "."
+                                + RS + mappingField.getMappingColumnName() + RE;
                     }
                 }
             }

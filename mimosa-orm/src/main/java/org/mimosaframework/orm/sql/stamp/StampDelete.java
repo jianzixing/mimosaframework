@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StampDelete implements StampAction {
-    public Class tables[];
-    public String aliasNames[];
+    public Class delTables[];
+    public String delTableAlias[];
 
     public StampFrom[] froms;
 

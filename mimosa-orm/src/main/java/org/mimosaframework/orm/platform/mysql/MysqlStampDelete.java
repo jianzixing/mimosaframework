@@ -16,8 +16,8 @@ public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombine
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE ");
-        String[] aliasNames = delete.aliasNames;
-        Class[] tables = delete.tables;
+        String[] aliasNames = delete.delTableAlias;
+        Class[] tables = delete.delTables;
 
         if (tables != null && tables.length > 0) {
             int i = 0;
@@ -45,7 +45,8 @@ public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombine
             }
         }
 
-        sb.append(" FROM ");
+        if ((aliasNames != null && aliasNames.length > 0) || (tables != null && tables.length > 0)) sb.append(" ");
+        sb.append("FROM ");
 
         StampFrom[] froms = delete.froms;
         int i = 0;
@@ -78,7 +79,7 @@ public class MysqlStampDelete extends MysqlAbstractStamp implements StampCombine
         }
 
         if (delete.limit != null) {
-            sb.append(" LIMIT " + delete.limit.start + "," + delete.limit.limit);
+            sb.append(" LIMIT " + delete.limit.limit);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

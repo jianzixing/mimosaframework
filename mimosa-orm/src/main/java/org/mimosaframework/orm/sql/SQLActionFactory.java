@@ -78,7 +78,11 @@ public class SQLActionFactory {
                         DeleteWhereNextBuilder.class,
                         CommonWhereBuilder.class,
                         CommonWhereCompareBuilder.class,
-                        CommonWhereNextImplBuilder.class
+                        CommonWhereNextImplBuilder.class,
+                        DeleteWhereOnlyNextBuilder.class,
+                        OrderByNextCountBuilder.class,
+                        OrderBySealCountBuilder.class,
+                        DeleteUsingTableBuilder.class
                 },
                 deleteBuilder
         );

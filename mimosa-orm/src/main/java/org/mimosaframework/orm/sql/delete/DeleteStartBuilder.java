@@ -7,7 +7,7 @@ public interface DeleteStartBuilder
         BeforeDeleteFromBuilder
                 <FromBuilder
                         <AbsTableAliasBuilder
-                                <DeleteAsTableBuilder<CommonWhereBuilder<DeleteWhereNextBuilder>>>>>,
+                                <DeleteAsTableBuilder<CommonWhereBuilder<DeleteWhereOnlyNextBuilder>>>>>,
 
         FromBuilder
                 <AbsTableBuilder

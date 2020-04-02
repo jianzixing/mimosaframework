@@ -21,5 +21,5 @@ public interface RedefineDeleteBuilder
         WrapperBuilder,
         OrderByBuilder,
         SortBuilder,
-        LimitBuilder {
+        LimitCountBuilder {
 }

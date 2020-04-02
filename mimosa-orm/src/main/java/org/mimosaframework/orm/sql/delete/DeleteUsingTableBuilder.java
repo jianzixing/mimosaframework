@@ -7,6 +7,6 @@ import org.mimosaframework.orm.sql.WhereBuilder;
 
 public interface DeleteUsingTableBuilder
         extends
-        WhereBuilder<CommonWhereBuilder<DeleteWhereNextBuilder>>,
+        WhereBuilder<CommonWhereBuilder<DeleteWhereOnlyNextBuilder>>,
         AbsTableAliasBuilder<DeleteUsingTableBuilder> {
 }

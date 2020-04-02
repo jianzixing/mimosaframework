@@ -298,6 +298,45 @@ public class SessionTemplateTesting {
     }
 
     @Test
+    public void testDelete4() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.delete().from()
+                        .table(TableUser.class)
+                        .where()
+                        .column("t1", TableUser.id)
+                        .eq()
+                        .value(1)
+                        .and()
+                        .column("t1", TableUser.id).eq().value(1)
+                        .orderBy()
+                        .column("t1", TableUser.id).asc()
+                        .column("t1", TableUser.age).desc()
+                        .limit(10)
+
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+    @Test
+    public void testDelete5() throws Exception {
+        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
+                SQLAutonomously.delete().from()
+                        .table(TableUser.class)
+                        .using()
+                        .table(TablePay.class, "t2")
+                        .where()
+                        .column(TableUser.class, TableUser.id).eq().value(1)
+                        .and()
+                        .column(TableUser.class, TableUser.id).eq().column("t2", TablePay.userId)
+
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        System.out.println(autoResult.getValue());
+    }
+
+
+    @Test
     public void testDrop1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.drop().table().table(TableUser.class)

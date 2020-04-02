@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.sql.delete;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
@@ -12,6 +13,8 @@ public class DefaultSQLDeleteBuilder
         CommonOperatorSQLBuilder
         implements
         RedefineDeleteBuilder {
+
+    protected boolean isUsing = false;
 
     protected StampDelete stampDelete = new StampDelete();
     protected List<StampFrom> stampFroms = new ArrayList<>();
@@ -142,9 +145,9 @@ public class DefaultSQLDeleteBuilder
     }
 
     @Override
-    public Object limit(int pos, int len) {
+    public Object limit(int len) {
         this.gammars.add("limit");
-        this.stampDelete.limit = new StampLimit(pos, len);
+        this.stampDelete.limit = new StampLimit(0, len);
         return this;
     }
 
@@ -164,7 +167,7 @@ public class DefaultSQLDeleteBuilder
     @Override
     public Object table(String... aliasNames) {
         this.gammars.add("table");
-        this.stampDelete.aliasNames = aliasNames;
+        this.stampDelete.delTableAlias = aliasNames;
         return this;
     }
 
@@ -172,7 +175,7 @@ public class DefaultSQLDeleteBuilder
     public Object table(Class... table) {
         this.gammars.add("table");
         if (this.previous("delete")) {
-            this.stampDelete.tables = table;
+            this.stampDelete.delTables = table;
         }
         return this;
     }
@@ -194,6 +197,15 @@ public class DefaultSQLDeleteBuilder
     @Override
     public Object using() {
         this.gammars.add("using");
+        this.isUsing = true;
+        if (stampFroms.size() > 0) {
+            StampFrom from = stampFroms.get(stampFroms.size() - 1);
+            if (from.table != null) {
+                this.stampDelete.delTables = new Class[]{from.table};
+            } else if (StringTools.isNotEmpty(from.aliasName)) {
+                this.stampDelete.delTableAlias = new String[]{from.aliasName};
+            }
+        }
         return this;
     }
 
@@ -203,7 +215,7 @@ public class DefaultSQLDeleteBuilder
             this.stampDelete.froms = stampFroms.toArray(new StampFrom[]{});
         }
         if (deletes != null && deletes.size() > 0) {
-            stampDelete.tables = deletes.toArray(new Class[]{});
+            stampDelete.delTables = deletes.toArray(new Class[]{});
         }
         if (where != null) stampDelete.where = where;
         if (orderBys != null) stampDelete.orderBy = orderBys.toArray(new StampOrderBy[]{});
