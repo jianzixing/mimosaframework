@@ -9,7 +9,5 @@ import org.mimosaframework.orm.sql.stamp.StampAction;
 public interface UnifyBuilder {
     StampAction compile();
 
-    void setAutonomously(SQLAutonomously autonomously);
-
     SQLAutonomously autonomously();
 }
