@@ -426,6 +426,8 @@ public class DefaultSQLSelectBuilder
                     column.column = ((FieldItem) param).getField();
                     column.tableAliasName = ((FieldItem) param).getTableAliasName();
                     newParams[i] = column;
+                } else if (param instanceof FunItem) {
+                    newParams[i] = new StampFieldFun(((FunItem) param).getFunName(), ((FunItem) param).getParams());
                 } else if ("distinct".equalsIgnoreCase(param.toString())) {
                     StampKeyword stampKeyword = new StampKeyword();
                     stampKeyword.distinct = true;

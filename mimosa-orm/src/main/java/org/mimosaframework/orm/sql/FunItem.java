@@ -3,81 +3,69 @@ package org.mimosaframework.orm.sql;
 import java.io.Serializable;
 
 public class FunItem implements FieldFunBuilder {
-    private Serializable param;
+    private String funName;
     private Serializable[] params;
-    private int pos;
-    private int len;
 
-    private Support type;
-
-    @Override
-    public Object count(Serializable... params) {
-        this.params = params;
-        this.type = Support.COUNT;
-        return this;
-    }
-
-    @Override
-    public Object max(Serializable... params) {
-        this.params = params;
-        this.type = Support.MAX;
-        return this;
-    }
-
-    @Override
-    public Object avg(Serializable... params) {
-        this.params = params;
-        this.type = Support.AVG;
-        return this;
-    }
-
-    @Override
-    public Object sum(Serializable... params) {
-        this.params = params;
-        this.type = Support.SUM;
-        return this;
-    }
-
-    @Override
-    public Object min(Serializable... params) {
-        this.params = params;
-        this.type = Support.MIN;
-        return this;
-    }
-
-    @Override
-    public Object concat(Serializable... params) {
-        this.params = params;
-        this.type = Support.CONCAT;
-        return this;
-    }
-
-    @Override
-    public Object substring(Serializable param, int pos, int len) {
-        this.param = param;
-        this.pos = pos;
-        this.len = len;
-        this.type = Support.SUBSTRING;
-        return this;
-    }
-
-    public Serializable getParam() {
-        return param;
+    public String getFunName() {
+        return funName;
     }
 
     public Serializable[] getParams() {
         return params;
     }
 
-    public int getPos() {
-        return pos;
+    public Object fun(String funName, Serializable... params) {
+        this.funName = funName;
+        this.params = params;
+        return this;
     }
 
-    public int getLen() {
-        return len;
+    @Override
+    public Object count(Serializable... params) {
+        this.params = params;
+        this.funName = Support.COUNT.toString();
+        return this;
     }
 
-    public Support getType() {
-        return type;
+    @Override
+    public Object max(Serializable... params) {
+        this.params = params;
+        this.funName = Support.MAX.toString();
+        return this;
+    }
+
+    @Override
+    public Object avg(Serializable... params) {
+        this.params = params;
+        this.funName = Support.AVG.toString();
+        return this;
+    }
+
+    @Override
+    public Object sum(Serializable... params) {
+        this.params = params;
+        this.funName = Support.SUM.toString();
+        return this;
+    }
+
+    @Override
+    public Object min(Serializable... params) {
+        this.params = params;
+        this.funName = Support.MIN.toString();
+        return this;
+    }
+
+    @Override
+    public Object concat(Serializable... params) {
+        this.params = params;
+        this.funName = Support.CONCAT.toString();
+        return this;
+    }
+
+    @Override
+    public Object substring(Serializable param, int pos, int len) {
+        this.params = new Serializable[]{param, pos, len};
+        this.funName = Support.SUBSTRING.toString();
+        return this;
     }
 }
