@@ -6,5 +6,6 @@ public interface SelectJoinsBuilder
         extends
         LeftJoinBuilder<AbsTableAliasBuilder<OnBuilder<CommonWhereBuilder<SelectJoinWhereNextBuilder>>>>,
         InnerJoinBuilder<AbsTableAliasBuilder<OnBuilder<CommonWhereBuilder<SelectJoinWhereNextBuilder>>>>,
-        WhereBuilder<CommonWhereBuilder<SelectWhereNextBuilder>> {
+        WhereBuilder<CommonWhereBuilder<SelectWhereNextBuilder>>,
+        SelectGHOLBuilder {
 }

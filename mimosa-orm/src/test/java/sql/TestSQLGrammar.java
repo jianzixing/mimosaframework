@@ -82,6 +82,13 @@ public class TestSQLGrammar {
                 .column("").desc()
                 .limit(0, 10);
 
+        unifyBuilder = SelectFactory.select()
+                .all()
+                .from()
+                .table(TestSQLGrammar.class)
+                .orderBy().column("").asc()
+                .limit(0, 10);
+
 
         ///
 
