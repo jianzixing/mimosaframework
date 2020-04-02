@@ -33,6 +33,7 @@ public class DefaultSQLInsertBuilder
             columns[i] = new StampColumn(field);
             i++;
         }
+        this.stampInsert.columns = columns;
         return this;
     }
 
