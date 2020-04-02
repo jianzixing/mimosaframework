@@ -1,13 +1,26 @@
 package org.mimosaframework.orm.sql;
 
+import org.mimosaframework.orm.SQLAutonomously;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractSQLBuilder {
+public abstract class AbstractSQLBuilder implements UnifyBuilder {
     protected List gammars = new ArrayList<>();
     protected List points = null;
     protected Object point = null;
     protected int posPoint = -1;
+
+    private SQLAutonomously autonomously;
+
+    public void setAutonomously(SQLAutonomously autonomously) {
+        this.autonomously = autonomously;
+    }
+
+    @Override
+    public SQLAutonomously autonomously() {
+        return this.autonomously;
+    }
 
     protected void addPoint(Object point) {
         this.gammars.add(point);

@@ -83,7 +83,7 @@ public class MysqlStampSelect extends MysqlAbstractStamp implements StampCombine
 
         if (select.having != null) {
             sb.append(" HAVING ");
-            this.buildWhere(wrapper, placeholders, select, select.where, sb);
+            this.buildWhere(wrapper, placeholders, select, select.having, sb);
         }
 
         if (select.orderBy != null && select.orderBy.length > 0) {
@@ -118,7 +118,12 @@ public class MysqlStampSelect extends MysqlAbstractStamp implements StampCombine
         String aliasName = field.aliasName;
         String tableAliasName = field.tableAliasName;
 
-        if (column != null) {
+        if (field.fieldType == KeyFieldType.ALL) {
+            if (StringTools.isNotEmpty(tableAliasName)) {
+                sb.append(RS + tableAliasName + RE + ".");
+            }
+            sb.append("*");
+        } else if (field.fieldType == KeyFieldType.COLUMN) {
             if (StringTools.isNotEmpty(tableAliasName)) {
                 sb.append(RS + tableAliasName + RE + ".");
             }
@@ -126,7 +131,7 @@ public class MysqlStampSelect extends MysqlAbstractStamp implements StampCombine
             if (StringTools.isNotEmpty(aliasName)) {
                 sb.append(" AS " + RS + aliasName + RE);
             }
-        } else if (fun != null) {
+        } else if (field.fieldType == KeyFieldType.FUN) {
             this.buildSelectFieldFun(wrapper, select, fun, sb);
 
             if (StringTools.isNotEmpty(aliasName)) {

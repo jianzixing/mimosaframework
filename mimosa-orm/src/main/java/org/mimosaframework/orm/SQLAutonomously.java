@@ -90,31 +90,59 @@ public class SQLAutonomously implements Serializable {
     }
 
     public static AlterAnyBuilder alter() {
-        return SQLActionFactory.alter();
+        AlterAnyBuilder alterAnyBuilder = SQLActionFactory.alter();
+        if (alterAnyBuilder instanceof UnifyBuilder) {
+            alterAnyBuilder.setAutonomously(newInstance(alterAnyBuilder));
+        }
+        return alterAnyBuilder;
     }
 
     public static CreateAnyBuilder create() {
-        return SQLActionFactory.create();
+        CreateAnyBuilder createAnyBuilder = SQLActionFactory.create();
+        if (createAnyBuilder instanceof UnifyBuilder) {
+            ((UnifyBuilder) createAnyBuilder).setAutonomously(newInstance((UnifyBuilder) createAnyBuilder));
+        }
+        return createAnyBuilder;
     }
 
     public static DeleteStartBuilder delete() {
-        return SQLActionFactory.delete();
+        DeleteStartBuilder deleteStartBuilder = SQLActionFactory.delete();
+        if (deleteStartBuilder instanceof UnifyBuilder) {
+            ((UnifyBuilder) deleteStartBuilder).setAutonomously(newInstance(deleteStartBuilder));
+        }
+        return deleteStartBuilder;
     }
 
     public static DropAnyBuilder drop() {
-        return SQLActionFactory.drop();
+        DropAnyBuilder dropAnyBuilder = SQLActionFactory.drop();
+        if (dropAnyBuilder instanceof UnifyBuilder) {
+            ((UnifyBuilder) dropAnyBuilder).setAutonomously(newInstance((UnifyBuilder) dropAnyBuilder));
+        }
+        return dropAnyBuilder;
     }
 
     public static InsertStartBuilder insert() {
-        return SQLActionFactory.insert();
+        InsertStartBuilder insertStartBuilder = SQLActionFactory.insert();
+        if (insertStartBuilder instanceof UnifyBuilder) {
+            ((UnifyBuilder) insertStartBuilder).setAutonomously(newInstance((UnifyBuilder) insertStartBuilder));
+        }
+        return insertStartBuilder;
     }
 
     public static SelectStartBuilder select() {
-        return SQLActionFactory.select();
+        SelectStartBuilder selectStartBuilder = SQLActionFactory.select();
+        if (selectStartBuilder instanceof UnifyBuilder) {
+            ((UnifyBuilder) selectStartBuilder).setAutonomously(newInstance((UnifyBuilder) selectStartBuilder));
+        }
+        return selectStartBuilder;
     }
 
     public static UpdateStartBuilder update() {
-        return SQLActionFactory.update();
+        UpdateStartBuilder updateStartBuilder = SQLActionFactory.update();
+        if (updateStartBuilder instanceof UnifyBuilder) {
+            ((UnifyBuilder) updateStartBuilder).setAutonomously(newInstance(updateStartBuilder));
+        }
+        return updateStartBuilder;
     }
 
     public void add(String sql) {

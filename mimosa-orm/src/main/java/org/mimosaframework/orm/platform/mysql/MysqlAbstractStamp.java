@@ -113,7 +113,7 @@ public abstract class MysqlAbstractStamp {
                     sb.append(key);
                 } else if (leftFun != null) {
                     this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
-                    key = fun.funName;
+                    key = leftFun.funName;
                 } else if (leftValue != null) {
                     sb.append("?");
 
@@ -146,7 +146,7 @@ public abstract class MysqlAbstractStamp {
                     sb.append(key);
                 } else if (leftFun != null) {
                     this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
-                    key = fun.funName;
+                    key = leftFun.funName;
                 } else if (leftValue != null) {
                     sb.append("?");
 
@@ -212,6 +212,9 @@ public abstract class MysqlAbstractStamp {
             for (Object param : params) {
                 if (param instanceof StampColumn) {
                     sb.append(this.getColumnName(wrapper, stampTables, (StampColumn) param));
+                }
+                if (param instanceof StampKeyword) {
+                    if (((StampKeyword) param).distinct) sb.append("DISTINCT ");
                 }
                 if (param instanceof Number) {
                     sb.append(param);

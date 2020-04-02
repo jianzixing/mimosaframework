@@ -394,6 +394,21 @@ public class SessionTemplateTesting {
     }
 
     @Test
+    public void testSelect2() throws Exception {
+        template.getAutonomously(
+                SQLAutonomously.select()
+                        .all()
+                        .from()
+                        .table(TableUser.class)
+                        .where()
+                        .column("t", TableUser.id).eq().value(1)
+                        .having()
+                        .count("distinct", TableUser.id).gt().value(10)
+                        .autonomously()
+        );
+    }
+
+    @Test
     public void testUpdate1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.update().table(TableUser.class)
