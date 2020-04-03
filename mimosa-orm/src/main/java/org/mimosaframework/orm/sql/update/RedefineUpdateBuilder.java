@@ -19,5 +19,6 @@ public interface RedefineUpdateBuilder
         LimitCountBuilder,
         AbsValueBuilder,
         UsingBuilder,
-        UpdateWhichTableBuilder {
+        UpdateWhichTableBuilder,
+        UpdateSetColumnBuilder {
 }

@@ -441,8 +441,8 @@ public class SessionTemplateTesting {
                         .using()
                         .table(TableUser.class, "t2")
                         .set()
-                        .column("t1", TableUser.address).eq().value("b")
-                        .column("t1", TableUser.createdTime).eq().value("2019-01-01 10:00:00")
+                        .column(TableUser.address).eq().value("b")
+                        .column(TableUser.createdTime).eq().value("2019-01-01 10:00:00")
                         .where().column("t1", TableUser.id).eq().value(1)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);

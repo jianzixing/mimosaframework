@@ -4,13 +4,12 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
-import org.mimosaframework.orm.platform.mysql.MysqlStampCommonality;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OracleStampUpdate extends MysqlStampCommonality implements StampCombineBuilder {
+public class OracleStampUpdate extends OracleStampCommonality implements StampCombineBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampUpdate update = (StampUpdate) action;
@@ -21,7 +20,7 @@ public class OracleStampUpdate extends MysqlStampCommonality implements StampCom
         if (fromTarget != null) {
             sb.append(this.getTableName(wrapper, fromTarget.table, fromTarget.name));
             if (StringTools.isNotEmpty(fromTarget.aliasName)) {
-                sb.append(" " + RS + fromTarget.aliasName + RE);
+                sb.append(" AS " + RS + fromTarget.aliasName + RE);
             }
         }
 
@@ -32,7 +31,7 @@ public class OracleStampUpdate extends MysqlStampCommonality implements StampCom
             for (StampFrom table : froms) {
                 sb.append(this.getTableName(wrapper, table.table, table.name));
                 if (StringTools.isNotEmpty(table.aliasName)) {
-                    sb.append(" " + RS + table.aliasName + RE);
+                    sb.append(" AS " + RS + table.aliasName + RE);
                 }
                 i++;
                 if (i != froms.length) sb.append(",");
@@ -80,6 +79,8 @@ public class OracleStampUpdate extends MysqlStampCommonality implements StampCom
                                  StampUpdateItem item,
                                  StringBuilder sb,
                                  List<SQLDataPlaceholder> placeholders) {
+        item.column.table = update.table.table;
+        item.column.tableAliasName = update.table.aliasName;
         String name = this.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");

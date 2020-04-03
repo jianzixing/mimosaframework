@@ -20,7 +20,7 @@ public class MysqlStampUpdate extends MysqlStampCommonality implements StampComb
         if (fromTarget != null) {
             sb.append(this.getTableName(wrapper, fromTarget.table, fromTarget.name));
             if (StringTools.isNotEmpty(fromTarget.aliasName)) {
-                sb.append(" " + RS + fromTarget.aliasName + RE);
+                sb.append(" AS " + RS + fromTarget.aliasName + RE);
             }
         }
 
@@ -31,7 +31,7 @@ public class MysqlStampUpdate extends MysqlStampCommonality implements StampComb
             for (StampFrom table : froms) {
                 sb.append(this.getTableName(wrapper, table.table, table.name));
                 if (StringTools.isNotEmpty(table.aliasName)) {
-                    sb.append(" " + RS + table.aliasName + RE);
+                    sb.append(" AS " + RS + table.aliasName + RE);
                 }
                 i++;
                 if (i != froms.length) sb.append(",");
@@ -79,6 +79,8 @@ public class MysqlStampUpdate extends MysqlStampCommonality implements StampComb
                                  StampUpdateItem item,
                                  StringBuilder sb,
                                  List<SQLDataPlaceholder> placeholders) {
+        item.column.table = update.table.table;
+        item.column.tableAliasName = update.table.aliasName;
         String name = this.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");

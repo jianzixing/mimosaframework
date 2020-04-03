@@ -95,7 +95,7 @@ public class TestSQLGrammar {
         unifyBuilder = UpdateFactory.update()
                 .table(TestSQLGrammar.class, "t1")
                 .set()
-                .column("", "").eq().value("")
+                .column("").eq().value("")
                 .column("").eq().value("")
                 .where().column("").eq().value("")
                 .orderBy()

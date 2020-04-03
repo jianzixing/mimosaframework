@@ -39,17 +39,6 @@ public abstract class OracleStampCommonality {
                     return columnName;
                 }
             }
-            if (column.table != null) {
-                MappingTable mappingTable = wrapper.getMappingTable(column.table);
-                if (mappingTable != null) {
-                    MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
-                    if (mappingField != null) {
-                        return RS + mappingTable.getMappingTableName() + RE
-                                + "."
-                                + RS + mappingField.getMappingColumnName() + RE;
-                    }
-                }
-            }
 
             List<StampAction.STItem> tables = stampTables.getTables();
             if (tables != null) {
@@ -66,7 +55,21 @@ public abstract class OracleStampCommonality {
                         }
                     }
                 }
+            }
 
+            if (column.table != null) {
+                MappingTable mappingTable = wrapper.getMappingTable(column.table);
+                if (mappingTable != null) {
+                    MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
+                    if (mappingField != null) {
+                        return RS + mappingTable.getMappingTableName() + RE
+                                + "."
+                                + RS + mappingField.getMappingColumnName() + RE;
+                    }
+                }
+            }
+
+            if (tables != null) {
                 for (StampAction.STItem stItem : tables) {
                     MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
                     if (mappingTable != null) {
