@@ -444,101 +444,75 @@ public class DefaultSQLSelectBuilder
         return null;
     }
 
-    @Override
-    public Object count(Serializable... params) {
-        this.gammars.add("fun");
-        StampFieldFun fun = new StampFieldFun("COUNT", this.covertFunParam(params));
+    protected void commonFunWhere(String funName, Serializable... params) {
+        StampFieldFun fun = new StampFieldFun(funName, this.covertFunParam(params));
         if (this.point.equals("having")) {
-            this.lastWhere.leftFun = fun;
+            if (this.previous("operator")) {
+                this.lastWhere.rightFun = fun;
+            } else {
+                if (this.previous("or") || this.previous("and")) {
+                    StampWhere where = new StampWhere();
+                    where.leftFun = fun;
+                    this.lastWhere.next = where;
+                    this.lastWhere = where;
+                } else {
+                    this.lastWhere.leftFun = fun;
+                }
+            }
         } else {
             StampSelectField field = new StampSelectField();
             field.fun = fun;
+            field.fieldType = KeyFieldType.FUN;
             this.stampSelectFields.add(field);
         }
+    }
+
+    @Override
+    public Object count(Serializable... params) {
+        this.gammars.add("fun");
+        this.commonFunWhere("COUNT", params);
         return this;
     }
 
     @Override
     public Object max(Serializable... params) {
         this.gammars.add("fun");
-        StampFieldFun fun = new StampFieldFun("MAX", this.covertFunParam(params));
-        if (this.point.equals("having")) {
-            this.lastWhere.leftFun = fun;
-        } else {
-            StampSelectField field = new StampSelectField();
-            field.fun = fun;
-            this.stampSelectFields.add(field);
-        }
+        this.commonFunWhere("MAX", params);
         return this;
     }
 
     @Override
     public Object avg(Serializable... params) {
         this.gammars.add("fun");
-        StampFieldFun fun = new StampFieldFun("AVG", this.covertFunParam(params));
-        if (this.point.equals("having")) {
-            this.lastWhere.leftFun = fun;
-        } else {
-            StampSelectField field = new StampSelectField();
-            field.fun = fun;
-            this.stampSelectFields.add(field);
-        }
+        this.commonFunWhere("AVG", params);
         return this;
     }
 
     @Override
     public Object sum(Serializable... params) {
         this.gammars.add("fun");
-        StampFieldFun fun = new StampFieldFun("SUM", this.covertFunParam(params));
-        if (this.point.equals("having")) {
-            this.lastWhere.leftFun = fun;
-        } else {
-            StampSelectField field = new StampSelectField();
-            field.fun = fun;
-            this.stampSelectFields.add(field);
-        }
+        this.commonFunWhere("SUM", params);
         return this;
     }
 
     @Override
     public Object min(Serializable... params) {
         this.gammars.add("fun");
-        StampFieldFun fun = new StampFieldFun("MIN", this.covertFunParam(params));
-        if (this.point.equals("having")) {
-            this.lastWhere.leftFun = fun;
-        } else {
-            StampSelectField field = new StampSelectField();
-            field.fun = fun;
-            this.stampSelectFields.add(field);
-        }
+        this.commonFunWhere("MIN", params);
         return this;
     }
 
     @Override
     public Object concat(Serializable... params) {
         this.gammars.add("fun");
-        StampFieldFun fun = new StampFieldFun("CONCAT", this.covertFunParam(params));
-        if (this.point.equals("having")) {
-            this.lastWhere.leftFun = fun;
-        } else {
-            StampSelectField field = new StampSelectField();
-            field.fun = fun;
-            this.stampSelectFields.add(field);
-        }
+        this.commonFunWhere("CONCAT", params);
         return this;
     }
 
     @Override
     public Object substring(Serializable param, int pos, int len) {
         this.gammars.add("fun");
-        StampFieldFun fun = new StampFieldFun("SUBSTRING", this.covertFunParam(param, pos, len));
-        if (this.point.equals("having")) {
-            this.lastWhere.leftFun = fun;
-        } else {
-            StampSelectField field = new StampSelectField();
-            field.fun = fun;
-            this.stampSelectFields.add(field);
-        }
+        this.commonFunWhere("SUBSTRING", param, pos, len);
         return this;
     }
 

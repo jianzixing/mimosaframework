@@ -40,7 +40,6 @@ public class MysqlStampSelect extends MysqlAbstractStamp implements StampCombine
 
         StampSelectJoin[] joins = select.joins;
         if (joins != null) {
-            int jc = 0;
             for (StampSelectJoin join : joins) {
                 if (join.joinType == KeyJoinType.LEFT) {
                     sb.append(" LEFT JOIN");
@@ -55,10 +54,6 @@ public class MysqlStampSelect extends MysqlAbstractStamp implements StampCombine
                 if (join.on != null) {
                     sb.append(" ON ");
                     this.buildWhere(wrapper, placeholders, select, join.on, sb);
-                }
-                jc++;
-                if (jc != joins.length) {
-                    sb.append(" ");
                 }
             }
         }

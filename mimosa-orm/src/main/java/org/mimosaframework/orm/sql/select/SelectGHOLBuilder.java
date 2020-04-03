@@ -5,7 +5,7 @@ import org.mimosaframework.orm.sql.*;
 public interface SelectGHOLBuilder
         extends
         SelectGroupByBuilder,
-        HavingBuilder<HavingOperatorFunctionBuilder>,
+        HavingBuilder<HavingWhereBuilder>,
         OrderByBuilder<OrderByNextBuilder>,
         LimitBuilder<UnifyBuilder> {
 

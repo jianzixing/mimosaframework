@@ -375,9 +375,10 @@ public class SessionTemplateTesting {
                 SQLAutonomously.select()
                         .field("t", TableUser.id)
                         .field("t", TableUser.userName)
-                        .count(new FieldItem("t", TableUser.id))
+                        .count(new FieldItem("t", TableUser.id)).as("c")
                         .from().table(TableUser.class, "t")
                         .left().join().table(TableUser.class, "t1").on().column("t1", TableUser.id).eq().column("t", TableUser.id)
+                        .inner().join().table(TableUser.class, "t2").on().column("t2", TableUser.id).eq().column("t", TableUser.id)
                         .where()
                         .column("t", TableUser.id).eq().value(1)
                         .groupBy()
@@ -404,6 +405,8 @@ public class SessionTemplateTesting {
                         .column("t", TableUser.id).eq().value(1)
                         .having()
                         .count("distinct", TableUser.id).gt().value(10)
+                        .and()
+                        .max(new FieldItem(TableUser.id)).ne().column("t", TableUser.age)
                         .autonomously()
         );
     }

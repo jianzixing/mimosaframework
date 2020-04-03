@@ -136,7 +136,7 @@ public class SQLActionFactory {
                         ReplaceSelectFieldBuilder.class,
                         SelectJoinsBuilder.class,
                         SelectTableAliasBuilder.class,
-                        HavingOperatorFunctionBuilder.class,
+                        HavingWhereBuilder.class,
                         SelectGroupByBuilder.class,
                         SelectGroupByNextBuilder.class,
                         OrderByNextBuilder.class,
@@ -145,7 +145,8 @@ public class SQLActionFactory {
                         CommonWhereBuilder.class,
                         CommonWhereCompareBuilder.class,
                         SelectJoinWhereNextBuilder.class,
-                        SelectWhereNextBuilder.class
+                        SelectWhereNextBuilder.class,
+                        HavingWhereNextBuilder.class
                 },
                 selectBuilder
         );
