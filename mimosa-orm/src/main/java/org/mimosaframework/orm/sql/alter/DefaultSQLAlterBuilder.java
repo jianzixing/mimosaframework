@@ -304,7 +304,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object index() {
-        this.addPoint("index");
+        this.gammars.add("index");
         StampAlterItem item = this.getLastItem();
         item.struct = KeyAlterStruct.INDEX;
         if (this.previous("fullText")) {
