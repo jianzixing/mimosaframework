@@ -3,7 +3,6 @@ package sql;
 import org.junit.Before;
 import org.junit.Test;
 import org.mimosaframework.orm.*;
-import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.sql.FieldItem;
 import org.mimosaframework.orm.sql.Wrapper;
@@ -92,10 +91,16 @@ public class SessionTemplateTesting {
     public void testAlter8() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
+                        .drop().index().name("b")
+        );
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+
+        sqlAutonomously = new SQLAutonomously(
+                SQLAutonomously.alter().table(TableUser.class)
                         .add().fullText().index().name("b").columns(TableUser.address, TableUser.userName)
                         .comment("aaa")
         );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        autoResult = template.getAutonomously(sqlAutonomously);
 
         sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)

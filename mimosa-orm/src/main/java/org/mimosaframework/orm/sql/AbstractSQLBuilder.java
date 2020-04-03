@@ -35,6 +35,13 @@ public abstract class AbstractSQLBuilder implements UnifyBuilder {
         return null;
     }
 
+    protected Object getPointNext(int i) {
+        if (this.posPoint + i < this.gammars.size()) {
+            return this.gammars.get(this.posPoint + i);
+        }
+        return null;
+    }
+
     protected Object getPrePoint() {
         return this.getPoint(1);
     }
@@ -47,18 +54,6 @@ public abstract class AbstractSQLBuilder implements UnifyBuilder {
         return false;
     }
 
-    protected boolean hasPreviousStop(Object... keyword) {
-        Object stop = keyword[keyword.length - 1];
-        for (int j = 0; j < keyword.length - 1; j++) {
-            for (int i = gammars.size() - 1; i >= 0; i--) {
-                Object k = gammars.get(i);
-                if (k.equals(keyword[j])) return true;
-                if (stop.equals(k)) break;
-            }
-        }
-        return false;
-    }
-
     protected Object previous(Object... keywords) {
         for (int i = gammars.size() - 1; i >= 0; i--) {
             Object k = gammars.get(i);
@@ -67,37 +62,5 @@ public abstract class AbstractSQLBuilder implements UnifyBuilder {
             }
         }
         return null;
-    }
-
-    protected boolean isAfter(Object keyword, int start, Object... is) {
-        for (int i = gammars.size() - 1; i >= 0; i--) {
-            if (i <= start) break;
-            Object k = gammars.get(i);
-            if (k.equals(keyword)) {
-                int j = 1;
-                for (Object s : is) {
-                    if (!s.equals("*")) {
-                        if ((i + j) < gammars.size() && gammars.get(i + j).equals(s)) {
-                        } else {
-                            return false;
-                        }
-                    }
-                    j++;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected boolean has(Object keyword) {
-        for (int i = 0; i < gammars.size(); i++) {
-            if (gammars.get(i).equals(keyword)) return true;
-        }
-        return false;
-    }
-
-    protected int indexOf(Object keyword) {
-        return this.gammars.lastIndexOf(keyword);
     }
 }

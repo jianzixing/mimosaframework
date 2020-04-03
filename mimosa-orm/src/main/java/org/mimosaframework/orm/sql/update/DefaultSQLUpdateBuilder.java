@@ -79,12 +79,12 @@ public class DefaultSQLUpdateBuilder
         } else {
             column = new StampColumn(field);
         }
-        if (this.hasPreviousStop("orderBy", "orderBy")) {
+        if (this.point.equals("orderBy")) {
             StampOrderBy stampOrderBy = new StampOrderBy();
             stampOrderBy.column = column;
             this.lastOrderBy = stampOrderBy;
             this.orderBys.add(stampOrderBy);
-        } else if (this.hasPreviousStop("where", "where")) {
+        } else if (this.point.equals("where")) {
             if (this.previous("operator")) {
                 this.lastWhere.whereType = KeyWhereType.NORMAL;
                 this.lastWhere.rightColumn = column;
@@ -96,7 +96,7 @@ public class DefaultSQLUpdateBuilder
                 this.lastWhere = where;
                 if (this.where == null) this.where = where;
             }
-        } else if (this.hasPreviousStop("set", "set")) {
+        } else if (this.point.equals("set")) {
             StampUpdateItem item = new StampUpdateItem();
             item.column = column;
             items.add(item);

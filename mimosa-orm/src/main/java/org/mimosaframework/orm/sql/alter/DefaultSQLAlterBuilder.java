@@ -32,6 +32,7 @@ public class DefaultSQLAlterBuilder
         this.gammars.add("name");
         if (this.previous("index") || this.previous("unique")) {
             StampAlterItem item = this.getLastItem();
+            item.dropType = KeyAlterDropType.INDEX;
             item.name = value.toString();
         } else {
             this.stampAlter.name = value.toString();
@@ -66,14 +67,14 @@ public class DefaultSQLAlterBuilder
         StampAlterItem item = this.getLastItem();
         if (this.previous("after")) {
             item.after = new StampColumn(field);
-        } else if (this.hasPreviousStop("index", ",")
-                || this.isAfter("add", this.indexOf(","), "primary", "key")) {
+        } else if (this.getPointNext(1).equals("index")
+                || (this.getPointNext(1).equals("primary") && this.getPointNext(2).equals("key"))) {
             item.columns = new StampColumn[]{new StampColumn(field)};
         } else {
             item.column = new StampColumn(field);
             item.struct = KeyAlterStruct.COLUMN;
 
-            if (this.hasPreviousStop("drop", ",")) {
+            if (this.point.equals("drop")) {
                 item.dropType = KeyAlterDropType.COLUMN;
             }
         }
@@ -130,7 +131,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object add() {
-        this.gammars.add("add");
+        this.addPoint("add");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.ADD;
         this.items.add(item);
@@ -313,7 +314,7 @@ public class DefaultSQLAlterBuilder
             item.indexType = KeyIndexType.UNIQUE;
         }
 
-        if (this.hasPreviousStop("drop", ",")) {
+        if (this.point.equals("drop")) {
             item.dropType = KeyAlterDropType.INDEX;
         }
         return this;
@@ -327,7 +328,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object drop() {
-        this.gammars.add("drop");
+        this.addPoint("drop");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.DROP;
         this.items.add(item);
@@ -339,13 +340,14 @@ public class DefaultSQLAlterBuilder
         this.gammars.add("key");
         if (this.previous("primary")) {
             StampAlterItem item = this.getLastItem();
-            if (this.hasPreviousStop("column", ",")) {
+            if (this.getPointNext(1).equals("column")) {
                 item.pk = true;
-            } else if (this.hasPreviousStop("add", ",") && !this.hasPreviousStop("column", ",")) {
+            } else if (this.point.equals("add")
+                    && !this.getPointNext(1).equals("column")) {
                 item.struct = KeyAlterStruct.INDEX;
                 item.indexType = KeyIndexType.PRIMARY_KEY;
             }
-            if (this.hasPreviousStop("drop", ",")) {
+            if (this.point.equals("drop")) {
                 item.dropType = KeyAlterDropType.PRIMARY_KEY;
             }
         } else {
@@ -369,7 +371,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object change() {
-        this.gammars.add("change");
+        this.addPoint("change");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.CHANGE;
         this.items.add(item);
@@ -378,7 +380,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object modify() {
-        this.gammars.add("modify");
+        this.addPoint("modify");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.MODIFY;
         this.items.add(item);
@@ -403,7 +405,7 @@ public class DefaultSQLAlterBuilder
 
     @Override
     public Object rename() {
-        this.gammars.add("rename");
+        this.addPoint("rename");
         StampAlterItem item = new StampAlterItem();
         this.items.add(item);
         return this;
@@ -412,24 +414,28 @@ public class DefaultSQLAlterBuilder
     @Override
     public Object fullText() {
         this.gammars.add("fullText");
-        StampAlterItem item = this.getLastItem();
-        item.indexType = KeyIndexType.FULLTEXT;
+        if (this.getPointNext(1).equals("fullText")) {
+            StampAlterItem item = this.getLastItem();
+            item.indexType = KeyIndexType.FULLTEXT;
+        }
         return this;
     }
 
     @Override
     public Object unique() {
         this.gammars.add("unique");
-        StampAlterItem item = this.getLastItem();
-        item.struct = KeyAlterStruct.INDEX;
-        item.indexType = KeyIndexType.UNIQUE;
+        if (this.getPointNext(1).equals("unique")) {
+            StampAlterItem item = this.getLastItem();
+            item.struct = KeyAlterStruct.INDEX;
+            item.indexType = KeyIndexType.UNIQUE;
+        }
         return this;
     }
 
     @Override
     public Object value(int number) {
         this.gammars.add("value");
-        if (this.hasPreviousStop("autoIncrement", ",")) {
+        if (this.point.equals("table")) {
             StampAlterItem item = this.getLastItem();
             item.value = number;
         }

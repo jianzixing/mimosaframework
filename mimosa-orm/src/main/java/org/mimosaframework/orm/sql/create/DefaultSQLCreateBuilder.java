@@ -136,7 +136,7 @@ public class DefaultSQLCreateBuilder
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");
-        if (this.isAfter("create", -1, "table")) {
+        if (this.points.get(1).equals("table")) {
             StampCreateColumn column = new StampCreateColumn();
             column.column = new StampColumn(field);
             this.stampCreateColumns.add(column);
