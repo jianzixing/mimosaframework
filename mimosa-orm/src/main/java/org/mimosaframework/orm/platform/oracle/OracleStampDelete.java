@@ -4,48 +4,30 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
+import org.mimosaframework.orm.platform.mysql.MysqlStampCommonality;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OracleStampDelete extends OracleStampCommonality implements StampCombineBuilder {
+public class OracleStampDelete extends MysqlStampCommonality implements StampCombineBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampDelete delete = (StampDelete) action;
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE ");
-        String[] aliasNames = delete.delTableAlias;
-        Class[] tables = delete.delTables;
 
-        if (tables != null && tables.length > 0) {
-            int i = 0;
-            for (Class table : tables) {
-                sb.append(this.getTableName(wrapper, table, null));
-                i++;
-                if (i != tables.length) {
-                    sb.append(",");
-                }
-            }
+        String aliasName = delete.delTableAlias;
+        Class table = delete.delTable;
 
-            if (aliasNames != null && aliasNames.length > 0) {
-                sb.append(",");
-            }
+        if (table != null) {
+            sb.append(this.getTableName(wrapper, table, null));
+        } else if (StringTools.isNotEmpty(aliasName)) {
+            sb.append(aliasName);
         }
 
-        if (aliasNames != null && aliasNames.length > 0) {
-            int i = 0;
-            for (String aliasName : aliasNames) {
-                sb.append(aliasName);
-                i++;
-                if (i != aliasNames.length) {
-                    sb.append(",");
-                }
-            }
-        }
-
-        if ((aliasNames != null && aliasNames.length > 0) || (tables != null && tables.length > 0)) sb.append(" ");
+        if (StringTools.isNotEmpty(aliasName) || table != null) sb.append(" ");
         sb.append("FROM ");
 
         StampFrom[] froms = delete.froms;

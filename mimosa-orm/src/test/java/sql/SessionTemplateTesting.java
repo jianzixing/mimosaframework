@@ -438,6 +438,7 @@ public class SessionTemplateTesting {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.update()
                         .table(TableUser.class, "t1")
+                        .using()
                         .table(TableUser.class, "t2")
                         .set()
                         .column("t1", TableUser.address).eq().value("b")

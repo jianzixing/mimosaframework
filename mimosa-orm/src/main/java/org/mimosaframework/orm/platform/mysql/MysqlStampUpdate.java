@@ -16,15 +16,26 @@ public class MysqlStampUpdate extends MysqlStampCommonality implements StampComb
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         sb.append("UPDATE ");
-        StampFrom[] tables = update.tables;
-        int i = 0;
-        for (StampFrom table : tables) {
-            sb.append(this.getTableName(wrapper, table.table, table.name));
-            if (StringTools.isNotEmpty(table.aliasName)) {
-                sb.append(" " + RS + table.aliasName + RE);
+        StampFrom fromTarget = update.table;
+        if (fromTarget != null) {
+            sb.append(this.getTableName(wrapper, fromTarget.table, fromTarget.name));
+            if (StringTools.isNotEmpty(fromTarget.aliasName)) {
+                sb.append(" " + RS + fromTarget.aliasName + RE);
             }
-            i++;
-            if (i != tables.length) sb.append(",");
+        }
+
+        StampFrom[] froms = update.froms;
+        if (froms != null && froms.length > 0) {
+            sb.append(",");
+            int i = 0;
+            for (StampFrom table : froms) {
+                sb.append(this.getTableName(wrapper, table.table, table.name));
+                if (StringTools.isNotEmpty(table.aliasName)) {
+                    sb.append(" " + RS + table.aliasName + RE);
+                }
+                i++;
+                if (i != froms.length) sb.append(",");
+            }
         }
 
         sb.append(" SET ");

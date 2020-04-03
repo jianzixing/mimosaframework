@@ -7,7 +7,7 @@ public interface RedefineDeleteBuilder
         DeleteBuilder,
         AbsTableBuilder,
         AbsTableAliasBuilder,
-        BeforeDeleteFromBuilder,
+        DeleteWhichBuilder,
         FromBuilder,
         WhereBuilder,
         AbsWhereColumnBuilder,

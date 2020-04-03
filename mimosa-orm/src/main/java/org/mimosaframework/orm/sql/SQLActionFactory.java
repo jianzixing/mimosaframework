@@ -71,7 +71,7 @@ public class SQLActionFactory {
                 new Class[]{
                         RedefineDeleteBuilder.class,
                         DeleteUsingBuilder.class,
-                        BeforeDeleteFromBuilder.class,
+                        DeleteWhichBuilder.class,
                         DeleteStartBuilder.class,
                         DeleteAsTableBuilder.class,
                         DeleteTableAsBuilder.class,
@@ -172,7 +172,8 @@ public class SQLActionFactory {
                         OrderBySealCountBuilder.class,
                         ReplaceUpdateOnlySetBuilder.class,
                         ReplaceUpdateOnlyValueBuilder.class,
-                        UpdateWhereOnlyNextBuilder.class
+                        UpdateWhereOnlyNextBuilder.class,
+                        UpdateUsingBuilder.class
                 },
                 updateBuilder
         );

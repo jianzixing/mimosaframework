@@ -37,15 +37,23 @@ public class DefaultSQLUpdateBuilder
 
     @Override
     public Object table(Class table) {
-        this.addPoint("table");
-        stampFroms.add(new StampFrom(table));
+        this.gammars.add("table");
+        if (this.point.equals("update")) {
+            stampUpdate.table = new StampFrom(table);
+        } else {
+            stampFroms.add(new StampFrom(table));
+        }
         return this;
     }
 
     @Override
     public Object table(Class table, String tableAliasName) {
-        this.addPoint("table");
-        stampFroms.add(new StampFrom(table, tableAliasName));
+        this.gammars.add("table");
+        if (this.point.equals("update")) {
+            stampUpdate.table = new StampFrom(table, tableAliasName);
+        } else {
+            stampFroms.add(new StampFrom(table, tableAliasName));
+        }
         return this;
     }
 
@@ -165,11 +173,17 @@ public class DefaultSQLUpdateBuilder
     @Override
     public StampAction compile() {
         if (stampFroms != null && stampFroms.size() > 0) {
-            this.stampUpdate.tables = stampFroms.toArray(new StampFrom[]{});
+            this.stampUpdate.froms = stampFroms.toArray(new StampFrom[]{});
         }
         if (where != null) stampUpdate.where = where;
         if (orderBys != null) stampUpdate.orderBy = orderBys.toArray(new StampOrderBy[]{});
         if (items != null && items.size() > 0) stampUpdate.items = items.toArray(new StampUpdateItem[]{});
         return this.stampUpdate;
+    }
+
+    @Override
+    public Object using() {
+        this.addPoint("using");
+        return this;
     }
 }
