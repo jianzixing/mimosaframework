@@ -1,4 +1,4 @@
-package org.mimosaframework.orm.platform.mysql;
+package org.mimosaframework.orm.platform.oracle;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
@@ -7,7 +7,7 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class MysqlStampAlter extends MysqlStampCommonality implements StampCombineBuilder {
+public class OracleStampAlter extends OracleStampCommonality implements StampCombineBuilder {
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,

@@ -1,4 +1,4 @@
-package org.mimosaframework.orm.platform.mysql;
+package org.mimosaframework.orm.platform.oracle;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
@@ -9,7 +9,7 @@ import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.List;
 
-public abstract class MysqlAbstractStamp {
+public abstract class OracleStampCommonality {
     protected static final String RS = "`";
     protected static final String RE = "`";
 

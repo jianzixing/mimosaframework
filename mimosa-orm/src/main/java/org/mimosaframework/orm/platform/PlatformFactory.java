@@ -157,6 +157,14 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new MysqlStampInsert();
             if (stampAction instanceof StampSelect) return new MysqlStampSelect();
             if (stampAction instanceof StampUpdate) return new MysqlStampUpdate();
+        } else if (databaseTypes == DatabaseTypes.ORACLE) {
+            if (stampAction instanceof StampAlter) return new OracleStampAlter();
+            if (stampAction instanceof StampCreate) return new OracleStampCreate();
+            if (stampAction instanceof StampDelete) return new OracleStampDelete();
+            if (stampAction instanceof StampDrop) return new OracleStampDrop();
+            if (stampAction instanceof StampInsert) return new OracleStampInsert();
+            if (stampAction instanceof StampSelect) return new OracleStampSelect();
+            if (stampAction instanceof StampUpdate) return new OracleStampUpdate();
         }
         return null;
     }

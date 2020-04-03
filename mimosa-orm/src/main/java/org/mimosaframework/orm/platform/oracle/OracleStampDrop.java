@@ -1,10 +1,13 @@
-package org.mimosaframework.orm.platform.mysql;
+package org.mimosaframework.orm.platform.oracle;
 
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.stamp.KeyTarget;
+import org.mimosaframework.orm.sql.stamp.StampAction;
+import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
+import org.mimosaframework.orm.sql.stamp.StampDrop;
 
-public class MysqlStampDrop extends MysqlStampCommonality implements StampCombineBuilder {
+public class OracleStampDrop extends OracleStampCommonality implements StampCombineBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampDrop drop = (StampDrop) action;

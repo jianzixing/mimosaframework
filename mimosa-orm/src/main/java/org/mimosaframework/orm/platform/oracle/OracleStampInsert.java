@@ -1,18 +1,21 @@
-package org.mimosaframework.orm.platform.mysql;
+package org.mimosaframework.orm.platform.oracle;
 
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
-import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
+import org.mimosaframework.orm.sql.stamp.StampColumn;
+import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
+import org.mimosaframework.orm.sql.stamp.StampInsert;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class MysqlStampInsert extends MysqlStampCommonality implements StampCombineBuilder {
+public class OracleStampInsert extends OracleStampCommonality implements StampCombineBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampInsert insert = (StampInsert) action;
