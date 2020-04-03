@@ -15,7 +15,11 @@ public class SessionTemplateTesting {
     @Before
     public void init() throws ContextException {
         if (template == null) {
-            XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream("/template-mimosa.xml"));
+            String config = "/template-mimosa.xml";
+            if (1 == 1) {
+                config = "/oracle-template-mimosa.xml";
+            }
+            XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream(config));
             SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
             template = new MimosaSessionTemplate();
             ((MimosaSessionTemplate) template).setSessionFactory(sessionFactory);
