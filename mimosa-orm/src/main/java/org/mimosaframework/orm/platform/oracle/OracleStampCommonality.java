@@ -7,11 +7,37 @@ import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class OracleStampCommonality {
-    protected static final String RS = "`";
-    protected static final String RE = "`";
+    protected static final String RS = "\"";
+    protected static final String RE = "\"";
+    protected String NL = "\n";
+    protected String TAB = "\t";
+    protected String NL_TAB = "\n\t";
+    protected List<StringBuilder> builders = null;
+
+    protected List<StringBuilder> getBuilders() {
+        if (builders == null) builders = new ArrayList<>();
+        return builders;
+    }
+
+    protected String toSQLString(StringBuilder sb) {
+        if (this.builders != null) {
+            this.builders.add(0, sb);
+            StringBuilder nsb = new StringBuilder();
+            nsb.append(NL + "BEGIN ");
+            for (StringBuilder item : this.builders) {
+                nsb.append(NL_TAB + "EXECUTE IMMEDIATE ");
+                nsb.append("'" + item.toString() + "'; ");
+            }
+            nsb.append(NL + "END;");
+            return nsb.toString();
+        } else {
+            return sb.toString();
+        }
+    }
 
     protected String getTableName(MappingGlobalWrapper wrapper,
                                   Class table,
@@ -19,10 +45,10 @@ public abstract class OracleStampCommonality {
         if (table != null) {
             MappingTable mappingTable = wrapper.getMappingTable(table);
             if (mappingTable != null) {
-                return RS + mappingTable.getMappingTableName() + RE;
+                return mappingTable.getMappingTableName().toUpperCase();
             }
         } else {
-            return RS + tableName + RE;
+            return tableName.toUpperCase();
         }
         return null;
     }
@@ -34,7 +60,7 @@ public abstract class OracleStampCommonality {
 
             if (columnName.equals("*")) {
                 if (StringTools.isNotEmpty(tableAliasName)) {
-                    return RS + tableAliasName + RE + "." + columnName;
+                    return tableAliasName.toUpperCase() + "." + columnName;
                 } else {
                     return columnName;
                 }
@@ -49,7 +75,7 @@ public abstract class OracleStampCommonality {
                             if (mappingTable != null) {
                                 MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                                 if (mappingField != null) {
-                                    return RS + tableAliasName + RE + "." + RS + mappingField.getMappingColumnName() + RE;
+                                    return tableAliasName.toUpperCase() + "." + RS + mappingField.getMappingColumnName() + RE;
                                 }
                             }
                         }
@@ -62,7 +88,7 @@ public abstract class OracleStampCommonality {
                 if (mappingTable != null) {
                     MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                     if (mappingField != null) {
-                        return RS + mappingTable.getMappingTableName() + RE
+                        return mappingTable.getMappingTableName().toUpperCase()
                                 + "."
                                 + RS + mappingField.getMappingColumnName() + RE;
                     }
@@ -234,12 +260,41 @@ public abstract class OracleStampCommonality {
         }
     }
 
+    /**
+     * ORACLE的数据类型 -- ORACLE的数据类型
+     * 常用的数据库字段类型如下：
+     * 字段类型 中文说明 限制条件 其它说明
+     * CHAR 固定长度字符串 最大长度2000 bytes
+     * VARCHAR2 可变长度的字符串 最大长度4000 bytes 可做索引的最大长度749
+     * NCHAR 根据字符集而定的固定长度字符串 最大长度2000 bytes
+     * NVARCHAR2 根据字符集而定的可变长度字符串 最大长度4000 bytes
+     * DATE 日期（日-月-年） DD-MM-YY（HH-MI-SS） 无千虫问题
+     * LONG 超长字符串 最大长度2G（231-1） 足够存储大部头著作
+     * RAW 固定长度的二进制数据 最大长度2000 bytes 可存放多媒体图象声音等
+     * LONG RAW 可变长度的二进制数据 最大长度2G 同上
+     * BLOB 二进制数据 最大长度4G
+     * CLOB 字符数据 最大长度4G
+     * NCLOB 根据字符集而定的字符数据 最大长度4G
+     * BFILE 存放在数据库外的二进制数据 最大长度4G
+     * ROWID 数据表中记录的唯一行号 10 bytes ********.****.****格式，*为0或1
+     * NROWID 二进制数据表中记录的唯一行号 最大长度4000 bytes
+     * NUMBER(P,S) 数字类型 P为总位数，S为小数位数
+     * DECIMAL(P,S) 数字类型 P为总位数，S为小数位数
+     * INTEGER 整数类型 小的整数
+     * FLOAT 浮点数类型 NUMBER(38)，双精度
+     * REAL 实数类型 NUMBER(63)，精度更高
+     *
+     * @param columnType
+     * @param len
+     * @param scale
+     * @return
+     */
     protected String getColumnType(KeyColumnType columnType, int len, int scale) {
         if (columnType == KeyColumnType.INT) {
             return "INT";
         }
         if (columnType == KeyColumnType.VARCHAR) {
-            return "VARCHAR(" + len + ")";
+            return "VARCHAR2(" + len + ")";
         }
         if (columnType == KeyColumnType.CHAR) {
             return "CHAR(" + len + ")";
@@ -284,7 +339,7 @@ public abstract class OracleStampCommonality {
             return "TIME";
         }
         if (columnType == KeyColumnType.DATETIME) {
-            return "DATETIME";
+            return "DATE";
         }
         if (columnType == KeyColumnType.TIMESTAMP) {
             return "TIMESTAMP";

@@ -7,6 +7,8 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.util.List;
+
 public class OracleStampAlter extends OracleStampCommonality implements StampCombineBuilder {
 
     @Override
@@ -44,7 +46,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 sb.append(" COLLATE " + alter.collate);
             }
         }
-        return new SQLBuilderCombine(sb.toString(), null);
+        return new SQLBuilderCombine(this.toSQLString(sb), null);
     }
 
     private void buildAlterItem(MappingGlobalWrapper wrapper,
@@ -113,7 +115,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" CHARACTER SET = " + item.name);
         }
         if (item.action == KeyAction.COMMENT) {
-            sb.append(" COMMENT = \"" + item.comment + "\"");
+            this.addCommentSQL(wrapper, alter, item.column, item.comment);
         }
     }
 
@@ -151,7 +153,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (StringTools.isNotEmpty(item.comment)) {
-            sb.append(" COMMENT \"" + item.comment + "\"");
+            this.addCommentSQL(wrapper, alter, item.column, item.comment);
         }
     }
 
@@ -182,13 +184,29 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            sb.append(" COMMENT \"" + column.comment + "\"");
+            this.addCommentSQL(wrapper, alter, column.column, column.comment);
         }
         if (column.after != null) {
             sb.append(" AFTER " + this.getColumnName(wrapper, alter, column.after));
         }
         if (column.before != null) {
             sb.append(" BEFORE " + this.getColumnName(wrapper, alter, column.before));
+        }
+    }
+
+    protected void addCommentSQL(MappingGlobalWrapper wrapper,
+                                 StampAlter alter,
+                                 StampColumn column,
+                                 String commentStr) {
+        List<StampAction.STItem> items = alter.getTables();
+        if (items != null && items.size() > 0) {
+            StringBuilder comment = new StringBuilder();
+            comment.append("COMMENT ON COLUMN ");
+            column.table = items.get(0).getTable();
+            comment.append(this.getColumnName(wrapper, alter, column));
+            comment.append(" IS ");
+            comment.append("''" + commentStr + "''");
+            this.getBuilders().add(comment);
         }
     }
 }
