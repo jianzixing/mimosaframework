@@ -209,41 +209,38 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                     StampAction.class, "miss_index_columns"));
         }
 
-//        if (item.indexType == KeyIndexType.FULLTEXT) {
-//            // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('MIMOSA_LEXER')"));
-//            this.getDeclares().add("HAS_PREFERENCE NUMBER");
-//            this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
-//            this.getBegins().add(new ExecuteImmediate().setProcedure("SELECT 1 INTO HAS_PREFERENCE FROM CTX_PARAMETERS WHERE PAR_VALUE = 'MIMOSA_LEXER'"));
-//            this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN NO_DATA_FOUND THEN HAS_PREFERENCE:=0"));
-//            this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
-//            this.getBegins().add(new ExecuteImmediate().setProcedure("IF (HAS_PREFERENCE!=1) THEN CTX_DDL.CREATE_PREFERENCE('MIMOSA_LEXER','CHINESE_VGRAM_LEXER');END IF"));
-//            if (item.columns != null && item.columns.length > 1) {
-//                String iallName = this.getTableName(wrapper, alter.table, alter.name) + "_";
-//                String cls = "";
-//                Iterator<String> iterator = fullTextIndexNames.iterator();
-//                while (iterator.hasNext()) {
-//                    String s = iterator.next();
-//                    iallName += s;
-//                    cls += s;
-//                    if (iterator.hasNext()) {
-//                        iallName += "_";
-//                        cls += ",";
-//                    }
-//                }
-//                iallName = iallName.toUpperCase();
-//                // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('" + iallName + "')"));
-//                this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
-//                this.getBegins().add(new ExecuteImmediate().setProcedure("SELECT 1 INTO HAS_PREFERENCE FROM CTX_PARAMETERS WHERE PAR_VALUE = '" + iallName + "'"));
-//                this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN NO_DATA_FOUND THEN HAS_PREFERENCE:=0"));
-//                this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
-//                this.getBegins().add(new ExecuteImmediate().setProcedure("IF (HAS_PREFERENCE!=1) THEN CTX_DDL.CREATE_PREFERENCE('"
-//                        + iallName + "','MULTI_COLUMN_DATASTORE');END IF"));
-//                this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.SET_ATTRIBUTE('" + iallName + "','COLUMNS','" + cls + "')"));
-//                sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''DATASTORE " + iallName + " LEXER MIMOSA_LEXER'')");
-//            } else {
-//                sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''LEXER MIMOSA_LEXER'')");
-//            }
-//        }
+        if (item.indexType == KeyIndexType.FULLTEXT) {
+            // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('MIMOSA_LEXER')"));
+            this.getDeclares().add("HAS_PREFERENCE NUMBER");
+            this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
+            this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('MIMOSA_LEXER','CHINESE_VGRAM_LEXER')"));
+            this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=1"));
+            this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
+            if (item.columns != null && item.columns.length > 1) {
+                String iallName = this.getTableName(wrapper, alter.table, alter.name) + "_";
+                String cls = "";
+                Iterator<String> iterator = fullTextIndexNames.iterator();
+                while (iterator.hasNext()) {
+                    String s = iterator.next();
+                    iallName += s;
+                    cls += s;
+                    if (iterator.hasNext()) {
+                        iallName += "_";
+                        cls += ",";
+                    }
+                }
+                iallName = iallName.toUpperCase();
+                // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('" + iallName + "')"));
+                this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
+                this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('"+ iallName + "','MULTI_COLUMN_DATASTORE')"));
+                this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=2"));
+                this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
+                this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.SET_ATTRIBUTE('" + iallName + "','COLUMNS','" + cls + "')"));
+                sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''DATASTORE " + iallName + " LEXER MIMOSA_LEXER'')");
+            } else {
+                sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''LEXER MIMOSA_LEXER'')");
+            }
+        }
 
         // oracle 没有所以注释 common on
         if (StringTools.isNotEmpty(item.comment)) {
