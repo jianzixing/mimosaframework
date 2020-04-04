@@ -26,7 +26,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" " + RS + alter.name + RE);
 
             if (StringTools.isNotEmpty(alter.charset)) {
-                sb.append(" CHARSET " + alter.charset);
+                sb.append(" DEFAULT CHARACTER SET " + alter.charset);
             }
             if (StringTools.isNotEmpty(alter.collate)) {
                 sb.append(" COLLATE " + alter.collate);
@@ -41,12 +41,9 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 for (StampAlterItem item : alter.items) {
                     this.buildAlterItem(wrapper, sb, alter, item);
                 }
-            }
-            if (StringTools.isNotEmpty(alter.charset)) {
-                sb.append(" CHARSET " + alter.charset);
-            }
-            if (StringTools.isNotEmpty(alter.collate)) {
-                sb.append(" COLLATE " + alter.collate);
+            } else {
+                // oracle 没有修改表字符集的设置
+                sb = null;
             }
         }
 
@@ -145,7 +142,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
         if (item.action == KeyAction.COMMENT) {
             totalAction++;
-            this.addCommentSQL(wrapper, alter, item.column, item.comment);
+            this.addCommentSQL(wrapper, alter, item, item.comment, 1);
         }
     }
 
@@ -153,11 +150,16 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                                  MappingGlobalWrapper wrapper,
                                  StampAlter alter,
                                  StampAlterItem item) {
+        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
+            sb.setLength(0);
+            sb.append("CREATE");
+        }
         if (item.indexType == KeyIndexType.FULLTEXT) {
             sb.append(" FULLTEXT");
             sb.append(" INDEX");
         } else if (item.indexType == KeyIndexType.UNIQUE) {
             sb.append(" UNIQUE");
+            sb.append(" INDEX");
         } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
             sb.append(" PRIMARY KEY");
         } else {
@@ -165,7 +167,11 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (StringTools.isNotEmpty(item.name)) {
-            sb.append(" " + item.name);
+            sb.append(" " + RS + item.name + RE);
+        }
+        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
+            sb.append(" ON ");
+            sb.append(this.getTableName(wrapper, alter.table, alter.name));
         }
 
         if (item.columns != null) {
@@ -182,9 +188,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                     StampAction.class, "miss_index_columns"));
         }
 
-        if (StringTools.isNotEmpty(item.comment)) {
-            this.addCommentSQL(wrapper, alter, item.column, item.comment);
-        }
+        // oracle 没有所以注释 common on
     }
 
     private void buildAlterColumn(StringBuilder sb,
@@ -215,7 +219,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, column.column, column.comment);
+            this.addCommentSQL(wrapper, alter, column, column.comment, 1);
         }
         if (column.after != null) {
             sb.append(" AFTER " + this.getColumnName(wrapper, alter, column.after));
@@ -227,14 +231,23 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
 
     protected void addCommentSQL(MappingGlobalWrapper wrapper,
                                  StampAlter alter,
-                                 StampColumn column,
-                                 String commentStr) {
+                                 StampAlterItem item,
+                                 String commentStr,
+                                 int type) {
         List<StampAction.STItem> items = alter.getTables();
         if (items != null && items.size() > 0) {
             StringBuilder comment = new StringBuilder();
-            comment.append("COMMENT ON COLUMN ");
-            column.table = items.get(0).getTable();
-            comment.append(this.getColumnName(wrapper, alter, column));
+            if (type == 1) {
+                StampColumn column = item.column;
+                comment.append("COMMENT ON COLUMN ");
+                if (column != null) column.table = items.get(0).getTable();
+                comment.append(this.getColumnName(wrapper, alter, column));
+            }
+            if (type == 2) {
+                comment.append("COMMENT ON INDEX ");
+                comment.append(this.getTableName(wrapper, items.get(0).getTable(), null));
+                comment.append("." + RS + item.name + RE);
+            }
             comment.append(" IS ");
             comment.append("''" + commentStr + "''");
             this.getBuilders().add(new ExecuteImmediate(comment));

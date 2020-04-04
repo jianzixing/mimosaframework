@@ -1539,33 +1539,35 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
         SQLBuilderCombine combine = builder.getSqlBuilder(mappingGlobalWrapper, stampAction);
         PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
-        if (stampAction instanceof StampDelete) {
-            porterStructure.setChangerClassify(ChangerClassify.DELETE);
-            return this.carryHandler.doHandler(porterStructure);
-        }
-        if (stampAction instanceof StampAlter) {
-            porterStructure.setChangerClassify(ChangerClassify.ALTER);
-            return this.carryHandler.doHandler(porterStructure);
-        }
-        if (stampAction instanceof StampCreate) {
-            porterStructure.setChangerClassify(ChangerClassify.CREATE);
-            return this.carryHandler.doHandler(porterStructure);
-        }
-        if (stampAction instanceof StampDrop) {
-            porterStructure.setChangerClassify(ChangerClassify.DROP);
-            return this.carryHandler.doHandler(porterStructure);
-        }
-        if (stampAction instanceof StampInsert) {
-            porterStructure.setChangerClassify(ChangerClassify.INSERT);
-            return this.carryHandler.doHandler(porterStructure);
-        }
-        if (stampAction instanceof StampSelect) {
-            porterStructure.setChangerClassify(ChangerClassify.SELECT);
-            return this.carryHandler.doHandler(porterStructure);
-        }
-        if (stampAction instanceof StampUpdate) {
-            porterStructure.setChangerClassify(ChangerClassify.UPDATE);
-            return this.carryHandler.doHandler(porterStructure);
+        if (StringTools.isNotEmpty(porterStructure.getSql())) {
+            if (stampAction instanceof StampDelete) {
+                porterStructure.setChangerClassify(ChangerClassify.DELETE);
+                return this.carryHandler.doHandler(porterStructure);
+            }
+            if (stampAction instanceof StampAlter) {
+                porterStructure.setChangerClassify(ChangerClassify.ALTER);
+                return this.carryHandler.doHandler(porterStructure);
+            }
+            if (stampAction instanceof StampCreate) {
+                porterStructure.setChangerClassify(ChangerClassify.CREATE);
+                return this.carryHandler.doHandler(porterStructure);
+            }
+            if (stampAction instanceof StampDrop) {
+                porterStructure.setChangerClassify(ChangerClassify.DROP);
+                return this.carryHandler.doHandler(porterStructure);
+            }
+            if (stampAction instanceof StampInsert) {
+                porterStructure.setChangerClassify(ChangerClassify.INSERT);
+                return this.carryHandler.doHandler(porterStructure);
+            }
+            if (stampAction instanceof StampSelect) {
+                porterStructure.setChangerClassify(ChangerClassify.SELECT);
+                return this.carryHandler.doHandler(porterStructure);
+            }
+            if (stampAction instanceof StampUpdate) {
+                porterStructure.setChangerClassify(ChangerClassify.UPDATE);
+                return this.carryHandler.doHandler(porterStructure);
+            }
         }
         return null;
     }

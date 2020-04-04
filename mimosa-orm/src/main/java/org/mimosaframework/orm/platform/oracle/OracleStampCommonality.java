@@ -99,7 +99,7 @@ public abstract class OracleStampCommonality {
             nsb.append(NL + "END;");
             return nsb.toString();
         } else {
-            return sb.toString();
+            return sb != null ? sb.toString() : null;
         }
     }
 
