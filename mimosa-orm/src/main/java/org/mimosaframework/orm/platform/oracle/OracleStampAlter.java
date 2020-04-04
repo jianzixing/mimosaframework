@@ -11,6 +11,9 @@ import java.util.List;
 
 public class OracleStampAlter extends OracleStampCommonality implements StampCombineBuilder {
 
+    protected int totalAction = 0;
+    protected boolean noNeedSource = false;
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
                                            StampAction action) {
@@ -46,6 +49,8 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 sb.append(" COLLATE " + alter.collate);
             }
         }
+
+        if (totalAction <= 1 && noNeedSource) sb = null;
         return new SQLBuilderCombine(this.toSQLString(sb), null);
     }
 
@@ -54,6 +59,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                                 StampAlter alter,
                                 StampAlterItem item) {
         if (item.action == KeyAction.ADD) {
+            totalAction++;
             sb.append(" ADD");
             if (item.struct == KeyAlterStruct.COLUMN) {
                 this.buildAlterColumn(sb, wrapper, alter, item, false);
@@ -64,6 +70,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (item.action == KeyAction.CHANGE) {
+            totalAction++;
             sb.append(" MODIFY");
             String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn);
             String newColumnName = this.getColumnName(wrapper, alter, item.column);
@@ -78,11 +85,13 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (item.action == KeyAction.MODIFY) {
+            totalAction++;
             sb.append(" MODIFY");
             this.buildAlterColumn(sb, wrapper, alter, item, false);
         }
 
         if (item.action == KeyAction.DROP) {
+            totalAction++;
             sb.append(" DROP");
             if (item.dropType == KeyAlterDropType.COLUMN) {
                 sb.append(" COLUMN");
@@ -98,6 +107,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (item.action == KeyAction.RENAME) {
+            totalAction++;
             sb.append(" RENAME");
             if (item.renameType == KeyAlterRenameType.COLUMN) {
                 sb.append(" COLUMN");
@@ -117,12 +127,24 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (item.action == KeyAction.AUTO_INCREMENT) {
-            sb.append(" AUTO_INCREMENT = " + item.value);
+            totalAction++;
+            this.noNeedSource = true;
+            String tableName = this.getTableName(wrapper, alter.table, alter.name);
+            String seqName = tableName + "_SEQ";
+
+            this.getDeclares().add("CACHE_CUR_SEQ NUMBER");
+            this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT " + seqName + ".NEXTVAL INTO CACHE_CUR_SEQ FROM DUAL"));
+            this.getBuilders().add(new ExecuteImmediate().setProcedure("EXECUTE IMMEDIATE concat('ALTER SEQUENCE " +
+                    seqName + " INCREMENT BY '," + item.value + "-CACHE_CUR_SEQ)"));
+            this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT " + seqName + ".NEXTVAL INTO CACHE_CUR_SEQ FROM DUAL"));
+            this.getBuilders().add(new ExecuteImmediate("ALTER SEQUENCE " + seqName + " INCREMENT BY 1"));
         }
         if (item.action == KeyAction.CHARACTER_SET) {
+            totalAction++;
             sb.append(" CHARACTER SET = " + item.name);
         }
         if (item.action == KeyAction.COMMENT) {
+            totalAction++;
             this.addCommentSQL(wrapper, alter, item.column, item.comment);
         }
     }

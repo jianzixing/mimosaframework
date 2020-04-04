@@ -67,7 +67,9 @@ public abstract class OracleStampCommonality {
 
     protected String toSQLString(StringBuilder sb) {
         if (this.builders != null) {
-            this.builders.add(0, new ExecuteImmediate(sb.toString()));
+            if (sb != null) {
+                this.builders.add(0, new ExecuteImmediate(sb.toString()));
+            }
             StringBuilder nsb = new StringBuilder();
             if (declares != null && declares.size() > 0) {
                 nsb.append(NL + "DECLARE ");
