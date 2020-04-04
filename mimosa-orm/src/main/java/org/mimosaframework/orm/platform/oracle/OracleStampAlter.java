@@ -166,7 +166,6 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
         if (item.indexType == KeyIndexType.FULLTEXT) {
             sb.append(" INDEX");
-            logger.warn("oracle not support fulltext index , please manually create");
         } else if (item.indexType == KeyIndexType.UNIQUE) {
             sb.append(" UNIQUE");
             sb.append(" INDEX");
@@ -223,7 +222,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 while (iterator.hasNext()) {
                     String s = iterator.next();
                     iallName += s;
-                    cls += s;
+                    cls += RS + s + RE;
                     if (iterator.hasNext()) {
                         iallName += "_";
                         cls += ",";
@@ -232,7 +231,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 iallName = iallName.toUpperCase();
                 // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('" + iallName + "')"));
                 this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
-                this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('"+ iallName + "','MULTI_COLUMN_DATASTORE')"));
+                this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('" + iallName + "','MULTI_COLUMN_DATASTORE')"));
                 this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=2"));
                 this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
                 this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.SET_ATTRIBUTE('" + iallName + "','COLUMNS','" + cls + "')"));
