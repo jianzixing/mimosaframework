@@ -53,6 +53,19 @@ public abstract class OracleStampCommonality {
         return null;
     }
 
+    /**
+     * oracle 的列名不区分大小写，但是如果被双引号引用的则区分大小写
+     * 比如
+     * id 和 ID 一致
+     * "id" 和 "ID" 不一致
+     * <p>
+     * 如果列名不加双引号则创建表时数据库自动大写,加了双引号则为原始字符串
+     *
+     * @param wrapper
+     * @param stampTables
+     * @param column
+     * @return
+     */
     protected String getColumnName(MappingGlobalWrapper wrapper, StampAction stampTables, StampColumn column) {
         if (column != null && column.column != null) {
             String columnName = column.column.toString();
@@ -67,16 +80,14 @@ public abstract class OracleStampCommonality {
             }
 
             List<StampAction.STItem> tables = stampTables.getTables();
-            if (tables != null) {
-                if (StringTools.isNotEmpty(tableAliasName)) {
-                    for (StampAction.STItem stItem : tables) {
-                        if (tableAliasName.equals(stItem.getTableAliasName())) {
-                            MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
-                            if (mappingTable != null) {
-                                MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
-                                if (mappingField != null) {
-                                    return tableAliasName.toUpperCase() + "." + RS + mappingField.getMappingColumnName() + RE;
-                                }
+            if (tables != null && StringTools.isNotEmpty(tableAliasName)) {
+                for (StampAction.STItem stItem : tables) {
+                    if (tableAliasName.equals(stItem.getTableAliasName())) {
+                        MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
+                        if (mappingTable != null) {
+                            MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
+                            if (mappingField != null) {
+                                return tableAliasName.toUpperCase() + "." + RS + mappingField.getMappingColumnName() + RE;
                             }
                         }
                     }
@@ -91,6 +102,10 @@ public abstract class OracleStampCommonality {
                         return mappingTable.getMappingTableName().toUpperCase()
                                 + "."
                                 + RS + mappingField.getMappingColumnName() + RE;
+                    } else {
+                        return mappingTable.getMappingTableName().toUpperCase()
+                                + "."
+                                + RS + columnName + RE;
                     }
                 }
             }
@@ -107,7 +122,7 @@ public abstract class OracleStampCommonality {
                 }
             }
 
-            return columnName;
+            return RS + columnName + RE;
         }
         return null;
     }

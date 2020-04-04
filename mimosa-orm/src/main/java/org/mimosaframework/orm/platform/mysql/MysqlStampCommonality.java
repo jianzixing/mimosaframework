@@ -81,7 +81,7 @@ public abstract class MysqlStampCommonality {
                 }
             }
 
-            return columnName;
+            return RS + columnName + RE;
         }
         return null;
     }

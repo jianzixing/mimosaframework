@@ -56,7 +56,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (item.action == KeyAction.ADD) {
             sb.append(" ADD");
             if (item.struct == KeyAlterStruct.COLUMN) {
-                this.buildAlterColumn(sb, wrapper, alter, item);
+                this.buildAlterColumn(sb, wrapper, alter, item, false);
             }
             if (item.struct == KeyAlterStruct.INDEX) {
                 this.buildAlterIndex(sb, wrapper, alter, item);
@@ -64,14 +64,22 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (item.action == KeyAction.CHANGE) {
-            sb.append(" CHANGE");
-            sb.append(" " + this.getColumnName(wrapper, alter, item.oldColumn));
-            this.buildAlterColumn(sb, wrapper, alter, item);
+            sb.append(" MODIFY");
+            String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn);
+            String newColumnName = this.getColumnName(wrapper, alter, item.column);
+            if (!oldColumnName.equalsIgnoreCase(newColumnName)) {
+                StringBuilder rnsb = new StringBuilder();
+                rnsb.append("ALTER TABLE");
+                rnsb.append(" " + this.getTableName(wrapper, alter.table, alter.name));
+                rnsb.append(" RENAME COLUMN " + oldColumnName + " TO " + newColumnName);
+                this.getBuilders().add(rnsb);
+            }
+            this.buildAlterColumn(sb, wrapper, alter, item, true);
         }
 
         if (item.action == KeyAction.MODIFY) {
             sb.append(" MODIFY");
-            this.buildAlterColumn(sb, wrapper, alter, item);
+            this.buildAlterColumn(sb, wrapper, alter, item, false);
         }
 
         if (item.action == KeyAction.DROP) {
@@ -160,8 +168,9 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
     private void buildAlterColumn(StringBuilder sb,
                                   MappingGlobalWrapper wrapper,
                                   StampAlter alter,
-                                  StampAlterItem column) {
-        sb.append(" " + this.getColumnName(wrapper, alter, column.column));
+                                  StampAlterItem column,
+                                  boolean isOldColumn) {
+        sb.append(" " + this.getColumnName(wrapper, alter, isOldColumn ? column.oldColumn : column.column));
         if (column.columnType != null) {
             sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
         }

@@ -40,9 +40,12 @@ public class SessionTemplateTesting {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
                         .change().oldColumn(TableUser.createdTime)
-                        .newColumn(TableUser.createdTime).datetime().comment("aaa")
+                        .newColumn("created_time2").datetime().comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+
+        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+                .rename().column().oldColumn("created_time2").to().newColumn("created_time").autonomously());
     }
 
     @Test
