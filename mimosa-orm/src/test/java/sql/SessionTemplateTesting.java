@@ -30,7 +30,7 @@ public class SessionTemplateTesting {
     public void testAlter1() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
-                        .modify().column(TableUser.createdTime).datetime().comment("aaa")
+                        .modify().column(TableUser.id).intType().autoIncrement().comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
     }

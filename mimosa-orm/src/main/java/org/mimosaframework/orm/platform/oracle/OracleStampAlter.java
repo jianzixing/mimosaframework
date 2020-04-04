@@ -72,7 +72,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 rnsb.append("ALTER TABLE");
                 rnsb.append(" " + this.getTableName(wrapper, alter.table, alter.name));
                 rnsb.append(" RENAME COLUMN " + oldColumnName + " TO " + newColumnName);
-                this.getBuilders().add(rnsb);
+                this.getBuilders().add(new ExecuteImmediate(rnsb));
             }
             this.buildAlterColumn(sb, wrapper, alter, item, true);
         }
@@ -178,7 +178,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" NOT NULL");
         }
         if (column.autoIncrement) {
-            sb.append(" AUTO_INCREMENT");
+            this.addAutoIncrement(wrapper, alter);
         }
         if (column.pk) {
             sb.append(" PRIMARY KEY");
@@ -215,7 +215,17 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             comment.append(this.getColumnName(wrapper, alter, column));
             comment.append(" IS ");
             comment.append("''" + commentStr + "''");
-            this.getBuilders().add(comment);
+            this.getBuilders().add(new ExecuteImmediate(comment));
         }
+    }
+
+    protected void addAutoIncrement(MappingGlobalWrapper wrapper,
+                                    StampAlter alter) {
+        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String seqName = tableName + "_SEQ";
+        this.getDeclares().add("SEQUENCE_COUNT NUMBER");
+        this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT 1 INTO SEQUENCE_COUNT FROM user_sequences WHERE sequence_name = '" + seqName + "'"));
+        this.getBuilders().add(new ExecuteImmediate("IF (SEQUENCE_COUNT!=1) THEN ",
+                "CREATE SEQUENCE " + seqName + " INCREMENT BY 1 START WITH 1 MINVALUE 1 MAXVALUE 9999999999999999", "END IF"));
     }
 }

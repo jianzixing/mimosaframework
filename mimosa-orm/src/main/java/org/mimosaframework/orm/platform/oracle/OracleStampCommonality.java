@@ -16,21 +16,83 @@ public abstract class OracleStampCommonality {
     protected String NL = "\n";
     protected String TAB = "\t";
     protected String NL_TAB = "\n\t";
-    protected List<StringBuilder> builders = null;
 
-    protected List<StringBuilder> getBuilders() {
+    protected List<String> declares = null;
+    protected List<ExecuteImmediate> builders = null;
+
+    class ExecuteImmediate {
+        public String procedure;
+
+        public String preview;
+        public String sql;
+        public String end;
+
+        public ExecuteImmediate() {
+        }
+
+        public ExecuteImmediate(String sql) {
+            this.sql = sql;
+        }
+
+        public ExecuteImmediate(StringBuilder sql) {
+            this.sql = sql.toString();
+        }
+
+        public ExecuteImmediate(String preview, String sql) {
+            this.preview = preview;
+            this.sql = sql;
+        }
+
+        public ExecuteImmediate(String preview, String sql, String end) {
+            this.preview = preview;
+            this.sql = sql;
+            this.end = end;
+        }
+
+        public ExecuteImmediate setProcedure(String procedure) {
+            this.procedure = procedure;
+            return this;
+        }
+    }
+
+    protected List<ExecuteImmediate> getBuilders() {
         if (builders == null) builders = new ArrayList<>();
         return builders;
     }
 
+    protected List<String> getDeclares() {
+        if (declares == null) declares = new ArrayList<>();
+        return declares;
+    }
+
     protected String toSQLString(StringBuilder sb) {
         if (this.builders != null) {
-            this.builders.add(0, sb);
+            this.builders.add(0, new ExecuteImmediate(sb.toString()));
             StringBuilder nsb = new StringBuilder();
+            if (declares != null && declares.size() > 0) {
+                nsb.append(NL + "DECLARE ");
+                for (String s : declares) {
+                    nsb.append(NL_TAB + s + ";");
+                }
+            }
             nsb.append(NL + "BEGIN ");
-            for (StringBuilder item : this.builders) {
-                nsb.append(NL_TAB + "EXECUTE IMMEDIATE ");
-                nsb.append("'" + item.toString() + "'; ");
+            for (ExecuteImmediate item : this.builders) {
+                if (StringTools.isNotEmpty(item.procedure)) {
+                    nsb.append(NL_TAB + item.procedure + ";");
+                } else {
+                    if (StringTools.isNotEmpty(item.preview)) {
+                        nsb.append(NL_TAB + item.preview + " EXECUTE IMMEDIATE ");
+                    } else {
+                        nsb.append(NL_TAB + "EXECUTE IMMEDIATE ");
+                    }
+
+                    if (StringTools.isNotEmpty(item.end)) {
+                        nsb.append("'" + item.sql + "';");
+                        nsb.append(item.end + ";");
+                    } else {
+                        nsb.append("'" + item.sql + "'; ");
+                    }
+                }
             }
             nsb.append(NL + "END;");
             return nsb.toString();
@@ -46,8 +108,10 @@ public abstract class OracleStampCommonality {
             MappingTable mappingTable = wrapper.getMappingTable(table);
             if (mappingTable != null) {
                 return mappingTable.getMappingTableName().toUpperCase();
+            } else if (StringTools.isNotEmpty(tableName)) {
+                return tableName.toUpperCase();
             }
-        } else {
+        } else if (StringTools.isNotEmpty(tableName)) {
             return tableName.toUpperCase();
         }
         return null;
