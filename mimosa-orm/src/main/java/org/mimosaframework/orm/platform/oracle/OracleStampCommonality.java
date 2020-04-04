@@ -19,6 +19,7 @@ public abstract class OracleStampCommonality {
 
     protected List<String> declares = null;
     protected List<ExecuteImmediate> builders = null;
+    protected List<ExecuteImmediate> begins = null;
 
     class ExecuteImmediate {
         public String procedure;
@@ -60,14 +61,20 @@ public abstract class OracleStampCommonality {
         return builders;
     }
 
+    protected List<ExecuteImmediate> getBegins() {
+        if (begins == null) begins = new ArrayList<>();
+        return begins;
+    }
+
     protected List<String> getDeclares() {
         if (declares == null) declares = new ArrayList<>();
         return declares;
     }
 
     protected String toSQLString(StringBuilder sb) {
-        if (this.builders != null) {
+        if (this.builders != null || this.begins != null) {
             if (sb != null) {
+                if (this.builders == null) this.builders = new ArrayList<>();
                 this.builders.add(0, new ExecuteImmediate(sb.toString()));
             }
             StringBuilder nsb = new StringBuilder();
@@ -78,9 +85,24 @@ public abstract class OracleStampCommonality {
                 }
             }
             nsb.append(NL + "BEGIN ");
-            for (ExecuteImmediate item : this.builders) {
+            this.appendBuilders(nsb, begins);
+            this.appendBuilders(nsb, builders);
+            nsb.append(NL + "END;");
+            return nsb.toString();
+        } else {
+            return sb != null ? sb.toString() : null;
+        }
+    }
+
+    private void appendBuilders(StringBuilder nsb, List<ExecuteImmediate> builders) {
+        if (builders != null) {
+            for (ExecuteImmediate item : builders) {
                 if (StringTools.isNotEmpty(item.procedure)) {
-                    nsb.append(NL_TAB + item.procedure + ";");
+                    if (item.procedure.equalsIgnoreCase("BEGIN")) {
+                        nsb.append(NL_TAB + item.procedure);
+                    } else {
+                        nsb.append(NL_TAB + item.procedure + ";");
+                    }
                 } else {
                     if (StringTools.isNotEmpty(item.preview)) {
                         nsb.append(NL_TAB + item.preview + " EXECUTE IMMEDIATE ");
@@ -96,10 +118,6 @@ public abstract class OracleStampCommonality {
                     }
                 }
             }
-            nsb.append(NL + "END;");
-            return nsb.toString();
-        } else {
-            return sb != null ? sb.toString() : null;
         }
     }
 
@@ -119,6 +137,10 @@ public abstract class OracleStampCommonality {
         return null;
     }
 
+    protected String getColumnName(MappingGlobalWrapper wrapper, StampAction stampTables, StampColumn column) {
+        return this.getColumnName(wrapper, stampTables, column, true);
+    }
+
     /**
      * oracle 的列名不区分大小写，但是如果被双引号引用的则区分大小写
      * 比如
@@ -132,7 +154,15 @@ public abstract class OracleStampCommonality {
      * @param column
      * @return
      */
-    protected String getColumnName(MappingGlobalWrapper wrapper, StampAction stampTables, StampColumn column) {
+    protected String getColumnName(MappingGlobalWrapper wrapper,
+                                   StampAction stampTables,
+                                   StampColumn column,
+                                   boolean hasRes) {
+        String RS = this.RS, RE = this.RE;
+        if (!hasRes) {
+            RS = "";
+            RE = "";
+        }
         if (column != null && column.column != null) {
             String columnName = column.column.toString();
             String tableAliasName = column.tableAliasName;

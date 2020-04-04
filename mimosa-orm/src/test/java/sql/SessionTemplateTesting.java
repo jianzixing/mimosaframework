@@ -98,16 +98,10 @@ public class SessionTemplateTesting {
     public void testAlter8() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
-                        .drop().index().name("b")
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-
-        sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
                         .add().fullText().index().name("b").columns(TableUser.address, TableUser.userName)
                         .comment("aaa")
         );
-        autoResult = template.getAutonomously(sqlAutonomously);
+        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
         sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)

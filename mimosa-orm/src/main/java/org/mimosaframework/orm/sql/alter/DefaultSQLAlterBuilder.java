@@ -68,6 +68,8 @@ public class DefaultSQLAlterBuilder
         if (this.previous("after")) {
             item.after = new StampColumn(field);
         } else if (this.getPointNext(1).equals("index")
+                || this.getPointNext(1).equals("fullText")
+                || this.getPointNext(1).equals("unique")
                 || (this.getPointNext(1).equals("primary") && this.getPointNext(2).equals("key"))) {
             item.columns = new StampColumn[]{new StampColumn(field)};
         } else {
