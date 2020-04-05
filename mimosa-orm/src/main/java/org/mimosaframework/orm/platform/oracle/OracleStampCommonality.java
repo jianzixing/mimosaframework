@@ -8,6 +8,7 @@ import org.mimosaframework.orm.platform.SQLDataPlaceholder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class OracleStampCommonality {
@@ -511,5 +512,134 @@ public abstract class OracleStampCommonality {
         this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO SEQUENCE_COUNT FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '" + seqName + "'"));
         this.getBuilders().add(new ExecuteImmediate("IF SEQUENCE_COUNT = 0 THEN ",
                 "CREATE SEQUENCE " + seqName + " INCREMENT BY 1 START WITH 1 MINVALUE 1 MAXVALUE 9999999999999999", "END IF"));
+    }
+
+    protected void buildFullTextSQL(boolean multi, String tableName,
+                                    List<String> fullTextIndexNames,
+                                    StringBuilder sb) {
+        // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('MIMOSA_LEXER')"));
+        this.getDeclares().add("HAS_PREFERENCE NUMBER");
+        this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
+        this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('MIMOSA_LEXER','CHINESE_VGRAM_LEXER')"));
+        this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=1"));
+        this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
+        if (multi) {
+            String iallName = tableName + "_";
+            String cls = "";
+            Iterator<String> iterator = fullTextIndexNames.iterator();
+            while (iterator.hasNext()) {
+                String s = iterator.next();
+                iallName += s;
+                cls += RS + s + RE;
+                if (iterator.hasNext()) {
+                    iallName += "_";
+                    cls += ",";
+                }
+            }
+            iallName = iallName.toUpperCase();
+            // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('" + iallName + "')"));
+            this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
+            this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('" + iallName + "','MULTI_COLUMN_DATASTORE')"));
+            this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=2"));
+            this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
+            this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.SET_ATTRIBUTE('" + iallName + "','COLUMNS','" + cls + "')"));
+            sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''DATASTORE " + iallName + " LEXER MIMOSA_LEXER'')");
+        } else {
+            sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''LEXER MIMOSA_LEXER'')");
+        }
+    }
+
+    /**
+     * 无order by
+     * SELECT *
+     * FROM (SELECT ROWNUM AS rowno, t.*
+     * FROM emp t
+     * WHERE hire_date BETWEEN TO_DATE ('20060501', 'yyyymmdd')
+     * AND TO_DATE ('20060731', 'yyyymmdd')
+     * AND ROWNUM <= 20) table_alias
+     * WHERE table_alias.rowno >= 10;
+     * <p>
+     * <p>
+     * 有order by
+     * SELECT *
+     * FROM (SELECT tt.*, ROWNUM AS rowno
+     * FROM (  SELECT t.*
+     * FROM emp t
+     * WHERE hire_date BETWEEN TO_DATE ('20060501', 'yyyymmdd')
+     * AND TO_DATE ('20060731', 'yyyymmdd')
+     * ORDER BY create_time DESC, emp_no) tt
+     * WHERE ROWNUM <= 20) table_alias
+     * WHERE table_alias.rowno >= 10;
+     *
+     * @param limit
+     */
+    protected void limit(StampLimit limit) {
+    }
+
+    protected StringBuilder multiDeleteOrUpdate(MappingGlobalWrapper wrapper,
+                                                Class delTable,
+                                                String delTableName,
+                                                StampFrom[] froms,
+                                                StampWhere where,
+                                                StampOrderBy[] orderBys,
+                                                StampLimit limit,
+                                                List<SQLDataPlaceholder> placeholders,
+                                                StampAction action) {
+        String selectFields = "*";
+        boolean isIn = false;
+        for (StampFrom from : froms) {
+            if (from.aliasName != null
+                    && StringTools.isNotEmpty(delTableName)
+                    && from.aliasName.equalsIgnoreCase(delTableName)) {
+                selectFields = from.aliasName.toUpperCase() + ".*";
+                isIn = true;
+            }
+        }
+        if (!isIn) {
+            selectFields = this.getTableName(wrapper, delTable, delTableName) + ".*";
+        }
+
+        StringBuilder select = new StringBuilder();
+        select.append("SELECT ");
+        select.append(selectFields);
+        select.append(" FROM");
+        int i = 0;
+        for (StampFrom from : froms) {
+            select.append(" " + this.getTableName(wrapper, from.table, from.name));
+            if (StringTools.isNotEmpty(from.aliasName)) {
+                select.append(" " + from.aliasName.toUpperCase());
+            }
+            i++;
+            if (i != froms.length) select.append(",");
+        }
+        if (where != null) {
+            select.append(" WHERE ");
+            this.buildWhere(wrapper, placeholders, action, where, select);
+        }
+
+        if (orderBys != null && orderBys.length > 0) {
+            select.append(" ORDER BY ");
+            int j = 0;
+            for (StampOrderBy ob : orderBys) {
+                select.append(this.getColumnName(wrapper, action, ob.column));
+                if (ob.sortType == KeySortType.ASC)
+                    select.append(" ASC");
+                else
+                    select.append(" DESC");
+                j++;
+                if (j != orderBys.length) select.append(",");
+            }
+        }
+
+        if (limit != null) {
+            long start = limit.start, len = limit.limit;
+            StringBuilder sb = new StringBuilder();
+            sb.append("SELECT * FROM (SELECT RN_TABLE_ALIAS.*, ROWNUM AS RN_ALIAS FROM (");
+            sb.append(select);
+            sb.append(") RN_TABLE_ALIAS WHERE ROWNUM <= " + len + ") RN_TABLE_ALIAS_2 WHERE RN_TABLE_ALIAS_2.RN_ALIAS >= " + start);
+            return sb;
+        } else {
+            return select;
+        }
     }
 }

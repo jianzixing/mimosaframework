@@ -236,7 +236,7 @@ public class SessionTemplateTesting {
     public void testCreate5() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.create().fullText().index().name("bb").on()
-                        .table(TableUser.class).columns(TableUser.id)
+                        .table(TableUser.class).columns(TableUser.address)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 

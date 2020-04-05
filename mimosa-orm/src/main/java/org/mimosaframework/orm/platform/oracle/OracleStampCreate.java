@@ -7,6 +7,9 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OracleStampCreate extends OracleStampCommonality implements StampCombineBuilder {
     private static final Log logger = LogFactory.getLog(OracleStampCreate.class);
 
@@ -47,26 +50,43 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
             }
         }
         if (create.target == KeyTarget.INDEX) {
-            sb.append(" INDEX");
+            if (create.indexType == KeyIndexType.UNIQUE) {
+                sb.append(" UNIQUE");
+            } else {
+                sb.append(" INDEX");
+            }
             sb.append(" " + RS + create.indexName + RE);
             sb.append(" ON");
             sb.append(" " + this.getTableName(wrapper, create.table, create.name));
 
+            List<String> fullTextIndexNames = new ArrayList<>();
             int i = 0;
             sb.append(" (");
             for (StampColumn column : create.indexColumns) {
+                column.table = null;
+                column.tableAliasName = null;
                 sb.append(this.getColumnName(wrapper, create, column));
+                fullTextIndexNames.add(this.getColumnName(wrapper, create, column, false));
                 i++;
                 if (i != create.indexColumns.length) sb.append(",");
             }
             sb.append(")");
+
+            if (create.indexType == KeyIndexType.FULLTEXT) {
+                String iallName = this.getTableName(wrapper, create.table, create.name);
+                if (create.indexColumns != null && create.indexColumns.length > 1) {
+                    this.buildFullTextSQL(true, iallName, fullTextIndexNames, sb);
+                } else {
+                    this.buildFullTextSQL(false, iallName, fullTextIndexNames, sb);
+                }
+            }
         }
 
         if (create.target == KeyTarget.TABLE && create.checkExist) {
             return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate("IF HAS_TABLE = 0 THEN",
                     sb != null ? sb.toString() : "", "END IF")), null);
         } else {
-            return new SQLBuilderCombine(sb != null ? sb.toString() : null, null);
+            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
         }
     }
 

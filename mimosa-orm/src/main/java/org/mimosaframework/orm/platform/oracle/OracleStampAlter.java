@@ -206,35 +206,11 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (item.indexType == KeyIndexType.FULLTEXT) {
-            // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('MIMOSA_LEXER')"));
-            this.getDeclares().add("HAS_PREFERENCE NUMBER");
-            this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
-            this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('MIMOSA_LEXER','CHINESE_VGRAM_LEXER')"));
-            this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=1"));
-            this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
+            String iallName = this.getTableName(wrapper, alter.table, alter.name);
             if (item.columns != null && item.columns.length > 1) {
-                String iallName = this.getTableName(wrapper, alter.table, alter.name) + "_";
-                String cls = "";
-                Iterator<String> iterator = fullTextIndexNames.iterator();
-                while (iterator.hasNext()) {
-                    String s = iterator.next();
-                    iallName += s;
-                    cls += RS + s + RE;
-                    if (iterator.hasNext()) {
-                        iallName += "_";
-                        cls += ",";
-                    }
-                }
-                iallName = iallName.toUpperCase();
-                // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('" + iallName + "')"));
-                this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
-                this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('" + iallName + "','MULTI_COLUMN_DATASTORE')"));
-                this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=2"));
-                this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
-                this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.SET_ATTRIBUTE('" + iallName + "','COLUMNS','" + cls + "')"));
-                sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''DATASTORE " + iallName + " LEXER MIMOSA_LEXER'')");
+                this.buildFullTextSQL(true, iallName, fullTextIndexNames, sb);
             } else {
-                sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''LEXER MIMOSA_LEXER'')");
+                this.buildFullTextSQL(false, iallName, fullTextIndexNames, sb);
             }
         }
 
