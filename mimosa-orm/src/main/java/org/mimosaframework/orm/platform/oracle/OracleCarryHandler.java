@@ -49,7 +49,7 @@ public class OracleCarryHandler extends CarryHandler {
                     || changerClassify == ChangerClassify.INSERT) {
                 SQLBuilder sqlBuilder = structure.getSqlBuilder();
                 Object autoIncrementId = null; // 自增列只允许有一个
-                List<SQLDataPlaceholder> placeholders = sqlBuilder.getDataPlaceholders();
+                List<SQLDataPlaceholder> placeholders = structure.getSqlDataPlaceholders();
                 if (placeholders != null && placeholders.size() > 0) {
                     for (SQLDataPlaceholder placeholder : placeholders) {
                         if (placeholder instanceof AISQLDataPlaceholder) {
