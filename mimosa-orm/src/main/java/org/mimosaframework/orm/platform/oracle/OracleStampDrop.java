@@ -29,9 +29,7 @@ public class OracleStampDrop extends OracleStampCommonality implements StampComb
         }
         if (drop.target == KeyTarget.INDEX) {
             sb.append(" INDEX");
-            sb.append(" " + drop.name);
-            sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, drop.table, drop.tableName));
+            sb.append(" " + RS + drop.name + RE);
         }
         return new SQLBuilderCombine(sb.toString(), null);
     }

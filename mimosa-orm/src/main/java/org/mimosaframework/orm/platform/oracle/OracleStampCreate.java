@@ -16,19 +16,8 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE");
         if (create.target == KeyTarget.DATABASE) {
-            sb.append(" DATABASE");
-            if (create.checkExist) {
-                sb.append(" IF NOT EXISTS");
-            }
-            if (StringTools.isNotEmpty(create.name)) {
-                sb.append(" " + create.name);
-            }
-            if (StringTools.isNotEmpty(create.charset)) {
-                sb.append(" " + create.charset);
-            }
-            if (StringTools.isNotEmpty(create.collate)) {
-                sb.append(" " + create.collate);
-            }
+            sb = null;
+            logger.warn("oracle can't create database by current sql");
         }
         if (create.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
@@ -59,7 +48,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
         }
         if (create.target == KeyTarget.INDEX) {
             sb.append(" INDEX");
-            sb.append(" " + create.indexName);
+            sb.append(" " + RS + create.indexName + RE);
             sb.append(" ON");
             sb.append(" " + this.getTableName(wrapper, create.table, create.name));
 
@@ -77,7 +66,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
             return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate("IF HAS_TABLE = 0 THEN",
                     sb != null ? sb.toString() : "", "END IF")), null);
         } else {
-            return new SQLBuilderCombine(sb.toString(), null);
+            return new SQLBuilderCombine(sb != null ? sb.toString() : null, null);
         }
     }
 
