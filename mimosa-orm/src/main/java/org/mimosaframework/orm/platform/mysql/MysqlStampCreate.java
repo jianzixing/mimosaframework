@@ -42,6 +42,9 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             this.buildTableIndex(wrapper, sb, create);
             sb.append(")");
 
+            if (StringTools.isNotEmpty(create.comment)) {
+                sb.append(" COMMENT=\"" + create.comment + "\"");
+            }
             if (StringTools.isNotEmpty(create.charset)) {
                 sb.append(" CHARSET " + create.charset);
             }

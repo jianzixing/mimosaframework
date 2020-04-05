@@ -36,7 +36,9 @@ public abstract class OracleStampCommonality {
         }
 
         public ExecuteImmediate(StringBuilder sql) {
-            this.sql = sql.toString();
+            if (sql != null) {
+                this.sql = sql.toString();
+            }
         }
 
         public ExecuteImmediate(String preview, String sql) {
@@ -71,11 +73,11 @@ public abstract class OracleStampCommonality {
         return declares;
     }
 
-    protected String toSQLString(StringBuilder sb) {
+    protected String toSQLString(ExecuteImmediate ei) {
         if (this.builders != null || this.begins != null) {
-            if (sb != null) {
+            if (ei != null) {
                 if (this.builders == null) this.builders = new ArrayList<>();
-                this.builders.add(0, new ExecuteImmediate(sb.toString()));
+                this.builders.add(0, ei);
             }
             StringBuilder nsb = new StringBuilder();
             if (declares != null && declares.size() > 0) {
@@ -90,7 +92,7 @@ public abstract class OracleStampCommonality {
             nsb.append(NL + "END;");
             return nsb.toString();
         } else {
-            return sb != null ? sb.toString() : null;
+            return ei.sql;
         }
     }
 
@@ -218,7 +220,11 @@ public abstract class OracleStampCommonality {
                 }
             }
 
-            return RS + columnName + RE;
+            if (StringTools.isNotEmpty(tableAliasName)) {
+                return tableAliasName.toUpperCase() + "." + RS + columnName + RE;
+            } else {
+                return RS + columnName + RE;
+            }
         }
         return null;
     }
@@ -459,5 +465,51 @@ public abstract class OracleStampCommonality {
             return "YEAR";
         }
         return null;
+    }
+
+
+    protected void addCommentSQL(MappingGlobalWrapper wrapper,
+                                 StampAction action,
+                                 Object param,
+                                 String commentStr,
+                                 int type) {
+        Class table = null;
+        String tableStr = null;
+        if (action instanceof StampAlter) {
+            table = ((StampAlter) action).table;
+            tableStr = ((StampAlter) action).name;
+        }
+        if (action instanceof StampCreate) {
+            table = ((StampCreate) action).table;
+            tableStr = ((StampCreate) action).name;
+        }
+
+        StringBuilder comment = new StringBuilder();
+        if (type == 1) {
+            StampColumn column = (StampColumn) param;
+            comment.append("COMMENT ON COLUMN ");
+            if (table != null) {
+                column.table = table;
+            } else if (StringTools.isNotEmpty(tableStr)) {
+                column.tableAliasName = tableStr;
+            }
+            comment.append(this.getColumnName(wrapper, action, column));
+        }
+        if (type == 2) {
+            String tableName = this.getTableName(wrapper, table, tableStr);
+            comment.append("COMMENT ON TABLE " + tableName);
+        }
+        comment.append(" IS ");
+        comment.append("''" + commentStr + "''");
+        this.getBuilders().add(new ExecuteImmediate(comment));
+    }
+
+    protected void addAutoIncrement(MappingGlobalWrapper wrapper, Class table, String tableStr) {
+        String tableName = this.getTableName(wrapper, table, tableStr);
+        String seqName = tableName + "_SEQ";
+        this.getDeclares().add("SEQUENCE_COUNT NUMBER");
+        this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO SEQUENCE_COUNT FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '" + seqName + "'"));
+        this.getBuilders().add(new ExecuteImmediate("IF SEQUENCE_COUNT = 0 THEN ",
+                "CREATE SEQUENCE " + seqName + " INCREMENT BY 1 START WITH 1 MINVALUE 1 MAXVALUE 9999999999999999", "END IF"));
     }
 }

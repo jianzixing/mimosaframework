@@ -151,11 +151,11 @@ public class SessionTemplateTesting {
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
-        sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
-                        .add().index().name(TableUser.id + "2").column(TableUser.id)
-        );
-        template.getAutonomously(sqlAutonomously);
+//        sqlAutonomously = new SQLAutonomously(
+//                SQLAutonomously.alter().table(TableUser.class)
+//                        .add().index().name(TableUser.id + "2").column(TableUser.id)
+//        );
+//        template.getAutonomously(sqlAutonomously);
 
         sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
@@ -163,11 +163,11 @@ public class SessionTemplateTesting {
         );
         template.getAutonomously(sqlAutonomously);
 
-        sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
-                        .drop().index().name(TableUser.id + "2")
-        );
-        template.getAutonomously(sqlAutonomously);
+//        sqlAutonomously = new SQLAutonomously(
+//                SQLAutonomously.alter().table(TableUser.class)
+//                        .drop().index().name(TableUser.id + "2")
+//        );
+//        template.getAutonomously(sqlAutonomously);
     }
 
     @Test
@@ -184,6 +184,7 @@ public class SessionTemplateTesting {
                 SQLAutonomously.create().table().ifNotExist().name("t_tt")
                         .column("id").intType().autoIncrement().primary().key().comment("a")
                         .column("name").varchar(50).not().nullable().comment("b")
+                        .tableComment("ttt")
                         .charset("utf8")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);

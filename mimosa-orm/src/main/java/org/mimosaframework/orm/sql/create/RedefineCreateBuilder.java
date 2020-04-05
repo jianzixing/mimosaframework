@@ -21,5 +21,6 @@ public interface RedefineCreateBuilder
         CreateIndexColumnsBuilder,
         AbsTableNameBuilder,
         ColumnTypeBuilder,
-        ColumnAssistBuilder {
+        ColumnAssistBuilder,
+        CreateCommentForBuilder {
 }

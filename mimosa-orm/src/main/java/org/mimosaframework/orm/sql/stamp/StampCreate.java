@@ -21,6 +21,8 @@ public class StampCreate implements StampAction {
     public String indexName;
     public StampColumn[] indexColumns;
 
+    public String comment;
+
     @Override
     public List<STItem> getTables() {
         List<STItem> items = new ArrayList<>();

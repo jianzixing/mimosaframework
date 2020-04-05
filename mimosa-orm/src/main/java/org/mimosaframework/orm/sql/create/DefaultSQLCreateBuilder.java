@@ -25,13 +25,13 @@ public class DefaultSQLCreateBuilder
 
     @Override
     public Object create() {
-        this.gammars.add("create");
+        this.addPoint("create");
         return this;
     }
 
     @Override
     public Object database() {
-        this.gammars.add("database");
+        this.addPoint("database");
         stampCreate.target = KeyTarget.DATABASE;
         return this;
     }
@@ -84,7 +84,7 @@ public class DefaultSQLCreateBuilder
 
     @Override
     public Object table() {
-        this.gammars.add("table");
+        this.addPoint("table");
         stampCreate.target = KeyTarget.TABLE;
         return this;
     }
@@ -98,14 +98,14 @@ public class DefaultSQLCreateBuilder
 
     @Override
     public Object fullText() {
-        this.gammars.add("fullText");
+        this.addPoint("fullText");
         stampCreate.indexType = KeyIndexType.FULLTEXT;
         return this;
     }
 
     @Override
     public Object index() {
-        this.gammars.add("index");
+        this.addPoint("index");
         stampCreate.target = KeyTarget.INDEX;
         return this;
     }
@@ -118,7 +118,7 @@ public class DefaultSQLCreateBuilder
 
     @Override
     public Object unique() {
-        this.gammars.add("unique");
+        this.addPoint("unique");
         stampCreate.indexType = KeyIndexType.UNIQUE;
         return this;
     }
@@ -136,7 +136,7 @@ public class DefaultSQLCreateBuilder
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");
-        if (this.points.get(1).equals("table")) {
+        if (this.points != null && this.points.get(1).equals("table")) {
             StampCreateColumn column = new StampCreateColumn();
             column.column = new StampColumn(field);
             this.stampCreateColumns.add(column);
@@ -173,6 +173,9 @@ public class DefaultSQLCreateBuilder
         this.gammars.add("key");
         StampCreateColumn column = this.getLastColumn();
         column.key = true;
+        if (this.previous("primary")) {
+            column.pk = true;
+        }
         return this;
     }
 
@@ -360,5 +363,11 @@ public class DefaultSQLCreateBuilder
             this.stampCreate.columns = this.stampCreateColumns.toArray(new StampCreateColumn[]{});
         }
         return this.stampCreate;
+    }
+
+    @Override
+    public Object tableComment(String comment) {
+        this.stampCreate.comment = comment;
+        return this;
     }
 }

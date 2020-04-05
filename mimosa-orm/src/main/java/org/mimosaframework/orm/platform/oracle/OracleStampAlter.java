@@ -30,7 +30,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" " + RS + alter.name + RE);
 
             if (StringTools.isNotEmpty(alter.charset)) {
-                sb.append(" DEFAULT CHARACTER SET " + alter.charset);
+                sb.append(" CHARACTER SET " + alter.charset);
             }
             if (StringTools.isNotEmpty(alter.collate)) {
                 sb.append(" COLLATE " + alter.collate);
@@ -53,7 +53,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (totalAction <= 1 && noNeedSource) sb = null;
-        return new SQLBuilderCombine(this.toSQLString(sb), null);
+        return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
     }
 
     private void buildAlterItem(MappingGlobalWrapper wrapper,
@@ -137,10 +137,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             String seqName = tableName + "_SEQ";
 
             this.getDeclares().add("CACHE_CUR_SEQ NUMBER");
-            this.getBuilders().add(new ExecuteImmediate().setProcedure("BEGIN"));
             this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT " + seqName + ".NEXTVAL INTO CACHE_CUR_SEQ FROM DUAL"));
-            this.getBuilders().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN NO_DATA_FOUND THEN CACHE_CUR_SEQ:=0"));
-            this.getBuilders().add(new ExecuteImmediate().setProcedure("END"));
             this.getBuilders().add(new ExecuteImmediate().setProcedure("EXECUTE IMMEDIATE concat('ALTER SEQUENCE " +
                     seqName + " INCREMENT BY '," + item.value + "-CACHE_CUR_SEQ)"));
             this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT " + seqName + ".NEXTVAL INTO CACHE_CUR_SEQ FROM DUAL"));
@@ -152,7 +149,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
         if (item.action == KeyAction.COMMENT) {
             totalAction++;
-            this.addCommentSQL(wrapper, alter, item, item.comment, 1);
+            this.addCommentSQL(wrapper, alter, item, item.comment, 2);
         }
     }
 
@@ -243,7 +240,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
 
         // oracle 没有所以注释 common on
         if (StringTools.isNotEmpty(item.comment)) {
-            logger.warn("oracle have no index comment");
+            logger.warn("oracle can't set index comment");
         }
     }
 
@@ -260,7 +257,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" NOT NULL");
         }
         if (column.autoIncrement) {
-            this.addAutoIncrement(wrapper, alter);
+            this.addAutoIncrement(wrapper, alter.table, alter.name);
         }
         if (column.pk) {
             sb.append(" PRIMARY KEY");
@@ -275,7 +272,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, column, column.comment, 1);
+            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
         }
         if (column.after != null) {
             sb.append(" AFTER " + this.getColumnName(wrapper, alter, column.after));
@@ -283,43 +280,5 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (column.before != null) {
             sb.append(" BEFORE " + this.getColumnName(wrapper, alter, column.before));
         }
-    }
-
-    protected void addCommentSQL(MappingGlobalWrapper wrapper,
-                                 StampAlter alter,
-                                 StampAlterItem item,
-                                 String commentStr,
-                                 int type) {
-        List<StampAction.STItem> items = alter.getTables();
-        if (items != null && items.size() > 0) {
-            StringBuilder comment = new StringBuilder();
-            if (type == 1) {
-                StampColumn column = item.column;
-                comment.append("COMMENT ON COLUMN ");
-                if (column != null) column.table = items.get(0).getTable();
-                comment.append(this.getColumnName(wrapper, alter, column));
-            }
-            if (type == 2) {
-                comment.append("COMMENT ON INDEX ");
-                comment.append(this.getTableName(wrapper, items.get(0).getTable(), null));
-                comment.append("." + RS + item.name + RE);
-            }
-            comment.append(" IS ");
-            comment.append("''" + commentStr + "''");
-            this.getBuilders().add(new ExecuteImmediate(comment));
-        }
-    }
-
-    protected void addAutoIncrement(MappingGlobalWrapper wrapper,
-                                    StampAlter alter) {
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
-        String seqName = tableName + "_SEQ";
-        this.getDeclares().add("SEQUENCE_COUNT NUMBER");
-        this.getBuilders().add(new ExecuteImmediate().setProcedure("BEGIN"));
-        this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT 1 INTO SEQUENCE_COUNT FROM user_sequences WHERE sequence_name = '" + seqName + "'"));
-        this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN NO_DATA_FOUND THEN SEQUENCE_COUNT:=0"));
-        this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
-        this.getBuilders().add(new ExecuteImmediate("IF (SEQUENCE_COUNT!=1) THEN ",
-                "CREATE SEQUENCE " + seqName + " INCREMENT BY 1 START WITH 1 MINVALUE 1 MAXVALUE 9999999999999999", "END IF"));
     }
 }
