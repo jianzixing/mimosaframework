@@ -9,6 +9,8 @@ import org.mimosaframework.orm.sql.Wrapper;
 import tables.TablePay;
 import tables.TableUser;
 
+import java.util.Date;
+
 public class SessionTemplateTesting {
     private static SessionTemplate template = null;
 
@@ -358,7 +360,7 @@ public class SessionTemplateTesting {
                 SQLAutonomously.insert().into().table(TableUser.class)
                         .columns(TableUser.id, TableUser.createdTime)
                         .values()
-                        .row(1, "2019-01-01 10:00:00")
+                        .row(1, new Date())
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
@@ -368,9 +370,11 @@ public class SessionTemplateTesting {
     public void testInsert2() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.insert().into().table(TableUser.class)
-                        .columns(TableUser.id, TableUser.createdTime)
+                        .columns(TableUser.id, TableUser.userName)
                         .values()
-                        .row(1, "2019-01-01 10:00:00")
+                        .row(1, "A")
+                        .row(2, "B")
+                        .row(3, "C")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());

@@ -21,46 +21,46 @@ public class OracleStampInsert extends OracleStampCommonality implements StampCo
         StampInsert insert = (StampInsert) action;
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT");
-        sb.append(" INTO");
-        sb.append(" " + this.getTableName(wrapper, insert.table, insert.name));
+        sb.append(NL + "BEGIN");
+        sb.append(" " + NL_TAB + "INSERT");
+        Object[][] values = insert.values;
+        if (values.length > 1) sb.append(" ALL");
+        for (Object[] row : values) {
+            sb.append(NL_TAB + "INTO");
+            sb.append(" " + this.getTableName(wrapper, insert.table, insert.name));
 
-        StampColumn[] columns = insert.columns;
-        String[] names = null;
-        if (columns != null && columns.length > 0) {
-            names = new String[columns.length];
-            sb.append(" (");
-            int i = 0;
-            for (StampColumn column : columns) {
-                String name = this.getColumnName(wrapper, insert, column);
-                sb.append(name);
-                names[i] = name;
-                i++;
-                if (i != columns.length) sb.append(",");
-            }
-            sb.append(")");
-            sb.append(" VALUES ");
-        } else {
-            if (insert.table != null) {
-                MappingTable mappingTable = wrapper.getMappingTable(insert.table);
-                if (mappingTable != null) {
-                    Set<MappingField> fields = mappingTable.getMappingFields();
-                    names = new String[fields.size()];
-                    Iterator<MappingField> iterator = fields.iterator();
-                    int c = 0;
-                    while (iterator.hasNext()) {
-                        MappingField field = iterator.next();
-                        names[c] = field.getMappingFieldName();
-                        c++;
+            StampColumn[] columns = insert.columns;
+            String[] names = null;
+            if (columns != null && columns.length > 0) {
+                names = new String[columns.length];
+                sb.append("(");
+                int i = 0;
+                for (StampColumn column : columns) {
+                    String name = this.getColumnName(wrapper, insert, column);
+                    sb.append(name);
+                    names[i] = name;
+                    i++;
+                    if (i != columns.length) sb.append(",");
+                }
+                sb.append(")");
+                sb.append(" VALUES ");
+            } else {
+                if (insert.table != null) {
+                    MappingTable mappingTable = wrapper.getMappingTable(insert.table);
+                    if (mappingTable != null) {
+                        Set<MappingField> fields = mappingTable.getMappingFields();
+                        names = new String[fields.size()];
+                        Iterator<MappingField> iterator = fields.iterator();
+                        int c = 0;
+                        while (iterator.hasNext()) {
+                            MappingField field = iterator.next();
+                            names[c] = field.getMappingFieldName();
+                            c++;
+                        }
                     }
                 }
             }
-        }
 
-
-        Object[][] values = insert.values;
-        int j = 0;
-        for (Object[] row : values) {
             int k = 0;
             sb.append("(");
             for (Object v : row) {
@@ -73,11 +73,12 @@ public class OracleStampInsert extends OracleStampCommonality implements StampCo
                 if (k != row.length) sb.append(",");
             }
             sb.append(")");
-
-            j++;
-            if (j != values.length) sb.append(",");
         }
 
+        if (values.length > 1) {
+            sb.append(" " + NL_TAB + "SELECT 1 FROM DUAL;");
+            sb.append(NL + "END;");
+        }
         return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 }
