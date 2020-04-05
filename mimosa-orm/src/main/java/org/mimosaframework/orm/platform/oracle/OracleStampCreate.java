@@ -42,12 +42,9 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
-            StampCreateIndex[] indices = create.indices;
-            if (indices != null && indices.length > 0) {
-                sb.append(",");
-            }
-            this.buildTableIndex(wrapper, sb, create);
             sb.append(")");
+
+            this.buildTableIndex(wrapper, sb, create);
 
             if (StringTools.isNotEmpty(create.comment)) {
                 this.addCommentSQL(wrapper, create, create, create.comment, 2);
@@ -88,47 +85,83 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
         StampCreateIndex[] indices = create.indices;
         if (indices != null && indices.length > 0) {
             int i = 0;
+            boolean isNeedDeclare = false;
             for (StampCreateIndex index : indices) {
                 if (index.indexType == KeyIndexType.PRIMARY_KEY) {
                     sb.append("PRIMARY KEY");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
+                    if (this.setTableIndexColumn(index, 1, wrapper, create)) isNeedDeclare = true;
                 }
                 if (index.indexType == KeyIndexType.INDEX) {
-                    sb.append("INDEX");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
+                    if (this.setTableIndexColumn(index, 2, wrapper, create)) isNeedDeclare = true;
                 }
                 if (index.indexType == KeyIndexType.FULLTEXT) {
                     sb.append("FULLTEXT INDEX");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
+                    if (this.setTableIndexColumn(index, 3, wrapper, create)) isNeedDeclare = true;
                 }
                 if (index.indexType == KeyIndexType.UNIQUE) {
                     sb.append("UNIQUE");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
+                    if (this.setTableIndexColumn(index, 4, wrapper, create)) isNeedDeclare = true;
                 }
                 i++;
                 if (i != indices.length) sb.append(",");
             }
+
+            if (isNeedDeclare) {
+                this.getDeclares().add("HAS_INDEX NUMBER");
+            }
         }
     }
 
-    private void setTableIndexColumn(StampCreateIndex index,
-                                     StringBuilder sb,
-                                     MappingGlobalWrapper wrapper,
-                                     StampCreate create) {
+    private boolean setTableIndexColumn(StampCreateIndex index,
+                                        int type,
+                                        MappingGlobalWrapper wrapper,
+                                        StampCreate create) {
+        boolean isNeedCheck = false;
+        String tableName = this.getTableName(wrapper, create.table, create.name);
+        StringBuilder sb = new StringBuilder();
+        StampColumn[] columns = index.columns;
+
+        StringBuilder queryNames = new StringBuilder();
+        StringBuilder queryNames2 = new StringBuilder();
+        int j = 0;
+        for (StampColumn column : columns) {
+            // 创建表所以不需要别名
+            column.table = null;
+            column.tableAliasName = null;
+            queryNames.append(this.getColumnName(wrapper, create, column));
+            queryNames2.append("'" + this.getColumnName(wrapper, create, column, false) + "'");
+            j++;
+            if (j != columns.length) {
+                queryNames.append(",");
+                queryNames2.append(",");
+            }
+        }
+        sb.append("CREATE");
+        if (type == 2) {
+            sb.append(" INDEX");
+        }
         if (StringTools.isNotEmpty(index.name)) {
-            sb.append(" " + index.name);
+            sb.append(" " + index.name + " ");
+            this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO HAS_INDEX FROM " +
+                    "USER_INDEXES T1,USER_IND_COLUMNS T2 " +
+                    "WHERE T1.TABLE_NAME='" + tableName + "' " +
+                    "AND T1.INDEX_NAME='" + index.name + "' " +
+                    "AND T1.TABLE_NAME = T2.TABLE_NAME " +
+                    "AND T1.INDEX_NAME = T2.INDEX_NAME " +
+                    "AND T2.COLUMN_NAME in (" + queryNames2 + ")"));
+            isNeedCheck = true;
         } else {
             sb.append(" ");
         }
-        StampColumn[] columns = index.columns;
-        int j = 0;
+
+        sb.append("ON ");
+        sb.append(tableName + " ");
         sb.append("(");
-        for (StampColumn column : columns) {
-            sb.append(this.getColumnName(wrapper, create, column));
-            j++;
-            if (j != columns.length) sb.append(",");
-        }
+        sb.append(queryNames);
         sb.append(")");
+
+        this.getBuilders().add(new ExecuteImmediate("IF HAS_INDEX = " + columns.length + " THEN", sb.toString(), "END IF"));
+        return isNeedCheck;
     }
 
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
@@ -137,7 +170,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
             int i = 0;
             for (StampCreateColumn column : columns) {
                 String columnName = this.getColumnName(wrapper, create, column.column);
-                sb.append(" " + columnName);
+                sb.append(columnName);
 
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
 
@@ -164,6 +197,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                         } else {
                             newIndex[ii] = new StampCreateIndex();
                             newIndex[ii].indexType = KeyIndexType.INDEX;
+                            newIndex[ii].name = column.column.column.toString();
                             newIndex[ii].columns = new StampColumn[]{column.column};
                         }
                     }

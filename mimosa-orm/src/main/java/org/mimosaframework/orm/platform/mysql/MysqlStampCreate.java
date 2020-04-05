@@ -109,6 +109,9 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
         StampColumn[] columns = index.columns;
         int j = 0;
         for (StampColumn column : columns) {
+            // 创建表所以不需要别名
+            column.table = null;
+            column.tableAliasName = null;
             sb.append(this.getColumnName(wrapper, create, column));
             j++;
             if (j != columns.length) sb.append(",");
@@ -120,7 +123,7 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
         if (columns != null && columns.length > 0) {
             int i = 0;
             for (StampCreateColumn column : columns) {
-                sb.append(" " + this.getColumnName(wrapper, create, column.column));
+                sb.append(this.getColumnName(wrapper, create, column.column));
 
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
 
