@@ -35,13 +35,19 @@ public class OracleStampDelete extends OracleStampCommonality implements StampCo
                 || (delete.orderBy != null && delete.orderBy.length > 0)
                 || delete.limit != null) {
 
-            String tableName = this.getTableName(wrapper, delete.delTable, delete.delTableAlias);
-            for (StampFrom from : delete.froms) {
-                if (from.aliasName != null && from.aliasName.equalsIgnoreCase(delete.delTableAlias)) {
-                    tableName = this.getTableName(wrapper, from.table, from.name);
+            if (delete.delTable != null || StringTools.isNotEmpty(delete.delTableAlias)) {
+                String tableName = this.getTableName(wrapper, delete.delTable, delete.delTableAlias);
+                for (StampFrom from : delete.froms) {
+                    if (from.aliasName != null && from.aliasName.equalsIgnoreCase(delete.delTableAlias)) {
+                        tableName = this.getTableName(wrapper, from.table, from.name);
+                    }
+                }
+                sb.append(tableName);
+            } else {
+                if (delete.froms != null && delete.froms.length > 0) {
+                    sb.append(this.getTableName(wrapper, delete.froms[0].table, delete.froms[0].name));
                 }
             }
-            sb.append(tableName);
             sb.append(" DEL_TABLE_ALIAS");
             sb.append(" WHERE EXISTS");
             sb.append(" (");

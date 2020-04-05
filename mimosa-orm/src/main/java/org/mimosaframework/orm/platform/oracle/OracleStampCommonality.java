@@ -614,7 +614,7 @@ public abstract class OracleStampCommonality {
                 isIn = true;
             }
         }
-        if (!isIn) {
+        if (!isIn && (delTable != null || StringTools.isNotEmpty(delTableName))) {
             selectFields = this.getTableName(wrapper, delTable, delTableName) + ".*";
         }
 
