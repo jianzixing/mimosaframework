@@ -149,7 +149,15 @@ public class PlatformFactory {
     }
 
     public static StampCombineBuilder getStampAlterBuilder(DatabaseTypes databaseTypes, StampAction stampAction) {
-        if (databaseTypes == DatabaseTypes.MYSQL) {
+        if (databaseTypes == DatabaseTypes.DB2) {
+            if (stampAction instanceof StampAlter) return new DB2StampAlter();
+            if (stampAction instanceof StampCreate) return new DB2StampCreate();
+            if (stampAction instanceof StampDelete) return new DB2StampDelete();
+            if (stampAction instanceof StampDrop) return new DB2StampDrop();
+            if (stampAction instanceof StampInsert) return new DB2StampInsert();
+            if (stampAction instanceof StampSelect) return new DB2StampSelect();
+            if (stampAction instanceof StampUpdate) return new DB2StampUpdate();
+        } else if (databaseTypes == DatabaseTypes.MYSQL) {
             if (stampAction instanceof StampAlter) return new MysqlStampAlter();
             if (stampAction instanceof StampCreate) return new MysqlStampCreate();
             if (stampAction instanceof StampDelete) return new MysqlStampDelete();
