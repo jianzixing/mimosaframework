@@ -14,10 +14,8 @@ public class DefaultSQLDeleteBuilder
         implements
         RedefineDeleteBuilder {
 
-    protected boolean isUsing = false;
-
     protected StampDelete stampDelete = new StampDelete();
-    protected List<StampFrom> stampFroms = new ArrayList<>();
+    protected StampFrom stampFrom;
     protected StampWhere where = null;
     protected List<StampOrderBy> orderBys = new ArrayList<>();
     protected StampOrderBy lastOrderBy = null;
@@ -31,23 +29,10 @@ public class DefaultSQLDeleteBuilder
     @Override
     public Object table(Class table) {
         this.gammars.add("table");
-        if (this.previous("delete")) {
-            this.stampDelete.delTable = table;
-        } else if (this.point.equals("from") || this.point.equals("using")) {
-            StampFrom stampFrom = new StampFrom(table);
-            stampFrom.table = table;
-            stampFroms.add(stampFrom);
+        if (this.point.equals("from")) {
+            this.stampFrom = new StampFrom(table);
+            this.stampFrom.table = table;
         }
-        return this;
-    }
-
-    @Override
-    public Object table(Class table, String tableAliasName) {
-        this.gammars.add("table");
-        StampFrom stampFrom = new StampFrom(table, tableAliasName);
-        stampFrom.table = table;
-        stampFrom.aliasName = tableAliasName;
-        stampFroms.add(stampFrom);
         return this;
     }
 
@@ -135,19 +120,6 @@ public class DefaultSQLDeleteBuilder
     }
 
     @Override
-    public Object orderBy() {
-        this.addPoint("orderBy");
-        return this;
-    }
-
-    @Override
-    public Object table(String aliasName) {
-        this.gammars.add("table");
-        this.stampDelete.delTableAlias = aliasName;
-        return this;
-    }
-
-    @Override
     public Object asc() {
         this.gammars.add("asc");
         this.lastOrderBy.sortType = KeySortType.ASC;
@@ -162,27 +134,9 @@ public class DefaultSQLDeleteBuilder
     }
 
     @Override
-    public Object using() {
-        this.addPoint("using");
-        this.isUsing = true;
-        if (stampFroms.size() > 0) {
-            StampFrom from = stampFroms.get(stampFroms.size() - 1);
-            if (from.table != null) {
-                this.stampDelete.delTable = from.table;
-            } else if (StringTools.isNotEmpty(from.aliasName)) {
-                this.stampDelete.delTableAlias = from.aliasName;
-            }
-        }
-        return this;
-    }
-
-    @Override
     public StampAction compile() {
-        if (stampFroms != null && stampFroms.size() > 0) {
-            this.stampDelete.froms = stampFroms.toArray(new StampFrom[]{});
-        }
+        this.stampDelete.from = stampFrom;
         if (where != null) stampDelete.where = where;
-        if (orderBys != null) stampDelete.orderBy = orderBys.toArray(new StampOrderBy[]{});
         return this.stampDelete;
     }
 }

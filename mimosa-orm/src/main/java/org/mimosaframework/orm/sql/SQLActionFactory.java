@@ -71,7 +71,6 @@ public class SQLActionFactory {
         SQLProxyInvoker invoker = new SQLProxyInvoker(
                 new Class[]{
                         RedefineDeleteBuilder.class,
-                        DeleteWhichBuilder.class,
                         DeleteStartBuilder.class,
                         DeleteWhereNextBuilder.class,
                         CommonWhereBuilder.class,

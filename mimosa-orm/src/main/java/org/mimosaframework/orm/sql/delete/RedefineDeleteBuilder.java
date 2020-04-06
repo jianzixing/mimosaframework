@@ -6,8 +6,6 @@ public interface RedefineDeleteBuilder
         extends
         DeleteBuilder,
         AbsTableBuilder,
-        AbsTableAliasBuilder,
-        DeleteWhichBuilder,
         FromBuilder,
         WhereBuilder,
         AbsWhereColumnBuilder,
@@ -17,7 +15,6 @@ public interface RedefineDeleteBuilder
         AbsValueBuilder,
         BetweenValueBuilder,
         LogicBuilder,
-        UsingBuilder,
         WrapperBuilder,
         SortBuilder {
 }

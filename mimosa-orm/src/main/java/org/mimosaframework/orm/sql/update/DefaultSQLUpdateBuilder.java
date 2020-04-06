@@ -45,18 +45,7 @@ public class DefaultSQLUpdateBuilder
         }
         return this;
     }
-
-    @Override
-    public Object table(Class table, String tableAliasName) {
-        this.gammars.add("table");
-        if (this.point.equals("update")) {
-            stampUpdate.table = new StampFrom(table, tableAliasName);
-        } else {
-            stampFroms.add(new StampFrom(table, tableAliasName));
-        }
-        return this;
-    }
-
+    
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");
@@ -175,11 +164,5 @@ public class DefaultSQLUpdateBuilder
         if (where != null) stampUpdate.where = where;
         if (items != null && items.size() > 0) stampUpdate.items = items.toArray(new StampUpdateItem[]{});
         return this.stampUpdate;
-    }
-
-    @Override
-    public Object using() {
-        this.addPoint("using");
-        return this;
     }
 }
