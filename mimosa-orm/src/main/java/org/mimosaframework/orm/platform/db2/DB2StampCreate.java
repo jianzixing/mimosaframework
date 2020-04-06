@@ -83,10 +83,6 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
                     sb.append("INDEX");
                     this.setTableIndexColumn(index, sb, wrapper, create);
                 }
-                if (index.indexType == KeyIndexType.FULLTEXT) {
-                    sb.append("FULLTEXT INDEX");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
                 if (index.indexType == KeyIndexType.UNIQUE) {
                     sb.append("UNIQUE");
                     this.setTableIndexColumn(index, sb, wrapper, create);
@@ -131,7 +127,7 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
                     sb.append(" NOT NULL");
                 }
                 if (column.autoIncrement) {
-                    sb.append(" AUTO_INCREMENT");
+                    sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
                 }
                 if (column.pk) {
                     sb.append(" PRIMARY KEY");

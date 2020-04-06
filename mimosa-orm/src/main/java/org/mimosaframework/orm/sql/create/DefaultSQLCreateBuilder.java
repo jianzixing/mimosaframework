@@ -97,13 +97,6 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object fullText() {
-        this.addPoint("fullText");
-        stampCreate.indexType = KeyIndexType.FULLTEXT;
-        return this;
-    }
-
-    @Override
     public Object index() {
         this.addPoint("index");
         stampCreate.target = KeyTarget.INDEX;

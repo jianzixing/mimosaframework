@@ -30,7 +30,6 @@ public interface RedefineAlterBuilder
         KeyBuilder,
         AlterRenameBuilder,
         ToBuilder,
-        FullTextBuilder,
         UniqueBuilder,
         AbsIntBuilder,
         AbsColumnsBuilder,

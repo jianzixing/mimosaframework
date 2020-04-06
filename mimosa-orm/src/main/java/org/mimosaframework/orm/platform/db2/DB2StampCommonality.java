@@ -4,14 +4,18 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.platform.ExecuteImmediate;
+import org.mimosaframework.orm.platform.PlatformStampCommonality;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
+import org.mimosaframework.orm.platform.oracle.OracleStampCommonality;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DB2StampCommonality {
-    protected static final String RS = "`";
-    protected static final String RE = "`";
+public abstract class DB2StampCommonality extends PlatformStampCommonality {
+    protected static final String RS = "\"";
+    protected static final String RE = "\"";
 
     protected String getTableName(MappingGlobalWrapper wrapper,
                                   Class table,
@@ -19,38 +23,50 @@ public abstract class DB2StampCommonality {
         if (table != null) {
             MappingTable mappingTable = wrapper.getMappingTable(table);
             if (mappingTable != null) {
-                return RS + mappingTable.getMappingTableName() + RE;
+                return mappingTable.getMappingTableName().toUpperCase();
+            } else if (StringTools.isNotEmpty(tableName)) {
+                return tableName.toUpperCase();
             }
-        } else {
-            return RS + tableName + RE;
+        } else if (StringTools.isNotEmpty(tableName)) {
+            return tableName.toUpperCase();
         }
         return null;
     }
 
     protected String getColumnName(MappingGlobalWrapper wrapper, StampAction stampTables, StampColumn column) {
+        return this.getColumnName(wrapper, stampTables, column, true);
+    }
+
+    protected String getColumnName(MappingGlobalWrapper wrapper,
+                                   StampAction stampTables,
+                                   StampColumn column,
+                                   boolean hasRes) {
+        String RS = this.RS, RE = this.RE;
+        if (!hasRes) {
+            RS = "";
+            RE = "";
+        }
         if (column != null && column.column != null) {
             String columnName = column.column.toString();
             String tableAliasName = column.tableAliasName;
 
             if (columnName.equals("*")) {
                 if (StringTools.isNotEmpty(tableAliasName)) {
-                    return RS + tableAliasName + RE + "." + columnName;
+                    return tableAliasName.toUpperCase() + "." + columnName;
                 } else {
                     return columnName;
                 }
             }
 
             List<StampAction.STItem> tables = stampTables.getTables();
-            if (tables != null) {
-                if (StringTools.isNotEmpty(tableAliasName)) {
-                    for (StampAction.STItem stItem : tables) {
-                        if (tableAliasName.equals(stItem.getTableAliasName())) {
-                            MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
-                            if (mappingTable != null) {
-                                MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
-                                if (mappingField != null) {
-                                    return RS + tableAliasName + RE + "." + RS + mappingField.getMappingColumnName() + RE;
-                                }
+            if (tables != null && StringTools.isNotEmpty(tableAliasName)) {
+                for (StampAction.STItem stItem : tables) {
+                    if (tableAliasName.equals(stItem.getTableAliasName())) {
+                        MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
+                        if (mappingTable != null) {
+                            MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
+                            if (mappingField != null) {
+                                return tableAliasName.toUpperCase() + "." + RS + mappingField.getMappingColumnName() + RE;
                             }
                         }
                     }
@@ -62,9 +78,13 @@ public abstract class DB2StampCommonality {
                 if (mappingTable != null) {
                     MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                     if (mappingField != null) {
-                        return RS + mappingTable.getMappingTableName() + RE
+                        return mappingTable.getMappingTableName().toUpperCase()
                                 + "."
                                 + RS + mappingField.getMappingColumnName() + RE;
+                    } else {
+                        return mappingTable.getMappingTableName().toUpperCase()
+                                + "."
+                                + RS + columnName + RE;
                     }
                 }
             }
@@ -81,7 +101,11 @@ public abstract class DB2StampCommonality {
                 }
             }
 
-            return RS + columnName + RE;
+            if (StringTools.isNotEmpty(tableAliasName)) {
+                return tableAliasName.toUpperCase() + "." + RS + columnName + RE;
+            } else {
+                return RS + columnName + RE;
+            }
         }
         return null;
     }
@@ -293,5 +317,41 @@ public abstract class DB2StampCommonality {
             return "YEAR";
         }
         return null;
+    }
+
+    protected void addCommentSQL(MappingGlobalWrapper wrapper,
+                                 StampAction action,
+                                 Object param,
+                                 String commentStr,
+                                 int type) {
+        Class table = null;
+        String tableStr = null;
+        if (action instanceof StampAlter) {
+            table = ((StampAlter) action).table;
+            tableStr = ((StampAlter) action).name;
+        }
+        if (action instanceof StampCreate) {
+            table = ((StampCreate) action).table;
+            tableStr = ((StampCreate) action).name;
+        }
+
+        StringBuilder comment = new StringBuilder();
+        if (type == 1) {
+            StampColumn column = (StampColumn) param;
+            comment.append("COMMENT ON COLUMN ");
+            if (table != null) {
+                column.table = table;
+            } else if (StringTools.isNotEmpty(tableStr)) {
+                column.tableAliasName = tableStr;
+            }
+            comment.append(this.getColumnName(wrapper, action, column));
+        }
+        if (type == 2) {
+            String tableName = this.getTableName(wrapper, table, tableStr);
+            comment.append("COMMENT ON TABLE " + tableName);
+        }
+        comment.append(" IS ");
+        comment.append("''" + commentStr + "''");
+        this.getBuilders().add(new ExecuteImmediate(comment));
     }
 }

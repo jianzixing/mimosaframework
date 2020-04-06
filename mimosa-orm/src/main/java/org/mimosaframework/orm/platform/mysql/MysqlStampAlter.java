@@ -121,10 +121,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
                                  MappingGlobalWrapper wrapper,
                                  StampAlter alter,
                                  StampAlterItem item) {
-        if (item.indexType == KeyIndexType.FULLTEXT) {
-            sb.append(" FULLTEXT");
-            sb.append(" INDEX");
-        } else if (item.indexType == KeyIndexType.UNIQUE) {
+        if (item.indexType == KeyIndexType.UNIQUE) {
             sb.append(" UNIQUE");
         } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
             sb.append(" PRIMARY KEY");

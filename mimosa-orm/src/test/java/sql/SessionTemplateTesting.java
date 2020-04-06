@@ -18,8 +18,11 @@ public class SessionTemplateTesting {
     public void init() throws ContextException {
         if (template == null) {
             String config = "/template-mimosa.xml";
-            if (1 == 1) {
+            if (1 == 2) {
                 config = "/oracle-template-mimosa.xml";
+            }
+            if (1 == 1) {
+                config = "/db2-template-mimosa.xml";
             }
             XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream(config));
             SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
@@ -32,19 +35,16 @@ public class SessionTemplateTesting {
     public void testAlter1() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
-                        .modify().column(TableUser.id).intType().autoIncrement().comment("aaa")
+                        .modify().column(TableUser.id).bigint().autoIncrement().comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
     }
 
     @Test
     public void testAlter2() throws Exception {
-        SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
-                        .change().oldColumn(TableUser.createdTime)
-                        .newColumn("created_time2").datetime().comment("aaa")
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+                .change().oldColumn(TableUser.createdTime)
+                .newColumn("created_time2").datetime().comment("aaa").autonomously());
 
         template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
                 .rename().column().oldColumn("created_time2").to().newColumn("created_time").autonomously());
@@ -54,7 +54,7 @@ public class SessionTemplateTesting {
     public void testAlter3() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
-                        .add().column("t1").intType().unique().comment("t+t1")
+                        .add().column("t1").intType().unique().comment("t+t1").after().column(TableUser.id)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
     }
@@ -100,7 +100,7 @@ public class SessionTemplateTesting {
     public void testAlter8() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
-                        .add().fullText().index().name("b").columns(TableUser.address, TableUser.userName)
+                        .add().index().name("b").columns(TableUser.address, TableUser.userName)
                         .comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
@@ -237,7 +237,7 @@ public class SessionTemplateTesting {
     @Test
     public void testCreate5() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.create().fullText().index().name("bb").on()
+                SQLAutonomously.create().index().name("bb").on()
                         .table(TableUser.class).columns(TableUser.address)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);

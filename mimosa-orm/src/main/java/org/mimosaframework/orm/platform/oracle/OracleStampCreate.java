@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
@@ -71,15 +72,6 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                 if (i != create.indexColumns.length) sb.append(",");
             }
             sb.append(")");
-
-            if (create.indexType == KeyIndexType.FULLTEXT) {
-                String iallName = this.getTableName(wrapper, create.table, create.name);
-                if (create.indexColumns != null && create.indexColumns.length > 1) {
-                    this.buildFullTextSQL(true, iallName, fullTextIndexNames, sb);
-                } else {
-                    this.buildFullTextSQL(false, iallName, fullTextIndexNames, sb);
-                }
-            }
         }
 
         if (create.target == KeyTarget.TABLE && create.checkExist) {
@@ -102,10 +94,6 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                 }
                 if (index.indexType == KeyIndexType.INDEX) {
                     if (this.setTableIndexColumn(index, 2, wrapper, create)) isNeedDeclare = true;
-                }
-                if (index.indexType == KeyIndexType.FULLTEXT) {
-                    sb.append("FULLTEXT INDEX");
-                    if (this.setTableIndexColumn(index, 3, wrapper, create)) isNeedDeclare = true;
                 }
                 if (index.indexType == KeyIndexType.UNIQUE) {
                     sb.append("UNIQUE");

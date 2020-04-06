@@ -44,6 +44,13 @@ public class DefaultSQLAlterBuilder
     public Object charset(String charset) {
         this.gammars.add("charset");
         this.stampAlter.charset = charset;
+        if ("alter".equals(this.getPrePoint()) && this.point.equals("table")) {
+            StampAlterItem item = new StampAlterItem();
+            this.stampAlter.target = KeyTarget.TABLE;
+            item.action = KeyAction.CHARACTER_SET;
+            item.name = charset;
+            this.items.add(item);
+        }
         return this;
     }
 
@@ -128,6 +135,10 @@ public class DefaultSQLAlterBuilder
     @Override
     public Object column() {
         this.gammars.add("column");
+        if (this.previous("rename")) {
+            StampAlterItem item = this.getLastItem();
+            item.renameType = KeyAlterRenameType.COLUMN;
+        }
         return this;
     }
 
@@ -309,15 +320,15 @@ public class DefaultSQLAlterBuilder
         this.gammars.add("index");
         StampAlterItem item = this.getLastItem();
         item.struct = KeyAlterStruct.INDEX;
-        if (this.previous("fullText")) {
-            item.indexType = KeyIndexType.FULLTEXT;
-        }
         if (this.previous("unique")) {
             item.indexType = KeyIndexType.UNIQUE;
         }
 
         if (this.point.equals("drop")) {
             item.dropType = KeyAlterDropType.INDEX;
+        }
+        if (this.previous("rename")) {
+            item.renameType = KeyAlterRenameType.INDEX;
         }
         return this;
     }
@@ -409,17 +420,8 @@ public class DefaultSQLAlterBuilder
     public Object rename() {
         this.addPoint("rename");
         StampAlterItem item = new StampAlterItem();
+        item.action = KeyAction.RENAME;
         this.items.add(item);
-        return this;
-    }
-
-    @Override
-    public Object fullText() {
-        this.gammars.add("fullText");
-        if (this.getPointNext(1).equals("fullText")) {
-            StampAlterItem item = this.getLastItem();
-            item.indexType = KeyIndexType.FULLTEXT;
-        }
         return this;
     }
 

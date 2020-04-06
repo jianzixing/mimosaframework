@@ -83,10 +83,6 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
                     sb.append("INDEX");
                     this.setTableIndexColumn(index, sb, wrapper, create);
                 }
-                if (index.indexType == KeyIndexType.FULLTEXT) {
-                    sb.append("FULLTEXT INDEX");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
                 if (index.indexType == KeyIndexType.UNIQUE) {
                     sb.append("UNIQUE");
                     this.setTableIndexColumn(index, sb, wrapper, create);

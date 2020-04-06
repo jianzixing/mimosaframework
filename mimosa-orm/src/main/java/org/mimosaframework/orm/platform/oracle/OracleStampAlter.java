@@ -6,11 +6,11 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class OracleStampAlter extends OracleStampCommonality implements StampCombineBuilder {
@@ -161,9 +161,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.setLength(0);
             sb.append("CREATE");
         }
-        if (item.indexType == KeyIndexType.FULLTEXT) {
-            sb.append(" INDEX");
-        } else if (item.indexType == KeyIndexType.UNIQUE) {
+        if (item.indexType == KeyIndexType.UNIQUE) {
             sb.append(" UNIQUE");
             sb.append(" INDEX");
         } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
@@ -187,31 +185,18 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 fullTextIndexNames.add(this.getColumnName(wrapper, alter, column, false));
             }
             sb.append(" (");
-            if (item.indexType == KeyIndexType.FULLTEXT) {
-                sb.append(this.getColumnName(wrapper, alter, item.columns[0]));
-            } else {
-                int i = 0;
-                for (StampColumn column : item.columns) {
-                    sb.append(this.getColumnName(wrapper, alter, column));
-                    i++;
-                    if (i != item.columns.length) {
-                        sb.append(",");
-                    }
+            int i = 0;
+            for (StampColumn column : item.columns) {
+                sb.append(this.getColumnName(wrapper, alter, column));
+                i++;
+                if (i != item.columns.length) {
+                    sb.append(",");
                 }
             }
             sb.append(")");
         } else {
             throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
                     StampAction.class, "miss_index_columns"));
-        }
-
-        if (item.indexType == KeyIndexType.FULLTEXT) {
-            String iallName = this.getTableName(wrapper, alter.table, alter.name);
-            if (item.columns != null && item.columns.length > 1) {
-                this.buildFullTextSQL(true, iallName, fullTextIndexNames, sb);
-            } else {
-                this.buildFullTextSQL(false, iallName, fullTextIndexNames, sb);
-            }
         }
 
         // oracle 没有所以注释 common on

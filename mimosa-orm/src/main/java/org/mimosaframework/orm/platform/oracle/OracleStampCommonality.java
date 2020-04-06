@@ -4,126 +4,18 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.platform.ExecuteImmediate;
+import org.mimosaframework.orm.platform.PlatformStampCommonality;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
 import org.mimosaframework.orm.sql.stamp.*;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class OracleStampCommonality {
+public abstract class OracleStampCommonality extends PlatformStampCommonality {
     protected static final String RS = "\"";
     protected static final String RE = "\"";
-    protected String NL = "\n";
-    protected String TAB = "\t";
-    protected String NL_TAB = "\n\t";
-
-    protected List<String> declares = null;
-    protected List<ExecuteImmediate> builders = null;
-    protected List<ExecuteImmediate> begins = null;
-
-    class ExecuteImmediate {
-        public String procedure;
-
-        public String preview;
-        public String sql;
-        public String end;
-
-        public ExecuteImmediate() {
-        }
-
-        public ExecuteImmediate(String sql) {
-            this.sql = sql;
-        }
-
-        public ExecuteImmediate(StringBuilder sql) {
-            if (sql != null) {
-                this.sql = sql.toString();
-            }
-        }
-
-        public ExecuteImmediate(String preview, String sql) {
-            this.preview = preview;
-            this.sql = sql;
-        }
-
-        public ExecuteImmediate(String preview, String sql, String end) {
-            this.preview = preview;
-            this.sql = sql;
-            this.end = end;
-        }
-
-        public ExecuteImmediate setProcedure(String procedure) {
-            this.procedure = procedure;
-            return this;
-        }
-    }
-
-    protected List<ExecuteImmediate> getBuilders() {
-        if (builders == null) builders = new ArrayList<>();
-        return builders;
-    }
-
-    protected List<ExecuteImmediate> getBegins() {
-        if (begins == null) begins = new ArrayList<>();
-        return begins;
-    }
-
-    protected List<String> getDeclares() {
-        if (declares == null) declares = new ArrayList<>();
-        return declares;
-    }
-
-    protected String toSQLString(ExecuteImmediate ei) {
-        if (this.builders != null || this.begins != null) {
-            if (ei != null) {
-                if (this.builders == null) this.builders = new ArrayList<>();
-                this.builders.add(0, ei);
-            }
-            StringBuilder nsb = new StringBuilder();
-            if (declares != null && declares.size() > 0) {
-                nsb.append(NL + "DECLARE ");
-                for (String s : declares) {
-                    nsb.append(NL_TAB + s + ";");
-                }
-            }
-            nsb.append(NL + "BEGIN ");
-            this.appendBuilders(nsb, begins);
-            this.appendBuilders(nsb, builders);
-            nsb.append(NL + "END;");
-            return nsb.toString();
-        } else {
-            return ei.sql;
-        }
-    }
-
-    private void appendBuilders(StringBuilder nsb, List<ExecuteImmediate> builders) {
-        if (builders != null) {
-            for (ExecuteImmediate item : builders) {
-                if (StringTools.isNotEmpty(item.procedure)) {
-                    if (item.procedure.equalsIgnoreCase("BEGIN")) {
-                        nsb.append(NL_TAB + item.procedure);
-                    } else {
-                        nsb.append(NL_TAB + item.procedure + ";");
-                    }
-                } else {
-                    if (StringTools.isNotEmpty(item.preview)) {
-                        nsb.append(NL_TAB + item.preview + " EXECUTE IMMEDIATE ");
-                    } else {
-                        nsb.append(NL_TAB + "EXECUTE IMMEDIATE ");
-                    }
-
-                    if (StringTools.isNotEmpty(item.end)) {
-                        nsb.append("'" + item.sql + "';");
-                        nsb.append(item.end + ";");
-                    } else {
-                        nsb.append("'" + item.sql + "'; ");
-                    }
-                }
-            }
-        }
-    }
 
     protected String getTableName(MappingGlobalWrapper wrapper,
                                   Class table,
@@ -532,41 +424,6 @@ public abstract class OracleStampCommonality {
         this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO SEQUENCE_COUNT FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '" + seqName + "'"));
         this.getBuilders().add(new ExecuteImmediate("IF SEQUENCE_COUNT = 0 THEN ",
                 "CREATE SEQUENCE " + seqName + " INCREMENT BY 1 START WITH 1 MINVALUE 1 MAXVALUE 9999999999999999", "END IF"));
-    }
-
-    protected void buildFullTextSQL(boolean multi, String tableName,
-                                    List<String> fullTextIndexNames,
-                                    StringBuilder sb) {
-        // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('MIMOSA_LEXER')"));
-        this.getDeclares().add("HAS_PREFERENCE NUMBER");
-        this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
-        this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('MIMOSA_LEXER','CHINESE_VGRAM_LEXER')"));
-        this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=1"));
-        this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
-        if (multi) {
-            String iallName = tableName + "_";
-            String cls = "";
-            Iterator<String> iterator = fullTextIndexNames.iterator();
-            while (iterator.hasNext()) {
-                String s = iterator.next();
-                iallName += s;
-                cls += RS + s + RE;
-                if (iterator.hasNext()) {
-                    iallName += "_";
-                    cls += ",";
-                }
-            }
-            iallName = iallName.toUpperCase();
-            // this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.DROP_PREFERENCE('" + iallName + "')"));
-            this.getBegins().add(new ExecuteImmediate().setProcedure("BEGIN"));
-            this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.CREATE_PREFERENCE('" + iallName + "','MULTI_COLUMN_DATASTORE')"));
-            this.getBegins().add(new ExecuteImmediate().setProcedure("EXCEPTION WHEN OTHERS THEN HAS_PREFERENCE:=2"));
-            this.getBegins().add(new ExecuteImmediate().setProcedure("END"));
-            this.getBegins().add(new ExecuteImmediate().setProcedure("CTX_DDL.SET_ATTRIBUTE('" + iallName + "','COLUMNS','" + cls + "')"));
-            sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''DATASTORE " + iallName + " LEXER MIMOSA_LEXER'')");
-        } else {
-            sb.append(" INDEXTYPE IS CTXSYS.CONTEXT PARAMETERS(''LEXER MIMOSA_LEXER'')");
-        }
     }
 
     /**

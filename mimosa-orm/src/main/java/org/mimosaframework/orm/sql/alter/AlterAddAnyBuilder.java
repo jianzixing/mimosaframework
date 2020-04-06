@@ -8,6 +8,5 @@ public interface AlterAddAnyBuilder<T>
         AbsColumnBuilder<ColumnTypeBuilder<AlterColumnAssistBuilder<T>>>,
         IndexBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder<UnifyBuilder>>>>,
         UniqueBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder<UnifyBuilder>>>>,
-        FullTextBuilder<IndexBuilder<AbsNameBuilder<AlterColumnsBuilder<CommentBuilder<UnifyBuilder>>>>>,
         PrimaryKeyBuilder<AlterPKColumnBuilder<CommentBuilder<UnifyBuilder>>> {
 }
