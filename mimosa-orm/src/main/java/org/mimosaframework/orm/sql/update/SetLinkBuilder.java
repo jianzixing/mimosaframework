@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.sql.update;
 
-import org.mimosaframework.orm.sql.AbsWhereValueBuilder;
+import org.mimosaframework.orm.sql.AbsValueBuilder;
 import org.mimosaframework.orm.sql.OperatorEqualBuilder;
 
 /**
@@ -10,5 +10,5 @@ import org.mimosaframework.orm.sql.OperatorEqualBuilder;
  */
 public interface SetLinkBuilder<T>
         extends
-        UpdateSetColumnBuilder<OperatorEqualBuilder<AbsWhereValueBuilder<T>>> {
+        UpdateSetColumnBuilder<OperatorEqualBuilder<AbsValueBuilder<T>>> {
 }

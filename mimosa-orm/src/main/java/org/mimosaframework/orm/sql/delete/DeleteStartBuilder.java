@@ -4,12 +4,5 @@ import org.mimosaframework.orm.sql.*;
 
 public interface DeleteStartBuilder
         extends
-        DeleteWhichBuilder
-                <FromBuilder
-                                <AbsTableAliasBuilder
-                                        <DeleteAsTableBuilder<CommonWhereBuilder<DeleteWhereOnlyNextBuilder>>>>>,
-
-        FromBuilder
-                <AbsTableBuilder
-                        <DeleteUsingBuilder>> {
+        FromBuilder<AbsTableBuilder<WhereBuilder<CommonWhereBuilder<DeleteWhereNextBuilder>>>> {
 }

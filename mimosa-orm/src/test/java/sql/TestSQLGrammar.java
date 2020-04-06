@@ -13,11 +13,8 @@ public class TestSQLGrammar {
     public static void main(String[] args) {
         UnifyBuilder unifyBuilder = null;
 
-        unifyBuilder = DeleteFactory.delete()
+        unifyBuilder = DeleteFactory.delete().from()
                 .table(TestSQLGrammar.class)
-                .from()
-                .table(TestSQLGrammar.class, "t1")
-                .table(TestSQLGrammar.class, "t2")
                 .where()
                 .column("").eq().value("");
 
@@ -31,27 +28,7 @@ public class TestSQLGrammar {
                 .and()
                 .wrapper(null).and()
                 .column("").in().value("")
-                .orderBy()
-                .column("").asc()
-                .column("").desc()
-                .column("").asc()
         ;
-
-        unifyBuilder = DeleteFactory.delete().from()
-                .table(TestSQLGrammar.class)
-                .using()
-                .table(TestSQLGrammar.class, "t1")
-                .table(TestSQLGrammar.class, "t2")
-                .where()
-                .column("").eq().value("");
-
-        unifyBuilder = DeleteFactory.delete()
-                .table("t1")
-                .from()
-                .table(TestSQLGrammar.class, "t1")
-                .table(TestSQLGrammar.class, "t2")
-                .where()
-                .column("").eq().value("");
 
         ///
 

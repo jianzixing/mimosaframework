@@ -4,8 +4,7 @@ import org.mimosaframework.orm.sql.*;
 
 public interface DeleteWhereNextBuilder
         extends
-        CommonWhereNextBuilder<DeleteWhereNextBuilder>,
-        OrderByBuilder<OrderByNextCountBuilder>
+        CommonWhereNextBuilder<DeleteWhereNextBuilder>
         // 不支持删除指定行数
         // LimitCountBuilder<UnifyBuilder>
 {

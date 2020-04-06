@@ -48,8 +48,8 @@ public class OracleStampUpdate extends OracleStampCommonality implements StampCo
                                  StampUpdateItem item,
                                  StringBuilder sb,
                                  List<SQLDataPlaceholder> placeholders) {
-//        item.column.table = null;
-//        item.column.tableAliasName = null;
+        item.column.table = null;
+        item.column.tableAliasName = null;
         String name = this.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");

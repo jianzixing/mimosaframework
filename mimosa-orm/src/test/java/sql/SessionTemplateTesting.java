@@ -252,7 +252,7 @@ public class SessionTemplateTesting {
     @Test
     public void testDelete1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.delete().table(TableUser.class).from().table(TableUser.class)
+                SQLAutonomously.delete().from().table(TableUser.class)
                         .where().column(TableUser.id).eq().value(1)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
@@ -262,35 +262,15 @@ public class SessionTemplateTesting {
     @Test
     public void testDelete2() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.delete().table("t1").from()
-                        .table(TableUser.class, "t1")
-                        .table(TablePay.class, "t2")
+                SQLAutonomously.delete().from()
+                        .table(TablePay.class)
                         .where()
                         .column("t1", TableUser.id).eq().value(1)
                         .and()
-                        .column("t1", TableUser.id).eq().column("t2", TablePay.userId)
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-        System.out.println(autoResult.getValue());
-    }
-
-    @Test
-    public void testDelete3() throws Exception {
-        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.delete().table("t1").from()
-                        .table(TableUser.class, "t1")
-                        .table(TablePay.class, "t2")
-                        .where()
-                        .column("t1", TableUser.id)
-                        .eq()
-                        .value(1)
-                        .and()
-                        .column("t1", TableUser.id).eq().column("t2", TablePay.userId)
+                        .column("t1", TableUser.id).eq().value(1)
                         .or()
                         .wrapper(Wrapper.build()
-                                .column("t1", TableUser.id)
-                                .eq()
-                                .column("t2", TablePay.userId)
+                                .column("t1", TableUser.id).eq().value(1)
                                 .and()
                                 .isNotNull("t1", TableUser.id)
                                 .and()
@@ -307,7 +287,7 @@ public class SessionTemplateTesting {
     }
 
     @Test
-    public void testDelete4() throws Exception {
+    public void testDelete3() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.delete().from()
                         .table(TableUser.class)
@@ -317,21 +297,16 @@ public class SessionTemplateTesting {
                         .value(1)
                         .and()
                         .column("t1", TableUser.id).eq().value(1)
-                        .orderBy()
-                        .column("t1", TableUser.id).asc()
-                        .column("t1", TableUser.age).desc()
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
     }
 
     @Test
-    public void testDelete5() throws Exception {
+    public void testDelete4() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.delete().from()
                         .table(TableUser.class)
-                        .using()
-                        .table(TablePay.class, "t2")
                         .where()
                         .column(TableUser.class, TableUser.id).eq().value(1)
                         .and()

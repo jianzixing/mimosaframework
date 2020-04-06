@@ -19,6 +19,5 @@ public interface RedefineDeleteBuilder
         LogicBuilder,
         UsingBuilder,
         WrapperBuilder,
-        OrderByBuilder,
         SortBuilder {
 }
