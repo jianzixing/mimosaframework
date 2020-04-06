@@ -16,6 +16,10 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
 
+        if (select.limit != null) {
+            sb.append("SELECT * FROM (");
+        }
+
         sb.append("SELECT ");
         StampSelectField[] columns = select.columns;
         int m = 0;
@@ -23,6 +27,12 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             this.buildSelectField(wrapper, select, column, sb, placeholders);
             m++;
             if (m != columns.length) sb.append(",");
+        }
+        if (columns != null && columns.length > 0 && select.limit != null) {
+            sb.append(",");
+        }
+        if (select.limit != null) {
+            sb.append(" ROW_NUMBER() OVER () AS RN_ALIAS");
         }
 
         sb.append(" FROM ");
@@ -32,7 +42,7 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
         for (StampFrom from : froms) {
             sb.append(this.getTableName(wrapper, from.table, from.name));
             if (StringTools.isNotEmpty(from.aliasName)) {
-                sb.append(" AS " + RS + from.aliasName + RE);
+                sb.append(" AS " + from.aliasName.toUpperCase());
             }
             i++;
             if (i != froms.length) sb.append(",");
@@ -49,7 +59,7 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
                 }
                 sb.append(" " + this.getTableName(wrapper, join.table, join.name));
                 if (StringTools.isNotEmpty(join.tableAliasName)) {
-                    sb.append(" AS " + RS + join.tableAliasName + RE);
+                    sb.append(" AS " + join.tableAliasName.toUpperCase());
                 }
                 if (join.on != null) {
                     sb.append(" ON ");
@@ -97,7 +107,8 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
         }
 
         if (select.limit != null) {
-            sb.append(" LIMIT " + select.limit.start + "," + select.limit.limit);
+            long start = select.limit.start, limit = start + select.limit.limit;
+            sb.append(") RN_TABLE_ALIAS WHERE RN_TABLE_ALIAS.RN_ALIAS BETWEEN " + start + " AND " + limit);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

@@ -211,8 +211,27 @@ public abstract class DB2StampCommonality extends PlatformStampCommonality {
             }
 
             if (whereType == KeyWhereType.FUN) {
-                if (where.not) sb.append("NOT ");
-                this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+                if (where.fun != null
+                        && where.fun.funName.equalsIgnoreCase("ISNULL")
+                        && where.fun.params != null
+                        && where.fun.params.length > 0
+                        && where.fun.params[0] instanceof StampColumn) {
+                    for (Object param : where.fun.params) {
+                        if (param instanceof StampColumn) {
+                            sb.append(this.getColumnName(wrapper, stampTables, ((StampColumn) param)));
+                            break;
+                        }
+                    }
+
+                    if (where.not) {
+                        sb.append(" IS NOT NULL");
+                    } else {
+                        sb.append(" IS NULL");
+                    }
+                } else {
+                    if (where.not) sb.append("NOT ");
+                    this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+                }
             }
         }
 

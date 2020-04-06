@@ -99,9 +99,9 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
                                      StampCreate create) {
         if (StringTools.isNotEmpty(index.name)) {
             sb.append(" " + index.name);
-        } else {
-            sb.append(" ");
         }
+
+        sb.append("(");
         StampColumn[] columns = index.columns;
         int j = 0;
         for (StampColumn column : columns) {
@@ -112,6 +112,7 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             j++;
             if (j != columns.length) sb.append(",");
         }
+        sb.append(")");
     }
 
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {

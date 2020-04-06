@@ -310,7 +310,7 @@ public class SessionTemplateTesting {
                         .where()
                         .column(TableUser.class, TableUser.id).eq().value(1)
                         .and()
-                        .column(TableUser.class, TableUser.id).eq().column("t2", TablePay.userId)
+                        .column(TableUser.class, TableUser.id).eq().column(TableUser.age)
 
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
@@ -320,10 +320,7 @@ public class SessionTemplateTesting {
 
     @Test
     public void testDrop1() throws Exception {
-        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.drop().table().table(TableUser.class)
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        AutoResult autoResult = template.getAutonomously(SQLAutonomously.drop().table().table(TableUser.class).autonomously());
         System.out.println(autoResult.getValue());
     }
 
@@ -331,9 +328,9 @@ public class SessionTemplateTesting {
     public void testInsert1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.insert().into().table(TableUser.class)
-                        .columns(TableUser.id, TableUser.createdTime)
+                        .columns(TableUser.userName, TableUser.createdTime)
                         .values()
-                        .row(1, new Date())
+                        .row("a", new Date())
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
@@ -343,11 +340,11 @@ public class SessionTemplateTesting {
     public void testInsert2() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.insert().into().table(TableUser.class)
-                        .columns(TableUser.id, TableUser.userName)
+                        .columns(TableUser.userName, TableUser.createdTime)
                         .values()
-                        .row(1, "A")
-                        .row(2, "B")
-                        .row(3, "C")
+                        .row("a1", new Date())
+                        .row("a2", new Date())
+                        .row("a3", new Date())
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());

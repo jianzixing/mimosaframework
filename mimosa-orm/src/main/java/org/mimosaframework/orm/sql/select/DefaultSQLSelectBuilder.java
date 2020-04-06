@@ -372,6 +372,12 @@ public class DefaultSQLSelectBuilder
         return this;
     }
 
+    /**
+     * 这里校验必须查询字段已groupBy中的字段开始
+     * 并且包含groupBy中所有的字段
+     *
+     * @return
+     */
     @Override
     public Object groupBy() {
         this.addPoint("groupBy");
