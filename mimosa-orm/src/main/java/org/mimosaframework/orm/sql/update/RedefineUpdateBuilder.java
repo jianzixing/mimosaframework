@@ -16,7 +16,6 @@ public interface RedefineUpdateBuilder
         WhereBuilder,
         OrderByBuilder,
         SortBuilder,
-        LimitCountBuilder,
         AbsValueBuilder,
         UsingBuilder,
         UpdateWhichTableBuilder,

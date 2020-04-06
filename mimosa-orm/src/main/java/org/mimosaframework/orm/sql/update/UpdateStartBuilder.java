@@ -1,7 +1,9 @@
 package org.mimosaframework.orm.sql.update;
 
 
+import org.mimosaframework.orm.sql.SetBuilder;
+
 public interface UpdateStartBuilder
         extends
-        UpdateWhichTableBuilder<UpdateUsingBuilder<ReplaceUpdateSetBuilder>> {
+        UpdateWhichTableBuilder<SetBuilder<ReplaceUpdateSetBuilder>> {
 }

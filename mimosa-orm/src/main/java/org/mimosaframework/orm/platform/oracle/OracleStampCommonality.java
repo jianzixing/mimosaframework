@@ -10,6 +10,7 @@ import org.mimosaframework.orm.sql.stamp.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public abstract class OracleStampCommonality {
     protected static final String RS = "\"";
@@ -603,24 +604,34 @@ public abstract class OracleStampCommonality {
                                                 StampOrderBy[] orderBys,
                                                 StampLimit limit,
                                                 List<SQLDataPlaceholder> placeholders,
-                                                StampAction action) {
-        String selectFields = "*";
-        boolean isIn = false;
-        for (StampFrom from : froms) {
-            if (from.aliasName != null
-                    && StringTools.isNotEmpty(delTableName)
-                    && from.aliasName.equalsIgnoreCase(delTableName)) {
-                selectFields = from.aliasName.toUpperCase() + ".*";
-                isIn = true;
-            }
-        }
-        if (!isIn && (delTable != null || StringTools.isNotEmpty(delTableName))) {
-            selectFields = this.getTableName(wrapper, delTable, delTableName) + ".*";
-        }
-
+                                                StampAction action,
+                                                Map<String, String> selectFieldMap) {
         StringBuilder select = new StringBuilder();
         select.append("SELECT ");
-        select.append(selectFields);
+        if (selectFieldMap != null && selectFieldMap.size() > 0) {
+            Iterator<Map.Entry<String, String>> iterator = selectFieldMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, String> entry = iterator.next();
+                select.append(entry.getKey());
+                select.append(" AS " + entry.getValue());
+                if (iterator.hasNext()) select.append(", ");
+            }
+        } else {
+            String selectFields = "*";
+            boolean isIn = false;
+            for (StampFrom from : froms) {
+                if (from.aliasName != null
+                        && StringTools.isNotEmpty(delTableName)
+                        && from.aliasName.equalsIgnoreCase(delTableName)) {
+                    selectFields = from.aliasName.toUpperCase() + ".*";
+                    isIn = true;
+                }
+            }
+            if (!isIn && (delTable != null || StringTools.isNotEmpty(delTableName))) {
+                selectFields = this.getTableName(wrapper, delTable, delTableName) + ".*";
+            }
+            select.append(selectFields);
+        }
         select.append(" FROM");
         int i = 0;
         for (StampFrom from : froms) {
@@ -651,7 +662,7 @@ public abstract class OracleStampCommonality {
         }
 
         if (limit != null) {
-            long start = limit.start, len = limit.limit;
+            long start = limit.start, len = start + limit.limit;
             StringBuilder sb = new StringBuilder();
             sb.append("SELECT * FROM (SELECT RN_TABLE_ALIAS.*, ROWNUM AS RN_ALIAS FROM (");
             sb.append(select);

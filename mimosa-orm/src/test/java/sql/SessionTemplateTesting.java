@@ -320,8 +320,6 @@ public class SessionTemplateTesting {
                         .orderBy()
                         .column("t1", TableUser.id).asc()
                         .column("t1", TableUser.age).desc()
-                        .limit(10)
-
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
@@ -384,8 +382,6 @@ public class SessionTemplateTesting {
     public void testSelect1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.select()
-                        .field("t", TableUser.id)
-                        .field("t", TableUser.userName)
                         .count(new FieldItem("t", TableUser.id)).as("c")
                         .from().table(TableUser.class, "t")
                         .left().join().table(TableUser.class, "t1").on().column("t1", TableUser.id).eq().column("t", TableUser.id)
@@ -409,15 +405,14 @@ public class SessionTemplateTesting {
     public void testSelect2() throws Exception {
         template.getAutonomously(
                 SQLAutonomously.select()
-                        .all()
+                        .field(TableUser.id)
                         .from()
                         .table(TableUser.class)
                         .where()
-                        .column("t", TableUser.id).eq().value(1)
+                        .column(TableUser.id).eq().value(1)
+                        .groupBy().column(TableUser.id)
                         .having()
                         .count("distinct", TableUser.id).gt().value(10)
-                        .and()
-                        .max(new FieldItem(TableUser.id)).ne().column("t", TableUser.age)
                         .autonomously()
         );
     }
@@ -425,31 +420,12 @@ public class SessionTemplateTesting {
     @Test
     public void testUpdate1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.update().table(TableUser.class)
-                        .set()
-                        .column(TableUser.address).eq().value("b")
-                        .column(TableUser.createdTime).eq().value("2019-01-01 10:00:00")
-                        .where().column(TableUser.id).eq().value(1)
-                        .orderBy()
-                        .column(TableUser.id).desc()
-                        .column(TableUser.age).asc()
-                        .limit(20)
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-        System.out.println(autoResult.getValue());
-    }
-
-    @Test
-    public void testUpdate2() throws Exception {
-        SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.update()
-                        .table(TableUser.class, "t1")
-                        .using()
-                        .table(TableUser.class, "t2")
+                        .table(TableUser.class)
                         .set()
                         .column(TableUser.address).eq().value("b")
-                        .column(TableUser.createdTime).eq().value("2019-01-01 10:00:00")
-                        .where().column("t1", TableUser.id).eq().value(1)
+                        .column(TableUser.createdTime).eq().value(new Date())
+                        .where().column(TableUser.id).eq().value(1)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());

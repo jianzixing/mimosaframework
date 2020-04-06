@@ -131,10 +131,10 @@ public class DefaultSQLUpdateBuilder
         }
     }
 
-    @Override
     public Object limit(int len) {
-        this.gammars.add("limit");
-        stampUpdate.limit = new StampLimit(0, len);
+        // this.gammars.add("limit");
+        // stampUpdate.limit = new StampLimit(0, len);
+        // 不支持删除指定行数
         return this;
     }
 
@@ -172,11 +172,7 @@ public class DefaultSQLUpdateBuilder
 
     @Override
     public StampAction compile() {
-        if (stampFroms != null && stampFroms.size() > 0) {
-            this.stampUpdate.froms = stampFroms.toArray(new StampFrom[]{});
-        }
         if (where != null) stampUpdate.where = where;
-        if (orderBys != null) stampUpdate.orderBy = orderBys.toArray(new StampOrderBy[]{});
         if (items != null && items.size() > 0) stampUpdate.items = items.toArray(new StampUpdateItem[]{});
         return this.stampUpdate;
     }

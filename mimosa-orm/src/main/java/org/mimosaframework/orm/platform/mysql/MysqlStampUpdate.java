@@ -24,20 +24,6 @@ public class MysqlStampUpdate extends MysqlStampCommonality implements StampComb
             }
         }
 
-        StampFrom[] froms = update.froms;
-        if (froms != null && froms.length > 0) {
-            sb.append(",");
-            int i = 0;
-            for (StampFrom table : froms) {
-                sb.append(this.getTableName(wrapper, table.table, table.name));
-                if (StringTools.isNotEmpty(table.aliasName)) {
-                    sb.append(" AS " + RS + table.aliasName + RE);
-                }
-                i++;
-                if (i != froms.length) sb.append(",");
-            }
-        }
-
         sb.append(" SET ");
         StampUpdateItem[] items = update.items;
         int k = 0;
@@ -50,25 +36,6 @@ public class MysqlStampUpdate extends MysqlStampCommonality implements StampComb
         if (update.where != null) {
             sb.append(" WHERE ");
             this.buildWhere(wrapper, placeholders, update, update.where, sb);
-        }
-
-        if (update.orderBy != null && update.orderBy.length > 0) {
-            StampOrderBy[] orderBy = update.orderBy;
-            sb.append(" ORDER BY ");
-            int j = 0;
-            for (StampOrderBy ob : orderBy) {
-                sb.append(this.getColumnName(wrapper, update, ob.column));
-                if (ob.sortType == KeySortType.ASC)
-                    sb.append(" ASC");
-                else
-                    sb.append(" DESC");
-                j++;
-                if (j != orderBy.length) sb.append(",");
-            }
-        }
-
-        if (update.limit != null) {
-            sb.append(" LIMIT " + update.limit.limit);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);
@@ -84,7 +51,13 @@ public class MysqlStampUpdate extends MysqlStampCommonality implements StampComb
         String name = this.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");
-        sb.append("?");
-        placeholders.add(new SQLDataPlaceholder(name, item.value));
+
+        if (item.value instanceof StampColumn) {
+            StampColumn column = (StampColumn) item.value;
+            sb.append(this.getColumnName(wrapper, update, column));
+        } else {
+            sb.append("?");
+            placeholders.add(new SQLDataPlaceholder(name, item.value));
+        }
     }
 }

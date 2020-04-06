@@ -20,6 +20,5 @@ public interface RedefineDeleteBuilder
         UsingBuilder,
         WrapperBuilder,
         OrderByBuilder,
-        SortBuilder,
-        LimitCountBuilder {
+        SortBuilder {
 }

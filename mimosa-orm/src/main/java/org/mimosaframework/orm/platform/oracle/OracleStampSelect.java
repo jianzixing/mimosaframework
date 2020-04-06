@@ -16,6 +16,11 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
 
+        if (select.limit != null) {
+            sb.append("SELECT * FROM (");
+            sb.append("SELECT RN_TABLE_ALIAS.*, ROWNUM AS RN_ALIAS FROM (");
+        }
+
         sb.append("SELECT ");
         StampSelectField[] columns = select.columns;
         int m = 0;
@@ -32,7 +37,7 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
         for (StampFrom from : froms) {
             sb.append(this.getTableName(wrapper, from.table, from.name));
             if (StringTools.isNotEmpty(from.aliasName)) {
-                sb.append(" AS " + RS + from.aliasName + RE);
+                sb.append(" " + from.aliasName.toUpperCase());
             }
             i++;
             if (i != froms.length) sb.append(",");
@@ -49,7 +54,7 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
                 }
                 sb.append(" " + this.getTableName(wrapper, join.table, join.name));
                 if (StringTools.isNotEmpty(join.tableAliasName)) {
-                    sb.append(" AS " + RS + join.tableAliasName + RE);
+                    sb.append(" " + join.tableAliasName.toUpperCase());
                 }
                 if (join.on != null) {
                     sb.append(" ON ");
@@ -97,7 +102,9 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
         }
 
         if (select.limit != null) {
-            sb.append(" LIMIT " + select.limit.start + "," + select.limit.limit);
+            long start = select.limit.start, limit = start + select.limit.limit;
+
+            sb.append(") RN_TABLE_ALIAS WHERE ROWNUM <= " + limit + ") RN_TABLE_ALIAS_2 WHERE RN_TABLE_ALIAS_2.RN_ALIAS >= " + start);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);
@@ -115,12 +122,12 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
 
         if (field.fieldType == KeyFieldType.ALL) {
             if (StringTools.isNotEmpty(tableAliasName)) {
-                sb.append(RS + tableAliasName + RE + ".");
+                sb.append(RS + tableAliasName.toUpperCase() + RE + ".");
             }
             sb.append("*");
         } else if (field.fieldType == KeyFieldType.COLUMN) {
             if (StringTools.isNotEmpty(tableAliasName)) {
-                sb.append(RS + tableAliasName + RE + ".");
+                sb.append(RS + tableAliasName.toUpperCase() + RE + ".");
             }
             sb.append(this.getColumnName(wrapper, select, column));
             if (StringTools.isNotEmpty(aliasName)) {

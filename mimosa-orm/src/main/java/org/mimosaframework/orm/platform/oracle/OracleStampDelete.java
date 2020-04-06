@@ -52,7 +52,7 @@ public class OracleStampDelete extends OracleStampCommonality implements StampCo
             sb.append(" WHERE EXISTS");
             sb.append(" (");
             StringBuilder del = this.multiDeleteOrUpdate(wrapper, delete.delTable, delete.delTableAlias,
-                    delete.froms, delete.where, delete.orderBy, delete.limit, placeholders, delete);
+                    delete.froms, delete.where, delete.orderBy, delete.limit, placeholders, delete, null);
             sb.append(del);
             sb.append(")");
         } else {

@@ -35,7 +35,6 @@ public class TestSQLGrammar {
                 .column("").asc()
                 .column("").desc()
                 .column("").asc()
-                .limit(10)
         ;
 
         unifyBuilder = DeleteFactory.delete().from()
@@ -93,21 +92,7 @@ public class TestSQLGrammar {
         ///
 
         unifyBuilder = UpdateFactory.update()
-                .table(TestSQLGrammar.class, "t1")
-                .set()
-                .column("").eq().value("")
-                .column("").eq().value("")
-                .where().column("").eq().value("")
-                .orderBy()
-                .column("").asc()
-                .column("").desc()
-                .limit(10);
-
-        unifyBuilder = UpdateFactory.update()
-                .table(TestSQLGrammar.class, "t1")
-                .using()
-                .table(TestSQLGrammar.class, "t2")
-                .table(TestSQLGrammar.class, "t3")
+                .table(TestSQLGrammar.class)
                 .set()
                 .column("").eq().value("")
                 .column("").eq().value("")

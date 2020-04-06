@@ -164,7 +164,6 @@ public class SQLActionFactory {
                         ReplaceUpdateSetBuilder.class,
                         ReplaceUpdateValueBuilder.class,
                         UpdateWhereNextBuilder.class,
-                        UpdateOLBuilder.class,
                         UpdateStartBuilder.class,
                         UpdateTableAliasBuilder.class,
                         CommonWhereBuilder.class,
@@ -173,8 +172,7 @@ public class SQLActionFactory {
                         OrderBySealCountBuilder.class,
                         ReplaceUpdateOnlySetBuilder.class,
                         ReplaceUpdateOnlyValueBuilder.class,
-                        UpdateWhereOnlyNextBuilder.class,
-                        UpdateUsingBuilder.class
+                        UpdateWhereOnlyNextBuilder.class
                 },
                 updateBuilder
         );

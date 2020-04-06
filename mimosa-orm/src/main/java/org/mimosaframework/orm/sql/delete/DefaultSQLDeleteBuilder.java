@@ -120,10 +120,10 @@ public class DefaultSQLDeleteBuilder
         return this;
     }
 
-    @Override
     public Object limit(int len) {
-        this.addPoint("limit");
-        this.stampDelete.limit = new StampLimit(0, len);
+        // this.addPoint("limit");
+        // this.stampDelete.limit = new StampLimit(0, len);
+        // 不支持删除指定行数
         return this;
     }
 
