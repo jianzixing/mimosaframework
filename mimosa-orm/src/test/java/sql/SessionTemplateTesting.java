@@ -219,7 +219,7 @@ public class SessionTemplateTesting {
     @Test
     public void testCreate4() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.create().database().name("bb")
+                SQLAutonomously.create().database().name("bb").charset("SQL_Latin1_General_CP1_CI_AS")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 

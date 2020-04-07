@@ -111,8 +111,14 @@ public class DefaultSQLCreateBuilder
 
     @Override
     public Object unique() {
-        this.addPoint("unique");
-        stampCreate.indexType = KeyIndexType.UNIQUE;
+        if (this.point.equals("table")) {
+            this.gammars.add("unique");
+            StampCreateColumn column = this.getLastColumn();
+            column.unique = true;
+        } else {
+            this.addPoint("unique");
+            stampCreate.indexType = KeyIndexType.UNIQUE;
+        }
         return this;
     }
 
@@ -165,9 +171,10 @@ public class DefaultSQLCreateBuilder
     public Object key() {
         this.gammars.add("key");
         StampCreateColumn column = this.getLastColumn();
-        column.key = true;
         if (this.previous("primary")) {
             column.pk = true;
+        } else {
+            column.key = true;
         }
         return this;
     }

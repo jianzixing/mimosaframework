@@ -20,8 +20,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         StringBuilder sb = new StringBuilder();
         if (alter.target == KeyTarget.DATABASE) {
             if (StringTools.isNotEmpty(alter.charset)) {
-                sb = null;
-                logger.warn("sqlserver can't reset database charset");
+                sb.append("ALTER DATABASE " + alter.name + " COLLATE " + alter.charset);
             }
         }
         if (alter.target == KeyTarget.TABLE) {

@@ -10,11 +10,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SQLServerStampSelect extends SQLServerStampCommonality implements StampCombineBuilder {
+
+    /**
+     * 请注意
+     * sql server 的ROW_NUMBER() OVER ()必须带排序
+     *
+     * @param wrapper
+     * @param action
+     * @return
+     */
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampSelect select = (StampSelect) action;
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
+
+        if (select.limit != null) {
+            sb.append("SELECT * FROM (");
+        }
+
+        StringBuilder orderBySql = null;
+        if (select.orderBy != null && select.orderBy.length > 0) {
+            orderBySql = new StringBuilder();
+            StampOrderBy[] orderBy = select.orderBy;
+            orderBySql.append("ORDER BY ");
+            int j = 0;
+            for (StampOrderBy ob : orderBy) {
+                orderBySql.append(this.getColumnName(wrapper, select, ob.column));
+                if (ob.sortType == KeySortType.ASC)
+                    orderBySql.append(" ASC");
+                else
+                    orderBySql.append(" DESC");
+                j++;
+                if (j != orderBy.length) orderBySql.append(",");
+            }
+        }
 
         sb.append("SELECT ");
         StampSelectField[] columns = select.columns;
@@ -23,6 +53,16 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
             this.buildSelectField(wrapper, select, column, sb, placeholders);
             m++;
             if (m != columns.length) sb.append(",");
+        }
+        if (columns != null && columns.length > 0 && select.limit != null) {
+            sb.append(",");
+        }
+        if (select.limit != null) {
+            if (orderBySql != null) {
+                sb.append(" ROW_NUMBER() OVER (" + orderBySql + ") AS RN_ALIAS");
+            } else {
+                sb.append(" ROW_NUMBER() OVER () AS RN_ALIAS");
+            }
         }
 
         sb.append(" FROM ");
@@ -81,23 +121,13 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
             this.buildWhere(wrapper, placeholders, select, select.having, sb);
         }
 
-        if (select.orderBy != null && select.orderBy.length > 0) {
-            StampOrderBy[] orderBy = select.orderBy;
-            sb.append(" ORDER BY ");
-            int j = 0;
-            for (StampOrderBy ob : orderBy) {
-                sb.append(this.getColumnName(wrapper, select, ob.column));
-                if (ob.sortType == KeySortType.ASC)
-                    sb.append(" ASC");
-                else
-                    sb.append(" DESC");
-                j++;
-                if (j != orderBy.length) sb.append(",");
-            }
+        if (select.orderBy != null && select.orderBy.length > 0 && select.limit == null) {
+            sb.append(" " + orderBySql);
         }
 
         if (select.limit != null) {
-            sb.append(" LIMIT " + select.limit.start + "," + select.limit.limit);
+            long start = select.limit.start, limit = start + select.limit.limit;
+            sb.append(") RN_TABLE_ALIAS WHERE RN_TABLE_ALIAS.RN_ALIAS BETWEEN " + start + " AND " + limit);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

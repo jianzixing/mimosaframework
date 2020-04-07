@@ -247,8 +247,27 @@ public abstract class SQLServerStampCommonality extends PlatformStampCommonality
             }
 
             if (whereType == KeyWhereType.FUN) {
-                if (where.not) sb.append("NOT ");
-                this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+                if (where.fun != null
+                        && where.fun.funName.equalsIgnoreCase("ISNULL")
+                        && where.fun.params != null
+                        && where.fun.params.length > 0
+                        && where.fun.params[0] instanceof StampColumn) {
+                    for (Object param : where.fun.params) {
+                        if (param instanceof StampColumn) {
+                            sb.append(this.getColumnName(wrapper, stampTables, ((StampColumn) param)));
+                            break;
+                        }
+                    }
+
+                    if (where.not) {
+                        sb.append(" IS NOT NULL");
+                    } else {
+                        sb.append(" IS NULL");
+                    }
+                } else {
+                    if (where.not) sb.append("NOT ");
+                    this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+                }
             }
         }
 
@@ -410,7 +429,7 @@ public abstract class SQLServerStampCommonality extends PlatformStampCommonality
                             "INNER JOIN SYS.SYSOBJECTS B ON A.ID = B.ID " +
                             "LEFT JOIN SYS.SYSCOMMENTS C ON A.CDEFAULT = C.ID " +
                             "LEFT JOIN SYS.EXTENDED_PROPERTIES F ON B.ID = F.MAJOR_ID AND F.MINOR_ID = 0 " +
-                            "WHERE B.NAME='t_tt' AND F.VALUE IS NOT NULL)"));
+                            "WHERE B.NAME='" + tableName + "' AND F.VALUE IS NOT NULL)"));
             this.getBuilders().add(new ExecuteImmediate().setProcedure(
                     (isCheckHasTable ? "IF (@HAS_TABLE = 0) BEGIN " + NL_TAB : "") +
                             "IF (@EXIST_TABLE_COMMENT = 1) " +

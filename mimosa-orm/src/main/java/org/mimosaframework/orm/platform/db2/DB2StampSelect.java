@@ -20,6 +20,22 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             sb.append("SELECT * FROM (");
         }
 
+        StringBuilder orderBySql = null;
+        if (select.orderBy != null && select.orderBy.length > 0) {
+            StampOrderBy[] orderBy = select.orderBy;
+            orderBySql.append("ORDER BY ");
+            int j = 0;
+            for (StampOrderBy ob : orderBy) {
+                orderBySql.append(this.getColumnName(wrapper, select, ob.column));
+                if (ob.sortType == KeySortType.ASC)
+                    orderBySql.append(" ASC");
+                else
+                    orderBySql.append(" DESC");
+                j++;
+                if (j != orderBy.length) orderBySql.append(",");
+            }
+        }
+
         sb.append("SELECT ");
         StampSelectField[] columns = select.columns;
         int m = 0;
@@ -32,7 +48,11 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             sb.append(",");
         }
         if (select.limit != null) {
-            sb.append(" ROW_NUMBER() OVER () AS RN_ALIAS");
+            if (orderBySql != null) {
+                sb.append(" ROW_NUMBER() OVER (" + orderBySql + ") AS RN_ALIAS");
+            } else {
+                sb.append(" ROW_NUMBER() OVER () AS RN_ALIAS");
+            }
         }
 
         sb.append(" FROM ");
@@ -91,19 +111,8 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             this.buildWhere(wrapper, placeholders, select, select.having, sb);
         }
 
-        if (select.orderBy != null && select.orderBy.length > 0) {
-            StampOrderBy[] orderBy = select.orderBy;
-            sb.append(" ORDER BY ");
-            int j = 0;
-            for (StampOrderBy ob : orderBy) {
-                sb.append(this.getColumnName(wrapper, select, ob.column));
-                if (ob.sortType == KeySortType.ASC)
-                    sb.append(" ASC");
-                else
-                    sb.append(" DESC");
-                j++;
-                if (j != orderBy.length) sb.append(",");
-            }
+        if (select.orderBy != null && select.orderBy.length > 0 && select.limit == null) {
+            sb.append(" " + orderBySql);
         }
 
         if (select.limit != null) {
