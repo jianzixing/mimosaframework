@@ -71,21 +71,25 @@ public abstract class PlatformStampCommonality {
                             nsb.append(NL_TAB + item.procedure + ";");
                         }
                     } else {
-                        if (StringTools.isNotEmpty(item.preview)) {
-                            nsb.append(NL_TAB + item.preview + " EXECUTE IMMEDIATE ");
-                        } else {
-                            nsb.append(NL_TAB + "EXECUTE IMMEDIATE ");
-                        }
-
-                        if (StringTools.isNotEmpty(item.end)) {
-                            nsb.append("'" + item.sql + "';");
-                            nsb.append(item.end + ";");
-                        } else {
-                            nsb.append("'" + item.sql + "'; ");
-                        }
+                        this.appendBuilderWrapper(item, nsb);
                     }
                 }
             }
+        }
+    }
+
+    protected void appendBuilderWrapper(ExecuteImmediate item, StringBuilder nsb) {
+        if (StringTools.isNotEmpty(item.preview)) {
+            nsb.append(NL_TAB + item.preview + " EXECUTE IMMEDIATE ");
+        } else {
+            nsb.append(NL_TAB + "EXECUTE IMMEDIATE ");
+        }
+
+        if (StringTools.isNotEmpty(item.end)) {
+            nsb.append("'" + item.sql + "';");
+            nsb.append(item.end + ";");
+        } else {
+            nsb.append("'" + item.sql + "'; ");
         }
     }
 }

@@ -173,6 +173,14 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new OracleStampInsert();
             if (stampAction instanceof StampSelect) return new OracleStampSelect();
             if (stampAction instanceof StampUpdate) return new OracleStampUpdate();
+        } else if (databaseTypes == DatabaseTypes.SQL_SERVER) {
+            if (stampAction instanceof StampAlter) return new SQLServerStampAlter();
+            if (stampAction instanceof StampCreate) return new SQLServerStampCreate();
+            if (stampAction instanceof StampDelete) return new SQLServerStampDelete();
+            if (stampAction instanceof StampDrop) return new SQLServerStampDrop();
+            if (stampAction instanceof StampInsert) return new SQLServerStampInsert();
+            if (stampAction instanceof StampSelect) return new SQLServerStampSelect();
+            if (stampAction instanceof StampUpdate) return new SQLServerStampUpdate();
         }
         return null;
     }

@@ -1,22 +1,54 @@
-package org.mimosaframework.orm.platform.mysql;
+package org.mimosaframework.orm.platform.sqlserver;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.PlatformStampCommonality;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.List;
 
-public abstract class MysqlStampCommonality extends PlatformStampCommonality {
-    protected static final String RS = "`";
-    protected static final String RE = "`";
+public abstract class SQLServerStampCommonality extends PlatformStampCommonality {
+    protected static final String RS = "[";
+    protected static final String RE = "]";
+
+    public SQLServerStampCommonality() {
+        this.declareInBegin = true;
+    }
+
+    protected void appendBuilderWrapper(ExecuteImmediate item, StringBuilder nsb) {
+        if (StringTools.isNotEmpty(item.preview)) {
+            nsb.append(NL_TAB + item.preview + " ");
+        } else {
+            nsb.append(NL_TAB);
+        }
+
+        if (StringTools.isNotEmpty(item.end)) {
+            nsb.append(item.sql + ";");
+            nsb.append(item.end + ";");
+        } else {
+            nsb.append(item.sql + "; ");
+        }
+    }
 
     protected String getTableName(MappingGlobalWrapper wrapper,
                                   Class table,
                                   String tableName) {
+        return this.getTableName(wrapper, table, tableName, true);
+    }
+
+    protected String getTableName(MappingGlobalWrapper wrapper,
+                                  Class table,
+                                  String tableName, boolean hasRes) {
+        String RS = this.RS;
+        String RE = this.RE;
+        if (!hasRes) {
+            RS = "";
+            RE = "";
+        }
         if (table != null) {
             MappingTable mappingTable = wrapper.getMappingTable(table);
             if (mappingTable != null) {
@@ -29,29 +61,39 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
     }
 
     protected String getColumnName(MappingGlobalWrapper wrapper, StampAction stampTables, StampColumn column) {
+        return this.getColumnName(wrapper, stampTables, column, true);
+    }
+
+    protected String getColumnName(MappingGlobalWrapper wrapper,
+                                   StampAction stampTables,
+                                   StampColumn column,
+                                   boolean hasRes) {
+        String RS = this.RS, RE = this.RE;
+        if (!hasRes) {
+            RS = "";
+            RE = "";
+        }
         if (column != null && column.column != null) {
             String columnName = column.column.toString();
             String tableAliasName = column.tableAliasName;
 
             if (columnName.equals("*")) {
                 if (StringTools.isNotEmpty(tableAliasName)) {
-                    return RS + tableAliasName + RE + "." + columnName;
+                    return tableAliasName + "." + columnName;
                 } else {
                     return columnName;
                 }
             }
 
             List<StampAction.STItem> tables = stampTables.getTables();
-            if (tables != null) {
-                if (StringTools.isNotEmpty(tableAliasName)) {
-                    for (StampAction.STItem stItem : tables) {
-                        if (tableAliasName.equals(stItem.getTableAliasName())) {
-                            MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
-                            if (mappingTable != null) {
-                                MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
-                                if (mappingField != null) {
-                                    return RS + tableAliasName + RE + "." + RS + mappingField.getMappingColumnName() + RE;
-                                }
+            if (tables != null && StringTools.isNotEmpty(tableAliasName)) {
+                for (StampAction.STItem stItem : tables) {
+                    if (tableAliasName.equals(stItem.getTableAliasName())) {
+                        MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
+                        if (mappingTable != null) {
+                            MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
+                            if (mappingField != null) {
+                                return tableAliasName + "." + RS + mappingField.getMappingColumnName() + RE;
                             }
                         }
                     }
@@ -63,9 +105,13 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
                 if (mappingTable != null) {
                     MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                     if (mappingField != null) {
-                        return RS + mappingTable.getMappingTableName() + RE
+                        return mappingTable.getMappingTableName()
                                 + "."
                                 + RS + mappingField.getMappingColumnName() + RE;
+                    } else {
+                        return mappingTable.getMappingTableName()
+                                + "."
+                                + RS + columnName + RE;
                     }
                 }
             }
@@ -82,7 +128,11 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
                 }
             }
 
-            return RS + columnName + RE;
+            if (StringTools.isNotEmpty(tableAliasName)) {
+                return tableAliasName + "." + RS + columnName + RE;
+            } else {
+                return RS + columnName + RE;
+            }
         }
         return null;
     }
@@ -294,5 +344,51 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
             return "YEAR";
         }
         return null;
+    }
+
+    protected void addCommentSQL(MappingGlobalWrapper wrapper,
+                                 StampAction action,
+                                 Object param,
+                                 String commentStr,
+                                 int type) {
+        Class table = null;
+        String tableStr = null;
+        if (action instanceof StampAlter) {
+            table = ((StampAlter) action).table;
+            tableStr = ((StampAlter) action).name;
+        }
+        if (action instanceof StampCreate) {
+            table = ((StampCreate) action).table;
+            tableStr = ((StampCreate) action).name;
+        }
+        String tableName = this.getTableName(wrapper, table, tableStr, false);
+
+        if (type == 1) {
+            StampColumn column = (StampColumn) param;
+            if (table != null) {
+                column.table = table;
+            } else if (StringTools.isNotEmpty(tableStr)) {
+                column.tableAliasName = tableStr;
+            }
+            String columnName = this.getColumnName(wrapper, action, new StampColumn(column.column), false);
+            this.getDeclares().add("@EXIST_COLUMN_COMMENT INT");
+            this.getBuilders().add(new ExecuteImmediate()
+                    .setProcedure("SELECT @EXIST_COLUMN_COMMENT=(SELECT COUNT(1) FROM SYS.COLUMNS A " +
+                            "LEFT JOIN SYS.EXTENDED_PROPERTIES G ON (A.OBJECT_ID = G.MAJOR_ID AND G.MINOR_ID = A.COLUMN_ID) " +
+                            "WHERE OBJECT_ID = (SELECT OBJECT_ID FROM SYS.TABLES WHERE NAME = '" + tableName + "') " +
+                            "AND A.NAME='" + columnName + "' AND G.VALUE IS NOT NULL)"));
+            this.getBuilders().add(new ExecuteImmediate().setProcedure(
+                    "IF (@EXIST_COLUMN_COMMENT = 1) " +
+                            "EXEC SP_UPDATEEXTENDEDPROPERTY 'MS_Description', '" + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "', 'COLUMN', '" + columnName + "';" +
+                            NL_TAB + "ELSE " +
+                            "EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', '" + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "', 'COLUMN', '" + columnName + "'"
+            ));
+        }
+        if (type == 2) {
+            this.getBuilders().add(new ExecuteImmediate().setProcedure(
+                    "EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', '"
+                            + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "'"
+            ));
+        }
     }
 }

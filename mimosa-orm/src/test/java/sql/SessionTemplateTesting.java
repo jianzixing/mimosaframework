@@ -21,8 +21,11 @@ public class SessionTemplateTesting {
             if (1 == 2) {
                 config = "/oracle-template-mimosa.xml";
             }
-            if (1 == 1) {
+            if (1 == 2) {
                 config = "/db2-template-mimosa.xml";
+            }
+            if (1 == 1) {
+                config = "/sqlserver-template-mimosa.xml";
             }
             XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream(config));
             SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
