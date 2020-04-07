@@ -28,11 +28,6 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
         StampAlter alter = (StampAlter) action;
         StringBuilder sb = new StringBuilder();
         if (alter.target == KeyTarget.DATABASE) {
-            sb.append("ALTER");
-            sb.append(" DATABASE");
-
-            sb.append(" " + RS + alter.name + RE);
-
             if (StringTools.isNotEmpty(alter.charset)) {
                 sb = null;
                 logger.warn("db2 can't reset database charset");

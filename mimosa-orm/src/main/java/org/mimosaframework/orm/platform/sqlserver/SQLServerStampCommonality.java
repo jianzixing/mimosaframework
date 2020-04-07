@@ -15,8 +15,17 @@ public abstract class SQLServerStampCommonality extends PlatformStampCommonality
     protected static final String RS = "[";
     protected static final String RE = "]";
 
+    protected boolean isDeclareCheckComment = false;
+    protected boolean isDeclareCheckTableComment = false;
+
     public SQLServerStampCommonality() {
         this.declareInBegin = true;
+    }
+
+    protected void appendBuilderDeclare(StringBuilder nsb, boolean isIn) {
+        for (String s : declares) {
+            nsb.append(NL_TAB + "DECLARE " + s + ";");
+        }
     }
 
     protected void appendBuilderWrapper(ExecuteImmediate item, StringBuilder nsb) {
@@ -350,7 +359,8 @@ public abstract class SQLServerStampCommonality extends PlatformStampCommonality
                                  StampAction action,
                                  Object param,
                                  String commentStr,
-                                 int type) {
+                                 int type,
+                                 boolean isCheckHasTable) {
         Class table = null;
         String tableStr = null;
         if (action instanceof StampAlter) {
@@ -371,23 +381,43 @@ public abstract class SQLServerStampCommonality extends PlatformStampCommonality
                 column.tableAliasName = tableStr;
             }
             String columnName = this.getColumnName(wrapper, action, new StampColumn(column.column), false);
-            this.getDeclares().add("@EXIST_COLUMN_COMMENT INT");
+            if (!isDeclareCheckComment) {
+                this.getDeclares().add("@EXIST_COLUMN_COMMENT INT");
+                this.isDeclareCheckComment = true;
+            }
             this.getBuilders().add(new ExecuteImmediate()
                     .setProcedure("SELECT @EXIST_COLUMN_COMMENT=(SELECT COUNT(1) FROM SYS.COLUMNS A " +
                             "LEFT JOIN SYS.EXTENDED_PROPERTIES G ON (A.OBJECT_ID = G.MAJOR_ID AND G.MINOR_ID = A.COLUMN_ID) " +
                             "WHERE OBJECT_ID = (SELECT OBJECT_ID FROM SYS.TABLES WHERE NAME = '" + tableName + "') " +
                             "AND A.NAME='" + columnName + "' AND G.VALUE IS NOT NULL)"));
             this.getBuilders().add(new ExecuteImmediate().setProcedure(
-                    "IF (@EXIST_COLUMN_COMMENT = 1) " +
+                    (isCheckHasTable ? "IF (@HAS_TABLE = 0) BEGIN " + NL_TAB : "") +
+                            "IF (@EXIST_COLUMN_COMMENT = 1) " +
                             "EXEC SP_UPDATEEXTENDEDPROPERTY 'MS_Description', '" + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "', 'COLUMN', '" + columnName + "';" +
                             NL_TAB + "ELSE " +
-                            "EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', '" + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "', 'COLUMN', '" + columnName + "'"
+                            "EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', '" + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "', 'COLUMN', '" + columnName + "';" +
+                            (isCheckHasTable ? NL_TAB + "END" : "")
             ));
         }
         if (type == 2) {
+            if (!isDeclareCheckTableComment) {
+                this.getDeclares().add("@EXIST_TABLE_COMMENT INT");
+                this.isDeclareCheckTableComment = true;
+            }
+            this.getBuilders().add(new ExecuteImmediate()
+                    .setProcedure("SELECT @EXIST_TABLE_COMMENT=(SELECT COUNT(DISTINCT B.NAME) " +
+                            "FROM SYS.SYSCOLUMNS A " +
+                            "INNER JOIN SYS.SYSOBJECTS B ON A.ID = B.ID " +
+                            "LEFT JOIN SYS.SYSCOMMENTS C ON A.CDEFAULT = C.ID " +
+                            "LEFT JOIN SYS.EXTENDED_PROPERTIES F ON B.ID = F.MAJOR_ID AND F.MINOR_ID = 0 " +
+                            "WHERE B.NAME='t_tt' AND F.VALUE IS NOT NULL)"));
             this.getBuilders().add(new ExecuteImmediate().setProcedure(
-                    "EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', '"
-                            + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "'"
+                    (isCheckHasTable ? "IF (@HAS_TABLE = 0) BEGIN " + NL_TAB : "") +
+                            "IF (@EXIST_TABLE_COMMENT = 1) " +
+                            "EXEC SP_UPDATEEXTENDEDPROPERTY 'MS_Description', '" + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "'" +
+                            NL_TAB + "ELSE " +
+                            "EXEC SP_ADDEXTENDEDPROPERTY 'MS_Description', '" + commentStr + "', 'SCHEMA', 'dbo', 'TABLE', '" + tableName + "'" +
+                            (isCheckHasTable ? NL_TAB + "END" : "")
             ));
         }
     }

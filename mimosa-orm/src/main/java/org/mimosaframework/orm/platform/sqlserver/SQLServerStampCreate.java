@@ -1,11 +1,16 @@
 package org.mimosaframework.orm.platform.sqlserver;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
 public class SQLServerStampCreate extends SQLServerStampCommonality implements StampCombineBuilder {
+    private static final Log logger = LogFactory.getLog(SQLServerStampCreate.class);
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampCreate create = (StampCreate) action;
@@ -27,9 +32,12 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             }
         }
         if (create.target == KeyTarget.TABLE) {
+            String tableName = this.getTableName(wrapper, create.table, create.name, false);
             sb.append(" TABLE");
             if (create.checkExist) {
-                sb.append(" IF NOT EXISTS");
+                this.getDeclares().add("@HAS_TABLE INT");
+                this.getBegins().add(new ExecuteImmediate()
+                        .setProcedure("SELECT @HAS_TABLE=(SELECT COUNT(1) FROM SYS.TABLES WHERE NAME='" + tableName + "')"));
             }
             sb.append(" " + this.getTableName(wrapper, create.table, create.name));
 
@@ -43,10 +51,11 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             sb.append(")");
 
             if (StringTools.isNotEmpty(create.comment)) {
-                sb.append(" COMMENT=\"" + create.comment + "\"");
+                this.addCommentSQL(wrapper, create, null, create.comment, 2,
+                        create.target == KeyTarget.TABLE && create.checkExist);
             }
             if (StringTools.isNotEmpty(create.charset)) {
-                sb.append(" CHARSET " + create.charset);
+                logger.warn("sqlserver can't set table charset");
             }
             if (StringTools.isNotEmpty(create.extra)) {
                 sb.append(" " + create.extra);
@@ -67,7 +76,13 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             }
             sb.append(")");
         }
-        return new SQLBuilderCombine(sb.toString(), null);
+
+        if (create.target == KeyTarget.TABLE && create.checkExist) {
+            return new SQLBuilderCombine(this.toSQLString(
+                    new ExecuteImmediate("IF (@HAS_TABLE = 0)", sb.toString())), null);
+        } else {
+            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+        }
     }
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
@@ -118,8 +133,10 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateColumn[] columns = create.columns;
         if (columns != null && columns.length > 0) {
+            String tableName = this.getTableName(wrapper, create.table, create.name, false);
             int i = 0;
             for (StampCreateColumn column : columns) {
+                String columnName = this.getColumnName(wrapper, create, column.column, false);
                 sb.append(this.getColumnName(wrapper, create, column.column));
 
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
@@ -128,7 +145,7 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
                     sb.append(" NOT NULL");
                 }
                 if (column.autoIncrement) {
-                    sb.append(" AUTO_INCREMENT");
+                    sb.append(" IDENTITY(1,1)");
                 }
                 if (column.pk) {
                     sb.append(" PRIMARY KEY");
@@ -137,13 +154,16 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
                     sb.append(" UNIQUE");
                 }
                 if (column.key) {
-                    sb.append(" KEY");
+                    this.getBuilders().add(new ExecuteImmediate()
+                            .setProcedure("IF (@HAS_TABLE = 0) CREATE INDEX " + columnName + " ON "
+                                    + tableName + "(" + columnName + ")"));
                 }
                 if (StringTools.isNotEmpty(column.defaultValue)) {
                     sb.append(" DEFAULT \"" + column.defaultValue + "\"");
                 }
                 if (StringTools.isNotEmpty(column.comment)) {
-                    sb.append(" COMMENT \"" + column.comment + "\"");
+                    this.addCommentSQL(wrapper, create, column.column, column.comment, 1,
+                            create.target == KeyTarget.TABLE && create.checkExist);
                 }
 
                 i++;

@@ -19,16 +19,9 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         StampAlter alter = (StampAlter) action;
         StringBuilder sb = new StringBuilder();
         if (alter.target == KeyTarget.DATABASE) {
-            sb.append("ALTER");
-            sb.append(" DATABASE");
-
-            sb.append(" " + RS + alter.name + RE);
-
             if (StringTools.isNotEmpty(alter.charset)) {
-                sb.append(" CHARSET " + alter.charset);
-            }
-            if (StringTools.isNotEmpty(alter.collate)) {
-                sb.append(" COLLATE " + alter.collate);
+                sb = null;
+                logger.warn("sqlserver can't reset database charset");
             }
         }
         if (alter.target == KeyTarget.TABLE) {
@@ -36,9 +29,6 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 for (StampAlterItem item : alter.items) {
                     this.buildAlterItem(wrapper, sb, alter, item);
                 }
-            }
-            if (StringTools.isNotEmpty(alter.charset)) {
-                logger.warn("sqlserver can't set table charset");
             }
         }
         return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
@@ -50,11 +40,11 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                 StampAlterItem item) {
         String tableName = this.getTableName(wrapper, alter.table, alter.name);
         if (item.action == KeyAction.ADD) {
-            sb.append("ALTER");
-            sb.append(" TABLE");
-            sb.append(" " + tableName);
-            sb.append(" ADD");
             if (item.struct == KeyAlterStruct.COLUMN) {
+                sb.append("ALTER");
+                sb.append(" TABLE");
+                sb.append(" " + tableName);
+                sb.append(" ADD");
                 this.buildAlterColumn(sb, wrapper, alter, item, 1);
             }
             if (item.struct == KeyAlterStruct.INDEX) {
@@ -80,20 +70,32 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         }
 
         if (item.action == KeyAction.DROP) {
-            sb.append("ALTER");
-            sb.append(" TABLE");
-            sb.append(" " + tableName);
-            sb.append(" DROP");
             if (item.dropType == KeyAlterDropType.COLUMN) {
+                sb.append("ALTER");
+                sb.append(" TABLE");
+                sb.append(" " + tableName);
+                sb.append(" DROP");
                 sb.append(" COLUMN");
                 sb.append(" " + this.getColumnName(wrapper, alter, item.column));
             }
             if (item.dropType == KeyAlterDropType.INDEX) {
+                sb.append("DROP");
                 sb.append(" INDEX");
                 sb.append(" " + item.name);
+                sb.append(" ON " + tableName);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
-                sb.append(" PRIMARY KEY");
+                String tableOutName = this.getTableName(wrapper, alter.table, alter.name, false);
+                this.getDeclares().add("@PK_INDEXNAME VARCHAR(MAX)");
+                this.getBegins().add(new ExecuteImmediate()
+                        .setProcedure("SELECT @PK_INDEXNAME=(SELECT A.NAME INDEXNAME " +
+                                "FROM SYS.INDEXES A " +
+                                "INNER JOIN SYS.INDEX_COLUMNS B ON A.OBJECT_ID = B.OBJECT_ID AND A.INDEX_ID = B.INDEX_ID " +
+                                "INNER JOIN SYS.SYSINDEXKEYS C ON A.OBJECT_ID = C.ID AND B.INDEX_ID = C.INDID AND B.COLUMN_ID = C.COLID " +
+                                "INNER JOIN INFORMATION_SCHEMA.COLUMNS D ON A.OBJECT_ID = OBJECT_ID(D.TABLE_NAME) AND C.KEYNO = D.ORDINAL_POSITION " +
+                                "WHERE A.OBJECT_ID = OBJECT_ID('" + tableOutName + "') " +
+                                "AND A.IS_PRIMARY_KEY = 1)"));
+                sb.append("exec ('ALTER TABLE " + tableName + " DROP CONSTRAINT ' + @PK_INDEXNAME)");
             }
         }
 
@@ -122,16 +124,12 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         }
 
         if (item.action == KeyAction.AUTO_INCREMENT) {
-            sb.append("ALTER");
-            sb.append(" TABLE");
-            sb.append(" " + tableName);
-            sb.append(" AUTO_INCREMENT = " + item.value);
+            String tableOutName = this.getTableName(wrapper, alter.table, alter.name, false);
+            sb.append("DBCC CHECKIDENT('" + tableOutName + "',RESEED," + item.value + ")");
         }
         if (item.action == KeyAction.CHARACTER_SET) {
-            sb.append("ALTER");
-            sb.append(" TABLE");
-            sb.append(" " + tableName);
-            sb.append(" CHARACTER SET = " + item.name);
+            logger.warn("sqlserver can't set table charset");
+            sb.setLength(0);
         }
         if (item.action == KeyAction.COMMENT) {
             sb.append("ALTER");
@@ -145,18 +143,31 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                  MappingGlobalWrapper wrapper,
                                  StampAlter alter,
                                  StampAlterItem item) {
+        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
+            sb.append("CREATE");
+        }
         if (item.indexType == KeyIndexType.UNIQUE) {
             sb.append(" UNIQUE");
+            sb.append(" INDEX");
         } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
+            sb.append("ALTER TABLE " + tableName + " ADD");
+            if (StringTools.isNotEmpty(item.name)) {
+                sb.append(" CONSTRAINT " + item.name);
+            }
             sb.append(" PRIMARY KEY");
         } else {
             sb.append(" INDEX");
         }
 
-        if (StringTools.isNotEmpty(item.name)) {
+        if (item.indexType != KeyIndexType.PRIMARY_KEY && StringTools.isNotEmpty(item.name)) {
             sb.append(" " + item.name);
         }
 
+        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
+            sb.append(" ON");
+            sb.append(" " + tableName);
+        }
         if (item.columns != null) {
             sb.append(" (");
             int i = 0;
@@ -172,7 +183,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         }
 
         if (StringTools.isNotEmpty(item.comment)) {
-            sb.append(" COMMENT \"" + item.comment + "\"");
+            logger.warn("sqlserver can't set index comment");
         }
     }
 
@@ -222,13 +233,14 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
             sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, type == 2 ? column.oldColumn : column.column, column.comment, 1);
+            this.addCommentSQL(wrapper, alter,
+                    type == 2 ? column.oldColumn : column.column, column.comment, 1, false);
         }
         if (column.after != null) {
-            sb.append(" AFTER " + this.getColumnName(wrapper, alter, column.after));
+            logger.warn("sqlserver can't set column order");
         }
         if (column.before != null) {
-            sb.append(" BEFORE " + this.getColumnName(wrapper, alter, column.before));
+            logger.warn("sqlserver can't set column order");
         }
     }
 }

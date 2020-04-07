@@ -38,17 +38,11 @@ public abstract class PlatformStampCommonality {
             }
             StringBuilder nsb = new StringBuilder();
             if (!declareInBegin && declares != null && declares.size() > 0) {
-                nsb.append(NL + "DECLARE ");
-                for (String s : declares) {
-                    nsb.append(NL_TAB + s + ";");
-                }
+                this.appendBuilderDeclare(nsb, false);
             }
             nsb.append(NL + "BEGIN ");
             if (declareInBegin && declares != null && declares.size() > 0) {
-                nsb.append(NL_TAB + "DECLARE ");
-                for (String s : declares) {
-                    nsb.append(NL_TAB + TAB + s + ";");
-                }
+                this.appendBuilderDeclare(nsb, true);
             }
             this.appendBuilders(nsb, begins);
             this.appendBuilders(nsb, builders);
@@ -56,6 +50,13 @@ public abstract class PlatformStampCommonality {
             return nsb.toString();
         } else {
             return ei.sql;
+        }
+    }
+
+    protected void appendBuilderDeclare(StringBuilder nsb, boolean isIn) {
+        nsb.append(NL + "DECLARE ");
+        for (String s : declares) {
+            nsb.append(NL_TAB + (isIn ? TAB : "") + s + ";");
         }
     }
 

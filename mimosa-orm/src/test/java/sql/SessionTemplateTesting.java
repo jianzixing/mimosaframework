@@ -91,12 +91,11 @@ public class SessionTemplateTesting {
 
     @Test
     public void testAlter7() throws Exception {
-        SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
-                        .add().index().name("a").columns(TableUser.address, TableUser.age)
-                        .comment("aaa")
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+                .add().index().name("a").columns(TableUser.address, TableUser.age)
+                .comment("aaa").autonomously());
+        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+                .drop().index().name("a").autonomously());
     }
 
     @Test
@@ -149,12 +148,9 @@ public class SessionTemplateTesting {
 
     @Test
     public void testAlter11() throws Exception {
-        SQLAutonomously sqlAutonomously;
-        sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
-                        .add().primary().key().column(TableUser.id)
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+//        SQLAutonomously sqlAutonomously;
+        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+                .add().primary().key().column(TableUser.id).autonomously());
 
 //        sqlAutonomously = new SQLAutonomously(
 //                SQLAutonomously.alter().table(TableUser.class)
@@ -162,11 +158,8 @@ public class SessionTemplateTesting {
 //        );
 //        template.getAutonomously(sqlAutonomously);
 
-        sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
-                        .drop().primary().key()
-        );
-        template.getAutonomously(sqlAutonomously);
+        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+                .drop().primary().key().autonomously());
 
 //        sqlAutonomously = new SQLAutonomously(
 //                SQLAutonomously.alter().table(TableUser.class)
