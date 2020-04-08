@@ -289,34 +289,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 this.getBuilders().add(new ExecuteImmediate(sb));
             }
         }
-        if (column.unique) {
-            StringBuilder sb = fromSb;
-            if (type == 3 || type == 2) {
-                sb = new StringBuilder();
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(actionSql);
-            }
-            sb.append(" UNIQUE");
-            if (type == 3 || type == 2) {
-                this.getBuilders().add(new ExecuteImmediate(sb));
-            }
-        }
-        if (column.key) {
-            StringBuilder sb = fromSb;
-            if (type == 3 || type == 2) {
-                sb = new StringBuilder();
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(actionSql);
-            }
-            sb.append(" KEY");
-            if (type == 3 || type == 2) {
-                this.getBuilders().add(new ExecuteImmediate(sb));
-            }
-        }
+
         if (StringTools.isNotEmpty(column.defaultValue)) {
             StringBuilder sb = fromSb;
             if (type == 3 || type == 2) {

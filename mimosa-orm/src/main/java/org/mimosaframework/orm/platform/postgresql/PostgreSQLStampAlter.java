@@ -68,9 +68,15 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         }
 
         if (item.action == KeyAction.CHANGE) {
-            sb.append(" CHANGE");
-            sb.append(" " + this.getColumnName(wrapper, alter, item.oldColumn));
+            String columnName = this.getColumnName(wrapper, alter, item.column);
+            String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn);
             this.buildAlterColumn(sb, wrapper, alter, item, 2);
+            if (!columnName.equalsIgnoreCase(oldColumnName)) {
+                this.getBuilders().add(new ExecuteImmediate().setProcedure(
+                        "ALTER TABLE " + tableName + " RENAME " +
+                                oldColumnName + " TO " + columnName
+                ));
+            }
         }
 
         if (item.action == KeyAction.MODIFY) {
@@ -162,12 +168,12 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                   StampAlter alter,
                                   StampAlterItem column,
                                   int type) {
-        if (type == 3) {
+        if (type == 3 || type == 2) {
             sb.append(" ALTER COLUMN");
         }
-        sb.append(" " + this.getColumnName(wrapper, alter, column.column));
+        sb.append(" " + this.getColumnName(wrapper, alter, type == 2 ? column.oldColumn : column.column));
         if (column.columnType != null) {
-            if (type == 3) {
+            if (type == 3 || type == 2) {
                 sb.append(" TYPE");
             }
             sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
@@ -208,17 +214,11 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         if (column.pk) {
             sb.append(" PRIMARY KEY");
         }
-        if (column.unique) {
-            sb.append(" UNIQUE");
-        }
-        if (column.key) {
-            sb.append(" KEY");
-        }
         if (StringTools.isNotEmpty(column.defaultValue)) {
             sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
+            this.addCommentSQL(wrapper, alter, type == 2 ? column.oldColumn : column.column, column.comment, 1);
         }
         if (column.after != null) {
             logger.warn("postgresql can't set column order");

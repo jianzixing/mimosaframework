@@ -169,12 +169,6 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
         if (column.pk) {
             sb.append(" PRIMARY KEY");
         }
-        if (column.unique) {
-            sb.append(" UNIQUE");
-        }
-        if (column.key) {
-            sb.append(" KEY");
-        }
         if (StringTools.isNotEmpty(column.defaultValue)) {
             sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }

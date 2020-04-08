@@ -223,12 +223,6 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (column.pk) {
             sb.append(" PRIMARY KEY");
         }
-        if (column.unique) {
-            sb.append(" UNIQUE");
-        }
-        if (column.key) {
-            sb.append(" KEY");
-        }
         if (StringTools.isNotEmpty(column.defaultValue)) {
             sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }

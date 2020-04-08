@@ -60,7 +60,7 @@ public class SessionTemplateTesting {
     public void testAlter3() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 SQLAutonomously.alter().table(TableUser.class)
-                        .add().column("t1").intType().unique().comment("t+t1").after().column(TableUser.id)
+                        .add().column("t1").intType().comment("t+t1").after().column(TableUser.id)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
     }
@@ -211,7 +211,7 @@ public class SessionTemplateTesting {
                 SQLAutonomously.create().table().ifNotExist().name("t_user_2")
                         .column("id").intType().autoIncrement().primary().key().comment("a")
                         .column("name").varchar(50).not().nullable().comment("b")
-                        .column(TableUser.userName).varchar(50).not().nullable().unique().comment("b")
+                        .column(TableUser.userName).varchar(50).not().nullable().comment("b")
                         .column(TableUser.createdTime).datetime().not().nullable().comment("b")
                         .charset("utf8")
         );

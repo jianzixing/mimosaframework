@@ -114,9 +114,7 @@ public class TestSQLGrammar {
                 .charset("").collate("");
 
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
-                .add().column("").intType().autoIncrement().after().column("")
-                .split()
-                .drop().column("");
+                .add().column("").intType().autoIncrement().after().column("");
 
 
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)

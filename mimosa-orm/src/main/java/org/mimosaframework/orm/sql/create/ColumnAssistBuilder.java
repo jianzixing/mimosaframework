@@ -18,9 +18,7 @@ public interface ColumnAssistBuilder<T>
         NullBuilder<T>,
         DefaultBuilder<T>,
         AutoIncrementBuilder<T>,
-        UniqueBuilder<T>,
         PrimaryKeyBuilder<T>,
-        KeyBuilder<T>,
         CommentBuilder<T>,
         CollateBuilder<T> {
 }

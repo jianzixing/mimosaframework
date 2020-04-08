@@ -20,7 +20,6 @@ public interface RedefineAlterBuilder
         AbsColumnBuilder,
         IndexBuilder,
         CommentBuilder,
-        SplitBuilder,
         AlterDropBuilder,
         AlterModifyBuilder,
         AlterChangeBuilder,

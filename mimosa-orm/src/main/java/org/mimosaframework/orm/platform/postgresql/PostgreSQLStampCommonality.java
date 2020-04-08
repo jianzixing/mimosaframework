@@ -340,7 +340,7 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
             return "TIME";
         }
         if (columnType == KeyColumnType.DATETIME) {
-            return "DATETIME";
+            return "TIMESTAMP";
         }
         if (columnType == KeyColumnType.TIMESTAMP) {
             return "TIMESTAMP";

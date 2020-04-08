@@ -334,12 +334,6 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object split() {
-        this.gammars.add(",");
-        return this;
-    }
-
-    @Override
     public Object drop() {
         this.addPoint("drop");
         StampAlterItem item = new StampAlterItem();
