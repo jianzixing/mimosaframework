@@ -19,32 +19,17 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         StampAlter alter = (StampAlter) action;
         StringBuilder sb = new StringBuilder();
         if (alter.target == KeyTarget.DATABASE) {
-            sb.append("ALTER");
-            sb.append(" DATABASE");
-
-            sb.append(" " + RS + alter.name + RE);
 
             if (StringTools.isNotEmpty(alter.charset)) {
-                sb.append(" CHARSET " + alter.charset);
-            }
-            if (StringTools.isNotEmpty(alter.collate)) {
-                sb.append(" COLLATE " + alter.collate);
+                sb.append("UPDATE PG_DATABASE SET ENCODING = PG_CHAR_TO_ENCODING('UTF8') " +
+                        "WHERE DATNAME = '" + alter.name + "'");
             }
         }
         if (alter.target == KeyTarget.TABLE) {
-            sb.append("ALTER");
-            sb.append(" TABLE");
-
             if (alter.items != null) {
                 for (StampAlterItem item : alter.items) {
                     this.buildAlterItem(wrapper, sb, alter, item);
                 }
-            }
-            if (StringTools.isNotEmpty(alter.charset)) {
-                sb.append(" CHARSET " + alter.charset);
-            }
-            if (StringTools.isNotEmpty(alter.collate)) {
-                sb.append(" COLLATE " + alter.collate);
             }
         }
         return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
@@ -54,7 +39,8 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                 StringBuilder sb,
                                 StampAlter alter,
                                 StampAlterItem item) {
-
+        sb.append("ALTER");
+        sb.append(" TABLE");
         String tableName = this.getTableName(wrapper, alter.table, alter.name);
         sb.append(" " + tableName);
         if (item.action == KeyAction.ADD) {
@@ -90,11 +76,21 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                 sb.append(" " + this.getColumnName(wrapper, alter, item.column));
             }
             if (item.dropType == KeyAlterDropType.INDEX) {
+                sb.setLength(0);
+                sb.append("DROP");
                 sb.append(" INDEX");
                 sb.append(" " + item.name);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
-                sb.append(" PRIMARY KEY");
+                sb.setLength(0);
+                String outTableName = this.getTableName(wrapper, alter.table, alter.name, false);
+                this.getDeclares().add("PK_INDEX_NAME VARCHAR(5000)");
+                this.getBegins().add(new ExecuteImmediate()
+                        .setProcedure("PK_INDEX_NAME = (SELECT CONNAME FROM PG_CONSTRAINT A, PG_CLASS B " +
+                                "WHERE A.CONRELID = B.OID " +
+                                "AND B.RELNAME = '" + outTableName + "' " +
+                                "AND A.CONTYPE = 'p' LIMIT 1)"));
+                sb.append("EXECUTE 'ALTER TABLE " + tableName + " DROP CONSTRAINT '||PK_INDEX_NAME");
             }
         }
 
@@ -118,10 +114,20 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         }
 
         if (item.action == KeyAction.AUTO_INCREMENT) {
-            sb.append(" AUTO_INCREMENT = " + item.value);
+            sb.setLength(0);
+            String outTableName = this.getTableName(wrapper, alter.table, alter.name, false);
+            this.getDeclares().add("AUTO_INCRE_SEQ_NAME VARCHAR(5000)");
+            this.getBegins().add(new ExecuteImmediate().setProcedure(
+                    "AUTO_INCRE_SEQ_NAME = (SELECT ARRAY_TO_STRING(REGEXP_MATCHES(COLUMN_DEFAULT, '[\"|''](.*)[\"|'']','gi'),'') " +
+                            "FROM INFORMATION_SCHEMA.COLUMNS " +
+                            "WHERE TABLE_NAME = '" + outTableName + "' " +
+                            "AND POSITION('nextval' IN COLUMN_DEFAULT) > 0 LIMIT 1)"
+            ));
+            sb.append("EXECUTE 'ALTER SEQUENCE '||AUTO_INCRE_SEQ_NAME||' RESTART WITH " + item.value + "'");
         }
         if (item.action == KeyAction.CHARACTER_SET) {
-            sb.append(" CHARACTER SET = " + item.name);
+            sb.setLength(0);
+            logger.warn("postgresql can't set table charset");
         }
         if (item.action == KeyAction.COMMENT) {
             this.addCommentSQL(wrapper, alter, null, item.comment, 2);
@@ -132,16 +138,33 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                  MappingGlobalWrapper wrapper,
                                  StampAlter alter,
                                  StampAlterItem item) {
+        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String outTableName = this.getTableName(wrapper, alter.table, alter.name, false);
+        sb.setLength(0);
+        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
+            sb.append("CREATE");
+        } else {
+            sb.append("ALTER TABLE " + tableName + " ADD CONSTRAINT ");
+        }
         if (item.indexType == KeyIndexType.UNIQUE) {
             sb.append(" UNIQUE");
+            sb.append(" INDEX");
         } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-            sb.append(" PRIMARY KEY");
+
         } else {
             sb.append(" INDEX");
         }
 
         if (StringTools.isNotEmpty(item.name)) {
             sb.append(" " + item.name);
+        } else {
+            sb.append(" " + outTableName + "_pkey");
+        }
+        if (item.indexType == KeyIndexType.PRIMARY_KEY) {
+            sb.append(" PRIMARY KEY");
+        } else {
+            sb.append(" ON ");
+            sb.append(tableName);
         }
 
         if (item.columns != null) {
@@ -159,7 +182,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         }
 
         if (StringTools.isNotEmpty(item.comment)) {
-            sb.append(" COMMENT \"" + item.comment + "\"");
+            logger.warn("postgresql can't set index comment");
         }
     }
 
