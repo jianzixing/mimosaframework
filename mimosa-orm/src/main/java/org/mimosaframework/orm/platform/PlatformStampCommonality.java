@@ -37,6 +37,7 @@ public abstract class PlatformStampCommonality {
                 this.builders.add(0, ei);
             }
             StringBuilder nsb = new StringBuilder();
+            this.appendBuilderBegin(nsb);
             if (!declareInBegin && declares != null && declares.size() > 0) {
                 this.appendBuilderDeclare(nsb, false);
             }
@@ -46,7 +47,7 @@ public abstract class PlatformStampCommonality {
             }
             this.appendBuilders(nsb, begins);
             this.appendBuilders(nsb, builders);
-            nsb.append(NL + "END;");
+            this.appendBuilderEnd(nsb);
             return nsb.toString();
         } else {
             return ei.sql;
@@ -92,5 +93,13 @@ public abstract class PlatformStampCommonality {
         } else {
             nsb.append("'" + item.sql + "'; ");
         }
+    }
+
+    protected void appendBuilderBegin(StringBuilder nsb) {
+
+    }
+
+    protected void appendBuilderEnd(StringBuilder nsb) {
+        nsb.append(NL + "END;");
     }
 }

@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.platform.postgresql;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
@@ -9,6 +11,7 @@ import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
 public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements StampCombineBuilder {
+    private static final Log logger = LogFactory.getLog(PostgreSQLStampAlter.class);
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
@@ -52,7 +55,8 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                 StampAlter alter,
                                 StampAlterItem item) {
 
-        sb.append(" " + this.getTableName(wrapper, alter.table, alter.name));
+        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        sb.append(" " + tableName);
         if (item.action == KeyAction.ADD) {
             sb.append(" ADD");
             if (item.struct == KeyAlterStruct.COLUMN) {
@@ -164,7 +168,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         sb.append(" " + this.getColumnName(wrapper, alter, column.column));
         if (column.columnType != null) {
             if (type == 3) {
-                sb.append(" UTYPE");
+                sb.append(" TYPE");
             }
             sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
         }
@@ -172,7 +176,34 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             sb.append(" NOT NULL");
         }
         if (column.autoIncrement) {
-            sb.append(" BIGSERIAL");
+            if (type == 3) {
+                String outTableName = this.getTableName(wrapper, alter.table, alter.name, false);
+                String outColumnName = this.getColumnName(wrapper, alter, column.column, false);
+                this.getDeclares().add("IS_AUTOINCRE INT");
+                this.getDeclares().add("HAS_SEQUENCE_AI INT");
+                String oldSeq = outTableName + "_" + outColumnName;
+                this.getBuilders().add(new ExecuteImmediate().setProcedure(
+                        "HAS_SEQUENCE_AI = (SELECT COUNT(1) FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_NAME='"
+                                + oldSeq + "')"
+                ));
+                this.getBuilders().add(new ExecuteImmediate().setProcedure(
+                        "IS_AUTOINCRE = (SELECT COUNT(1) AS AUTO_INCRE_COUNT " +
+                                "FROM INFORMATION_SCHEMA.COLUMNS " +
+                                "WHERE TABLE_NAME='" + outTableName + "' " +
+                                "AND COLUMN_NAME='" + outColumnName + "' " +
+                                "AND POSITION('nextval' IN COLUMN_DEFAULT) > 0)"
+                ));
+                this.getBuilders().add(new ExecuteImmediate().setProcedure("" +
+                        "IF IS_AUTOINCRE = 0 THEN " +
+                        NL_TAB + "IF HAS_SEQUENCE_AI = 0 THEN " +
+                        NL_TAB + "CREATE SEQUENCE " + oldSeq + " START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1; " +
+                        NL_TAB + "END IF; " +
+                        NL_TAB + "ALTER TABLE EVENT ALTER COLUMN ID SET DEFAULT NEXTVAL('" + oldSeq + "');" +
+                        "END IF"
+                ));
+            } else {
+                sb.append(" BIGSERIAL");
+            }
         }
         if (column.pk) {
             sb.append(" PRIMARY KEY");
@@ -190,10 +221,10 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
         }
         if (column.after != null) {
-            sb.append(" AFTER " + this.getColumnName(wrapper, alter, column.after));
+            logger.warn("postgresql can't set column order");
         }
         if (column.before != null) {
-            sb.append(" BEFORE " + this.getColumnName(wrapper, alter, column.before));
+            logger.warn("postgresql can't set column order");
         }
     }
 }

@@ -15,9 +15,44 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
     protected static final String RS = "\"";
     protected static final String RE = "\"";
 
+    protected void appendBuilderBegin(StringBuilder nsb) {
+        nsb.append(NL + "DO $BODY$");
+    }
+
+    protected void appendBuilderEnd(StringBuilder nsb) {
+        nsb.append(NL + "END $BODY$;");
+    }
+
+    protected void appendBuilderWrapper(ExecuteImmediate item, StringBuilder nsb) {
+        if (StringTools.isNotEmpty(item.preview)) {
+            nsb.append(NL_TAB + item.preview + " ");
+        } else {
+            nsb.append(NL_TAB);
+        }
+
+        if (StringTools.isNotEmpty(item.end)) {
+            nsb.append(item.sql + ";");
+            nsb.append(item.end + ";");
+        } else {
+            nsb.append(item.sql + "; ");
+        }
+    }
+
     protected String getTableName(MappingGlobalWrapper wrapper,
                                   Class table,
                                   String tableName) {
+        return this.getTableName(wrapper, table, tableName, true);
+    }
+
+    protected String getTableName(MappingGlobalWrapper wrapper,
+                                  Class table,
+                                  String tableName, boolean hasRes) {
+        String RS = this.RS;
+        String RE = this.RE;
+        if (!hasRes) {
+            RS = "";
+            RE = "";
+        }
         if (table != null) {
             MappingTable mappingTable = wrapper.getMappingTable(table);
             if (mappingTable != null) {
@@ -30,29 +65,39 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
     }
 
     protected String getColumnName(MappingGlobalWrapper wrapper, StampAction stampTables, StampColumn column) {
+        return this.getColumnName(wrapper, stampTables, column, true);
+    }
+
+    protected String getColumnName(MappingGlobalWrapper wrapper,
+                                   StampAction stampTables,
+                                   StampColumn column,
+                                   boolean hasRes) {
+        String RS = this.RS, RE = this.RE;
+        if (!hasRes) {
+            RS = "";
+            RE = "";
+        }
         if (column != null && column.column != null) {
             String columnName = column.column.toString();
             String tableAliasName = column.tableAliasName;
 
             if (columnName.equals("*")) {
                 if (StringTools.isNotEmpty(tableAliasName)) {
-                    return RS + tableAliasName + RE + "." + columnName;
+                    return tableAliasName + "." + columnName;
                 } else {
                     return columnName;
                 }
             }
 
             List<StampAction.STItem> tables = stampTables.getTables();
-            if (tables != null) {
-                if (StringTools.isNotEmpty(tableAliasName)) {
-                    for (StampAction.STItem stItem : tables) {
-                        if (tableAliasName.equals(stItem.getTableAliasName())) {
-                            MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
-                            if (mappingTable != null) {
-                                MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
-                                if (mappingField != null) {
-                                    return RS + tableAliasName + RE + "." + RS + mappingField.getMappingColumnName() + RE;
-                                }
+            if (tables != null && StringTools.isNotEmpty(tableAliasName)) {
+                for (StampAction.STItem stItem : tables) {
+                    if (tableAliasName.equals(stItem.getTableAliasName())) {
+                        MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
+                        if (mappingTable != null) {
+                            MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
+                            if (mappingField != null) {
+                                return tableAliasName + "." + RS + mappingField.getMappingColumnName() + RE;
                             }
                         }
                     }
@@ -64,9 +109,13 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
                 if (mappingTable != null) {
                     MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
                     if (mappingField != null) {
-                        return RS + mappingTable.getMappingTableName() + RE
+                        return mappingTable.getMappingTableName()
                                 + "."
                                 + RS + mappingField.getMappingColumnName() + RE;
+                    } else {
+                        return mappingTable.getMappingTableName()
+                                + "."
+                                + RS + columnName + RE;
                     }
                 }
             }
@@ -83,10 +132,15 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
                 }
             }
 
-            return RS + columnName + RE;
+            if (StringTools.isNotEmpty(tableAliasName)) {
+                return tableAliasName + "." + RS + columnName + RE;
+            } else {
+                return RS + columnName + RE;
+            }
         }
         return null;
     }
+
 
     protected void buildWhere(MappingGlobalWrapper wrapper,
                               List<SQLDataPlaceholder> placeholders,
@@ -329,7 +383,7 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
             comment.append("COMMENT ON TABLE " + tableName);
         }
         comment.append(" IS ");
-        comment.append("''" + commentStr + "''");
+        comment.append("'" + commentStr + "'");
         this.getBuilders().add(new ExecuteImmediate(comment));
     }
 }
