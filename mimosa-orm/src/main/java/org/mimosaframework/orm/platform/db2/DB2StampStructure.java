@@ -73,10 +73,10 @@ public class DB2StampStructure implements StampCombineBuilder {
                             "T1.LENGTH," +                          // 字段长度
                             "T1.SCALE," +                           // 精度
                             "T1.DEFAULT," +                         // 默认值
-                            "T1.NULLS," +                           // 是否为空
+                            "T1.NULLS AS IS_NULLABLE," +            // 是否为空
                             "T1.IDENTITY AS AUTO_INCREMENT," +      // 是否自增
                             "(CASE WHEN T1.COLNAME = T2.COLNAME THEN 'Y' ELSE 'N' END) AS PK," + // 主键
-                            "T1.REMARKS " +                         // 用户注释
+                            "T1.REMARKS AS COMMENT" +               // 用户注释
                             "FROM SYSCAT.COLUMNS T1 " +
                             "LEFT JOIN SYSCAT.KEYCOLUSE T2 ON T2.TABNAME=T1.TABNAME AND T2.TABSCHEMA=T1.TABSCHEMA " +
                             "WHERE T1.TABNAME IN (" + tableNames + ")"
@@ -90,7 +90,8 @@ public class DB2StampStructure implements StampCombineBuilder {
             StringBuilder tableNames = this.getTableNames(structure);
             StringBuilder sb = new StringBuilder();
             sb.append(
-                    "SELECT T1.INDNAME," +                      // 索引名称
+                    "SELECT T1.TABSCHEMA," +
+                            "T1.INDNAME," +                      // 索引名称
                             "T1.TABNAME," +                     //索引表
                             "T1.UNIQUERULE AS TYPE," +          //索引类型 D 普通所有  U 唯一索引  P 主键索引
                             "T2.COLNAME " +                      //列名称

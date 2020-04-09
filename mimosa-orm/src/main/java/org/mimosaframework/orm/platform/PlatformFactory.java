@@ -166,6 +166,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new MysqlStampInsert();
             if (stampAction instanceof StampSelect) return new MysqlStampSelect();
             if (stampAction instanceof StampUpdate) return new MysqlStampUpdate();
+            if (stampAction instanceof StampStructure) return new MysqlStampStructure();
         } else if (databaseTypes == DatabaseTypes.ORACLE) {
             if (stampAction instanceof StampAlter) return new OracleStampAlter();
             if (stampAction instanceof StampCreate) return new OracleStampCreate();
@@ -174,6 +175,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new OracleStampInsert();
             if (stampAction instanceof StampSelect) return new OracleStampSelect();
             if (stampAction instanceof StampUpdate) return new OracleStampUpdate();
+            if (stampAction instanceof StampStructure) return new OracleStampStructure();
         } else if (databaseTypes == DatabaseTypes.POSTGRESQL) {
             if (stampAction instanceof StampAlter) return new PostgreSQLStampAlter();
             if (stampAction instanceof StampCreate) return new PostgreSQLStampCreate();
@@ -182,6 +184,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new PostgreSQLStampInsert();
             if (stampAction instanceof StampSelect) return new PostgreSQLStampSelect();
             if (stampAction instanceof StampUpdate) return new PostgreSQLStampUpdate();
+            if (stampAction instanceof StampStructure) return new PostgreSQLStampUpdate();
         } else if (databaseTypes == DatabaseTypes.SQLITE) {
             if (stampAction instanceof StampAlter) return new SqliteStampAlter();
             if (stampAction instanceof StampCreate) return new SqliteStampCreate();
@@ -190,6 +193,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new SqliteStampInsert();
             if (stampAction instanceof StampSelect) return new SqliteStampSelect();
             if (stampAction instanceof StampUpdate) return new SqliteStampUpdate();
+            if (stampAction instanceof StampStructure) return new SqliteStampStructure();
         } else if (databaseTypes == DatabaseTypes.SQL_SERVER) {
             if (stampAction instanceof StampAlter) return new SQLServerStampAlter();
             if (stampAction instanceof StampCreate) return new SQLServerStampCreate();
@@ -198,6 +202,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new SQLServerStampInsert();
             if (stampAction instanceof StampSelect) return new SQLServerStampSelect();
             if (stampAction instanceof StampUpdate) return new SQLServerStampUpdate();
+            if (stampAction instanceof StampStructure) return new SQLServerStampStructure();
         }
         return null;
     }
