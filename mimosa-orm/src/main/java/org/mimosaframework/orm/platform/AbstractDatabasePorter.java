@@ -1565,7 +1565,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     porterStructure.setChangerClassify(ChangerClassify.INSERT);
                     return this.carryHandler.doHandler(porterStructure);
                 }
-                if (stampAction instanceof StampSelect) {
+                if (stampAction instanceof StampSelect || stampAction instanceof StampStructure) {
                     porterStructure.setChangerClassify(ChangerClassify.SELECT);
                     return this.carryHandler.doHandler(porterStructure);
                 }

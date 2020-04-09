@@ -2,6 +2,7 @@ package sql;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.sql.FieldItem;
@@ -10,6 +11,7 @@ import tables.TablePay;
 import tables.TableUser;
 
 import java.util.Date;
+import java.util.List;
 
 public class SessionTemplateTesting {
     private static SessionTemplate template = null;
@@ -18,11 +20,11 @@ public class SessionTemplateTesting {
     public void init() throws ContextException {
         if (template == null) {
             String config = "/template-mimosa.xml";
-            if (1 == 2) {
-                config = "/oracle-template-mimosa.xml";
+            if (1 == 1) {
+                config = "/db2-template-mimosa.xml";
             }
             if (1 == 2) {
-                config = "/db2-template-mimosa.xml";
+                config = "/oracle-template-mimosa.xml";
             }
             if (1 == 2) {
                 config = "/sqlserver-template-mimosa.xml";
@@ -30,7 +32,7 @@ public class SessionTemplateTesting {
             if (1 == 2) {
                 config = "/postgresql-template-mimosa.xml";
             }
-            if (1 == 1) {
+            if (1 == 2) {
                 config = "/sqlite-template-mimosa.xml";
             }
             XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream(config));
@@ -403,5 +405,29 @@ public class SessionTemplateTesting {
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(autoResult.getValue());
+    }
+
+    @Test
+    public void tableStructure() throws Exception {
+        AutoResult result = template.getAutonomously(SQLAutonomously.structure().table("DB2INST1").autonomously());
+        List<String> tables = result.getStrings("TABNAME");
+        List<ModelObject> ob1 = result.getObjects();
+        if (ob1 != null) {
+            for (ModelObject o : ob1) System.out.println("TABLE  " + o);
+        }
+        System.out.println();
+
+        result = template.getAutonomously(SQLAutonomously.structure().column(tables).autonomously());
+        List<ModelObject> ob2 = result.getObjects();
+        if (ob2 != null) {
+            for (ModelObject o : ob2) System.out.println("COLUMN  " + o);
+        }
+        System.out.println();
+
+        result = template.getAutonomously(SQLAutonomously.structure().index(tables).autonomously());
+        List<ModelObject> ob3 = result.getObjects();
+        if (ob3 != null) {
+            for (ModelObject o : ob3) System.out.println("INDEX  " + o);
+        }
     }
 }

@@ -6,6 +6,7 @@ import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.platform.PlatformFactory;
 import org.mimosaframework.orm.sql.AlterBuilder;
 import org.mimosaframework.orm.sql.SQLActionFactory;
+import org.mimosaframework.orm.sql.StructureBuilder;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.sql.alter.AlterAnyBuilder;
 import org.mimosaframework.orm.sql.alter.AlterFactory;
@@ -122,6 +123,11 @@ public class SQLAutonomously implements Serializable {
     public static UpdateStartBuilder update() {
         UpdateStartBuilder updateStartBuilder = SQLActionFactory.update();
         return updateStartBuilder;
+    }
+
+    public static StructureBuilder structure() {
+        StructureBuilder structureBuilder = new StructureBuilder();
+        return structureBuilder;
     }
 
     public void add(String sql) {

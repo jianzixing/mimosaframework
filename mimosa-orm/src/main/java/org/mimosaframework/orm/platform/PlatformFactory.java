@@ -157,6 +157,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new DB2StampInsert();
             if (stampAction instanceof StampSelect) return new DB2StampSelect();
             if (stampAction instanceof StampUpdate) return new DB2StampUpdate();
+            if (stampAction instanceof StampStructure) return new DB2StampStructure();
         } else if (databaseTypes == DatabaseTypes.MYSQL) {
             if (stampAction instanceof StampAlter) return new MysqlStampAlter();
             if (stampAction instanceof StampCreate) return new MysqlStampCreate();
