@@ -30,8 +30,6 @@ public class PostgreSQLStampDrop extends PostgreSQLStampCommonality implements S
         if (drop.target == KeyTarget.INDEX) {
             sb.append(" INDEX");
             sb.append(" " + drop.name);
-            sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, drop.table, drop.tableName));
         }
         return new SQLBuilderCombine(sb.toString(), null);
     }

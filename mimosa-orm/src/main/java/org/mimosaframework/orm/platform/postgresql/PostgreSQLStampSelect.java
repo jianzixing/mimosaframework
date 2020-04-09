@@ -97,7 +97,7 @@ public class PostgreSQLStampSelect extends PostgreSQLStampCommonality implements
         }
 
         if (select.limit != null) {
-            sb.append(" LIMIT " + select.limit.start + "," + select.limit.limit);
+            sb.append(" LIMIT " + select.limit.limit + " OFFSET " + select.limit.start);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

@@ -1,11 +1,16 @@
 package org.mimosaframework.orm.platform.postgresql;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
 public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements StampCombineBuilder {
+    private static final Log logger = LogFactory.getLog(PostgreSQLStampCreate.class);
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampCreate create = (StampCreate) action;
@@ -20,10 +25,10 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
                 sb.append(" " + create.name);
             }
             if (StringTools.isNotEmpty(create.charset)) {
-                sb.append(" " + create.charset);
+                sb.append(" ENCODING = " + create.charset);
             }
             if (StringTools.isNotEmpty(create.collate)) {
-                sb.append(" " + create.collate);
+                sb.append(" LC_COLLATE = " + create.collate);
             }
         }
         if (create.target == KeyTarget.TABLE) {
@@ -43,10 +48,10 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
             sb.append(")");
 
             if (StringTools.isNotEmpty(create.comment)) {
-                sb.append(" COMMENT=\"" + create.comment + "\"");
+                this.addCommentSQL(wrapper, create, null, create.comment, 2);
             }
             if (StringTools.isNotEmpty(create.charset)) {
-                sb.append(" CHARSET " + create.charset);
+                logger.warn("postgresql can't set table charset");
             }
             if (StringTools.isNotEmpty(create.extra)) {
                 sb.append(" " + create.extra);
@@ -67,7 +72,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
             }
             sb.append(")");
         }
-        return new SQLBuilderCombine(sb.toString(), null);
+        return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
     }
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
@@ -122,14 +127,22 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
             for (StampCreateColumn column : columns) {
                 sb.append(this.getColumnName(wrapper, create, column.column));
 
-                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                if (column.autoIncrement) {
+                    if (column.columnType.equals("INT")) {
+                        sb.append(" SERIAL");
+                    } else if (column.columnType.equals("SMALLINT")) {
+                        sb.append(" SMALLSERIAL");
+                    } else {
+                        sb.append(" BIGSERIAL");
+                    }
+                } else {
+                    sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                }
 
                 if (!column.nullable) {
                     sb.append(" NOT NULL");
                 }
-                if (column.autoIncrement) {
-                    sb.append(" AUTO_INCREMENT");
-                }
+
                 if (column.pk) {
                     sb.append(" PRIMARY KEY");
                 }
@@ -143,7 +156,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
                     sb.append(" DEFAULT \"" + column.defaultValue + "\"");
                 }
                 if (StringTools.isNotEmpty(column.comment)) {
-                    sb.append(" COMMENT \"" + column.comment + "\"");
+                    this.addCommentSQL(wrapper, create, column.column, column.comment, 1);
                 }
 
                 i++;

@@ -19,9 +19,6 @@ public class PostgreSQLStampUpdate extends PostgreSQLStampCommonality implements
         StampFrom fromTarget = update.table;
         if (fromTarget != null) {
             sb.append(this.getTableName(wrapper, fromTarget.table, fromTarget.name));
-            if (StringTools.isNotEmpty(fromTarget.aliasName)) {
-                sb.append(" AS " + RS + fromTarget.aliasName + RE);
-            }
         }
 
         sb.append(" SET ");
@@ -46,8 +43,8 @@ public class PostgreSQLStampUpdate extends PostgreSQLStampCommonality implements
                                  StampUpdateItem item,
                                  StringBuilder sb,
                                  List<SQLDataPlaceholder> placeholders) {
-        item.column.table = update.table.table;
-        item.column.tableAliasName = update.table.aliasName;
+        item.column.table = null;
+        item.column.tableAliasName = null;
         String name = this.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");

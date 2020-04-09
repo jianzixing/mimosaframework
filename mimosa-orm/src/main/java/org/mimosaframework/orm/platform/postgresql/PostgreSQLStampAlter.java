@@ -199,10 +199,9 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             if (type == 3 || type == 2) {
                 sb.append(" TYPE");
             }
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
-        }
-        if (!column.nullable) {
-            sb.append(" NOT NULL");
+            if (!column.autoIncrement) {
+                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            }
         }
         if (column.autoIncrement) {
             if (type == 3) {
@@ -231,8 +230,17 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                         "END IF"
                 ));
             } else {
-                sb.append(" BIGSERIAL");
+                if (column.columnType.equals("INT")) {
+                    sb.append(" SERIAL");
+                } else if (column.columnType.equals("SMALLINT")) {
+                    sb.append(" SMALLSERIAL");
+                } else {
+                    sb.append(" BIGSERIAL");
+                }
             }
+        }
+        if (!column.nullable) {
+            sb.append(" NOT NULL");
         }
         if (column.pk) {
             sb.append(" PRIMARY KEY");
