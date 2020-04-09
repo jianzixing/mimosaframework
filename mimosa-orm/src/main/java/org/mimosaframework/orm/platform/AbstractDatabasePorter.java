@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.platform;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
@@ -18,6 +20,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public abstract class AbstractDatabasePorter implements DatabasePorter {
+    private static final Log logger = LogFactory.getLog(AbstractDatabasePorter.class);
     protected CarryHandler carryHandler;
 
     @Override
@@ -1536,37 +1539,40 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     @Override
     public Object execute(MappingGlobalWrapper mappingGlobalWrapper, StampAction stampAction) throws SQLException {
         StampCombineBuilder builder = PlatformFactory.getStampAlterBuilder(this.getDatabaseType(), stampAction);
-
-        SQLBuilderCombine combine = builder.getSqlBuilder(mappingGlobalWrapper, stampAction);
-        PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
-        if (StringTools.isNotEmpty(porterStructure.getSql())) {
-            if (stampAction instanceof StampDelete) {
-                porterStructure.setChangerClassify(ChangerClassify.DELETE);
-                return this.carryHandler.doHandler(porterStructure);
-            }
-            if (stampAction instanceof StampAlter) {
-                porterStructure.setChangerClassify(ChangerClassify.ALTER);
-                return this.carryHandler.doHandler(porterStructure);
-            }
-            if (stampAction instanceof StampCreate) {
-                porterStructure.setChangerClassify(ChangerClassify.CREATE);
-                return this.carryHandler.doHandler(porterStructure);
-            }
-            if (stampAction instanceof StampDrop) {
-                porterStructure.setChangerClassify(ChangerClassify.DROP);
-                return this.carryHandler.doHandler(porterStructure);
-            }
-            if (stampAction instanceof StampInsert) {
-                porterStructure.setChangerClassify(ChangerClassify.INSERT);
-                return this.carryHandler.doHandler(porterStructure);
-            }
-            if (stampAction instanceof StampSelect) {
-                porterStructure.setChangerClassify(ChangerClassify.SELECT);
-                return this.carryHandler.doHandler(porterStructure);
-            }
-            if (stampAction instanceof StampUpdate) {
-                porterStructure.setChangerClassify(ChangerClassify.UPDATE);
-                return this.carryHandler.doHandler(porterStructure);
+        if (builder == null) {
+            logger.error("not found " + stampAction.getClass().getSimpleName() + "'s implement");
+        } else {
+            SQLBuilderCombine combine = builder.getSqlBuilder(mappingGlobalWrapper, stampAction);
+            PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
+            if (StringTools.isNotEmpty(porterStructure.getSql())) {
+                if (stampAction instanceof StampDelete) {
+                    porterStructure.setChangerClassify(ChangerClassify.DELETE);
+                    return this.carryHandler.doHandler(porterStructure);
+                }
+                if (stampAction instanceof StampAlter) {
+                    porterStructure.setChangerClassify(ChangerClassify.ALTER);
+                    return this.carryHandler.doHandler(porterStructure);
+                }
+                if (stampAction instanceof StampCreate) {
+                    porterStructure.setChangerClassify(ChangerClassify.CREATE);
+                    return this.carryHandler.doHandler(porterStructure);
+                }
+                if (stampAction instanceof StampDrop) {
+                    porterStructure.setChangerClassify(ChangerClassify.DROP);
+                    return this.carryHandler.doHandler(porterStructure);
+                }
+                if (stampAction instanceof StampInsert) {
+                    porterStructure.setChangerClassify(ChangerClassify.INSERT);
+                    return this.carryHandler.doHandler(porterStructure);
+                }
+                if (stampAction instanceof StampSelect) {
+                    porterStructure.setChangerClassify(ChangerClassify.SELECT);
+                    return this.carryHandler.doHandler(porterStructure);
+                }
+                if (stampAction instanceof StampUpdate) {
+                    porterStructure.setChangerClassify(ChangerClassify.UPDATE);
+                    return this.carryHandler.doHandler(porterStructure);
+                }
             }
         }
         return null;

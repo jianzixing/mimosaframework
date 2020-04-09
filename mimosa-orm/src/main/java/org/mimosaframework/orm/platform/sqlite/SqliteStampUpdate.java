@@ -1,4 +1,4 @@
-package org.mimosaframework.orm.platform.sqlserver;
+package org.mimosaframework.orm.platform.sqlite;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
@@ -9,7 +9,7 @@ import org.mimosaframework.orm.sql.stamp.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLServerStampUpdate extends SQLServerStampCommonality implements StampCombineBuilder {
+public class SqliteStampUpdate extends SqliteStampCommonality implements StampCombineBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampUpdate update = (StampUpdate) action;

@@ -46,8 +46,8 @@ public class DB2StampUpdate extends DB2StampCommonality implements StampCombineB
                                  StampUpdateItem item,
                                  StringBuilder sb,
                                  List<SQLDataPlaceholder> placeholders) {
-        item.column.table = update.table.table;
-        item.column.tableAliasName = update.table.aliasName;
+        item.column.table = null;
+        item.column.tableAliasName = null;
         String name = this.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");

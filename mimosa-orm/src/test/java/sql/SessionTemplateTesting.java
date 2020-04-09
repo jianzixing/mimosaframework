@@ -27,8 +27,11 @@ public class SessionTemplateTesting {
             if (1 == 2) {
                 config = "/sqlserver-template-mimosa.xml";
             }
-            if (1 == 1) {
+            if (1 == 2) {
                 config = "/postgresql-template-mimosa.xml";
+            }
+            if (1 == 1) {
+                config = "/sqlite-template-mimosa.xml";
             }
             XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream(config));
             SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();

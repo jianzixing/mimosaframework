@@ -181,6 +181,14 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new PostgreSQLStampInsert();
             if (stampAction instanceof StampSelect) return new PostgreSQLStampSelect();
             if (stampAction instanceof StampUpdate) return new PostgreSQLStampUpdate();
+        } else if (databaseTypes == DatabaseTypes.SQLITE) {
+            if (stampAction instanceof StampAlter) return new SqliteStampAlter();
+            if (stampAction instanceof StampCreate) return new SqliteStampCreate();
+            if (stampAction instanceof StampDelete) return new SqliteStampDelete();
+            if (stampAction instanceof StampDrop) return new SqliteStampDrop();
+            if (stampAction instanceof StampInsert) return new SqliteStampInsert();
+            if (stampAction instanceof StampSelect) return new SqliteStampSelect();
+            if (stampAction instanceof StampUpdate) return new SqliteStampUpdate();
         } else if (databaseTypes == DatabaseTypes.SQL_SERVER) {
             if (stampAction instanceof StampAlter) return new SQLServerStampAlter();
             if (stampAction instanceof StampCreate) return new SQLServerStampCreate();
