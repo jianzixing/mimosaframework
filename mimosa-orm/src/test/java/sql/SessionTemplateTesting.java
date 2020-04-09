@@ -23,7 +23,7 @@ public class SessionTemplateTesting {
             if (1 == 2) {
                 config = "/db2-template-mimosa.xml";
             }
-            if (1 == 2) {
+            if (1 == 1) {
                 config = "/oracle-template-mimosa.xml";
             }
             if (1 == 2) {

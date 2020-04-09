@@ -230,10 +230,10 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
         }
         if (column.after != null) {
-            sb.append(" AFTER " + this.getColumnName(wrapper, alter, column.after));
+            logger.warn("oracle can't set column order");
         }
         if (column.before != null) {
-            sb.append(" BEFORE " + this.getColumnName(wrapper, alter, column.before));
+            logger.warn("oracle can't set column order");
         }
     }
 }
