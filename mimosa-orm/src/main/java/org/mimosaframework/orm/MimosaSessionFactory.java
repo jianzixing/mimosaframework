@@ -1,14 +1,8 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
-import org.mimosaframework.orm.platform.PlatformFactory;
-import org.mimosaframework.orm.platform.SimpleTemplate;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionManager;

@@ -36,16 +36,16 @@ public class MysqlStampStructure implements StampCombineBuilder {
         if (structure.type == 1) {
             sb.append(
                     "SELECT " +
-                            "TABLE_SCHEMA             AS TABSCHEMA," +
-                            "TABLE_NAME               AS TABNAME," +
-                            "COLUMN_NAME              AS COLNAME," +
-                            "DATA_TYPE                AS TYPENAME," +
+                            "TABLE_SCHEMA AS TABSCHEMA," +
+                            "TABLE_NAME AS TABNAME," +
+                            "COLUMN_NAME AS COLNAME," +
+                            "DATA_TYPE AS TYPENAME," +
                             "CHARACTER_MAXIMUM_LENGTH AS LENGTH," +
-                            "NUMERIC_SCALE            AS SCALE," +
-                            "COLUMN_DEFAULT           AS `DEFAULT`," +
+                            "NUMERIC_SCALE AS SCALE," +
+                            "COLUMN_DEFAULT AS `DEFAULT`," +
                             "(CASE WHEN IS_NULLABLE = 'NO' THEN 'N' ELSE 'Y' END) AS IS_NULLABLE," +
                             "(CASE WHEN POSITION('auto_increment' IN EXTRA) > 0 THEN 'Y' ELSE 'N' END) AS AUTO_INCREMENT," +
-                            "COLUMN_COMMENT                                       AS COMMENT " +
+                            "COLUMN_COMMENT AS COMMENT " +
                             "FROM INFORMATION_SCHEMA.COLUMNS " +
                             "WHERE TABLE_NAME IN (" + this.getTableNames(structure) + ")"
             );

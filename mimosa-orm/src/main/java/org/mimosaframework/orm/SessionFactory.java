@@ -1,10 +1,8 @@
 package org.mimosaframework.orm;
 
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
-import org.mimosaframework.orm.builder.Builder;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.platform.SimpleTemplate;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionPropagationType;

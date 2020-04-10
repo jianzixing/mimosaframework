@@ -1,5 +1,5 @@
 package org.mimosaframework.orm.convert;
 
-public interface MappingNamedConvert {
+public interface NamingConvert {
     String convert(String name, ConvertType type);
 }

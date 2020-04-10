@@ -1,7 +1,7 @@
 package org.mimosaframework.orm;
 
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
@@ -23,7 +23,7 @@ public interface ContextContainer {
 
     ModelObjectConvertKey getModelObjectConvertKey();
 
-    MappingNamedConvert getConvert();
+    NamingConvert getConvert();
 
     SQLDefinedLoader getDefinedLoader();
 

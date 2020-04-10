@@ -2,11 +2,11 @@ package org.mimosaframework.orm.builder;
 
 import org.mimosaframework.orm.AbstractInterceptSession;
 import org.mimosaframework.orm.MappingLevel;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 
 public class BasicSetting {
     private boolean isShowSQL;
-    private MappingNamedConvert convert;
+    private NamingConvert convert;
     private MappingLevel mappingLevel;
     private Boolean isIgnoreEmptySlave = true;
     private AbstractInterceptSession interceptSession;
@@ -19,11 +19,11 @@ public class BasicSetting {
         isShowSQL = showSQL;
     }
 
-    public MappingNamedConvert getConvert() {
+    public NamingConvert getConvert() {
         return convert;
     }
 
-    public void setConvert(MappingNamedConvert convert) {
+    public void setConvert(NamingConvert convert) {
         this.convert = convert;
     }
 

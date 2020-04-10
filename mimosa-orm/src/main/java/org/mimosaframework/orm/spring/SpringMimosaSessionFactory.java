@@ -4,12 +4,11 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.*;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.platform.SimpleTemplate;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionPropagationType;
@@ -47,7 +46,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     protected String applicationName;
     protected String applicationDetail;
     protected boolean isShowSQL;
-    protected MappingNamedConvert convert;
+    protected NamingConvert convert;
     protected String convertType;
     protected String scanPackage;
     protected Set<String> mappingClasses;
@@ -80,7 +79,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         this.basicSetting.setIgnoreEmptySlave(ignoreEmptySlave);
     }
 
-    public void setConvert(MappingNamedConvert convert) {
+    public void setConvert(NamingConvert convert) {
         this.convert = convert;
         this.basicSetting.setConvert(convert);
     }

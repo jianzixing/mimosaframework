@@ -6,7 +6,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.convert.ConvertFactory;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
@@ -33,7 +33,7 @@ public class NormalContextContainer implements ContextContainer {
     protected Set<Class> resolvers;
     protected Set<MappingTable> mappingTables;
     protected MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
-    protected MappingNamedConvert convert;
+    protected NamingConvert convert;
 
     protected ActionDataSourceWrapper defaultDataSource;
 
@@ -146,14 +146,14 @@ public class NormalContextContainer implements ContextContainer {
         }
     }
 
-    public MappingNamedConvert getConvert() {
+    public NamingConvert getConvert() {
         if (convert == null) {
             convert = ConvertFactory.getDefaultConvert();
         }
         return convert;
     }
 
-    public void setConvert(MappingNamedConvert convert) {
+    public void setConvert(NamingConvert convert) {
         this.convert = convert;
     }
 

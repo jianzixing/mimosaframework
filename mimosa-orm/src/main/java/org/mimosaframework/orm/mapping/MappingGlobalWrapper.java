@@ -74,6 +74,12 @@ public class MappingGlobalWrapper {
         return null;
     }
 
+    public List<MappingTable> getMappingTables() {
+        List<MappingTable> mappingTables = new ArrayList<>();
+        mappingTables.addAll(this.mappingTables.values());
+        return mappingTables;
+    }
+
     public MappingTable getMappingTable(String tableName) {
         Iterator<Map.Entry<Class, MappingTable>> iterator = mappingTables.entrySet().iterator();
         while (iterator.hasNext()) {

@@ -3,7 +3,7 @@ package org.mimosaframework.orm.builder;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 
@@ -18,7 +18,7 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
         return BuilderUtils.getMappingClass(mappingClassPackage, additionClasses);
     }
 
-    protected MappingNamedConvert getConvert(String convertClass, String convertName, Map properties) throws ContextException {
+    protected NamingConvert getConvert(String convertClass, String convertName, Map properties) throws ContextException {
         return BuilderUtils.getConvert(convertClass, convertName, properties);
     }
 

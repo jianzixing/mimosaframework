@@ -6,7 +6,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.auxiliary.FactoryBuilderConfig;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.w3c.dom.*;
@@ -639,7 +639,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
 
                         Map<String, String> properties = this.getNodeByProperties(node);
 
-                        MappingNamedConvert convert = this.getConvert(className != null ? className.getNodeValue() : null,
+                        NamingConvert convert = this.getConvert(className != null ? className.getNodeValue() : null,
                                 name != null ? name.getNodeValue() : null, properties);
                         basicInfo.setConvert(convert);
                     }

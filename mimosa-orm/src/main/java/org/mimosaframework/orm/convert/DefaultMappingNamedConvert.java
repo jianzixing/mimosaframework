@@ -3,7 +3,7 @@ package org.mimosaframework.orm.convert;
 /**
  * @author yangankang
  */
-public class DefaultMappingNamedConvert implements MappingNamedConvert {
+public class DefaultMappingNamedConvert implements NamingConvert {
     public String convert(String name, ConvertType type) {
         if (type.equals(ConvertType.TABLE_NAME)) {
             if (name.length() > 1) {

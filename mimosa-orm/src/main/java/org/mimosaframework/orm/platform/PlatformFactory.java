@@ -206,4 +206,20 @@ public class PlatformFactory {
         }
         return null;
     }
+
+    public static PlatformDialect getDialect(DatabaseTypes databaseTypes) {
+        if (databaseTypes.equals(DatabaseTypes.MYSQL)) {
+        }
+        if (databaseTypes.equals(DatabaseTypes.ORACLE)) {
+        }
+        if (databaseTypes.equals(DatabaseTypes.SQL_SERVER)) {
+        }
+        if (databaseTypes.equals(DatabaseTypes.POSTGRESQL)) {
+        }
+        if (databaseTypes.equals(DatabaseTypes.DB2)) {
+        }
+        if (databaseTypes.equals(DatabaseTypes.SQLITE)) {
+        }
+        return null;
+    }
 }

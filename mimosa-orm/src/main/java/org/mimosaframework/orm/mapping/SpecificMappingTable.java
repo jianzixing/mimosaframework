@@ -4,7 +4,7 @@ import java.util.*;
 
 public class SpecificMappingTable implements MappingTable {
     private MappingDatabase mappingDatabase;
-    private Set<MappingIndex> mappingIndexs;
+    private Set<MappingIndex> mappingIndexes;
     // 映射类字段名称对应的字段
     private Map<String, MappingField> mappingFields;
     // 数据库字段名称对应的字段
@@ -186,7 +186,7 @@ public class SpecificMappingTable implements MappingTable {
     public MappingTable clone() {
         SpecificMappingTable table = new SpecificMappingTable();
         table.mappingDatabase = this.mappingDatabase;
-        table.mappingIndexs = this.mappingIndexs;
+        table.mappingIndexes = this.mappingIndexes;
         table.mappingFields = this.mappingFields;
         table.mappingColumns = this.mappingColumns;
         table.mappingClass = this.mappingClass;
@@ -276,12 +276,12 @@ public class SpecificMappingTable implements MappingTable {
         this.sourceMappingTableName = sourceMappingTableName;
     }
 
-    public Set<MappingIndex> getMappingIndexs() {
-        return mappingIndexs;
+    public Set<MappingIndex> getMappingIndexes() {
+        return mappingIndexes;
     }
 
-    public void setMappingIndexs(Set<MappingIndex> mappingIndexs) {
-        this.mappingIndexs = mappingIndexs;
+    public void setMappingIndexes(Set<MappingIndex> mappingIndexes) {
+        this.mappingIndexes = mappingIndexes;
     }
 
     public void setMappingFields(Map<String, MappingField> mappingFields) {

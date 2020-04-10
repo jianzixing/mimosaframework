@@ -18,6 +18,8 @@ public interface MappingTable {
 
     Set<MappingField> getMappingFields();
 
+    Set<MappingIndex> getMappingIndexes();
+
     Set<MappingField> getMappingColumns();
 
     /**

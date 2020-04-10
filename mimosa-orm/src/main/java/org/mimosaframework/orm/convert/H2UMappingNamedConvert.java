@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.convert;
 
-public class H2UMappingNamedConvert implements MappingNamedConvert {
+public class H2UMappingNamedConvert implements NamingConvert {
     public String convert(String name, ConvertType type) {
         if (name == null || name.equals("")) {
             return "";

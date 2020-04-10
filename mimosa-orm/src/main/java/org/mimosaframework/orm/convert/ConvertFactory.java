@@ -4,19 +4,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class ConvertFactory {
-    private static final Map<String, Class<? extends MappingNamedConvert>> convert = new LinkedHashMap<String, Class<? extends MappingNamedConvert>>();
+    private static final Map<String, Class<? extends NamingConvert>> convert = new LinkedHashMap<String, Class<? extends NamingConvert>>();
 
     static {
         convert.put("H2U", H2UMappingNamedConvert.class);
         convert.put("DEFAULT", DefaultMappingNamedConvert.class);
     }
 
-    public static MappingNamedConvert getDefaultConvert() {
+    public static NamingConvert getDefaultConvert() {
         return new DefaultMappingNamedConvert();
     }
 
-    public static MappingNamedConvert getConvert(String name) {
-        Class<? extends MappingNamedConvert> c = convert.get(name);
+    public static NamingConvert getConvert(String name) {
+        Class<? extends NamingConvert> c = convert.get(name);
         if (c != null) {
             try {
                 return c.newInstance();

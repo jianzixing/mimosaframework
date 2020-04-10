@@ -1,9 +1,9 @@
 package xmlcontext;
 
 import org.mimosaframework.orm.convert.ConvertType;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 
-public class TestConvert implements MappingNamedConvert {
+public class TestConvert implements NamingConvert {
     private String pm;
 
     public String getPm() {

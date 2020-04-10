@@ -7,7 +7,7 @@ import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.convert.ConvertType;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 
@@ -19,9 +19,9 @@ import java.util.Set;
 
 public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
     private Class mappingClass;
-    private MappingNamedConvert convert;
+    private NamingConvert convert;
 
-    public DefaultDisassembleMappingClass(Class mappingClass, MappingNamedConvert convert) {
+    public DefaultDisassembleMappingClass(Class mappingClass, NamingConvert convert) {
         this.mappingClass = mappingClass;
         this.convert = convert;
     }

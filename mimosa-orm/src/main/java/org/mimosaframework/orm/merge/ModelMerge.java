@@ -3,7 +3,6 @@ package org.mimosaframework.orm.merge;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.platform.SelectFieldAliasReference;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
 
 import java.util.List;
 

@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.mapping;
 
+import java.util.List;
+
 public class SpecificMappingIndex implements MappingIndex {
     private SpecificMappingTable mappingTable;
 
@@ -22,5 +24,20 @@ public class SpecificMappingIndex implements MappingIndex {
 
     public void setDatabaseIndexName(String databaseIndexName) {
         this.databaseIndexName = databaseIndexName;
+    }
+
+    @Override
+    public String getIndexName() {
+        return null;
+    }
+
+    @Override
+    public List<MappingField> getIndexColumns() {
+        return null;
+    }
+
+    @Override
+    public IndexType getIndexType() {
+        return null;
     }
 }

@@ -6,7 +6,7 @@ import org.mimosaframework.core.utils.FilterPackageClass;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.convert.ConvertFactory;
-import org.mimosaframework.orm.convert.MappingNamedConvert;
+import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 
 import javax.sql.DataSource;
@@ -47,13 +47,13 @@ public class BuilderUtils {
         return null;
     }
 
-    public static MappingNamedConvert getConvert(String convertClass, String convertName, Map properties) throws ContextException {
+    public static NamingConvert getConvert(String convertClass, String convertName, Map properties) throws ContextException {
         if (convertClass != null) convertClass = convertClass.trim();
         if (convertName != null) convertName = convertName.trim();
         // 类名和数据库字段名称的转换
         if (StringTools.isNotEmpty(convertClass)) {
             try {
-                Class<? extends MappingNamedConvert> c = (Class<? extends MappingNamedConvert>) Class.forName(convertClass);
+                Class<? extends NamingConvert> c = (Class<? extends NamingConvert>) Class.forName(convertClass);
                 if (properties != null && properties.size() > 0) {
                     return ModelObject.toJavaObject(new ModelObject(properties), c);
                 } else {
@@ -64,7 +64,7 @@ public class BuilderUtils {
             }
         }
         if (StringTools.isEmpty(convertClass) && StringTools.isNotEmpty(convertName)) {
-            MappingNamedConvert convert = ConvertFactory.getConvert(convertName);
+            NamingConvert convert = ConvertFactory.getConvert(convertName);
             if (convert == null) {
                 throw new ContextException("字段名称转换器 " + convertName + " 不存在");
             }
