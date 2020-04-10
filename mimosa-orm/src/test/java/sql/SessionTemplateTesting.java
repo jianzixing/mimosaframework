@@ -26,10 +26,10 @@ public class SessionTemplateTesting {
             if (1 == 2) {
                 config = "/oracle-template-mimosa.xml";
             }
-            if (1 == 2) {
+            if (1 == 1) {
                 config = "/sqlserver-template-mimosa.xml";
             }
-            if (1 == 1) {
+            if (1 == 2) {
                 config = "/postgresql-template-mimosa.xml";
             }
             if (1 == 2) {
@@ -428,6 +428,12 @@ public class SessionTemplateTesting {
         List<ModelObject> ob3 = result.getObjects();
         if (ob3 != null) {
             for (ModelObject o : ob3) System.out.println("INDEX  " + o);
+        }
+
+        result = template.getAutonomously(SQLAutonomously.structure().constraint(tables).autonomously());
+        List<ModelObject> ob4 = result.getObjects();
+        if (ob4 != null) {
+            for (ModelObject o : ob4) System.out.println("CONSTRAINT  " + o);
         }
     }
 }

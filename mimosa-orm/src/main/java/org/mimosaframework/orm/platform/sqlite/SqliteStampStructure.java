@@ -17,10 +17,19 @@ public class SqliteStampStructure implements StampCombineBuilder {
         StringBuilder sb = new StringBuilder();
 
         if (structure.type == 0) {
-
+            sb.append(
+                    "SELECT NULL AS TABSCHEMA," +
+                            "name AS TABNAME," +
+                            "type AS TYPE," +
+                            "0 AS COUNT," +
+                            "NULL AS LASTUSED," +
+                            "NULL AS CREATE_TIME," +
+                            "NULL AS COMMENT" +
+                            "FROM SQLITE_MASTER WHERE TYPE='table'"
+            );
         }
         if (structure.type == 1) {
-
+            sb.append("pragma table_info (" + this.getTableNames(structure) + ")");
         }
         if (structure.type == 2) {
 
@@ -28,14 +37,8 @@ public class SqliteStampStructure implements StampCombineBuilder {
         return new SQLBuilderCombine(sb.toString(), null);
     }
 
-    private StringBuilder getTableNames(StampStructure structure) {
-        StringBuilder tableNames = new StringBuilder();
+    private String getTableNames(StampStructure structure) {
         List<String> tables = structure.tables;
-        Iterator<String> iterator = tables.iterator();
-        while (iterator.hasNext()) {
-            tableNames.append("'" + iterator.next() + "'");
-            if (iterator.hasNext()) tableNames.append(",");
-        }
-        return tableNames;
+        return "\"" + tables.get(0) + "\"";
     }
 }
