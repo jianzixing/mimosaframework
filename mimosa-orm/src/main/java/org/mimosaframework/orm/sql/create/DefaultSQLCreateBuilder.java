@@ -260,22 +260,6 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object mediumint() {
-        this.gammars.add("type");
-        StampCreateColumn column = this.getLastColumn();
-        column.columnType = KeyColumnType.MEDIUMINT;
-        return this;
-    }
-
-    @Override
-    public Object bit() {
-        this.gammars.add("type");
-        StampCreateColumn column = this.getLastColumn();
-        column.columnType = KeyColumnType.BIT;
-        return this;
-    }
-
-    @Override
     public Object bigint() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
@@ -346,14 +330,6 @@ public class DefaultSQLCreateBuilder
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.TIMESTAMP;
-        return this;
-    }
-
-    @Override
-    public Object year() {
-        this.gammars.add("type");
-        StampCreateColumn column = this.getLastColumn();
-        column.columnType = KeyColumnType.YEAR;
         return this;
     }
 

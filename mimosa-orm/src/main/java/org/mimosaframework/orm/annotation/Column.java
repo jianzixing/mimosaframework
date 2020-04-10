@@ -16,6 +16,26 @@ public @interface Column {
 
     String name() default "";
 
+    /**
+     * {@link Integer} or int.class
+     * {@link String}
+     * {@link Character} or char.class
+     * {@link java.sql.Blob}
+     * {@link org.mimosaframework.orm.platform.Text}
+     * {@link Byte} or byte.class
+     * {@link Short} or short.class
+     * {@link Long} or long.class
+     * {@link Float} or float.class
+     * {@link Double} or double.class
+     * {@link java.math.BigDecimal}
+     * {@link Boolean} or boolean.class
+     * {@link java.sql.Date}
+     * {@link java.sql.Time}
+     * {@link java.util.Date}
+     * {@link java.sql.Timestamp}
+     *
+     * @return
+     */
     Class<?> type() default String.class;
 
     int length() default 255;

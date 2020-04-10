@@ -8,8 +8,6 @@ public enum KeyColumnType {
     TEXT,
     TINYINT,
     SMALLINT,
-    MEDIUMINT,
-    BIT,
     BIGINT,
     FLOAT,
     DOUBLE,
@@ -18,6 +16,5 @@ public enum KeyColumnType {
     DATE,
     TIME,
     DATETIME,
-    TIMESTAMP,
-    YEAR
+    TIMESTAMP
 }

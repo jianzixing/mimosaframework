@@ -45,10 +45,6 @@ public interface ColumnTypeBuilder<T> {
 
     T smallint();
 
-    T mediumint();
-
-    T bit();
-
     T bigint();
 
     T floatType();
@@ -66,6 +62,4 @@ public interface ColumnTypeBuilder<T> {
     T datetime();
 
     T timestamp();
-
-    T year();
 }

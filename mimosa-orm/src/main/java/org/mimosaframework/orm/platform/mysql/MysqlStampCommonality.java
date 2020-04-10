@@ -257,12 +257,6 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
         if (columnType == KeyColumnType.SMALLINT) {
             return "SMALLINT";
         }
-        if (columnType == KeyColumnType.MEDIUMINT) {
-            return "MEDIUMINT";
-        }
-        if (columnType == KeyColumnType.BIT) {
-            return "BIT";
-        }
         if (columnType == KeyColumnType.BIGINT) {
             return "BIGINT";
         }
@@ -289,9 +283,6 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
         }
         if (columnType == KeyColumnType.TIMESTAMP) {
             return "TIMESTAMP";
-        }
-        if (columnType == KeyColumnType.YEAR) {
-            return "YEAR";
         }
         return null;
     }

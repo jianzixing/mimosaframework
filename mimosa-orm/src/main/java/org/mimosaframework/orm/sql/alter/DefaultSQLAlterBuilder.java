@@ -210,22 +210,6 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object mediumint() {
-        this.gammars.add("type");
-        StampAlterItem item = this.getLastItem();
-        item.columnType = KeyColumnType.MEDIUMINT;
-        return this;
-    }
-
-    @Override
-    public Object bit() {
-        this.gammars.add("type");
-        StampAlterItem item = this.getLastItem();
-        item.columnType = KeyColumnType.BIT;
-        return this;
-    }
-
-    @Override
     public Object bigint() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
@@ -296,14 +280,6 @@ public class DefaultSQLAlterBuilder
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.TIMESTAMP;
-        return this;
-    }
-
-    @Override
-    public Object year() {
-        this.gammars.add("type");
-        StampAlterItem item = this.getLastItem();
-        item.columnType = KeyColumnType.YEAR;
         return this;
     }
 
