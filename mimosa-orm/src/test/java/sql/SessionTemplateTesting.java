@@ -23,13 +23,13 @@ public class SessionTemplateTesting {
             if (1 == 2) {
                 config = "/db2-template-mimosa.xml";
             }
-            if (1 == 1) {
+            if (1 == 2) {
                 config = "/oracle-template-mimosa.xml";
             }
             if (1 == 2) {
                 config = "/sqlserver-template-mimosa.xml";
             }
-            if (1 == 2) {
+            if (1 == 1) {
                 config = "/postgresql-template-mimosa.xml";
             }
             if (1 == 2) {
@@ -409,7 +409,7 @@ public class SessionTemplateTesting {
 
     @Test
     public void tableStructure() throws Exception {
-        AutoResult result = template.getAutonomously(SQLAutonomously.structure().table("mimosa").autonomously());
+        AutoResult result = template.getAutonomously(SQLAutonomously.structure().table("public").autonomously());
         List<String> tables = result.getStrings("TABNAME");
         List<ModelObject> ob1 = result.getObjects();
         if (ob1 != null) {

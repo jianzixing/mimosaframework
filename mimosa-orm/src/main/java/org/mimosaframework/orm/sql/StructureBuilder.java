@@ -60,4 +60,17 @@ public class StructureBuilder implements
         structure.tables = tables;
         return this;
     }
+
+    public UnifyBuilder constraint(List<String> tables) {
+        structure.type = 3;
+        structure.tables = tables;
+        return this;
+    }
+
+    public UnifyBuilder constraint(String schema, List<String> tables) {
+        structure.type = 3;
+        structure.schema = schema;
+        structure.tables = tables;
+        return this;
+    }
 }

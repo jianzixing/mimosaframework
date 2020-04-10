@@ -167,7 +167,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampSelect) return new MysqlStampSelect();
             if (stampAction instanceof StampUpdate) return new MysqlStampUpdate();
             if (stampAction instanceof StampStructure) return new MysqlStampStructure();
-        } else if (databaseTypes == DatabaseTypes.ORACLE) {
+        } else if (databaseTypes == DatabaseTypes.ORACLE) { // 没有schema概念
             if (stampAction instanceof StampAlter) return new OracleStampAlter();
             if (stampAction instanceof StampCreate) return new OracleStampCreate();
             if (stampAction instanceof StampDelete) return new OracleStampDelete();
@@ -184,7 +184,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampInsert) return new PostgreSQLStampInsert();
             if (stampAction instanceof StampSelect) return new PostgreSQLStampSelect();
             if (stampAction instanceof StampUpdate) return new PostgreSQLStampUpdate();
-            if (stampAction instanceof StampStructure) return new PostgreSQLStampUpdate();
+            if (stampAction instanceof StampStructure) return new PostgreSQLStampStructure();
         } else if (databaseTypes == DatabaseTypes.SQLITE) {
             if (stampAction instanceof StampAlter) return new SqliteStampAlter();
             if (stampAction instanceof StampCreate) return new SqliteStampCreate();
