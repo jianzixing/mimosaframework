@@ -43,9 +43,9 @@ public class DB2StampStructure implements StampCombineBuilder {
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampStructure structure = (StampStructure) action;
         String schema = structure.schema;
+        StringBuilder sb = new StringBuilder();
 
         if (structure.type == 0) {
-            StringBuilder sb = new StringBuilder();
             sb.append(
                     "SELECT TABSCHEMA," +               // 模式名
                             "TABNAME," +                // 表名
@@ -64,7 +64,6 @@ public class DB2StampStructure implements StampCombineBuilder {
         }
         if (structure.type == 1) {
             StringBuilder tableNames = this.getTableNames(structure);
-            StringBuilder sb = new StringBuilder();
             sb.append(
                     "SELECT T1.TABSCHEMA," +                        // 模式名
                             "T1.TABNAME," +                         // 表名
@@ -75,20 +74,17 @@ public class DB2StampStructure implements StampCombineBuilder {
                             "T1.DEFAULT," +                         // 默认值
                             "T1.NULLS AS IS_NULLABLE," +            // 是否为空
                             "T1.IDENTITY AS AUTO_INCREMENT," +      // 是否自增
-                            "(CASE WHEN T1.COLNAME = T2.COLNAME THEN 'Y' ELSE 'N' END) AS PK," + // 主键
-                            "T1.REMARKS AS COMMENT" +               // 用户注释
+                            "T1.REMARKS AS COMMENT " +               // 用户注释
                             "FROM SYSCAT.COLUMNS T1 " +
-                            "LEFT JOIN SYSCAT.KEYCOLUSE T2 ON T2.TABNAME=T1.TABNAME AND T2.TABSCHEMA=T1.TABSCHEMA " +
                             "WHERE T1.TABNAME IN (" + tableNames + ")"
             );
             if (StringTools.isNotEmpty(schema)) {
-                sb.append(" AND T1.TABSCHEMA = 'DB2INST1'");
+                sb.append(" AND T1.TABSCHEMA = '" + schema + "'");
             }
-            return new SQLBuilderCombine(sb.toString(), null);
+
         }
         if (structure.type == 2) {
             StringBuilder tableNames = this.getTableNames(structure);
-            StringBuilder sb = new StringBuilder();
             sb.append(
                     "SELECT T1.TABSCHEMA," +
                             "T1.INDNAME," +                      // 索引名称
@@ -100,11 +96,29 @@ public class DB2StampStructure implements StampCombineBuilder {
                             "WHERE T1.TABNAME IN (" + tableNames + ")"
             );
             if (StringTools.isNotEmpty(schema)) {
-                sb.append(" AND T1.TABSCHEMA = 'DB2INST1'");
+                sb.append(" AND T1.TABSCHEMA = '" + schema + "'");
             }
             return new SQLBuilderCombine(sb.toString(), null);
         }
-        return null;
+        if (structure.type == 3) {
+            sb.append(
+                    "SELECT " +
+                            "A.CONSTNAME AS CONSNAME," +
+                            "A.TABNAME AS TABNAME," +
+                            "B.COLNAME AS COLNAME," +
+                            "C.REFTABNAME AS FGNTABNAME," +
+                            "C.REFTABNAME AS FGNCOLNAME," +
+                            "A.TYPE AS TYPE " +
+                            "FROM SYSCAT.TABCONST A " +
+                            "LEFT JOIN SYSCAT.KEYCOLUSE B ON A.CONSTNAME=B.CONSTNAME AND A.TABSCHEMA=B.TABSCHEMA " +
+                            "LEFT JOIN SYSCAT.REFERENCES C ON A.CONSTNAME=C.CONSTNAME AND A.TABSCHEMA=C.TABSCHEMA " +
+                            "WHERE A.TABNAME IN (" + this.getTableNames(structure) + ")"
+            );
+            if (StringTools.isNotEmpty(schema)) {
+                sb.append(" AND A.TABSCHEMA = '" + schema + "'");
+            }
+        }
+        return new SQLBuilderCombine(sb.toString(), null);
     }
 
     private StringBuilder getTableNames(StampStructure structure) {
