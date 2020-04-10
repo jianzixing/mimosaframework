@@ -20,7 +20,7 @@ public class SessionTemplateTesting {
     public void init() throws ContextException {
         if (template == null) {
             String config = "/template-mimosa.xml";
-            if (1 == 1) {
+            if (1 == 2) {
                 config = "/db2-template-mimosa.xml";
             }
             if (1 == 2) {
@@ -409,7 +409,7 @@ public class SessionTemplateTesting {
 
     @Test
     public void tableStructure() throws Exception {
-        AutoResult result = template.getAutonomously(SQLAutonomously.structure().table("DB2INST1").autonomously());
+        AutoResult result = template.getAutonomously(SQLAutonomously.structure().table("mimosa").autonomously());
         List<String> tables = result.getStrings("TABNAME");
         List<ModelObject> ob1 = result.getObjects();
         if (ob1 != null) {

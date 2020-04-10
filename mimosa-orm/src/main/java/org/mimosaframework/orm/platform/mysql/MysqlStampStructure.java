@@ -109,6 +109,27 @@ public class MysqlStampStructure implements StampCombineBuilder {
                 sb.append(" AND TABLE_SCHEMA = '" + schema + "'");
             }
         }
+        if (structure.type == 3) {
+            sb.append(
+                    "SELECT A.TABLE_SCHEMA AS TABSCHEMA," +
+                            "A.CONSTRAINT_NAME AS CONSTNAME," +
+                            "A.TABLE_NAME AS TABNAME," +
+                            "B.COLUMN_NAME AS COLNAME," +
+                            "B.REFERENCED_TABLE_NAME AS FGNTABNAME," +
+                            "B.REFERENCED_COLUMN_NAME AS FGNCOLNAME," +
+                            "(CASE" +
+                            " WHEN A.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN 'P'" +
+                            " WHEN A.CONSTRAINT_TYPE = 'UNIQUE' THEN 'U'" +
+                            " WHEN A.CONSTRAINT_TYPE = 'CHECK' THEN 'C'" +
+                            " WHEN A.CONSTRAINT_TYPE = 'FOREIGN KEY' THEN 'F' END) AS TYPE " +
+                            "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS A " +
+                            "LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND A.TABLE_SCHEMA = B.TABLE_SCHEMA " +
+                            "WHERE A.TABLE_NAME IN (" + this.getTableNames(structure) + ")"
+            );
+            if (StringTools.isNotEmpty(schema)) {
+                sb.append(" AND A.TABLE_SCHEMA = '" + schema + "'");
+            }
+        }
         return new SQLBuilderCombine(sb.toString(), null);
     }
 
