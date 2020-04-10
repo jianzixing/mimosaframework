@@ -5,8 +5,8 @@ public class TableColumnStructure {
     private String tableName;
     private String columnName;
     private String typeName;
-    private int length;
-    private int scale;
+    private int length = -1;
+    private int scale = -1;
     private String defaultValue;
     /**
      * Y or N

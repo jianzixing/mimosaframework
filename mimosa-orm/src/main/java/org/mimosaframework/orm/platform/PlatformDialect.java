@@ -24,4 +24,8 @@ public class PlatformDialect {
     public List<TableStructure> getTableStructures() {
         return null;
     }
+
+    public ColumnType getColumnType(KeyColumnType type) {
+        return columnTypes.get(type);
+    }
 }

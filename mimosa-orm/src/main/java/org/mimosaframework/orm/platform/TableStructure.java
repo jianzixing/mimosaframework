@@ -114,4 +114,15 @@ public class TableStructure {
         }
         return structures;
     }
+
+    public boolean isPrimaryKeyColumn(String column) {
+        if (constraintStructures != null) {
+            for (TableConstraintStructure constraintStructure : constraintStructures) {
+                if (column.equalsIgnoreCase(constraintStructure.getColumnName()) && "P".equals(constraintStructure.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
