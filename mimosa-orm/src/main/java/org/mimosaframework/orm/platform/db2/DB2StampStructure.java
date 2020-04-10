@@ -10,34 +10,6 @@ import org.mimosaframework.orm.sql.stamp.StampStructure;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * SELECT TABSCHEMA,         --模式名
- * TABNAME,           --表名
- * TYPE,              --类型(T: 表, V:视图, N:昵称)
- * CARD    AS COUNT,  --记录数(最新一次RUNSTATS统计)
- * LASTUSED,          --最近一次访问日期(增删改查)
- * CREATE_TIME,       --表的创建时间
- * REMARKS AS COMMENT --表的注释
- * FROM SYSCAT.TABLES
- * WHERE TYPE = 'T'
- * and TABNAME = 'T_USER'
- * AND TABSCHEMA = 'DB2INST1';
- * --查看表中列的注释
- * SELECT T1.TABSCHEMA, --模式名
- * T1.TABNAME,   --表名
- * T1.COLNAME,   --字段名
- * T1.TYPENAME,  --字段类型
- * T1.LENGTH,    --字段长度
- * T1.SCALE,     --精度
- * T1.DEFAULT,   --默认值
- * T1.NULLS,     --是否为空
- * (CASE WHEN T1.COLNAME = T2.COLNAME THEN 'Y' ELSE 'N' END) AS PK,
- * T1.REMARKS    --用户注释
- * FROM SYSCAT.COLUMNS T1
- * LEFT JOIN SYSCAT.KEYCOLUSE T2 ON T2.TABNAME=T1.TABNAME AND T2.TABSCHEMA=T1.TABSCHEMA
- * WHERE T1.TABSCHEMA = 'DB2INST1'
- * AND T1.TABNAME = 'T_TT';
- */
 public class DB2StampStructure implements StampCombineBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
@@ -102,7 +74,7 @@ public class DB2StampStructure implements StampCombineBuilder {
         }
         if (structure.type == 3) {
             sb.append(
-                    "SELECT " +
+                    "SELECT A.TABSCHEMA AS TABSCHEMA," +
                             "A.CONSTNAME AS CONSNAME," +
                             "A.TABNAME AS TABNAME," +
                             "B.COLNAME AS COLNAME," +

@@ -10,45 +10,6 @@ import org.mimosaframework.orm.sql.stamp.StampStructure;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * SELECT *,
- * TABLE_SCHEMA  AS TABSCHEMA,
- * TABLE_NAME    AS TABNAME,
- * TABLE_TYPE    AS TYPE,
- * TABLE_ROWS    AS COUNT,
- * UPDATE_TIME   AS LASTUSED,
- * TABLE_COMMENT AS COMMENT,
- * CREATE_TIME
- * FROM INFORMATION_SCHEMA.TABLES
- * WHERE TABLE_SCHEMA = 'mimosa';
- * <p>
- * SELECT
- * TABLE_SCHEMA                                                            AS TABSCHEMA,
- * TABLE_NAME                                                              AS TABNAME,
- * COLUMN_NAME                                                             AS COLNAME,
- * DATA_TYPE                                                               AS TYPENAME,
- * CHARACTER_MAXIMUM_LENGTH                                                AS LENGTH,
- * NUMERIC_SCALE                                                           AS SCALE,
- * COLUMN_DEFAULT                                                          AS `DEFAULT`,
- * (CASE WHEN IS_NULLABLE = 'NO' THEN 'N' ELSE 'Y' END)                    AS IS_NULLABLE,
- * (CASE WHEN POSITION('auto_increment' IN EXTRA) > 0 THEN 'Y' ELSE 'N' END) AS
- * AUTO_INCREMENT,
- * (CASE WHEN COLUMN_KEY = 'PRI' THEN 'Y' ELSE 'N' END)                    AS PK,
- * COLUMN_COMMENT                                                          AS COMMENT
- * FROM INFORMATION_SCHEMA.COLUMNS
- * WHERE TABLE_NAME = 't_user' and TABLE_SCHEMA='';
- * <p>
- * <p>
- * SELECT * ,
- * TABLE_SCHEMA AS TABSCHEMA,
- * INDEX_NAME AS INDNAME,
- * TABLE_NAME AS TABNAME,
- * (CASE WHEN NON_UNIQUE=1 THEN 'U' WHEN INDEX_NAME='PRIMARY' THEN 'P' ELSE 'D' END) AS TYPE,
- * COLUMN_NAME AS COLNAME,
- * INDEX_COMMENT AS COMMENT
- * FROM INFORMATION_SCHEMA.STATISTICS
- * WHERE TABLE_NAME='T_USER';
- */
 public class MysqlStampStructure implements StampCombineBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
@@ -84,7 +45,6 @@ public class MysqlStampStructure implements StampCombineBuilder {
                             "COLUMN_DEFAULT           AS `DEFAULT`," +
                             "(CASE WHEN IS_NULLABLE = 'NO' THEN 'N' ELSE 'Y' END) AS IS_NULLABLE," +
                             "(CASE WHEN POSITION('auto_increment' IN EXTRA) > 0 THEN 'Y' ELSE 'N' END) AS AUTO_INCREMENT," +
-                            "(CASE WHEN COLUMN_KEY = 'PRI' THEN 'Y' ELSE 'N' END) AS PK," +
                             "COLUMN_COMMENT                                       AS COMMENT " +
                             "FROM INFORMATION_SCHEMA.COLUMNS " +
                             "WHERE TABLE_NAME IN (" + this.getTableNames(structure) + ")"
