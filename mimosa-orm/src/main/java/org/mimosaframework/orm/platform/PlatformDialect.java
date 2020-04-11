@@ -2,16 +2,21 @@ package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.sql.AbsColumnBuilder;
 import org.mimosaframework.orm.sql.StructureBuilder;
+import org.mimosaframework.orm.sql.UnifyBuilder;
+import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
+import org.mimosaframework.orm.sql.create.CreateColumnAssistBuilder;
+import org.mimosaframework.orm.sql.create.CreateFactory;
+import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class PlatformDialect {
     private Map<KeyColumnType, ColumnType> columnTypes = new HashMap<>();
@@ -200,6 +205,53 @@ public abstract class PlatformDialect {
         return columnTypes.get(type);
     }
 
+    protected StampCreate commonCreateTable(MappingTable mappingTable) {
+        Class table = mappingTable.getMappingClass();
+        Set<MappingField> mappingFields = mappingTable.getMappingFields();
+        if (mappingFields != null && mappingFields.size() > 0) {
+            DefaultSQLCreateBuilder sql = (DefaultSQLCreateBuilder) CreateFactory.create()
+                    .table().ifNotExist().name(table);
+            for (MappingField mappingField : mappingFields) {
+                String field = mappingField.getMappingColumnName();
+                Class type = mappingField.getMappingFieldType();
+                int length = mappingField.getMappingFieldLength();
+                int scale = mappingField.getMappingFieldDecimalDigits();
+                String defVal = mappingField.getMappingFieldDefaultValue();
+                boolean nullable = mappingField.isMappingFieldNullable();
+                boolean autoIncr = mappingField.isMappingAutoIncrement();
+                String comment = mappingField.getMappingFieldComment();
+
+                sql.column(field);
+                this.setSQLType(sql, type, length, scale);
+                if (!nullable) {
+                    sql.not();
+                    sql.nullable();
+                }
+                if (autoIncr) sql.autoIncrement();
+                if (StringTools.isNotEmpty(defVal)) {
+                    sql.defaultValue(defVal);
+                }
+                if (StringTools.isNotEmpty(comment)) {
+                    sql.comment(comment);
+                }
+            }
+
+            if (StringTools.isNotEmpty(mappingTable.getEncoding())) {
+                sql.charset(mappingTable.getEncoding());
+            }
+
+            return (StampCreate) ((UnifyBuilder) sql).compile();
+        }
+        return null;
+    }
+
+    protected void setSQLType(ColumnTypeBuilder typeBuilder,
+                              Class type,
+                              int length,
+                              int scale) {
+        JavaType2ColumnType.getColumnTypeByJava(type, typeBuilder, length, scale);
+    }
+
     public abstract SQLBuilderCombine alter(StampAlter alter);
 
     public abstract SQLBuilderCombine create(StampCreate create);
@@ -214,5 +266,5 @@ public abstract class PlatformDialect {
 
     public abstract SQLBuilderCombine update(StampUpdate update);
 
-    public abstract void define(DataDefinition definition);
+    public abstract void define(DataDefinition definition) throws SQLException;
 }

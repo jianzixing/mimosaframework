@@ -1,10 +1,14 @@
 package org.mimosaframework.orm.platform.mysql;
 
-import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.DataDefinition;
+import org.mimosaframework.orm.platform.DataDefinitionType;
 import org.mimosaframework.orm.platform.PlatformDialect;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
+
+import java.sql.SQLException;
 
 public class MysqlPlatformDialect extends PlatformDialect {
     public MysqlPlatformDialect() {
@@ -76,7 +80,38 @@ public class MysqlPlatformDialect extends PlatformDialect {
     }
 
     @Override
-    public void define(DataDefinition definition) {
+    public void define(DataDefinition definition) throws SQLException {
+        if (definition != null) {
+            DataDefinitionType type = definition.getType();
+            if (type == DataDefinitionType.CREATE_TABLE) {
+                MappingTable mappingTable = definition.getMappingTable();
+                StampCreate stampCreate = this.commonCreateTable(mappingTable);
+                if (StringTools.isNotEmpty(mappingTable.getEngineName())) {
+                    stampCreate.extra = "ENGINE=InnoDB";
+                }
+                this.runner(stampCreate);
+            }
+            if (type == DataDefinitionType.DROP_TABLE) {
 
+            }
+            if (type == DataDefinitionType.ADD_COLUMN) {
+
+            }
+            if (type == DataDefinitionType.MODIFY_COLUMN) {
+
+            }
+            if (type == DataDefinitionType.DROP_COLUMN) {
+
+            }
+            if (type == DataDefinitionType.ADD_INDEX) {
+
+            }
+            if (type == DataDefinitionType.MODIFY_INDEX) {
+
+            }
+            if (type == DataDefinitionType.DROP_INDEX) {
+
+            }
+        }
     }
 }

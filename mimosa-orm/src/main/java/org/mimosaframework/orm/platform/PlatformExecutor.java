@@ -5,7 +5,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.sql.stamp.KeyColumnType;
+import org.mimosaframework.orm.sql.stamp.*;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -63,7 +63,7 @@ public class PlatformExecutor {
 
                                 if (currField != null) {
                                     List<ColumnEditType> columnEditTypes = new ArrayList<>();
-                                    ColumnType columnType = dialect.getColumnType(this.getColumnTypeByJava(currField.getMappingFieldType()));
+                                    ColumnType columnType = dialect.getColumnType(JavaType2ColumnType.getColumnTypeByJava(currField.getMappingFieldType()));
                                     if (columnStructure.getTypeName()
                                             .equalsIgnoreCase(columnType.getTypeName())
                                             || columnStructure.getLength() != currField.getMappingFieldLength()
@@ -179,26 +179,6 @@ public class PlatformExecutor {
         }
     }
 
-    private KeyColumnType getColumnTypeByJava(Class c) {
-        if (c.equals(Integer.class) || c.equals(int.class)) return KeyColumnType.INT;
-        if (c.equals(String.class)) return KeyColumnType.VARCHAR;
-        if (c.equals(Character.class) || c.equals(char.class)) return KeyColumnType.CHAR;
-        if (c.equals(Blob.class)) return KeyColumnType.BLOB;
-        if (c.equals(Text.class)) return KeyColumnType.TEXT;
-        if (c.equals(Byte.class) || c.equals(byte.class)) return KeyColumnType.TINYINT;
-        if (c.equals(Short.class) || c.equals(short.class)) return KeyColumnType.SMALLINT;
-        if (c.equals(Long.class) || c.equals(long.class)) return KeyColumnType.BIGINT;
-        if (c.equals(Float.class) || c.equals(float.class)) return KeyColumnType.FLOAT;
-        if (c.equals(Double.class) || c.equals(double.class)) return KeyColumnType.DOUBLE;
-        if (c.equals(BigDecimal.class)) return KeyColumnType.DECIMAL;
-        if (c.equals(Boolean.class) || c.equals(boolean.class)) return KeyColumnType.BOOLEAN;
-        if (c.equals(java.sql.Date.class)) return KeyColumnType.DATE;
-        if (c.equals(java.sql.Time.class)) return KeyColumnType.TIME;
-        if (c.equals(java.util.Date.class)) return KeyColumnType.DATETIME;
-        if (c.equals(java.sql.Timestamp.class)) return KeyColumnType.TIMESTAMP;
-        return null;
-    }
-
     private PlatformDialect getDialect(MappingGlobalWrapper mappingGlobalWrapper,
                                        DataSourceWrapper dswrapper) {
         PlatformDialect dialect = PlatformFactory.getDialect(dswrapper);
@@ -208,14 +188,14 @@ public class PlatformExecutor {
 
     public void createTable(MappingGlobalWrapper mappingGlobalWrapper,
                             DataSourceWrapper dswrapper,
-                            MappingTable mappingTable) {
+                            MappingTable mappingTable) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.define(new DataDefinition(DataDefinitionType.CREATE_TABLE, mappingTable));
     }
 
     public void dropTable(MappingGlobalWrapper mappingGlobalWrapper,
                           DataSourceWrapper dswrapper,
-                          TableStructure tableStructure) {
+                          TableStructure tableStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.define(new DataDefinition(DataDefinitionType.DROP_TABLE, tableStructure));
     }
@@ -223,7 +203,7 @@ public class PlatformExecutor {
     public void createField(MappingGlobalWrapper mappingGlobalWrapper,
                             DataSourceWrapper dswrapper,
                             MappingTable mappingTable,
-                            MappingField mappingField) {
+                            MappingField mappingField) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.define(new DataDefinition(DataDefinitionType.ADD_COLUMN, mappingTable, mappingField));
     }
@@ -232,7 +212,7 @@ public class PlatformExecutor {
                             DataSourceWrapper dswrapper,
                             MappingTable mappingTable,
                             MappingField mappingField,
-                            TableColumnStructure columnStructure) {
+                            TableColumnStructure columnStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.define(new DataDefinition(DataDefinitionType.MODIFY_COLUMN, mappingTable, mappingField, columnStructure));
     }
@@ -240,7 +220,7 @@ public class PlatformExecutor {
     public void dropField(MappingGlobalWrapper mappingGlobalWrapper,
                           DataSourceWrapper dswrapper,
                           MappingTable mappingTable,
-                          TableColumnStructure columnStructure) {
+                          TableColumnStructure columnStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.define(new DataDefinition(DataDefinitionType.DROP_COLUMN, mappingTable, columnStructure));
     }
@@ -248,7 +228,7 @@ public class PlatformExecutor {
     public void createIndex(MappingGlobalWrapper mappingGlobalWrapper,
                             DataSourceWrapper dswrapper,
                             MappingTable mappingTable,
-                            MappingIndex mappingIndex) {
+                            MappingIndex mappingIndex) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.define(new DataDefinition(DataDefinitionType.ADD_INDEX, mappingTable, mappingIndex));
     }
@@ -256,8 +236,43 @@ public class PlatformExecutor {
     public void dropIndex(MappingGlobalWrapper mappingGlobalWrapper,
                           DataSourceWrapper dswrapper,
                           MappingTable mappingTable,
-                          TableIndexStructure indexStructure) {
+                          TableIndexStructure indexStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexStructure));
     }
+
+    public Object dialect(MappingGlobalWrapper mappingGlobalWrapper,
+                          DataSourceWrapper dswrapper,
+                          StampAction stampAction) throws SQLException {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        SQLBuilderCombine combine = null;
+        if (stampAction instanceof StampAlter) {
+            combine = dialect.alter((StampAlter) stampAction);
+        }
+        if (stampAction instanceof StampCreate) {
+            combine = dialect.create((StampCreate) stampAction);
+        }
+        if (stampAction instanceof StampDrop) {
+            combine = dialect.drop((StampDrop) stampAction);
+        }
+        if (stampAction instanceof StampInsert) {
+            combine = dialect.insert((StampInsert) stampAction);
+        }
+        if (stampAction instanceof StampDelete) {
+            combine = dialect.delete((StampDelete) stampAction);
+        }
+        if (stampAction instanceof StampSelect) {
+            combine = dialect.select((StampSelect) stampAction);
+        }
+        if (stampAction instanceof StampUpdate) {
+            combine = dialect.update((StampUpdate) stampAction);
+        }
+
+        if (combine != null) {
+            return new DefaultDBRunner(dswrapper).doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+        }
+        return null;
+    }
+
+
 }
