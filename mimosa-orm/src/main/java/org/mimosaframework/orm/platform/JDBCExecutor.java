@@ -8,15 +8,15 @@ import java.util.List;
 public interface JDBCExecutor {
     void setDatabaseExecutorCallback(DatabaseExecutorCallback callback);
 
-    boolean execute(PorterStructure structure) throws SQLException;
+    boolean execute(JDBCTraversing structure) throws SQLException;
 
-    int delete(PorterStructure structure) throws SQLException;
+    int delete(JDBCTraversing structure) throws SQLException;
 
-    List<Long> insert(PorterStructure structure) throws SQLException;
+    List<Long> insert(JDBCTraversing structure) throws SQLException;
 
     void inserts(BatchPorterStructure structure) throws SQLException;
 
-    List<ModelObject> select(PorterStructure structure) throws SQLException;
+    List<ModelObject> select(JDBCTraversing structure) throws SQLException;
 
-    int update(PorterStructure structure) throws SQLException;
+    int update(JDBCTraversing structure) throws SQLException;
 }

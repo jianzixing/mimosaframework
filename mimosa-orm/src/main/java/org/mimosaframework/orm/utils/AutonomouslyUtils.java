@@ -2,13 +2,13 @@ package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.platform.TypeForRunner;
-import org.mimosaframework.orm.platform.PorterStructure;
+import org.mimosaframework.orm.platform.JDBCTraversing;
 import org.mimosaframework.orm.scripting.BoundSql;
 import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 
 public class AutonomouslyUtils {
-    public static PorterStructure parseStructure(SQLDefinedLoader definedLoader, String name, ModelObject parameter) {
+    public static JDBCTraversing parseStructure(SQLDefinedLoader definedLoader, String name, ModelObject parameter) {
         DynamicSqlSource sqlSource = definedLoader.getDynamicSqlSource(name);
         if (sqlSource == null) {
             throw new IllegalArgumentException("没有发现配置文件SQL");
@@ -17,18 +17,18 @@ public class AutonomouslyUtils {
         BoundSql boundSql = sqlSource.getBoundSql(parameter);
         String action = boundSql.getAction();
 
-        PorterStructure structure = null;
+        JDBCTraversing structure = null;
         if (action.equalsIgnoreCase("select")) {
-            structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
+            structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
             structure.setChangerClassify(TypeForRunner.SELECT);
         } else if (action.equalsIgnoreCase("update")) {
-            structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
+            structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
             structure.setChangerClassify(TypeForRunner.UPDATE);
         } else if (action.equalsIgnoreCase("delete")) {
-            structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
+            structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
             structure.setChangerClassify(TypeForRunner.DELETE);
         } else if (action.equalsIgnoreCase("insert")) {
-            structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
+            structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
             structure.setChangerClassify(TypeForRunner.ADD_OBJECT);
         }
         return structure;

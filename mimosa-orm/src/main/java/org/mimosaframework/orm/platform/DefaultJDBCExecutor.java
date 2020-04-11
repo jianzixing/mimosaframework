@@ -60,7 +60,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
     }
 
 
-    private void logger(PorterStructure structure) {
+    private void logger(JDBCTraversing structure) {
         if (isShowSql && structure.getChangerClassify() != TypeForRunner.SILENT) {
             SQLBuilder sqlBuilder = structure.getSqlBuilder();
             String sqlStr = structure.getSql();
@@ -133,7 +133,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
         }
     }
 
-    private PreparedStatement replacePlaceholder(Connection connection, PorterStructure structure, boolean gk) throws SQLException {
+    private PreparedStatement replacePlaceholder(Connection connection, JDBCTraversing structure, boolean gk) throws SQLException {
         String sql = null;
         List<SQLDataPlaceholder> placeholders = null;
 
@@ -177,7 +177,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
         return value;
     }
 
-    private String getStructureSql(PorterStructure structure) {
+    private String getStructureSql(JDBCTraversing structure) {
         SQLBuilder sqlBuilder = structure.getSqlBuilder();
         if (sqlBuilder != null) {
             return sqlBuilder.toSQLString().getSql();
@@ -187,7 +187,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
     }
 
     @Override
-    public boolean execute(PorterStructure structure) throws SQLException {
+    public boolean execute(JDBCTraversing structure) throws SQLException {
         logger(structure);
         Connection connection = null;
         PreparedStatement statement = null;
@@ -202,12 +202,12 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
     }
 
     @Override
-    public int delete(PorterStructure structure) throws SQLException {
+    public int delete(JDBCTraversing structure) throws SQLException {
         return executeUpdateMethod(structure);
     }
 
     @Override
-    public List<Long> insert(PorterStructure structure) throws SQLException {
+    public List<Long> insert(JDBCTraversing structure) throws SQLException {
         logger(structure);
         Connection connection = null;
         PreparedStatement statement = null;
@@ -268,7 +268,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
     }
 
     @Override
-    public List<ModelObject> select(PorterStructure structure) throws SQLException {
+    public List<ModelObject> select(JDBCTraversing structure) throws SQLException {
         logger(structure);
         Connection connection = null;
         PreparedStatement statement = null;
@@ -307,11 +307,11 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
     }
 
     @Override
-    public int update(PorterStructure structure) throws SQLException {
+    public int update(JDBCTraversing structure) throws SQLException {
         return executeUpdateMethod(structure);
     }
 
-    private int executeUpdateMethod(PorterStructure structure) throws SQLException {
+    private int executeUpdateMethod(JDBCTraversing structure) throws SQLException {
         logger(structure);
         Connection connection = null;
         PreparedStatement statement = null;

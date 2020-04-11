@@ -413,11 +413,11 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
 //            tableBuilder.DEFAULT().CHARSET().addEqualMark().addString(encoding);
 //        }
 
-        PorterStructure tableStructure = new PorterStructure(TypeForRunner.CREATE_TABLE, tableBuilder);
+        JDBCTraversing tableStructure = new JDBCTraversing(TypeForRunner.CREATE_TABLE, tableBuilder);
         if (AUTO_INCREMENT_SQL_1 != null) {
             carryHandler.doHandler(tableStructure);
-            carryHandler.doHandler(new PorterStructure(TypeForRunner.SILENT, this.dropOracleSequence(table)));
-            carryHandler.doHandler(new PorterStructure(TypeForRunner.SILENT, AUTO_INCREMENT_SQL_1));
+            carryHandler.doHandler(new JDBCTraversing(TypeForRunner.SILENT, this.dropOracleSequence(table)));
+            carryHandler.doHandler(new JDBCTraversing(TypeForRunner.SILENT, AUTO_INCREMENT_SQL_1));
         } else {
             carryHandler.doHandler(tableStructure);
         }
@@ -495,7 +495,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
 
         this.resetSeqValue(table, tableName, object);
 
-        Long id = (Long) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECT, insertBuilder));
+        Long id = (Long) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.ADD_OBJECT, insertBuilder));
         return id;
     }
 
@@ -560,7 +560,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
                             // select max(id) from table
                             SQLBuilder max = this.createSQLBuilder().SELECT().addFun("max", field.getMappingColumnName(), "max")
                                     .FROM().addString(tableName);
-                            List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT, max));
+                            List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.SELECT, max));
                             if (objects != null && objects.size() > 0) {
                                 ModelObject o = objects.get(0);
                                 Long maxValue = o.getLong("max");
@@ -573,7 +573,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
                                     SQLBuilder resetSeq = this.createSQLBuilder().ALTER().addString("sequence")
                                             .addString(tableName.trim().toUpperCase() + "_SEQ")
                                             .addString("increment").addString("by").addString("" + maxValue);
-                                    carryHandler.doHandler(new PorterStructure(TypeForRunner.UPDATE, resetSeq));
+                                    carryHandler.doHandler(new JDBCTraversing(TypeForRunner.UPDATE, resetSeq));
                                 }
                             }
                         }
@@ -615,7 +615,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
         if (innerJoins != null && innerJoins.size() > 0) {
             builder = this.buildSelectInnerJoin(tables, query, aliasMap, true, false);
 
-            PorterStructure structure = new PorterStructure(TypeForRunner.SELECT_PRIMARY_KEY, builder);
+            JDBCTraversing structure = new JDBCTraversing(TypeForRunner.SELECT_PRIMARY_KEY, builder);
             List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structure);
             return new SelectResult(objects, structure);
         } else {
@@ -626,7 +626,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
             }
             builder = this.buildSelectLeftJoins(tables, query, aliasMap, references);
 
-            PorterStructure structure = new PorterStructure(TypeForRunner.SELECT, builder, references);
+            JDBCTraversing structure = new JDBCTraversing(TypeForRunner.SELECT, builder, references);
             List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structure);
             return new SelectResult(objects, structure);
         }
@@ -637,7 +637,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
         MappingTable table = tables.get(query);
         SQLBuilder sqlBuilder = this.buildSingleSelect(query, table, true);
 
-        return (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT_PRIMARY_KEY, sqlBuilder));
+        return (List<ModelObject>) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.SELECT_PRIMARY_KEY, sqlBuilder));
     }
 
     @Override

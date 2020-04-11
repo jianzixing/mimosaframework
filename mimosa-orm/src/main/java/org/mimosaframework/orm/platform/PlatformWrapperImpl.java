@@ -97,7 +97,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     public Integer update(String sql) throws SQLException {
         SQLBuilder builder = SQLBuilderFactory.createSQLBuilder();
         builder.addSQLString(sql);
-        return (Integer) carryHandler.doHandler(new PorterStructure(TypeForRunner.UPDATE, builder));
+        return (Integer) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.UPDATE, builder));
     }
 
     @Override
@@ -205,7 +205,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     public List<ModelObject> select(String sql) throws SQLException {
         SQLBuilder builder = SQLBuilderFactory.createSQLBuilder();
         builder.addSQLString(sql);
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT, builder));
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.SELECT, builder));
         return objects;
     }
 

@@ -9,25 +9,32 @@ import java.util.List;
 import java.util.Map;
 
 public interface PlatformCompare {
-    void tableCreate(MappingGlobalWrapper wrapper, MappingTable mappingTable);
+    void tableCreate(MappingGlobalWrapper wrapper,
+                     PlatformDialect dialect,
+                     MappingTable mappingTable);
 
     void fieldUpdate(MappingGlobalWrapper wrapper,
+                     PlatformDialect dialect,
                      MappingTable mappingTable,
                      Map<MappingField, List<ColumnEditType>> updateFields);
 
     void fieldAdd(MappingGlobalWrapper wrapper,
+                  PlatformDialect dialect,
                   MappingTable mappingTable,
                   List<MappingField> mappingFields);
 
     void fieldDel(MappingGlobalWrapper wrapper,
+                  PlatformDialect dialect,
                   MappingTable mappingTable,
                   List<TableColumnStructure> mappingFields);
 
     void indexUpdate(MappingGlobalWrapper wrapper,
+                     PlatformDialect dialect,
                      MappingTable mappingTable,
                      List<MappingIndex> mappingIndexes);
 
     void indexAdd(MappingGlobalWrapper wrapper,
+                  PlatformDialect dialect,
                   MappingTable mappingTable,
                   List<MappingIndex> mappingIndexes);
 }

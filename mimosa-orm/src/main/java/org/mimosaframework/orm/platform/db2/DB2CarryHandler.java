@@ -16,7 +16,7 @@ public class DB2CarryHandler extends DBRunner {
     }
 
     @Override
-    public Object doHandler(PorterStructure structure) throws SQLException {
+    public Object doHandler(JDBCTraversing structure) throws SQLException {
         JDBCExecutor dbSession = dswrapper.getDBChanger();
         try {
             TypeForRunner changerClassify = structure.getChangerClassify();

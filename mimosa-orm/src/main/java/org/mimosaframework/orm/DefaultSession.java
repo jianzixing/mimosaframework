@@ -536,18 +536,18 @@ public class DefaultSession implements Session {
             BoundSql boundSql = sqlSource.getBoundSql(autonomously.getParameter());
             String action = boundSql.getAction();
 
-            PorterStructure structure = null;
+            JDBCTraversing structure = null;
             if (action.equalsIgnoreCase("select")) {
-                structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
+                structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
                 structure.setChangerClassify(TypeForRunner.SELECT);
             } else if (action.equalsIgnoreCase("update")) {
-                structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
+                structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
                 structure.setChangerClassify(TypeForRunner.UPDATE);
             } else if (action.equalsIgnoreCase("delete")) {
-                structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
+                structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
                 structure.setChangerClassify(TypeForRunner.DELETE);
             } else if (action.equalsIgnoreCase("insert")) {
-                structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
+                structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
                 structure.setChangerClassify(TypeForRunner.ADD_OBJECT);
             }
 

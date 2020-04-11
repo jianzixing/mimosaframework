@@ -5,7 +5,7 @@ import org.mimosaframework.core.json.ModelObject;
 import java.util.List;
 import java.util.Map;
 
-public class BatchPorterStructure extends PorterStructure {
+public class BatchPorterStructure extends JDBCTraversing {
     private List<ModelObject> objects;
     private List<String> fields;
 

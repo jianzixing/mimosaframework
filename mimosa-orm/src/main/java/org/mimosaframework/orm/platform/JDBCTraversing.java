@@ -3,8 +3,8 @@ package org.mimosaframework.orm.platform;
 import java.util.List;
 import java.util.Map;
 
-public class PorterStructure {
-    private TypeForRunner changerClassify;
+public class JDBCTraversing {
+    private TypeForRunner typeForRunner;
     private SQLBuilder sqlBuilder;
     private long primaryKeyValue;
 
@@ -22,28 +22,32 @@ public class PorterStructure {
      */
     private Map<Object, List<SelectFieldAliasReference>> references;
 
-    public PorterStructure(String sql, List<SQLDataPlaceholder> sqlDataPlaceholders) {
+    public JDBCTraversing(String sql) {
+        this.sql = sql;
+    }
+
+    public JDBCTraversing(String sql, List<SQLDataPlaceholder> sqlDataPlaceholders) {
         this.sql = sql;
         this.sqlDataPlaceholders = sqlDataPlaceholders;
     }
 
-    public PorterStructure(TypeForRunner changerClassify, SQLBuilder sqlBuilder) {
-        this.changerClassify = changerClassify;
+    public JDBCTraversing(TypeForRunner typeForRunner, SQLBuilder sqlBuilder) {
+        this.typeForRunner = typeForRunner;
         this.sqlBuilder = sqlBuilder;
     }
 
-    public PorterStructure(TypeForRunner changerClassify, SQLBuilder sqlBuilder, Map<Object, List<SelectFieldAliasReference>> references) {
-        this.changerClassify = changerClassify;
+    public JDBCTraversing(TypeForRunner typeForRunner, SQLBuilder sqlBuilder, Map<Object, List<SelectFieldAliasReference>> references) {
+        this.typeForRunner = typeForRunner;
         this.sqlBuilder = sqlBuilder;
         this.references = references;
     }
 
-    public TypeForRunner getChangerClassify() {
-        return changerClassify;
+    public TypeForRunner getTypeForRunner() {
+        return typeForRunner;
     }
 
-    public void setChangerClassify(TypeForRunner changerClassify) {
-        this.changerClassify = changerClassify;
+    public void setTypeForRunner(TypeForRunner typeForRunner) {
+        this.typeForRunner = typeForRunner;
     }
 
     public SQLBuilder getSqlBuilder() {

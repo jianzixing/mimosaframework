@@ -66,7 +66,7 @@ public class SqliteDatabasePorter extends AbstractDatabasePorter {
         String encoding = table.getEncoding();
         this.createTableDefaultCharset(tableBuilder, encoding);
 
-        PorterStructure tableStructure = new PorterStructure(TypeForRunner.CREATE_TABLE, tableBuilder);
+        JDBCTraversing tableStructure = new JDBCTraversing(TypeForRunner.CREATE_TABLE, tableBuilder);
 
         carryHandler.doHandler(tableStructure);
     }
@@ -170,7 +170,7 @@ public class SqliteDatabasePorter extends AbstractDatabasePorter {
             }
         }
 
-        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECTS, insertBuilder));
+        List<Long> ids = (List<Long>) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.ADD_OBJECTS, insertBuilder));
         return ids;
     }
 }

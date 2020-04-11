@@ -21,7 +21,7 @@ public class OracleCarryHandler extends DBRunner {
     }
 
     @Override
-    public Object doHandler(PorterStructure structure) throws SQLException {
+    public Object doHandler(JDBCTraversing structure) throws SQLException {
         JDBCExecutor dbSession = dswrapper.getDBChanger();
         try {
             TypeForRunner changerClassify = structure.getChangerClassify();
@@ -54,7 +54,7 @@ public class OracleCarryHandler extends DBRunner {
                     for (SQLDataPlaceholder placeholder : placeholders) {
                         if (placeholder instanceof AISQLDataPlaceholder) {
                             List<ModelObject> id = dbSession.select(
-                                    new PorterStructure(
+                                    new JDBCTraversing(
                                             TypeForRunner.SELECT, SQLBuilderFactory.createSQLBuilder().addString(((AISQLDataPlaceholder) placeholder).getSql())));
                             if (id != null && id.size() > 0) {
                                 autoIncrementId = id.get(0).get("ID");
@@ -84,7 +84,7 @@ public class OracleCarryHandler extends DBRunner {
                     int size = datas.size();
                     for (int i = 0; i < size; i++) {
                         List<ModelObject> id = dbSession.select(
-                                new PorterStructure(
+                                new JDBCTraversing(
                                         TypeForRunner.SELECT, SQLBuilderFactory.createSQLBuilder().addString(sql)));
                         if (id != null && id.size() > 0) {
                             if (autoIncrementIds == null) autoIncrementIds = new ArrayList<>();

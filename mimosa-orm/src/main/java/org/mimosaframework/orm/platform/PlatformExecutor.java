@@ -101,22 +101,22 @@ public class PlatformExecutor {
                         }
 
                         if (updateFields != null && updateFields.size() > 0) {
-                            compare.fieldUpdate(mapping, currTable, updateFields);
+                            compare.fieldUpdate(mapping, dialect, currTable, updateFields);
                         }
 
                         mappingFields.removeAll(rmCol);
                         columnStructures.removeAll(rmSCol);
                         if (mappingFields.size() > 0) {
                             // 有新添加的字段需要添加
-                            compare.fieldAdd(mapping, currTable, new ArrayList<MappingField>(mappingFields));
+                            compare.fieldAdd(mapping, dialect, currTable, new ArrayList<MappingField>(mappingFields));
                         }
                         if (columnStructures.size() > 0) {
                             // 有多余的字段需要删除
-                            compare.fieldDel(mapping, currTable, columnStructures);
+                            compare.fieldDel(mapping, dialect, currTable, columnStructures);
                         }
                     } else {
                         // 数据库的字段没有需要重新添加全部字段
-                        compare.fieldAdd(mapping, currTable, new ArrayList<MappingField>(mappingFields));
+                        compare.fieldAdd(mapping, dialect, currTable, new ArrayList<MappingField>(mappingFields));
                     }
                 }
 
@@ -156,10 +156,10 @@ public class PlatformExecutor {
                             }
                         }
                         if (updateIndexes != null && updateIndexes.size() > 0) {
-                            compare.indexUpdate(mapping, currTable, updateIndexes);
+                            compare.indexUpdate(mapping, dialect, currTable, updateIndexes);
                         }
                         if (newIndexes != null && newIndexes.size() > 0) {
-                            compare.indexAdd(mapping, currTable, newIndexes);
+                            compare.indexAdd(mapping, dialect, currTable, newIndexes);
                         }
                     }
                 }
@@ -171,8 +171,8 @@ public class PlatformExecutor {
 
                 for (MappingTable mappingTable : mappingTables) {
                     Set<MappingIndex> mappingIndex = mappingTable.getMappingIndexes();
-                    compare.tableCreate(mapping, mappingTable);
-                    compare.indexAdd(mapping, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
+                    compare.tableCreate(mapping, dialect, mappingTable);
+                    compare.indexAdd(mapping, dialect, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
                 }
             }
         }

@@ -293,7 +293,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             tableBuilder.CHARACTER().SET().addString(encoding);
         }
 
-        PorterStructure tableStructure = new PorterStructure(TypeForRunner.CREATE_TABLE, tableBuilder);
+        JDBCTraversing tableStructure = new JDBCTraversing(TypeForRunner.CREATE_TABLE, tableBuilder);
         carryHandler.doHandler(tableStructure);
     }
 
@@ -329,7 +329,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             insertBuilder.SET().addString("IDENTITY_INSERT").addWrapString(tableName).OFF().addEndMark();
         }
 
-        Long id = (Long) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECT, insertBuilder));
+        Long id = (Long) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.ADD_OBJECT, insertBuilder));
         return id;
     }
 
@@ -377,7 +377,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
         }
         SQLBuilder builder = this.buildSelectLeftJoins(tables, query, aliasMap, references);
 
-        PorterStructure structure = new PorterStructure(TypeForRunner.SELECT, builder, references);
+        JDBCTraversing structure = new JDBCTraversing(TypeForRunner.SELECT, builder, references);
         List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structure);
         return new SelectResult(objects, structure);
     }
@@ -386,7 +386,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
     public List<ModelObject> selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
         MappingTable table = tables.get(query);
         SQLBuilder sqlBuilder = this.buildSingleSelect(query, table, true);
-        return (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT_PRIMARY_KEY, sqlBuilder));
+        return (List<ModelObject>) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.SELECT_PRIMARY_KEY, sqlBuilder));
     }
 
     @Override

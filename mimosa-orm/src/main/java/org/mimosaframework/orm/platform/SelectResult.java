@@ -6,9 +6,9 @@ import java.util.List;
 
 public class SelectResult {
     private List<ModelObject> objects;
-    private PorterStructure structure;
+    private JDBCTraversing structure;
 
-    public SelectResult(List<ModelObject> objects, PorterStructure structure) {
+    public SelectResult(List<ModelObject> objects, JDBCTraversing structure) {
         this.objects = objects;
         this.structure = structure;
     }
@@ -21,11 +21,11 @@ public class SelectResult {
         this.objects = objects;
     }
 
-    public PorterStructure getStructure() {
+    public JDBCTraversing getStructure() {
         return structure;
     }
 
-    public void setStructure(PorterStructure structure) {
+    public void setStructure(JDBCTraversing structure) {
         this.structure = structure;
     }
 }

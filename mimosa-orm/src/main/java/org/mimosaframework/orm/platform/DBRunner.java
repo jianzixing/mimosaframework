@@ -17,7 +17,7 @@ public abstract class DBRunner {
         this.dswrapper = dswrapper;
     }
 
-    public abstract Object doHandler(PorterStructure structure) throws SQLException;
+    public abstract Object doHandler(JDBCTraversing structure) throws SQLException;
 
     protected void processClobType(ModelObject object) throws SQLException {
         if (object != null) {
