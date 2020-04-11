@@ -447,4 +447,12 @@ public class DefaultSQLAlterBuilder
         item.defaultValue = value;
         return this;
     }
+
+    @Override
+    public Object table(String name) {
+        this.addPoint("table");
+        this.stampAlter.target = KeyTarget.TABLE;
+        this.stampAlter.name = name;
+        return this;
+    }
 }

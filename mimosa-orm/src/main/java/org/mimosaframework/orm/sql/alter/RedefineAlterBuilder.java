@@ -11,7 +11,7 @@ public interface RedefineAlterBuilder
         AbsNameBuilder,
         CharsetBuilder,
         CollateBuilder,
-        AbsTableBuilder,
+        AlterTableNameBuilder,
         AlterAddBuilder,
         ColumnBuilder,
         ColumnTypeBuilder,

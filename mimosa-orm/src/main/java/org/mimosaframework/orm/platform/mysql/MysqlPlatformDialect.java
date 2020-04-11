@@ -2,10 +2,7 @@ package org.mimosaframework.orm.platform.mysql;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.DataDefinition;
-import org.mimosaframework.orm.platform.DataDefinitionType;
-import org.mimosaframework.orm.platform.PlatformDialect;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
@@ -92,16 +89,20 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 this.runner(stampCreate);
             }
             if (type == DataDefinitionType.DROP_TABLE) {
-
+                TableStructure tableStructure = definition.getTableStructure();
+                StampDrop stampDrop = this.commonDropTable(tableStructure);
+                this.runner(stampDrop);
             }
             if (type == DataDefinitionType.ADD_COLUMN) {
-
+                StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), definition.getMappingField());
+                this.runner(stampAlter);
             }
             if (type == DataDefinitionType.MODIFY_COLUMN) {
 
             }
             if (type == DataDefinitionType.DROP_COLUMN) {
-
+                StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), definition.getColumnStructure());
+                this.runner(stampAlter);
             }
             if (type == DataDefinitionType.ADD_INDEX) {
 

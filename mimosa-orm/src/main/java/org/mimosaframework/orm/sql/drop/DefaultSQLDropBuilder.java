@@ -73,4 +73,10 @@ public class DefaultSQLDropBuilder
     public StampAction compile() {
         return this.stampDrop;
     }
+
+    @Override
+    public Object table(String name) {
+
+        return this;
+    }
 }

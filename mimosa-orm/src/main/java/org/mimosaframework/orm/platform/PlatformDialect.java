@@ -5,13 +5,14 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.sql.AbsColumnBuilder;
 import org.mimosaframework.orm.sql.StructureBuilder;
 import org.mimosaframework.orm.sql.UnifyBuilder;
+import org.mimosaframework.orm.sql.alter.AlterFactory;
+import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
-import org.mimosaframework.orm.sql.create.CreateColumnAssistBuilder;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
+import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.Connection;
@@ -250,6 +251,44 @@ public abstract class PlatformDialect {
                               int length,
                               int scale) {
         JavaType2ColumnType.getColumnTypeByJava(type, typeBuilder, length, scale);
+    }
+
+    protected StampDrop commonDropTable(TableStructure structure) {
+        return (StampDrop) DropFactory.drop().table().table(structure.getTableName()).compile();
+    }
+
+    protected StampAlter commonAddColumn(MappingTable mappingTable, MappingField mappingField) {
+        String field = mappingField.getMappingColumnName();
+        Class type = mappingField.getMappingFieldType();
+        int length = mappingField.getMappingFieldLength();
+        int scale = mappingField.getMappingFieldDecimalDigits();
+        String defVal = mappingField.getMappingFieldDefaultValue();
+        boolean nullable = mappingField.isMappingFieldNullable();
+        boolean autoIncr = mappingField.isMappingAutoIncrement();
+        String comment = mappingField.getMappingFieldComment();
+
+        DefaultSQLAlterBuilder sql = (DefaultSQLAlterBuilder) AlterFactory.alter()
+                .table(mappingTable.getMappingClass()).add().column(field);
+
+        this.setSQLType(sql, type, length, scale);
+        if (!nullable) {
+            sql.not();
+            sql.nullable();
+        }
+        if (autoIncr) sql.autoIncrement();
+        if (StringTools.isNotEmpty(defVal)) {
+            sql.defaultValue(defVal);
+        }
+        if (StringTools.isNotEmpty(comment)) {
+            sql.comment(comment);
+        }
+
+        return (StampAlter) sql.compile();
+    }
+
+    protected StampAlter commonDropColumn(MappingTable mappingTable, TableColumnStructure structure) {
+        return (StampAlter) AlterFactory.alter().table(mappingTable.getMappingTableName())
+                .drop().column(structure.getColumnName()).compile();
     }
 
     public abstract SQLBuilderCombine alter(StampAlter alter);

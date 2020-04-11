@@ -7,5 +7,5 @@ import org.mimosaframework.orm.sql.DatabaseBuilder;
 public interface AlterAnyBuilder
         extends
         DatabaseBuilder<AbsNameBuilder<AlterDatabaseBuilder>>,
-        AbsTableBuilder<AlterTableOptionBuilder> {
+        AlterTableNameBuilder<AlterTableOptionBuilder> {
 }

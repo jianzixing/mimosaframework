@@ -11,7 +11,7 @@ public interface RedefineDropBuilder
         IEBuilder,
         AbsNameBuilder,
         TableBuilder,
-        AbsTableBuilder,
+        DropTableNameBuilder,
         IndexBuilder,
         OnBuilder {
 }
