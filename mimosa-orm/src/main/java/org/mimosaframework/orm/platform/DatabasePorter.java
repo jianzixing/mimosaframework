@@ -12,7 +12,7 @@ public interface DatabasePorter extends
         DeleteDatabasePorter,
         SelectDatabasePorter {
 
-    void setCarryHandler(CarryHandler carryHandler);
+    void setCarryHandler(DBRunner carryHandler);
 
     Object execute(MappingGlobalWrapper mappingGlobalWrapper, StampAction stampAction) throws SQLException;
 }

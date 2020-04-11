@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public class WarnCompareMapping extends NothingCompareMapping {
     private static final Log logger = LogFactory.getLog(WarnCompareMapping.class);
 
-    public WarnCompareMapping(ActionDataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
+    public WarnCompareMapping(DataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
         super(dataSourceWrapper, notMatchObject);
     }
 

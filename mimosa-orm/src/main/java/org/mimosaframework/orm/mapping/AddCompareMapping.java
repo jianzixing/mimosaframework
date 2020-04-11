@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class AddCompareMapping extends NothingCompareMapping {
-    public AddCompareMapping(ActionDataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
+    public AddCompareMapping(DataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
         super(dataSourceWrapper, notMatchObject);
     }
 
@@ -16,11 +16,11 @@ public class AddCompareMapping extends NothingCompareMapping {
     public void doMapping() throws SQLException {
         super.doMapping();
         if (notMatchObject != null) {
-            ActionDataSourceWrapper wrapper = dataSourceWrapper.newDataSourceWrapper();
+            DataSourceWrapper wrapper = dataSourceWrapper.newDataSourceWrapper();
             wrapper.setAutoCloseConnection(true);
 
             DatabasePorter porter = PlatformFactory.getDatabasePorter(wrapper);
-            CarryHandler carryHandler = PlatformFactory.getCarryHandler(wrapper);
+            DBRunner carryHandler = PlatformFactory.getCarryHandler(wrapper);
 
             List<MappingTable> missingTables = notMatchObject.getMissingTables();
             List<MappingField> missingFields = notMatchObject.getMissingFields();

@@ -4,7 +4,7 @@ import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
@@ -19,7 +19,7 @@ public interface ContextContainer {
 
     MappingGlobalWrapper getMappingGlobalWrapper();
 
-    ActionDataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew);
+    DataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew);
 
     ModelObjectConvertKey getModelObjectConvertKey();
 

@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class PlatformDialect {
     private Map<KeyColumnType, ColumnType> columnTypes = new HashMap<>();
+    private JDBCExecutor executor = null;
 
     protected void registerColumnType(KeyColumnType type, String typeName) {
         this.columnTypes.put(type, new ColumnType(type, typeName, -1, -1));
@@ -19,6 +20,10 @@ public class PlatformDialect {
 
     protected void registerColumnType(KeyColumnType type, String typeName, int length, int scale) {
         this.columnTypes.put(type, new ColumnType(type, typeName, length, scale));
+    }
+
+    public void setDataSourceWrapper(DataSourceWrapper dswrapper) {
+        this.executor = new DefaultJDBCExecutor(dswrapper);
     }
 
     public List<TableStructure> getTableStructures() {

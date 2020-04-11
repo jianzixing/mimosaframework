@@ -1,16 +1,15 @@
-package org.mimosaframework.orm.platform.mysql;
+package org.mimosaframework.orm.platform;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.orm.platform.*;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class MysqlCarryHandler extends DBRunner {
-    private static final Log logger = LogFactory.getLog(MysqlCarryHandler.class);
+public class DefaultDBRunner extends DBRunner {
+    private static final Log logger = LogFactory.getLog(DefaultDBRunner.class);
 
-    public MysqlCarryHandler(DataSourceWrapper dswrapper) {
+    public DefaultDBRunner(DataSourceWrapper dswrapper) {
         super(dswrapper);
     }
 
@@ -19,19 +18,14 @@ public class MysqlCarryHandler extends DBRunner {
         JDBCExecutor dbSession = dswrapper.getDBChanger();
         try {
             TypeForRunner changerClassify = structure.getChangerClassify();
-            if (changerClassify == TypeForRunner.CREATE_TABLE
-                    || changerClassify == TypeForRunner.CREATE_FIELD
-                    || changerClassify == TypeForRunner.DROP_TABLE
-                    || changerClassify == TypeForRunner.DROP_FIELD
-                    || changerClassify == TypeForRunner.CREATE
+            if (changerClassify == TypeForRunner.CREATE
                     || changerClassify == TypeForRunner.DROP
                     || changerClassify == TypeForRunner.ALTER) {
                 dbSession.execute(structure);
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());
                 }
-            } else if (changerClassify == TypeForRunner.ADD_OBJECT
-                    || changerClassify == TypeForRunner.INSERT) {
+            } else if (changerClassify == TypeForRunner.INSERT) {
                 List<Long> backObjects = dbSession.insert(structure);
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());
@@ -39,27 +33,17 @@ public class MysqlCarryHandler extends DBRunner {
                 if (backObjects != null && backObjects.size() > 0) {
                     return backObjects.get(0);
                 }
-            } else if (changerClassify == TypeForRunner.ADD_OBJECTS) {
-                List<Long> backObjects = dbSession.insert(structure);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("do mysql carry handler action " + changerClassify.name());
-                }
-                return backObjects;
-            } else if (changerClassify == TypeForRunner.UPDATE_OBJECT
-                    || changerClassify == TypeForRunner.UPDATE) {
+            } else if (changerClassify == TypeForRunner.UPDATE) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());
                 }
                 return dbSession.update(structure);
-            } else if (changerClassify == TypeForRunner.DELETE_OBJECT
-                    || changerClassify == TypeForRunner.DELETE) {
+            } else if (changerClassify == TypeForRunner.DELETE) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());
                 }
                 return dbSession.delete(structure);
-            } else if (changerClassify == TypeForRunner.SELECT
-                    || changerClassify == TypeForRunner.COUNT
-                    || changerClassify == TypeForRunner.SELECT_PRIMARY_KEY) {
+            } else if (changerClassify == TypeForRunner.SELECT) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do mysql carry handler action " + changerClassify.name());
                 }

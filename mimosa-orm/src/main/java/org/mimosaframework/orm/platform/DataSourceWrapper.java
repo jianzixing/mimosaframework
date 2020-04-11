@@ -9,7 +9,7 @@ import org.mimosaframework.orm.utils.DatabaseTypes;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ActionDataSourceWrapper {
+public class DataSourceWrapper {
     private ContextContainer contextValues;
     private MimosaDataSource dataSource;
     private boolean isMaster = true;
@@ -17,10 +17,10 @@ public class ActionDataSourceWrapper {
     private boolean isAutoCloseConnection = false;
     private Connection connection;
 
-    public ActionDataSourceWrapper() {
+    public DataSourceWrapper() {
     }
 
-    public ActionDataSourceWrapper(ContextContainer contextValues) {
+    public DataSourceWrapper(ContextContainer contextValues) {
         this.contextValues = contextValues;
     }
 
@@ -59,8 +59,8 @@ public class ActionDataSourceWrapper {
         this.slaveName = slaveName;
     }
 
-    public DatabaseExecutor getDBChanger() {
-        return new RelationDatabaseExecutor(this);
+    public JDBCExecutor getDBChanger() {
+        return new DefaultJDBCExecutor(this);
     }
 
     public DatabaseTypes getDatabaseTypeEnum() {
@@ -99,8 +99,8 @@ public class ActionDataSourceWrapper {
         return contextValues.isIgnoreEmptySlave();
     }
 
-    public ActionDataSourceWrapper newDataSourceWrapper() {
-        ActionDataSourceWrapper dataSourceWrapper = new ActionDataSourceWrapper();
+    public DataSourceWrapper newDataSourceWrapper() {
+        DataSourceWrapper dataSourceWrapper = new DataSourceWrapper();
         dataSourceWrapper.contextValues = contextValues;
         dataSourceWrapper.dataSource = dataSource;
         dataSourceWrapper.isMaster = isMaster;
@@ -109,8 +109,8 @@ public class ActionDataSourceWrapper {
         return dataSourceWrapper;
     }
 
-    public ActionDataSourceWrapper newDataSourceWrapper(ContextContainer contextValues) {
-        ActionDataSourceWrapper dataSourceWrapper = new ActionDataSourceWrapper();
+    public DataSourceWrapper newDataSourceWrapper(ContextContainer contextValues) {
+        DataSourceWrapper dataSourceWrapper = new DataSourceWrapper();
         dataSourceWrapper.contextValues = contextValues;
         dataSourceWrapper.dataSource = dataSource;
         dataSourceWrapper.isMaster = isMaster;

@@ -4,7 +4,7 @@ import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 
 public class ContextWrapper {
     private ContextContainer container;
@@ -13,7 +13,7 @@ public class ContextWrapper {
         this.container = container;
     }
 
-    public ActionDataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew) {
+    public DataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew) {
         return this.container.getDefaultDataSourceWrapper(isCreateNew);
     }
 

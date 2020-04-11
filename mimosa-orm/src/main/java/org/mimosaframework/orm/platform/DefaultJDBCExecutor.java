@@ -12,14 +12,14 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
-public class RelationDatabaseExecutor implements DatabaseExecutor {
-    private static final Log logger = LogFactory.getLog(RelationDatabaseExecutor.class);
-    private ActionDataSourceWrapper actionDataSourceWrapper;
+public class DefaultJDBCExecutor implements JDBCExecutor {
+    private static final Log logger = LogFactory.getLog(DefaultJDBCExecutor.class);
+    private DataSourceWrapper actionDataSourceWrapper;
     private boolean isIgnoreEmptySlave = true;
     private boolean isShowSql = false;
     private DatabaseExecutorCallback callback;
 
-    public RelationDatabaseExecutor(ActionDataSourceWrapper wrapper) {
+    public DefaultJDBCExecutor(DataSourceWrapper wrapper) {
         this.isShowSql = wrapper.isShowSql();
         this.isIgnoreEmptySlave = wrapper.isIgnoreEmptySlave();
         this.actionDataSourceWrapper = wrapper;
@@ -61,7 +61,7 @@ public class RelationDatabaseExecutor implements DatabaseExecutor {
 
 
     private void logger(PorterStructure structure) {
-        if (isShowSql && structure.getChangerClassify() != ChangerClassify.SILENT) {
+        if (isShowSql && structure.getChangerClassify() != TypeForRunner.SILENT) {
             SQLBuilder sqlBuilder = structure.getSqlBuilder();
             String sqlStr = structure.getSql();
 
@@ -297,7 +297,7 @@ public class RelationDatabaseExecutor implements DatabaseExecutor {
                     }
                 } else {
                     logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
-                            RelationDatabaseExecutor.class, "result_set_empty"));
+                            DefaultJDBCExecutor.class, "result_set_empty"));
                 }
             }
             return result;

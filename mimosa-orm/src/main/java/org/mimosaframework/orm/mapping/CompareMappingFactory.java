@@ -3,12 +3,12 @@ package org.mimosaframework.orm.mapping;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MappingLevel;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 
 public class CompareMappingFactory {
 
     public static StartCompareMapping getCompareMapping(MappingLevel level,
-                                                        ActionDataSourceWrapper dataSourceWrapper,
+                                                        DataSourceWrapper dataSourceWrapper,
                                                         NotMatchObject notMatchObject) {
 
 

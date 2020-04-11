@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.platform.ChangerClassify;
+import org.mimosaframework.orm.platform.TypeForRunner;
 import org.mimosaframework.orm.platform.PorterStructure;
 import org.mimosaframework.orm.scripting.BoundSql;
 import org.mimosaframework.orm.scripting.DynamicSqlSource;
@@ -20,16 +20,16 @@ public class AutonomouslyUtils {
         PorterStructure structure = null;
         if (action.equalsIgnoreCase("select")) {
             structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
-            structure.setChangerClassify(ChangerClassify.SELECT);
+            structure.setChangerClassify(TypeForRunner.SELECT);
         } else if (action.equalsIgnoreCase("update")) {
             structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
-            structure.setChangerClassify(ChangerClassify.UPDATE);
+            structure.setChangerClassify(TypeForRunner.UPDATE);
         } else if (action.equalsIgnoreCase("delete")) {
             structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
-            structure.setChangerClassify(ChangerClassify.DELETE);
+            structure.setChangerClassify(TypeForRunner.DELETE);
         } else if (action.equalsIgnoreCase("insert")) {
             structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
-            structure.setChangerClassify(ChangerClassify.ADD_OBJECT);
+            structure.setChangerClassify(TypeForRunner.ADD_OBJECT);
         }
         return structure;
     }

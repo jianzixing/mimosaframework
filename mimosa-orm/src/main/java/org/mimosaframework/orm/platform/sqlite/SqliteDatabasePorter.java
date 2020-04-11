@@ -10,7 +10,6 @@ import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.LimitBuilder;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.sql.SQLException;
@@ -67,7 +66,7 @@ public class SqliteDatabasePorter extends AbstractDatabasePorter {
         String encoding = table.getEncoding();
         this.createTableDefaultCharset(tableBuilder, encoding);
 
-        PorterStructure tableStructure = new PorterStructure(ChangerClassify.CREATE_TABLE, tableBuilder);
+        PorterStructure tableStructure = new PorterStructure(TypeForRunner.CREATE_TABLE, tableBuilder);
 
         carryHandler.doHandler(tableStructure);
     }
@@ -171,7 +170,7 @@ public class SqliteDatabasePorter extends AbstractDatabasePorter {
             }
         }
 
-        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
+        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECTS, insertBuilder));
         return ids;
     }
 }

@@ -10,7 +10,6 @@ import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.LimitBuilder;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.sql.SQLException;
@@ -108,7 +107,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
         String encoding = table.getEncoding();
         this.createTableDefaultCharset(tableBuilder, encoding);
 
-        PorterStructure tableStructure = new PorterStructure(ChangerClassify.CREATE_TABLE, tableBuilder);
+        PorterStructure tableStructure = new PorterStructure(TypeForRunner.CREATE_TABLE, tableBuilder);
         carryHandler.doHandler(tableStructure);
     }
 
@@ -117,7 +116,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
         String tableName = table.getDatabaseTableName();
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
         this.insertAddValue(insertBuilder, table, object);
-        Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder));
+        Long id = (Long) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECT, insertBuilder));
 
         this.resetSeqValue(table, tableName, object);
         return id;
@@ -136,7 +135,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                             // select max(id) from table
                             SQLBuilder max = this.createSQLBuilder().SELECT().addFun("max", field.getMappingColumnName(), "max")
                                     .FROM().addString(tableName);
-                            List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, max));
+                            List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT, max));
                             if (objects != null && objects.size() > 0) {
                                 ModelObject o = objects.get(0);
                                 Long maxValue = o.getLong("max");
@@ -148,7 +147,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                                     SQLBuilder resetSeq = this.createSQLBuilder().ALTER().addString("sequence")
                                             .addString(tableName + "_" + field.getMappingColumnName() + "_seq")
                                             .addString("restart").addString("with").addString("" + maxValue);
-                                    carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, resetSeq));
+                                    carryHandler.doHandler(new PorterStructure(TypeForRunner.UPDATE, resetSeq));
                                 }
                             }
                         }
@@ -204,7 +203,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
             }
         }
 
-        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
+        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECTS, insertBuilder));
         return ids;
     }
 

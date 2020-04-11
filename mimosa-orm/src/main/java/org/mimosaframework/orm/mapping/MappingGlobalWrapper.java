@@ -2,7 +2,7 @@ package org.mimosaframework.orm.mapping;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.MimosaDataSource;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -184,7 +184,7 @@ public class MappingGlobalWrapper {
      * @param c
      * @return
      */
-    public MappingTable getSingleDatabaseTable(ActionDataSourceWrapper wrapper, Class c) {
+    public MappingTable getSingleDatabaseTable(DataSourceWrapper wrapper, Class c) {
         if (this.mappingDatabaseTables != null && wrapper != null) {
             MimosaDataSource dataSource = wrapper.getDataSource();
             return this.getSingleDatabaseTable(dataSource, c);

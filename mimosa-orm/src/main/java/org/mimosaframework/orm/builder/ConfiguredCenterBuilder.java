@@ -6,7 +6,7 @@ import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.external.ConfiguredCenterInterface;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 
 import javax.sql.DataSource;
 import java.net.MalformedURLException;
@@ -67,7 +67,7 @@ public class ConfiguredCenterBuilder extends AbstractConfigBuilder {
     }
 
     private void parseGlobalDatabase() throws ContextException {
-        ActionDataSourceWrapper wrapper = new ActionDataSourceWrapper();
+        DataSourceWrapper wrapper = new DataSourceWrapper();
         wrapper.setDataSource(this.mimosaDataSource);
         // this.checkDBMapping(wrapper);
     }

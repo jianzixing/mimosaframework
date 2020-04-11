@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.strategy;
 
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 
 public class StrategyWrapper {
     private ContextWrapper context;
@@ -54,7 +54,7 @@ public class StrategyWrapper {
         this.dbField = dbField;
     }
 
-    public ActionDataSourceWrapper getNewDataSourceWrapper() {
+    public DataSourceWrapper getNewDataSourceWrapper() {
         return this.context.getDefaultDataSourceWrapper(true);
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class UpdateCompareMapping extends AddCompareMapping {
 
-    public UpdateCompareMapping(ActionDataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
+    public UpdateCompareMapping(DataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
         super(dataSourceWrapper, notMatchObject);
     }
 
@@ -15,7 +15,7 @@ public class UpdateCompareMapping extends AddCompareMapping {
     public void doMapping() throws SQLException {
         super.doMapping();
 
-        ActionDataSourceWrapper wrapper = dataSourceWrapper.newDataSourceWrapper();
+        DataSourceWrapper wrapper = dataSourceWrapper.newDataSourceWrapper();
         wrapper.setAutoCloseConnection(true);
         DatabasePorter porter = PlatformFactory.getDatabasePorter(wrapper);
         List<MappingField> changeFields = notMatchObject.getChangeFields();

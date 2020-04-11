@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PorterStructure {
-    private ChangerClassify changerClassify;
+    private TypeForRunner changerClassify;
     private SQLBuilder sqlBuilder;
     private long primaryKeyValue;
 
@@ -27,22 +27,22 @@ public class PorterStructure {
         this.sqlDataPlaceholders = sqlDataPlaceholders;
     }
 
-    public PorterStructure(ChangerClassify changerClassify, SQLBuilder sqlBuilder) {
+    public PorterStructure(TypeForRunner changerClassify, SQLBuilder sqlBuilder) {
         this.changerClassify = changerClassify;
         this.sqlBuilder = sqlBuilder;
     }
 
-    public PorterStructure(ChangerClassify changerClassify, SQLBuilder sqlBuilder, Map<Object, List<SelectFieldAliasReference>> references) {
+    public PorterStructure(TypeForRunner changerClassify, SQLBuilder sqlBuilder, Map<Object, List<SelectFieldAliasReference>> references) {
         this.changerClassify = changerClassify;
         this.sqlBuilder = sqlBuilder;
         this.references = references;
     }
 
-    public ChangerClassify getChangerClassify() {
+    public TypeForRunner getChangerClassify() {
         return changerClassify;
     }
 
-    public void setChangerClassify(ChangerClassify changerClassify) {
+    public void setChangerClassify(TypeForRunner changerClassify) {
         this.changerClassify = changerClassify;
     }
 

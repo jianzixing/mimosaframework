@@ -68,8 +68,8 @@ public class DB2DatabasePorter extends AbstractDatabasePorter {
         String encoding = table.getEncoding();
         this.createTableDefaultCharset(tableBuilder, encoding);
 
-        PorterStructure tableStructure = new PorterStructure(ChangerClassify.CREATE_TABLE, tableBuilder);
-        PorterStructure fieldStructure = new PorterStructure(ChangerClassify.UPDATE_FIELD, alertMultiPk);
+        PorterStructure tableStructure = new PorterStructure(TypeForRunner.CREATE_TABLE, tableBuilder);
+        PorterStructure fieldStructure = new PorterStructure(TypeForRunner.UPDATE_FIELD, alertMultiPk);
 
         carryHandler.doHandler(tableStructure);
         carryHandler.doHandler(fieldStructure);
@@ -171,7 +171,7 @@ public class DB2DatabasePorter extends AbstractDatabasePorter {
             }
         }
 
-        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
+        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECTS, insertBuilder));
         return ids;
     }
 }

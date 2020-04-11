@@ -9,7 +9,7 @@ import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.*;
-import org.mimosaframework.orm.platform.ActionDataSourceWrapper;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.utils.DatabaseTypes;
@@ -35,7 +35,7 @@ public class NormalContextContainer implements ContextContainer {
     protected MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
     protected NamingConvert convert;
 
-    protected ActionDataSourceWrapper defaultDataSource;
+    protected DataSourceWrapper defaultDataSource;
 
     protected List<? extends IDStrategy> idStrategies;
     protected boolean isShowSQL = false;
@@ -157,7 +157,7 @@ public class NormalContextContainer implements ContextContainer {
         this.convert = convert;
     }
 
-    public ActionDataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew) {
+    public DataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew) {
         if (defaultDataSource == null) {
             throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, NormalContextContainer.class, "please_set_ds"));
         }
@@ -208,7 +208,7 @@ public class NormalContextContainer implements ContextContainer {
         globalDataSource.add(dataSource);
 
         if (dataSource.getName().equals(MimosaDataSource.DEFAULT_DS_NAME)) {
-            this.defaultDataSource = new ActionDataSourceWrapper(this);
+            this.defaultDataSource = new DataSourceWrapper(this);
             this.defaultDataSource.setDataSource(dataSource);
         }
     }
@@ -266,8 +266,8 @@ public class NormalContextContainer implements ContextContainer {
         return null;
     }
 
-    public ActionDataSourceWrapper getNewDataSourceWrapper() {
-        return new ActionDataSourceWrapper(this);
+    public DataSourceWrapper getNewDataSourceWrapper() {
+        return new DataSourceWrapper(this);
     }
 
     public Set<MimosaDataSource> getCurrentDataSources() {

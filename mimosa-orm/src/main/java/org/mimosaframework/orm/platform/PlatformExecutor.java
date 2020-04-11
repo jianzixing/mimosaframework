@@ -17,10 +17,12 @@ import java.util.*;
  */
 public class PlatformExecutor {
 
-    private void compareTableStructure(MappingGlobalWrapper wrapper, PlatformCompare compare) {
-        PlatformDialect dialect = PlatformFactory.getDialect(null);
+    public void compareTableStructure(MappingGlobalWrapper mapping,
+                                      DataSourceWrapper dswrapper,
+                                      PlatformCompare compare) {
+        PlatformDialect dialect = PlatformFactory.getDialect(dswrapper);
         List<TableStructure> structures = dialect.getTableStructures();
-        List<MappingTable> mappingTables = wrapper.getMappingTables();
+        List<MappingTable> mappingTables = mapping.getMappingTables();
 
         if (structures != null) {
             List<MappingTable> rmTab = new ArrayList<>();
@@ -99,22 +101,22 @@ public class PlatformExecutor {
                         }
 
                         if (updateFields != null && updateFields.size() > 0) {
-                            compare.fieldUpdate(wrapper, currTable, updateFields);
+                            compare.fieldUpdate(mapping, currTable, updateFields);
                         }
 
                         mappingFields.removeAll(rmCol);
                         columnStructures.removeAll(rmSCol);
                         if (mappingFields.size() > 0) {
                             // 有新添加的字段需要添加
-                            compare.fieldAdd(wrapper, currTable, new ArrayList<MappingField>(mappingFields));
+                            compare.fieldAdd(mapping, currTable, new ArrayList<MappingField>(mappingFields));
                         }
                         if (columnStructures.size() > 0) {
                             // 有多余的字段需要删除
-                            compare.fieldDel(wrapper, currTable, columnStructures);
+                            compare.fieldDel(mapping, currTable, columnStructures);
                         }
                     } else {
                         // 数据库的字段没有需要重新添加全部字段
-                        compare.fieldAdd(wrapper, currTable, new ArrayList<MappingField>(mappingFields));
+                        compare.fieldAdd(mapping, currTable, new ArrayList<MappingField>(mappingFields));
                     }
                 }
 
@@ -154,10 +156,10 @@ public class PlatformExecutor {
                             }
                         }
                         if (updateIndexes != null && updateIndexes.size() > 0) {
-                            compare.indexUpdate(wrapper, currTable, updateIndexes);
+                            compare.indexUpdate(mapping, currTable, updateIndexes);
                         }
                         if (newIndexes != null && newIndexes.size() > 0) {
-                            compare.indexAdd(wrapper, currTable, newIndexes);
+                            compare.indexAdd(mapping, currTable, newIndexes);
                         }
                     }
                 }
@@ -169,8 +171,8 @@ public class PlatformExecutor {
 
                 for (MappingTable mappingTable : mappingTables) {
                     Set<MappingIndex> mappingIndex = mappingTable.getMappingIndexes();
-                    compare.tableCreate(wrapper, mappingTable);
-                    compare.indexAdd(wrapper, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
+                    compare.tableCreate(mapping, mappingTable);
+                    compare.indexAdd(mapping, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
                 }
             }
         }

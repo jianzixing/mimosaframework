@@ -14,16 +14,15 @@ import org.mimosaframework.orm.merge.DefaultModelMerge;
 import org.mimosaframework.orm.merge.MergeTree;
 import org.mimosaframework.orm.merge.ModelMerge;
 import org.mimosaframework.orm.sql.stamp.StampAction;
-import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 
 import java.sql.SQLException;
 import java.util.*;
 
 public class PlatformWrapperImpl implements PlatformWrapper {
     private DatabasePorter databasePorter;
-    private CarryHandler carryHandler;
+    private DBRunner carryHandler;
 
-    public PlatformWrapperImpl(DatabasePorter databasePorter, CarryHandler carryHandler) {
+    public PlatformWrapperImpl(DatabasePorter databasePorter, DBRunner carryHandler) {
         this.databasePorter = databasePorter;
         this.carryHandler = carryHandler;
     }
@@ -32,7 +31,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         return databasePorter;
     }
 
-    public CarryHandler getCarryHandler() {
+    public DBRunner getCarryHandler() {
         return carryHandler;
     }
 
@@ -98,7 +97,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     public Integer update(String sql) throws SQLException {
         SQLBuilder builder = SQLBuilderFactory.createSQLBuilder();
         builder.addSQLString(sql);
-        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, builder));
+        return (Integer) carryHandler.doHandler(new PorterStructure(TypeForRunner.UPDATE, builder));
     }
 
     @Override
@@ -206,7 +205,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     public List<ModelObject> select(String sql) throws SQLException {
         SQLBuilder builder = SQLBuilderFactory.createSQLBuilder();
         builder.addSQLString(sql);
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, builder));
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT, builder));
         return objects;
     }
 

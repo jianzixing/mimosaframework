@@ -5,7 +5,7 @@ import org.mimosaframework.core.json.ModelObject;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface DatabaseExecutor {
+public interface JDBCExecutor {
     void setDatabaseExecutorCallback(DatabaseExecutorCallback callback);
 
     boolean execute(PorterStructure structure) throws SQLException;

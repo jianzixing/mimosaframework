@@ -13,30 +13,30 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OracleCarryHandler extends CarryHandler {
+public class OracleCarryHandler extends DBRunner {
     private static final Log logger = LogFactory.getLog(OracleCarryHandler.class);
 
-    public OracleCarryHandler(ActionDataSourceWrapper dswrapper) {
+    public OracleCarryHandler(DataSourceWrapper dswrapper) {
         super(dswrapper);
     }
 
     @Override
     public Object doHandler(PorterStructure structure) throws SQLException {
-        DatabaseExecutor dbSession = dswrapper.getDBChanger();
+        JDBCExecutor dbSession = dswrapper.getDBChanger();
         try {
-            ChangerClassify changerClassify = structure.getChangerClassify();
-            if (changerClassify == ChangerClassify.CREATE_TABLE
-                    || changerClassify == ChangerClassify.CREATE_FIELD
-                    || changerClassify == ChangerClassify.DROP_TABLE
-                    || changerClassify == ChangerClassify.DROP_FIELD
-                    || changerClassify == ChangerClassify.SILENT
-                    || changerClassify == ChangerClassify.CREATE
-                    || changerClassify == ChangerClassify.DROP
-                    || changerClassify == ChangerClassify.ALTER) {
+            TypeForRunner changerClassify = structure.getChangerClassify();
+            if (changerClassify == TypeForRunner.CREATE_TABLE
+                    || changerClassify == TypeForRunner.CREATE_FIELD
+                    || changerClassify == TypeForRunner.DROP_TABLE
+                    || changerClassify == TypeForRunner.DROP_FIELD
+                    || changerClassify == TypeForRunner.SILENT
+                    || changerClassify == TypeForRunner.CREATE
+                    || changerClassify == TypeForRunner.DROP
+                    || changerClassify == TypeForRunner.ALTER) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do oracle carry handler action " + changerClassify.name());
                 }
-                if (changerClassify == ChangerClassify.SILENT) {
+                if (changerClassify == TypeForRunner.SILENT) {
                     try {
                         dbSession.execute(structure);
                     } catch (Exception e) {
@@ -45,8 +45,8 @@ public class OracleCarryHandler extends CarryHandler {
                 } else {
                     dbSession.execute(structure);
                 }
-            } else if (changerClassify == ChangerClassify.ADD_OBJECT
-                    || changerClassify == ChangerClassify.INSERT) {
+            } else if (changerClassify == TypeForRunner.ADD_OBJECT
+                    || changerClassify == TypeForRunner.INSERT) {
                 SQLBuilder sqlBuilder = structure.getSqlBuilder();
                 Object autoIncrementId = null; // 自增列只允许有一个
                 List<SQLDataPlaceholder> placeholders = structure.getSqlDataPlaceholders();
@@ -55,7 +55,7 @@ public class OracleCarryHandler extends CarryHandler {
                         if (placeholder instanceof AISQLDataPlaceholder) {
                             List<ModelObject> id = dbSession.select(
                                     new PorterStructure(
-                                            ChangerClassify.SELECT, SQLBuilderFactory.createSQLBuilder().addString(((AISQLDataPlaceholder) placeholder).getSql())));
+                                            TypeForRunner.SELECT, SQLBuilderFactory.createSQLBuilder().addString(((AISQLDataPlaceholder) placeholder).getSql())));
                             if (id != null && id.size() > 0) {
                                 autoIncrementId = id.get(0).get("ID");
                                 if (autoIncrementId instanceof BigDecimal) {
@@ -74,7 +74,7 @@ public class OracleCarryHandler extends CarryHandler {
                     logger.debug("do oracle carry handler action " + changerClassify.name());
                 }
                 return autoIncrementId;
-            } else if (changerClassify == ChangerClassify.ADD_OBJECTS) {
+            } else if (changerClassify == TypeForRunner.ADD_OBJECTS) {
                 List<Long> autoIncrementIds = null; // 自增列只允许有一个
                 if (structure instanceof BatchPorterStructure) {
                     AIBatchPorterStructure batchPorterStructure = (AIBatchPorterStructure) structure;
@@ -85,7 +85,7 @@ public class OracleCarryHandler extends CarryHandler {
                     for (int i = 0; i < size; i++) {
                         List<ModelObject> id = dbSession.select(
                                 new PorterStructure(
-                                        ChangerClassify.SELECT, SQLBuilderFactory.createSQLBuilder().addString(sql)));
+                                        TypeForRunner.SELECT, SQLBuilderFactory.createSQLBuilder().addString(sql)));
                         if (id != null && id.size() > 0) {
                             if (autoIncrementIds == null) autoIncrementIds = new ArrayList<>();
                             Object autoIncrementId = id.get(0).get("ID");
@@ -109,21 +109,21 @@ public class OracleCarryHandler extends CarryHandler {
                     logger.debug("do oracle carry handler action " + changerClassify.name());
                 }
                 return autoIncrementIds;
-            } else if (changerClassify == ChangerClassify.UPDATE_OBJECT
-                    || changerClassify == ChangerClassify.UPDATE) {
+            } else if (changerClassify == TypeForRunner.UPDATE_OBJECT
+                    || changerClassify == TypeForRunner.UPDATE) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do oracle carry handler action " + changerClassify.name());
                 }
                 return dbSession.update(structure);
-            } else if (changerClassify == ChangerClassify.DELETE_OBJECT
-                    || changerClassify == ChangerClassify.DELETE) {
+            } else if (changerClassify == TypeForRunner.DELETE_OBJECT
+                    || changerClassify == TypeForRunner.DELETE) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do oracle carry handler action " + changerClassify.name());
                 }
                 return dbSession.delete(structure);
-            } else if (changerClassify == ChangerClassify.SELECT
-                    || changerClassify == ChangerClassify.COUNT
-                    || changerClassify == ChangerClassify.SELECT_PRIMARY_KEY) {
+            } else if (changerClassify == TypeForRunner.SELECT
+                    || changerClassify == TypeForRunner.COUNT
+                    || changerClassify == TypeForRunner.SELECT_PRIMARY_KEY) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("do oracle carry handler action " + changerClassify.name());
                 }

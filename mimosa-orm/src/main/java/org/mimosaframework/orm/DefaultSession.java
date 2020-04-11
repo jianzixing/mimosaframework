@@ -29,7 +29,7 @@ import java.util.*;
 public class DefaultSession implements Session {
     private UpdateSkipReset updateSkipReset = new UpdateSkiptResetEmpty();
     private ContextContainer context;
-    private ActionDataSourceWrapper wrapper;
+    private DataSourceWrapper wrapper;
     private MappingGlobalWrapper mappingGlobalWrapper;
     private ModelObjectConvertKey convert;
 
@@ -532,23 +532,23 @@ public class DefaultSession implements Session {
                 throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
                         DefaultSession.class, "not_found_file_sql"));
             }
-            CarryHandler carryHandler = PlatformFactory.getCarryHandler(wrapper);
+            DBRunner carryHandler = PlatformFactory.getCarryHandler(wrapper);
             BoundSql boundSql = sqlSource.getBoundSql(autonomously.getParameter());
             String action = boundSql.getAction();
 
             PorterStructure structure = null;
             if (action.equalsIgnoreCase("select")) {
                 structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setChangerClassify(ChangerClassify.SELECT);
+                structure.setChangerClassify(TypeForRunner.SELECT);
             } else if (action.equalsIgnoreCase("update")) {
                 structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setChangerClassify(ChangerClassify.UPDATE);
+                structure.setChangerClassify(TypeForRunner.UPDATE);
             } else if (action.equalsIgnoreCase("delete")) {
                 structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setChangerClassify(ChangerClassify.DELETE);
+                structure.setChangerClassify(TypeForRunner.DELETE);
             } else if (action.equalsIgnoreCase("insert")) {
                 structure = new PorterStructure(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setChangerClassify(ChangerClassify.ADD_OBJECT);
+                structure.setChangerClassify(TypeForRunner.ADD_OBJECT);
             }
 
             if (structure != null) {
@@ -567,7 +567,7 @@ public class DefaultSession implements Session {
 
     @Override
     public List<DataSourceTableName> getDataSourceNames(Class c) {
-        ActionDataSourceWrapper wrapper = this.context.getDefaultDataSourceWrapper(false);
+        DataSourceWrapper wrapper = this.context.getDefaultDataSourceWrapper(false);
         MimosaDataSource mimosaDataSource = wrapper.getDataSource();
 
         List<DataSourceTableName> names = new ArrayList<>();

@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class CarryHandler {
-    protected ActionDataSourceWrapper dswrapper;
+public abstract class DBRunner {
+    protected DataSourceWrapper dswrapper;
 
-    public CarryHandler(ActionDataSourceWrapper dswrapper) {
+    public DBRunner(DataSourceWrapper dswrapper) {
         this.dswrapper = dswrapper;
     }
 

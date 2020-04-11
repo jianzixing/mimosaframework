@@ -36,7 +36,7 @@ public class PlatformFactory {
         return null;
     }
 
-    public static DatabasePorter getDatabasePorter(ActionDataSourceWrapper dswrapper) {
+    public static DatabasePorter getDatabasePorter(DataSourceWrapper dswrapper) {
         MimosaDataSource dataSource = dswrapper.getDataSource();
         DatabaseTypes typeEnum = dataSource.getDatabaseTypeEnum();
         DatabasePorter databasePorter = null;
@@ -64,7 +64,7 @@ public class PlatformFactory {
         return databasePorter;
     }
 
-    public static CarryHandler getCarryHandler(ActionDataSourceWrapper dswrapper) {
+    public static DBRunner getCarryHandler(DataSourceWrapper dswrapper) {
         MimosaDataSource dataSource = dswrapper.getDataSource();
         DatabaseTypes typeEnum = dataSource.getDatabaseTypeEnum();
         if (typeEnum.equals(DatabaseTypes.MYSQL)) {
@@ -88,8 +88,8 @@ public class PlatformFactory {
         return null;
     }
 
-    public static PlatformWrapper getPlatformWrapper(ActionDataSourceWrapper dswrapper) {
-        CarryHandler carryHandler = getCarryHandler(dswrapper);
+    public static PlatformWrapper getPlatformWrapper(DataSourceWrapper dswrapper) {
+        DBRunner carryHandler = getCarryHandler(dswrapper);
         DatabasePorter databasePorter = getDatabasePorter(dswrapper);
 
         if (carryHandler == null || databasePorter == null) {
@@ -207,18 +207,36 @@ public class PlatformFactory {
         return null;
     }
 
-    public static PlatformDialect getDialect(DatabaseTypes databaseTypes) {
-        if (databaseTypes.equals(DatabaseTypes.MYSQL)) {
+    public static PlatformDialect getDialect(DataSourceWrapper dataSourceWrapper) {
+        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseTypes.MYSQL)) {
+            PlatformDialect dialect = new MysqlPlatformDialect();
+            dialect.setDataSourceWrapper(dataSourceWrapper);
+            return dialect;
         }
-        if (databaseTypes.equals(DatabaseTypes.ORACLE)) {
+        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseTypes.ORACLE)) {
+            PlatformDialect dialect = null;
+            dialect.setDataSourceWrapper(dataSourceWrapper);
+            return dialect;
         }
-        if (databaseTypes.equals(DatabaseTypes.SQL_SERVER)) {
+        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseTypes.SQL_SERVER)) {
+            PlatformDialect dialect = null;
+            dialect.setDataSourceWrapper(dataSourceWrapper);
+            return dialect;
         }
-        if (databaseTypes.equals(DatabaseTypes.POSTGRESQL)) {
+        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseTypes.POSTGRESQL)) {
+            PlatformDialect dialect = null;
+            dialect.setDataSourceWrapper(dataSourceWrapper);
+            return dialect;
         }
-        if (databaseTypes.equals(DatabaseTypes.DB2)) {
+        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseTypes.DB2)) {
+            PlatformDialect dialect = null;
+            dialect.setDataSourceWrapper(dataSourceWrapper);
+            return dialect;
         }
-        if (databaseTypes.equals(DatabaseTypes.SQLITE)) {
+        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseTypes.SQLITE)) {
+            PlatformDialect dialect = null;
+            dialect.setDataSourceWrapper(dataSourceWrapper);
+            return dialect;
         }
         return null;
     }

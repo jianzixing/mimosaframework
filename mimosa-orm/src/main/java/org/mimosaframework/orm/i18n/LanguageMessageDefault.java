@@ -431,7 +431,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         // RelationDatabaseExecutor
         Map<String, String> mapRelationDatabaseExecutor = new HashMap<>();
         mapRelationDatabaseExecutor.put("result_set_empty", "没有获取到ResultSet的结果集");
-        messageWords.add(new MessageWords(PROJECT, RelationDatabaseExecutor.class, mapRelationDatabaseExecutor));
+        messageWords.add(new MessageWords(PROJECT, DefaultJDBCExecutor.class, mapRelationDatabaseExecutor));
 
         // CommonSQLBuilder
         Map<String, String> mapCommonSQLBuilder = new HashMap<>();

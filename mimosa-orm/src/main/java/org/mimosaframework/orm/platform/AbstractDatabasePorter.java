@@ -11,7 +11,6 @@ import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
@@ -21,10 +20,10 @@ import java.util.*;
 
 public abstract class AbstractDatabasePorter implements DatabasePorter {
     private static final Log logger = LogFactory.getLog(AbstractDatabasePorter.class);
-    protected CarryHandler carryHandler;
+    protected DBRunner carryHandler;
 
     @Override
-    public void setCarryHandler(CarryHandler carryHandler) {
+    public void setCarryHandler(DBRunner carryHandler) {
         this.carryHandler = carryHandler;
     }
 
@@ -180,7 +179,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
         this.createTableDefaultCharset(tableBuilder, encoding);
 
-        PorterStructure tableStructure = new PorterStructure(ChangerClassify.CREATE_TABLE, tableBuilder);
+        PorterStructure tableStructure = new PorterStructure(TypeForRunner.CREATE_TABLE, tableBuilder);
 
         carryHandler.doHandler(tableStructure);
     }
@@ -212,7 +211,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
 
         PorterStructure fieldStructure = new PorterStructure(
-                isModify ? ChangerClassify.UPDATE_FIELD : ChangerClassify.CREATE_FIELD, sqlBuilder);
+                isModify ? TypeForRunner.UPDATE_FIELD : TypeForRunner.CREATE_FIELD, sqlBuilder);
 
         carryHandler.doHandler(fieldStructure);
     }
@@ -231,14 +230,14 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     public void dropField(String table, MappingField field) throws SQLException {
         SQLBuilder dropFieldBuilder = this.createSQLBuilder();
         dropFieldBuilder.ALTER().TABLE(table).DROP().addWrapString(field.getDatabaseColumnName());
-        carryHandler.doHandler(new PorterStructure(ChangerClassify.DROP_FIELD, dropFieldBuilder));
+        carryHandler.doHandler(new PorterStructure(TypeForRunner.DROP_FIELD, dropFieldBuilder));
     }
 
     @Override
     public void dropTable(String tableName) throws SQLException {
         SQLBuilder dropBuilder = this.createSQLBuilder();
         dropBuilder.DROP().TABLE(tableName);
-        carryHandler.doHandler(new PorterStructure(ChangerClassify.DROP_TABLE, dropBuilder));
+        carryHandler.doHandler(new PorterStructure(TypeForRunner.DROP_TABLE, dropBuilder));
     }
 
     protected void insertAddValue(SQLBuilder insertBuilder, MappingTable table, ModelObject object) {
@@ -332,7 +331,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         String tableName = table.getDatabaseTableName();
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
         this.insertAddValue(insertBuilder, table, object);
-        Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder));
+        Long id = (Long) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECT, insertBuilder));
         return id;
     }
 
@@ -397,7 +396,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
         }
 
-        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECTS, insertBuilder));
+        List<Long> ids = (List<Long>) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECTS, insertBuilder));
         return ids;
     }
 
@@ -432,7 +431,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         sqlBuilder.addSQLBuilder(valueBuilder);
         sqlBuilder.addParenthesisEnd();
 
-        Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, sqlBuilder));
+        Long id = (Long) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECT, sqlBuilder));
         return id;
     }
 
@@ -480,7 +479,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
 
         updateBuilder.WHERE().addSQLBuilder(updateWhereBuilder);
-        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE_OBJECT, updateBuilder));
+        return (Integer) carryHandler.doHandler(new PorterStructure(TypeForRunner.UPDATE_OBJECT, updateBuilder));
     }
 
     @Override
@@ -528,7 +527,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
 
             this.selectBuildWhere(table, sqlBuilder, update.getLogicWraps());
-            return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.UPDATE, sqlBuilder));
+            return (Integer) carryHandler.doHandler(new PorterStructure(TypeForRunner.UPDATE, sqlBuilder));
         }
         return null;
     }
@@ -573,7 +572,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
 
         deleteBuilder.WHERE().addSQLBuilder(deleteWhereBuilder);
-        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.DELETE_OBJECT, deleteBuilder));
+        return (Integer) carryHandler.doHandler(new PorterStructure(TypeForRunner.DELETE_OBJECT, deleteBuilder));
     }
 
     @Override
@@ -583,7 +582,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         sqlBuilder.DELETE().FROM().addString(tableName);
 
         selectBuildWhere(table, sqlBuilder, delete.getLogicWraps());
-        return (Integer) carryHandler.doHandler(new PorterStructure(ChangerClassify.DELETE, sqlBuilder));
+        return (Integer) carryHandler.doHandler(new PorterStructure(TypeForRunner.DELETE, sqlBuilder));
     }
 
     @Override
@@ -622,7 +621,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
          */
         SQLBuilder builder = this.buildSelect(tables, query, aliasMap, references);
 
-        PorterStructure structure = new PorterStructure(ChangerClassify.SELECT, builder, references);
+        PorterStructure structure = new PorterStructure(TypeForRunner.SELECT, builder, references);
         List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structure);
         return new SelectResult(objects, structure);
     }
@@ -770,7 +769,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
         }
 
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT, sqlBuilder));
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT, sqlBuilder));
         return objects;
     }
 
@@ -815,7 +814,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
         }
 
-        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.COUNT, countBuilder));
+        List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.COUNT, countBuilder));
         return objects;
     }
 
@@ -829,7 +828,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             aliasMap.put(next.getKey(), "t" + (++startAliasNumber));
         }
         SQLBuilder builder = this.buildSelectInnerJoin(tables, query, aliasMap, true, false);
-        return (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT_PRIMARY_KEY, builder));
+        return (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT_PRIMARY_KEY, builder));
     }
 
     protected void simpleBuildValue(SQLBuilder sqlBuilder, Iterator<Map.Entry<Object, Object>> iterator) {
@@ -1546,31 +1545,31 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             PorterStructure porterStructure = new PorterStructure(combine.getSql(), combine.getPlaceholders());
             if (StringTools.isNotEmpty(porterStructure.getSql())) {
                 if (stampAction instanceof StampDelete) {
-                    porterStructure.setChangerClassify(ChangerClassify.DELETE);
+                    porterStructure.setChangerClassify(TypeForRunner.DELETE);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampAlter) {
-                    porterStructure.setChangerClassify(ChangerClassify.ALTER);
+                    porterStructure.setChangerClassify(TypeForRunner.ALTER);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampCreate) {
-                    porterStructure.setChangerClassify(ChangerClassify.CREATE);
+                    porterStructure.setChangerClassify(TypeForRunner.CREATE);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampDrop) {
-                    porterStructure.setChangerClassify(ChangerClassify.DROP);
+                    porterStructure.setChangerClassify(TypeForRunner.DROP);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampInsert) {
-                    porterStructure.setChangerClassify(ChangerClassify.INSERT);
+                    porterStructure.setChangerClassify(TypeForRunner.INSERT);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampSelect || stampAction instanceof StampStructure) {
-                    porterStructure.setChangerClassify(ChangerClassify.SELECT);
+                    porterStructure.setChangerClassify(TypeForRunner.SELECT);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampUpdate) {
-                    porterStructure.setChangerClassify(ChangerClassify.UPDATE);
+                    porterStructure.setChangerClassify(TypeForRunner.UPDATE);
                     return this.carryHandler.doHandler(porterStructure);
                 }
             }

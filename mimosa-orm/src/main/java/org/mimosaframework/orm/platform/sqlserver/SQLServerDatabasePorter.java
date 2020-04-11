@@ -2,16 +2,12 @@ package org.mimosaframework.orm.platform.sqlserver;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.criteria.*;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
@@ -297,7 +293,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             tableBuilder.CHARACTER().SET().addString(encoding);
         }
 
-        PorterStructure tableStructure = new PorterStructure(ChangerClassify.CREATE_TABLE, tableBuilder);
+        PorterStructure tableStructure = new PorterStructure(TypeForRunner.CREATE_TABLE, tableBuilder);
         carryHandler.doHandler(tableStructure);
     }
 
@@ -333,7 +329,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             insertBuilder.SET().addString("IDENTITY_INSERT").addWrapString(tableName).OFF().addEndMark();
         }
 
-        Long id = (Long) carryHandler.doHandler(new PorterStructure(ChangerClassify.ADD_OBJECT, insertBuilder));
+        Long id = (Long) carryHandler.doHandler(new PorterStructure(TypeForRunner.ADD_OBJECT, insertBuilder));
         return id;
     }
 
@@ -381,7 +377,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
         }
         SQLBuilder builder = this.buildSelectLeftJoins(tables, query, aliasMap, references);
 
-        PorterStructure structure = new PorterStructure(ChangerClassify.SELECT, builder, references);
+        PorterStructure structure = new PorterStructure(TypeForRunner.SELECT, builder, references);
         List<ModelObject> objects = (List<ModelObject>) carryHandler.doHandler(structure);
         return new SelectResult(objects, structure);
     }
@@ -390,7 +386,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
     public List<ModelObject> selectPrimaryKey(Map<Object, MappingTable> tables, DefaultQuery query) throws SQLException {
         MappingTable table = tables.get(query);
         SQLBuilder sqlBuilder = this.buildSingleSelect(query, table, true);
-        return (List<ModelObject>) carryHandler.doHandler(new PorterStructure(ChangerClassify.SELECT_PRIMARY_KEY, sqlBuilder));
+        return (List<ModelObject>) carryHandler.doHandler(new PorterStructure(TypeForRunner.SELECT_PRIMARY_KEY, sqlBuilder));
     }
 
     @Override

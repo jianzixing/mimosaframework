@@ -9,7 +9,7 @@ public class BatchPorterStructure extends PorterStructure {
     private List<ModelObject> objects;
     private List<String> fields;
 
-    public BatchPorterStructure(ChangerClassify changerClassify,
+    public BatchPorterStructure(TypeForRunner changerClassify,
                                 SQLBuilder sqlBuilder,
                                 List<ModelObject> objects,
                                 List<String> fields) {
@@ -18,7 +18,7 @@ public class BatchPorterStructure extends PorterStructure {
         this.fields = fields;
     }
 
-    public BatchPorterStructure(ChangerClassify changerClassify,
+    public BatchPorterStructure(TypeForRunner changerClassify,
                                 SQLBuilder sqlBuilder,
                                 Map<Object, List<SelectFieldAliasReference>> references,
                                 List<ModelObject> objects,
