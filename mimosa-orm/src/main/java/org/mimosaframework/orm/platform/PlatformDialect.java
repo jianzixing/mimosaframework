@@ -1,23 +1,23 @@
 package org.mimosaframework.orm.platform;
 
+import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.sql.StructureBuilder;
-import org.mimosaframework.orm.sql.stamp.KeyColumnType;
-import org.mimosaframework.orm.sql.stamp.StampAction;
-import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
+import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PlatformDialect {
+public abstract class PlatformDialect {
     private Map<KeyColumnType, ColumnType> columnTypes = new HashMap<>();
     private DataSourceWrapper dataSourceWrapper;
     private DBRunner runner = null;
-    private MappingGlobalWrapper mappingGlobalWrapper;
+    protected MappingGlobalWrapper mappingGlobalWrapper;
 
     protected void registerColumnType(KeyColumnType type, String typeName) {
         this.columnTypes.put(type, new ColumnType(type, typeName, -1, -1));
@@ -45,7 +45,114 @@ public class PlatformDialect {
         String schema = this.getCatalogAndSchema();
         StampAction table = structureBuilder.table(schema).compile();
         Object result = this.runner(table);
-        
+        if (result instanceof List) {
+            List<TableStructure> tableStructures = new ArrayList<>();
+            List<String> tables = new ArrayList<>();
+            List<ModelObject> list = (List<ModelObject>) result;
+            for (ModelObject o : list) {
+                TableStructure tableStructure = new TableStructure();
+                tableStructure.setTableSchema(o.getString("TABSCHEMA"));
+                tableStructure.setTableName(o.getString("TABNAME"));
+                tableStructure.setType(o.getString("TYPE"));
+                tableStructure.setCount(o.getLongValue("COUNT"));
+                tableStructure.setLastUsed(o.get("LASTUSED"));
+                tableStructure.setComment(o.getString("COMMENT"));
+                tableStructure.setCreateTime(o.get("CREATE_TIME"));
+                tableStructures.add(tableStructure);
+                tables.add(tableStructure.getTableName());
+            }
+
+            if (tableStructures != null && tableStructures.size() > 0) {
+                StampAction column = structureBuilder.column(schema, tables).compile();
+                List<TableColumnStructure> columnStructures = new ArrayList<>();
+                Object resultColumn = this.runner(column);
+                if (resultColumn instanceof List) {
+                    List<ModelObject> listColumn = (List<ModelObject>) resultColumn;
+                    for (ModelObject o : listColumn) {
+                        TableColumnStructure columnStructure = new TableColumnStructure();
+                        columnStructure.setTableSchema(o.getString("TABSCHEMA"));
+                        columnStructure.setTableName(o.getString("TABNAME"));
+                        columnStructure.setColumnName(o.getString("COLNAME"));
+                        columnStructure.setTypeName(o.getString("TYPENAME"));
+                        columnStructure.setLength(o.getIntValue("LENGTH"));
+                        columnStructure.setScale(o.getIntValue("SCALE"));
+                        columnStructure.setDefaultValue(o.getString("DEFAULT"));
+                        columnStructure.setIsNullable(o.getString("IS_NULLABLE"));
+                        columnStructure.setAutoIncrement(o.getString("AUTO_INCREMENT"));
+                        columnStructure.setComment(o.getString("COMMENT"));
+                        columnStructures.add(columnStructure);
+                    }
+                }
+
+                StampAction index = structureBuilder.index(schema, tables).compile();
+                List<TableIndexStructure> indexStructures = new ArrayList<>();
+                Object resultIndex = this.runner(index);
+                if (resultIndex instanceof List) {
+                    List<ModelObject> listIndex = (List<ModelObject>) resultIndex;
+                    for (ModelObject o : listIndex) {
+                        TableIndexStructure indexStructure = new TableIndexStructure();
+                        indexStructure.setTableSchema(o.getString("TABSCHEMA"));
+                        indexStructure.setIndexName(o.getString("INDNAME"));
+                        indexStructure.setTableName(o.getString("TABNAME"));
+                        indexStructure.setType(o.getString("TYPE"));
+                        indexStructure.setColumnName(o.getString("COLNAME"));
+                        indexStructure.setComment(o.getString("COMMENT"));
+                        indexStructures.add(indexStructure);
+                    }
+                }
+
+                StampAction constraint = structureBuilder.constraint(schema, tables).compile();
+                List<TableConstraintStructure> constraintStructures = new ArrayList<>();
+                Object resultConstraint = this.runner(constraint);
+                if (resultConstraint instanceof List) {
+                    List<ModelObject> listConstraint = (List<ModelObject>) resultConstraint;
+                    for (ModelObject o : listConstraint) {
+                        TableConstraintStructure constraintStructure = new TableConstraintStructure();
+                        constraintStructure.setTableSchema(o.getString("TABSCHEMA"));
+                        constraintStructure.setConstraintName(o.getString("CONSTNAME"));
+                        constraintStructure.setTableName(o.getString("TABNAME"));
+                        constraintStructure.setColumnName(o.getString("COLNAME"));
+                        constraintStructure.setForeignTableName(o.getString("FGNTABNAME"));
+                        constraintStructure.setForeignColumnName(o.getString("FGNCOLNAME"));
+                        constraintStructure.setType(o.getString("TYPE"));
+                        constraintStructures.add(constraintStructure);
+                    }
+                }
+
+                for (TableStructure tableStructure : tableStructures) {
+                    String tableName = tableStructure.getTableName();
+                    if (columnStructures != null && columnStructures.size() > 0) {
+                        List<TableColumnStructure> forTable = new ArrayList<>();
+                        for (TableColumnStructure columnStructure : columnStructures) {
+                            if (tableName.equalsIgnoreCase(columnStructure.getTableName())) {
+                                forTable.add(columnStructure);
+                            }
+                        }
+                        tableStructure.setColumnStructures(forTable);
+                    }
+                    if (indexStructures != null && indexStructures.size() > 0) {
+                        List<TableIndexStructure> forTable = new ArrayList<>();
+                        for (TableIndexStructure indexStructure : indexStructures) {
+                            if (tableName.equalsIgnoreCase(indexStructure.getTableName())) {
+                                forTable.add(indexStructure);
+                            }
+                        }
+                        tableStructure.setIndexStructures(forTable);
+                    }
+                    if (constraintStructures != null && constraintStructures.size() > 0) {
+                        List<TableConstraintStructure> forTable = new ArrayList<>();
+                        for (TableConstraintStructure constraintStructure : constraintStructures) {
+                            if (tableName.equalsIgnoreCase(constraintStructure.getTableName())) {
+                                forTable.add(constraintStructure);
+                            }
+                        }
+                        tableStructure.setConstraintStructures(forTable);
+                    }
+                }
+            }
+
+            return tableStructures;
+        }
         return null;
     }
 
@@ -92,4 +199,20 @@ public class PlatformDialect {
     public ColumnType getColumnType(KeyColumnType type) {
         return columnTypes.get(type);
     }
+
+    public abstract SQLBuilderCombine alter(StampAlter alter);
+
+    public abstract SQLBuilderCombine create(StampCreate create);
+
+    public abstract SQLBuilderCombine drop(StampDrop drop);
+
+    public abstract SQLBuilderCombine insert(StampInsert insert);
+
+    public abstract SQLBuilderCombine delete(StampDelete delete);
+
+    public abstract SQLBuilderCombine select(StampSelect select);
+
+    public abstract SQLBuilderCombine update(StampUpdate update);
+
+    public abstract void define(DataDefinition definition);
 }

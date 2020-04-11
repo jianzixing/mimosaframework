@@ -9,6 +9,7 @@ import org.mimosaframework.orm.sql.stamp.KeyColumnType;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -19,8 +20,8 @@ public class PlatformExecutor {
 
     public void compareTableStructure(MappingGlobalWrapper mapping,
                                       DataSourceWrapper dswrapper,
-                                      PlatformCompare compare) {
-        PlatformDialect dialect = PlatformFactory.getDialect(dswrapper);
+                                      PlatformCompare compare) throws SQLException {
+        PlatformDialect dialect = this.getDialect(mapping, dswrapper);
         List<TableStructure> structures = dialect.getTableStructures();
         List<MappingTable> mappingTables = mapping.getMappingTables();
 
@@ -101,22 +102,22 @@ public class PlatformExecutor {
                         }
 
                         if (updateFields != null && updateFields.size() > 0) {
-                            compare.fieldUpdate(mapping, dialect, currTable, updateFields);
+                            compare.fieldUpdate(mapping, currTable, updateFields);
                         }
 
                         mappingFields.removeAll(rmCol);
                         columnStructures.removeAll(rmSCol);
                         if (mappingFields.size() > 0) {
                             // 有新添加的字段需要添加
-                            compare.fieldAdd(mapping, dialect, currTable, new ArrayList<MappingField>(mappingFields));
+                            compare.fieldAdd(mapping, currTable, new ArrayList<MappingField>(mappingFields));
                         }
                         if (columnStructures.size() > 0) {
                             // 有多余的字段需要删除
-                            compare.fieldDel(mapping, dialect, currTable, columnStructures);
+                            compare.fieldDel(mapping, currTable, columnStructures);
                         }
                     } else {
                         // 数据库的字段没有需要重新添加全部字段
-                        compare.fieldAdd(mapping, dialect, currTable, new ArrayList<MappingField>(mappingFields));
+                        compare.fieldAdd(mapping, currTable, new ArrayList<MappingField>(mappingFields));
                     }
                 }
 
@@ -156,10 +157,10 @@ public class PlatformExecutor {
                             }
                         }
                         if (updateIndexes != null && updateIndexes.size() > 0) {
-                            compare.indexUpdate(mapping, dialect, currTable, updateIndexes);
+                            compare.indexUpdate(mapping, currTable, updateIndexes);
                         }
                         if (newIndexes != null && newIndexes.size() > 0) {
-                            compare.indexAdd(mapping, dialect, currTable, newIndexes);
+                            compare.indexAdd(mapping, currTable, newIndexes);
                         }
                     }
                 }
@@ -171,8 +172,8 @@ public class PlatformExecutor {
 
                 for (MappingTable mappingTable : mappingTables) {
                     Set<MappingIndex> mappingIndex = mappingTable.getMappingIndexes();
-                    compare.tableCreate(mapping, dialect, mappingTable);
-                    compare.indexAdd(mapping, dialect, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
+                    compare.tableCreate(mapping, mappingTable);
+                    compare.indexAdd(mapping, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
                 }
             }
         }
@@ -196,5 +197,67 @@ public class PlatformExecutor {
         if (c.equals(java.util.Date.class)) return KeyColumnType.DATETIME;
         if (c.equals(java.sql.Timestamp.class)) return KeyColumnType.TIMESTAMP;
         return null;
+    }
+
+    private PlatformDialect getDialect(MappingGlobalWrapper mappingGlobalWrapper,
+                                       DataSourceWrapper dswrapper) {
+        PlatformDialect dialect = PlatformFactory.getDialect(dswrapper);
+        dialect.setMappingGlobalWrapper(mappingGlobalWrapper);
+        return dialect;
+    }
+
+    public void createTable(MappingGlobalWrapper mappingGlobalWrapper,
+                            DataSourceWrapper dswrapper,
+                            MappingTable mappingTable) {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        dialect.define(new DataDefinition(DataDefinitionType.CREATE_TABLE, mappingTable));
+    }
+
+    public void dropTable(MappingGlobalWrapper mappingGlobalWrapper,
+                          DataSourceWrapper dswrapper,
+                          TableStructure tableStructure) {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        dialect.define(new DataDefinition(DataDefinitionType.DROP_TABLE, tableStructure));
+    }
+
+    public void createField(MappingGlobalWrapper mappingGlobalWrapper,
+                            DataSourceWrapper dswrapper,
+                            MappingTable mappingTable,
+                            MappingField mappingField) {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        dialect.define(new DataDefinition(DataDefinitionType.ADD_COLUMN, mappingTable, mappingField));
+    }
+
+    public void modifyField(MappingGlobalWrapper mappingGlobalWrapper,
+                            DataSourceWrapper dswrapper,
+                            MappingTable mappingTable,
+                            MappingField mappingField,
+                            TableColumnStructure columnStructure) {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        dialect.define(new DataDefinition(DataDefinitionType.MODIFY_COLUMN, mappingTable, mappingField, columnStructure));
+    }
+
+    public void dropField(MappingGlobalWrapper mappingGlobalWrapper,
+                          DataSourceWrapper dswrapper,
+                          MappingTable mappingTable,
+                          TableColumnStructure columnStructure) {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        dialect.define(new DataDefinition(DataDefinitionType.DROP_COLUMN, mappingTable, columnStructure));
+    }
+
+    public void createIndex(MappingGlobalWrapper mappingGlobalWrapper,
+                            DataSourceWrapper dswrapper,
+                            MappingTable mappingTable,
+                            MappingIndex mappingIndex) {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        dialect.define(new DataDefinition(DataDefinitionType.ADD_INDEX, mappingTable, mappingIndex));
+    }
+
+    public void dropIndex(MappingGlobalWrapper mappingGlobalWrapper,
+                          DataSourceWrapper dswrapper,
+                          MappingTable mappingTable,
+                          TableIndexStructure indexStructure) {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexStructure));
     }
 }
