@@ -18,7 +18,7 @@ public class DataDefinition {
     // for create
     private MappingIndex mappingIndex;
     // for delete
-    private TableIndexStructure indexStructure;
+    private String indexName;
 
     private DataDefinitionType type;
 
@@ -70,10 +70,10 @@ public class DataDefinition {
         this.mappingIndex = mappingIndex;
     }
 
-    public DataDefinition(DataDefinitionType type, MappingTable mappingTable, TableIndexStructure indexStructure) {
+    public DataDefinition(DataDefinitionType type, MappingTable mappingTable, String indexName) {
         this.type = type;
         this.mappingTable = mappingTable;
-        this.indexStructure = indexStructure;
+        this.indexName = indexName;
     }
 
     public MappingTable getMappingTable() {
@@ -124,11 +124,11 @@ public class DataDefinition {
         this.mappingIndex = mappingIndex;
     }
 
-    public TableIndexStructure getIndexStructure() {
-        return indexStructure;
+    public String getIndexName() {
+        return indexName;
     }
 
-    public void setIndexStructure(TableIndexStructure indexStructure) {
-        this.indexStructure = indexStructure;
+    public void setIndexName(String indexName) {
+        this.indexName = indexName;
     }
 }

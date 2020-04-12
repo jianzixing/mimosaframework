@@ -350,9 +350,8 @@ public abstract class PlatformDialect {
         return sql;
     }
 
-    protected StampDrop commonDropIndex(MappingTable mappingTable, TableIndexStructure structure) {
+    protected StampDrop commonDropIndex(MappingTable mappingTable, String indexName) {
         String tableName = mappingTable.getMappingTableName();
-        String indexName = structure.getIndexName();
         return (StampDrop) DropFactory.drop().index().name(indexName).on().table(tableName);
     }
 

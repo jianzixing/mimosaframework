@@ -17,7 +17,6 @@ public class LanguageMessageDefault implements MessagesRegister {
         // AbstractConfigBuilder
         Map<String, String> words = new HashMap<>();
         words.put("need_basic", "需要先初始化BasicDisposition拿到Convert实例");
-        words.put("not_found_mapping_class", "没有找到映射类");
         words.put("instance_convert_error", "实例化 ConvertClass 出错");
         words.put("convert_name_null", "字段名称转换器 %s 不存在");
         words.put("data_source_fail", "加载DataSourceClass类失败");
@@ -93,9 +92,6 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("not_support_type", "不支持的数据类型 %s");
         words.put("db2_max_decimal_len", "DB2的Decimal类型整数位最大只支持31位");
 
-        // MysqlDifferentColumn
-        words.put("not_support_type", "不支持的数据类型 %s");
-
         // OracleCarryHandler
         words.put("oracle_auto_incr_empty", "获取Oracle自增序列值为空");
         words.put("type_not_batch", "传入执行类型不是批量执行");
@@ -103,24 +99,6 @@ public class LanguageMessageDefault implements MessagesRegister {
         // OracleDatabasePorter
         words.put("reset_incr_field", "由于插入数据时带有主键信息，所以开始重置数据库自增初始值");
         words.put("reset_incr_field_error", "保存数据时由于包含主键值需要重置主键自增序列时出错");
-
-        // OracleDifferentColumn
-        words.put("not_support_type", "不支持的数据类型 %s");
-
-        // PostgreSQLDatabasePorter
-        words.put("reset_incr_field", "由于插入数据时带有主键信息，所以开始重置数据库自增初始值");
-        words.put("reset_incr_field_error", "保存数据时由于包含主键值需要重置主键自增序列时出错");
-        words.put("not_fount_field", "没有找到字段 %s 映射字段");
-
-        // PostgreSQLDifferentColumn
-        words.put("not_support_type", "不支持的数据类型 %s");
-
-        // SqliteDatabasePorter
-        words.put("not_fount_field", "没有找到字段 %s 映射字段");
-        words.put("not_support_type", "不支持的数据类型 %s");
-
-        // SQLServerDifferentColumn
-        words.put("not_support_type", "不支持的数据类型 %s");
 
         // AbstractDatabasePorter
         words.put("lack_mapping_table", "添加表字段必须有表MappingTable信息");
@@ -159,41 +137,23 @@ public class LanguageMessageDefault implements MessagesRegister {
         // NestedTransactionPropagation
         words.put("create_trans_fail", "创建事务失败");
         words.put("create_trans_point_fail", "创建事务保存点失败");
-        words.put("submit_trans_fail", "提交新的事物失败");
-        words.put("rollback_trans_fail", "回滚新的事物失败");
+        words.put("submit_trans_fail", "提交事物失败");
+        words.put("rollback_trans_fail", "回滚事物失败");
         words.put("rollback_trans_point_fail", "回滚到保存点失败");
         words.put("close_db_fail", "关闭数据库连接失败");
 
         // NeverTransactionPropagation
         words.put("found_trans", "以非事物运行但是发现已有事物开启");
-        words.put("create_trans_fail", "创建事物失败");
         words.put("close_trans_fail", "关闭事物失败");
 
-        // NotSupportedTransactionPropagation
-        words.put("create_trans_fail", "创建事物失败");
-        words.put("close_db_fail", "关闭数据库连接失败");
-
-        // RequiredTransactionPropagation
-        words.put("create_trans_fail", "创建事物失败");
-        words.put("submit_trans_fail", "提交事物失败");
-        words.put("rollback_trans_fail", "回滚事物失败");
-        words.put("close_db_fail", "关闭数据库连接失败");
 
         // RequiresNewTransactionPropagation
-        words.put("create_trans_fail", "创建事物失败");
         words.put("submit_db_close", "提交事物时数据库连接被关闭");
-        words.put("submit_trans_fail", "提交事物失败");
         words.put("rollback_trans_db_close", "回滚事物时数据库连接被关闭");
-        words.put("rollback_trans_fail", "回滚事物失败");
-        words.put("db_close_fail", "关闭数据库连接失败");
-
-        // SupportsTransactionPropagation
-        words.put("create_trans_fail", "创建事物失败");
         words.put("db_close_fail", "关闭数据库连接失败");
 
         // TransactionManager
         words.put("check_db_size", "检测到数据库链接个数(%s)个");
-        words.put("create_trans_fail", "创建事物失败,原因没找到配置的DataSource连接");
 
         // SessionUtils
         words.put("not_set_mapping_table", "没有设置要操作的映射类");
@@ -239,7 +199,6 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("query_data_fail", "查询数据失败");
         words.put("not_found_file_sql", "没有发现配置文件SQL");
         words.put("not_support_action", "不支持的动作标签,当前仅支持select,update,delete,insert");
-        words.put("close_db_fail", "关闭数据库连接出错");
 
         // MimosaConnection
         words.put("must_ds", "必须传入DataSource实例");
@@ -309,6 +268,13 @@ public class LanguageMessageDefault implements MessagesRegister {
         // StampAction
         words.put("miss_index_columns", "缺少索引的列");
 
+        // NothingCompareMapping
+        words.put("compare_mapping_warn_create_table", "需要新建数据库表 %s");
+        words.put("compare_mapping_warn_field_update", "需要更新表 %s 字段 %s 的 %s 属性");
+        words.put("compare_mapping_warn_field_add", "需要向表 %s 添加字段 %s ");
+        words.put("compare_mapping_warn_field_del", "需要删除表 %s 的字段 %s");
+        words.put("compare_mapping_warn_index_update", "需要重置表 %s 的索引 %s");
+        words.put("compare_mapping_warn_index_add", "需要向表 %s 添加索引 %s");
 
         messageWords.add(new MessageWords(PROJECT, words));
     }

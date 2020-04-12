@@ -45,6 +45,7 @@ public class PlatformExecutor {
                     Set<MappingField> mappingFields = currTable.getMappingFields();
                     if (columnStructures != null && columnStructures.size() > 0) {
                         Map<MappingField, List<ColumnEditType>> updateFields = new LinkedHashMap();
+                        Map<MappingField, TableColumnStructure> updateColumnsStructures = new LinkedHashMap();
                         for (TableColumnStructure columnStructure : columnStructures) {
                             if (mappingFields != null) {
                                 MappingField currField = null;
@@ -94,28 +95,29 @@ public class PlatformExecutor {
                                     if (columnEditTypes.size() > 0) {
                                         // 需要修改字段
                                         updateFields.put(currField, columnEditTypes);
+                                        updateColumnsStructures.put(currField, columnStructure);
                                     }
                                 }
                             }
                         }
 
                         if (updateFields != null && updateFields.size() > 0) {
-                            compare.fieldUpdate(mapping, currTable, updateFields);
+                            compare.fieldUpdate(mapping, currTable, structure, updateFields, updateColumnsStructures);
                         }
 
                         mappingFields.removeAll(rmCol);
                         columnStructures.removeAll(rmSCol);
                         if (mappingFields.size() > 0) {
                             // 有新添加的字段需要添加
-                            compare.fieldAdd(mapping, currTable, new ArrayList<MappingField>(mappingFields));
+                            compare.fieldAdd(mapping, currTable, structure, new ArrayList<MappingField>(mappingFields));
                         }
                         if (columnStructures.size() > 0) {
                             // 有多余的字段需要删除
-                            compare.fieldDel(mapping, currTable, columnStructures);
+                            compare.fieldDel(mapping, currTable, structure, columnStructures);
                         }
                     } else {
                         // 数据库的字段没有需要重新添加全部字段
-                        compare.fieldAdd(mapping, currTable, new ArrayList<MappingField>(mappingFields));
+                        compare.fieldAdd(mapping, currTable, structure, new ArrayList<MappingField>(mappingFields));
                     }
                 }
 
@@ -124,6 +126,7 @@ public class PlatformExecutor {
                     if (mappingIndexes != null) {
                         List<MappingIndex> newIndexes = new ArrayList<>();
                         List<MappingIndex> updateIndexes = new ArrayList<>();
+                        List<String> updateIndexNames = new ArrayList<>();
                         for (MappingIndex index : mappingIndexes) {
                             String mappingIndexName = index.getIndexName();
                             List<TableIndexStructure> indexStructures = structure.getIndexStructures(mappingIndexName);
@@ -133,6 +136,7 @@ public class PlatformExecutor {
                                 if (!indexStructures.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
                                     // 索引类型不一致需要重建索引
                                     updateIndexes.add(index);
+                                    updateIndexNames.add(mappingIndexName);
                                 } else {
                                     List<MappingField> rmIdxCol = new ArrayList<>();
                                     for (TableIndexStructure indexStructure : indexStructures) {
@@ -147,6 +151,7 @@ public class PlatformExecutor {
                                     if (indexMappingFields.size() != 0) {
                                         // 需要重建索引
                                         updateIndexes.add(index);
+                                        updateIndexNames.add(mappingIndexName);
                                     }
                                 }
                             } else {
@@ -155,7 +160,7 @@ public class PlatformExecutor {
                             }
                         }
                         if (updateIndexes != null && updateIndexes.size() > 0) {
-                            compare.indexUpdate(mapping, currTable, updateIndexes);
+                            compare.indexUpdate(mapping, currTable, updateIndexes, updateIndexNames);
                         }
                         if (newIndexes != null && newIndexes.size() > 0) {
                             compare.indexAdd(mapping, currTable, newIndexes);
@@ -237,9 +242,9 @@ public class PlatformExecutor {
     public void dropIndex(MappingGlobalWrapper mappingGlobalWrapper,
                           DataSourceWrapper dswrapper,
                           MappingTable mappingTable,
-                          TableIndexStructure indexStructure) throws SQLException {
+                          String indexName) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
-        dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexStructure));
+        dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexName));
     }
 
     public Object dialect(MappingGlobalWrapper mappingGlobalWrapper,

@@ -181,13 +181,13 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 this.runner(sql);
             }
             if (type == DataDefinitionType.MODIFY_INDEX) {
-                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexStructure());
+                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
                 this.runner(stampDrop);
                 StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
                 this.runner(sql);
             }
             if (type == DataDefinitionType.DROP_INDEX) {
-                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexStructure());
+                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
                 this.runner(stampDrop);
             }
         }
@@ -195,7 +195,7 @@ public class MysqlPlatformDialect extends PlatformDialect {
 
     @Override
     protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) {
-        
+
     }
 
     @Override
