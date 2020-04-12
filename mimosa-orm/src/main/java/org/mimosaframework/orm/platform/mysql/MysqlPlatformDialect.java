@@ -1,8 +1,11 @@
 package org.mimosaframework.orm.platform.mysql;
 
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.sql.alter.AlterFactory;
+import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
@@ -98,7 +101,66 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 this.runner(stampAlter);
             }
             if (type == DataDefinitionType.MODIFY_COLUMN) {
-                
+                TableStructure tableStructure = definition.getTableStructure();
+                MappingTable mappingTable = definition.getMappingTable();
+                MappingField mappingField = definition.getMappingField();
+                TableColumnStructure columnStructure = definition.getColumnStructure();
+                ColumnType columnType = this.getColumnType(JavaType2ColumnType
+                        .getColumnTypeByJava(mappingField.getMappingFieldType()));
+
+                String tableName = mappingTable.getMappingTableName();
+                String columnName = mappingField.getMappingColumnName();
+                DefaultSQLAlterBuilder sql = (DefaultSQLAlterBuilder) AlterFactory.alter().table(tableName)
+                        .modify().column(columnName);
+
+                if (columnStructure.getTypeName()
+                        .equalsIgnoreCase(columnType.getTypeName())
+                        || columnStructure.getLength() != mappingField.getMappingFieldLength()
+                        || columnStructure.getScale() != mappingField.getDatabaseColumnDecimalDigits()) {
+                    // ColumnEditType.TYPE
+                    this.setSQLType(sql, mappingField.getMappingFieldType(),
+                            mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
+                }
+
+                if (StringTools.isEmpty(columnStructure.getIsNullable()) != mappingField.isMappingFieldNullable()
+                        || columnStructure.isNullable() != mappingField.isMappingFieldNullable()) {
+                    // ColumnEditType.ISNULL
+                    if (!mappingField.isMappingFieldNullable()) {
+                        sql.not();
+                        sql.nullable();
+                    }
+                }
+
+                if (mappingField.isMappingFieldPrimaryKey() == tableStructure.isPrimaryKeyColumn(columnStructure.getColumnName())) {
+                    // ColumnEditType.PRIMARY_KEY
+                    if (mappingField.isMappingFieldPrimaryKey()) {
+                        
+                    }
+                }
+
+                if ((StringTools.isEmpty(columnStructure.getDefaultValue()) && StringTools.isNotEmpty(mappingField.getMappingFieldDefaultValue()))
+                        || (StringTools.isNotEmpty(columnStructure.getDefaultValue())
+                        && !columnStructure.getDefaultValue().equals(mappingField.getMappingFieldDefaultValue()))) {
+                    // ColumnEditType.DEF_VALUE
+                    if (StringTools.isNotEmpty(mappingField.getMappingFieldDefaultValue())) {
+                        sql.defaultValue(mappingField.getMappingFieldDefaultValue());
+                    }
+                }
+                if (StringTools.isNotEmpty(columnStructure.getAutoIncrement()) == mappingField.isMappingAutoIncrement()
+                        || !columnStructure.isAutoIncrement() != mappingField.isMappingAutoIncrement()) {
+                    // ColumnEditType.AUTO_INCREMENT
+                    if (mappingField.isMappingAutoIncrement()) {
+                        sql.autoIncrement();
+                    }
+                }
+                if ((StringTools.isEmpty(columnStructure.getComment()) && StringTools.isNotEmpty(mappingField.getMappingFieldComment()))
+                        || (StringTools.isNotEmpty(columnStructure.getComment())
+                        && !columnStructure.getComment().equals(mappingField.getMappingFieldComment()))) {
+                    // ColumnEditType.COMMENT
+                    if (StringTools.isNotEmpty(mappingField.getMappingFieldComment())) {
+                        sql.comment(mappingField.getMappingFieldComment());
+                    }
+                }
             }
             if (type == DataDefinitionType.DROP_COLUMN) {
                 StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), definition.getColumnStructure());

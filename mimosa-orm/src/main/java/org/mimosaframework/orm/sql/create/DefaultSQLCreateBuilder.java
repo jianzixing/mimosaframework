@@ -24,20 +24,20 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object create() {
+    public DefaultSQLCreateBuilder create() {
         this.addPoint("create");
         return this;
     }
 
     @Override
-    public Object database() {
+    public DefaultSQLCreateBuilder database() {
         this.addPoint("database");
         stampCreate.target = KeyTarget.DATABASE;
         return this;
     }
 
     @Override
-    public Object name(Serializable value) {
+    public DefaultSQLCreateBuilder name(Serializable value) {
         this.gammars.add("name");
         if (this.previous("index") || this.previous("unique")) {
             stampCreate.indexName = value.toString();
@@ -48,69 +48,69 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object name(Class table) {
+    public DefaultSQLCreateBuilder name(Class table) {
         this.gammars.add("name");
         stampCreate.table = table;
         return this;
     }
 
     @Override
-    public Object charset(String charset) {
+    public DefaultSQLCreateBuilder charset(String charset) {
         this.gammars.add("charset");
         stampCreate.charset = charset;
         return this;
     }
 
     @Override
-    public Object collate(String collate) {
+    public DefaultSQLCreateBuilder collate(String collate) {
         this.gammars.add("collate");
         stampCreate.collate = collate;
         return this;
     }
 
     @Override
-    public Object ifNotExist() {
+    public DefaultSQLCreateBuilder ifNotExist() {
         this.gammars.add("ifNotExist");
         stampCreate.checkExist = true;
         return this;
     }
 
     @Override
-    public Object extra(String sql) {
+    public DefaultSQLCreateBuilder extra(String sql) {
         this.gammars.add("extra");
         stampCreate.extra = sql;
         return this;
     }
 
     @Override
-    public Object table() {
+    public DefaultSQLCreateBuilder table() {
         this.addPoint("table");
         stampCreate.target = KeyTarget.TABLE;
         return this;
     }
 
     @Override
-    public Object table(Class table) {
+    public DefaultSQLCreateBuilder table(Class table) {
         this.gammars.add("table");
         stampCreate.table = table;
         return this;
     }
 
     @Override
-    public Object index() {
+    public DefaultSQLCreateBuilder index() {
         this.addPoint("index");
         stampCreate.target = KeyTarget.INDEX;
         return this;
     }
 
     @Override
-    public Object on() {
+    public DefaultSQLCreateBuilder on() {
         this.gammars.add("on");
         return this;
     }
 
     @Override
-    public Object unique() {
+    public DefaultSQLCreateBuilder unique() {
         if (this.point.equals("table")) {
             this.gammars.add("unique");
             StampCreateColumn column = this.getLastColumn();
@@ -123,7 +123,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object columns(Serializable... columns) {
+    public DefaultSQLCreateBuilder columns(Serializable... columns) {
         this.gammars.add("columns");
         StampColumn[] stampColumns = new StampColumn[columns.length];
         for (int i = 0; i < columns.length; i++) stampColumns[i] = new StampColumn(columns[i]);
@@ -133,7 +133,7 @@ public class DefaultSQLCreateBuilder
 
 
     @Override
-    public Object column(Serializable field) {
+    public DefaultSQLCreateBuilder column(Serializable field) {
         this.gammars.add("column");
         if (this.points != null && this.points.get(1).equals("table")) {
             StampCreateColumn column = new StampCreateColumn();
@@ -144,7 +144,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object autoIncrement() {
+    public DefaultSQLCreateBuilder autoIncrement() {
         this.gammars.add("autoIncrement");
         StampCreateColumn column = this.getLastColumn();
         column.autoIncrement = true;
@@ -152,7 +152,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object comment(String comment) {
+    public DefaultSQLCreateBuilder comment(String comment) {
         this.gammars.add("comment");
         StampCreateColumn column = this.getLastColumn();
         column.comment = comment;
@@ -160,7 +160,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object defaultValue(String value) {
+    public DefaultSQLCreateBuilder defaultValue(String value) {
         this.gammars.add("defaultValue");
         StampCreateColumn column = this.getLastColumn();
         column.defaultValue = value;
@@ -168,7 +168,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object key() {
+    public DefaultSQLCreateBuilder key() {
         this.gammars.add("key");
         StampCreateColumn column = this.getLastColumn();
         if (this.previous("primary")) {
@@ -180,13 +180,13 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object not() {
+    public DefaultSQLCreateBuilder not() {
         this.gammars.add("not");
         return this;
     }
 
     @Override
-    public Object nullable() {
+    public DefaultSQLCreateBuilder nullable() {
         this.gammars.add("nullable");
         if (this.previous("not")) {
             StampCreateColumn column = this.getLastColumn();
@@ -196,13 +196,13 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object primary() {
+    public DefaultSQLCreateBuilder primary() {
         this.gammars.add("primary");
         return this;
     }
 
     @Override
-    public Object intType() {
+    public DefaultSQLCreateBuilder intType() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.INT;
@@ -210,7 +210,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object varchar(int len) {
+    public DefaultSQLCreateBuilder varchar(int len) {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.VARCHAR;
@@ -219,7 +219,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object charType(int len) {
+    public DefaultSQLCreateBuilder charType(int len) {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.CHAR;
@@ -228,7 +228,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object blob() {
+    public DefaultSQLCreateBuilder blob() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.BLOB;
@@ -236,7 +236,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object text() {
+    public DefaultSQLCreateBuilder text() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.TEXT;
@@ -244,7 +244,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object tinyint() {
+    public DefaultSQLCreateBuilder tinyint() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.TINYINT;
@@ -252,7 +252,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object smallint() {
+    public DefaultSQLCreateBuilder smallint() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.SMALLINT;
@@ -260,7 +260,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object bigint() {
+    public DefaultSQLCreateBuilder bigint() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.BIGINT;
@@ -268,7 +268,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object floatType() {
+    public DefaultSQLCreateBuilder floatType() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.FLOAT;
@@ -276,7 +276,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object doubleType() {
+    public DefaultSQLCreateBuilder doubleType() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.DOUBLE;
@@ -284,7 +284,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object decimal(int len, int scale) {
+    public DefaultSQLCreateBuilder decimal(int len, int scale) {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.DECIMAL;
@@ -294,7 +294,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object booleanType() {
+    public DefaultSQLCreateBuilder booleanType() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.BOOLEAN;
@@ -302,7 +302,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object date() {
+    public DefaultSQLCreateBuilder date() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.DATE;
@@ -310,7 +310,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object time() {
+    public DefaultSQLCreateBuilder time() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.TIME;
@@ -318,7 +318,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object datetime() {
+    public DefaultSQLCreateBuilder datetime() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.DATETIME;
@@ -326,7 +326,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object timestamp() {
+    public DefaultSQLCreateBuilder timestamp() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.TIMESTAMP;
@@ -342,13 +342,13 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public Object tableComment(String comment) {
+    public DefaultSQLCreateBuilder tableComment(String comment) {
         this.stampCreate.comment = comment;
         return this;
     }
 
     @Override
-    public Object table(String name) {
+    public DefaultSQLCreateBuilder table(String name) {
         this.gammars.add("table");
         if (this.point.equals("index")) {
             this.stampCreate.name = name;

@@ -6,4 +6,8 @@ public class UpdateFactory {
     public static UpdateStartBuilder update() {
         return SQLActionFactory.update();
     }
+
+    public static DefaultSQLUpdateBuilder origin() {
+        return new DefaultSQLUpdateBuilder();
+    }
 }

@@ -6,4 +6,8 @@ public class SelectFactory {
     public static SelectStartBuilder select() {
         return SQLActionFactory.select();
     }
+
+    public static DefaultSQLSelectBuilder origin() {
+        return new DefaultSQLSelectBuilder();
+    }
 }

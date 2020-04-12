@@ -6,4 +6,8 @@ public class AlterFactory {
     public static AlterAnyBuilder alter() {
         return SQLActionFactory.alter();
     }
+
+    public static DefaultSQLAlterBuilder origin() {
+        return new DefaultSQLAlterBuilder();
+    }
 }

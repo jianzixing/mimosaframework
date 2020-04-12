@@ -6,4 +6,8 @@ public class DropFactory {
     public static DropAnyBuilder drop() {
         return SQLActionFactory.drop();
     }
+
+    public static DefaultSQLDropBuilder origin() {
+        return new DefaultSQLDropBuilder();
+    }
 }

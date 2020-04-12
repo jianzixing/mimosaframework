@@ -47,8 +47,11 @@ public class DataDefinition {
         this.columnStructure = columnStructure;
     }
 
-    public DataDefinition(DataDefinitionType type, MappingTable mappingTable, MappingField mappingField, TableColumnStructure columnStructure) {
+    public DataDefinition(DataDefinitionType type, TableStructure tableStructure,
+                          MappingTable mappingTable, MappingField mappingField,
+                          TableColumnStructure columnStructure) {
         this.type = type;
+        this.tableStructure = tableStructure;
         this.mappingTable = mappingTable;
         this.mappingField = mappingField;
         this.columnStructure = columnStructure;

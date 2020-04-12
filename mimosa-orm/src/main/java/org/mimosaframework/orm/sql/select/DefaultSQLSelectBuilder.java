@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DefaultSQLSelectBuilder
         extends
-        CommonOperatorSQLBuilder
+        CommonOperatorSQLBuilder<DefaultSQLSelectBuilder>
         implements
         RedefineSelectBuilder {
 
@@ -34,13 +34,13 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object select() {
+    public DefaultSQLSelectBuilder select() {
         this.addPoint("select");
         return this;
     }
 
     @Override
-    public Object all() {
+    public DefaultSQLSelectBuilder all() {
         this.gammars.add("all");
         StampSelectField field = new StampSelectField();
         field.fieldType = KeyFieldType.ALL;
@@ -49,7 +49,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object field(Serializable... fields) {
+    public DefaultSQLSelectBuilder field(Serializable... fields) {
         this.gammars.add("field");
         int i = 0;
         for (Serializable f : fields) {
@@ -66,7 +66,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object field(Class table, Serializable... fields) {
+    public DefaultSQLSelectBuilder field(Class table, Serializable... fields) {
         this.gammars.add("field");
         int i = 0;
         for (Serializable f : fields) {
@@ -83,7 +83,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object field(String tableAliasName, Serializable... fields) {
+    public DefaultSQLSelectBuilder field(String tableAliasName, Serializable... fields) {
         this.gammars.add("field");
         int i = 0;
         for (Serializable f : fields) {
@@ -100,7 +100,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object field(Serializable field, String fieldAliasName) {
+    public DefaultSQLSelectBuilder field(Serializable field, String fieldAliasName) {
         this.gammars.add("field");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -112,7 +112,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object field(Class table, Serializable field, String fieldAliasName) {
+    public DefaultSQLSelectBuilder field(Class table, Serializable field, String fieldAliasName) {
         this.gammars.add("field");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -124,7 +124,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object field(String tableAliasName, Serializable field, String fieldAliasName) {
+    public DefaultSQLSelectBuilder field(String tableAliasName, Serializable field, String fieldAliasName) {
         this.gammars.add("field");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -142,7 +142,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object distinct(Serializable field) {
+    public DefaultSQLSelectBuilder distinct(Serializable field) {
         this.gammars.add("distinct");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -153,7 +153,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object distinct(String tableAliasName, Serializable field) {
+    public DefaultSQLSelectBuilder distinct(String tableAliasName, Serializable field) {
         this.gammars.add("distinct");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -164,7 +164,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object distinct(Class table, Serializable field) {
+    public DefaultSQLSelectBuilder distinct(Class table, Serializable field) {
         this.gammars.add("distinct");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -175,7 +175,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object distinct(Serializable field, String fieldAliasName) {
+    public DefaultSQLSelectBuilder distinct(Serializable field, String fieldAliasName) {
         this.gammars.add("distinct");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -187,7 +187,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object distinct(String tableAliasName, Serializable field, String fieldAliasName) {
+    public DefaultSQLSelectBuilder distinct(String tableAliasName, Serializable field, String fieldAliasName) {
         this.gammars.add("distinct");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -199,7 +199,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object distinct(Class table, Serializable field, String fieldAliasName) {
+    public DefaultSQLSelectBuilder distinct(Class table, Serializable field, String fieldAliasName) {
         this.gammars.add("distinct");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
@@ -211,21 +211,21 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object column(Serializable field) {
+    public DefaultSQLSelectBuilder column(Serializable field) {
         this.gammars.add("column");
         this.column(null, null, field);
         return this;
     }
 
     @Override
-    public Object column(Class table, Serializable field) {
+    public DefaultSQLSelectBuilder column(Class table, Serializable field) {
         this.gammars.add("column");
         this.column(null, table, field);
         return this;
     }
 
     @Override
-    public Object column(String aliasName, Serializable field) {
+    public DefaultSQLSelectBuilder column(String aliasName, Serializable field) {
         this.gammars.add("column");
         this.column(aliasName, null, field);
         return this;
@@ -270,20 +270,20 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object and() {
+    public DefaultSQLSelectBuilder and() {
         this.gammars.add("and");
         this.lastWhere.nextLogic = KeyLogic.AND;
         return this;
     }
 
     @Override
-    public Object from() {
+    public DefaultSQLSelectBuilder from() {
         this.addPoint("from");
         return this;
     }
 
     @Override
-    public Object having() {
+    public DefaultSQLSelectBuilder having() {
         this.addPoint("having");
         StampWhere where = new StampWhere();
         this.having = where;
@@ -292,41 +292,41 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object limit(int pos, int len) {
+    public DefaultSQLSelectBuilder limit(int pos, int len) {
         this.addPoint("limit");
         this.stampSelect.limit = new StampLimit(pos, len);
         return this;
     }
 
     @Override
-    public Object or() {
+    public DefaultSQLSelectBuilder or() {
         this.gammars.add("or");
         this.lastWhere.nextLogic = KeyLogic.OR;
         return this;
     }
 
     @Override
-    public Object orderBy() {
+    public DefaultSQLSelectBuilder orderBy() {
         this.addPoint("orderBy");
         return this;
     }
 
     @Override
-    public Object asc() {
+    public DefaultSQLSelectBuilder asc() {
         this.gammars.add("asc");
         this.lastOrderBy.sortType = KeySortType.ASC;
         return this;
     }
 
     @Override
-    public Object desc() {
+    public DefaultSQLSelectBuilder desc() {
         this.gammars.add("desc");
         this.lastOrderBy.sortType = KeySortType.DESC;
         return this;
     }
 
     @Override
-    public Object where() {
+    public DefaultSQLSelectBuilder where() {
         this.addPoint("where");
         StampWhere where = new StampWhere();
         this.where = where;
@@ -335,13 +335,13 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object inner() {
+    public DefaultSQLSelectBuilder inner() {
         this.gammars.add("inner");
         return this;
     }
 
     @Override
-    public Object join() {
+    public DefaultSQLSelectBuilder join() {
         this.addPoint("join");
         if (this.previous("inner")) {
             this.lastJoin = new StampSelectJoin();
@@ -357,13 +357,13 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object left() {
+    public DefaultSQLSelectBuilder left() {
         this.gammars.add("left");
         return this;
     }
 
     @Override
-    public Object on() {
+    public DefaultSQLSelectBuilder on() {
         this.addPoint("on");
         if (this.getPrePoint().equals("join")) {
             this.lastWhere = new StampWhere();
@@ -379,13 +379,13 @@ public class DefaultSQLSelectBuilder
      * @return
      */
     @Override
-    public Object groupBy() {
+    public DefaultSQLSelectBuilder groupBy() {
         this.addPoint("groupBy");
         return this;
     }
 
     @Override
-    public Object table(Class table) {
+    public DefaultSQLSelectBuilder table(Class table) {
         this.gammars.add("table");
         if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
             this.lastJoin.table = table;
@@ -398,7 +398,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object table(Class table, String tableAliasName) {
+    public DefaultSQLSelectBuilder table(Class table, String tableAliasName) {
         this.gammars.add("table");
         if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
             this.lastJoin.table = table;
@@ -413,7 +413,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object as(String aliasName) {
+    public DefaultSQLSelectBuilder as(String aliasName) {
         this.gammars.add("as");
         if (this.previous("fun")) {
             this.getLastField().aliasName = aliasName;
@@ -474,49 +474,49 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public Object count(Serializable... params) {
+    public DefaultSQLSelectBuilder count(Serializable... params) {
         this.gammars.add("fun");
         this.commonFunWhere("COUNT", params);
         return this;
     }
 
     @Override
-    public Object max(Serializable... params) {
+    public DefaultSQLSelectBuilder max(Serializable... params) {
         this.gammars.add("fun");
         this.commonFunWhere("MAX", params);
         return this;
     }
 
     @Override
-    public Object avg(Serializable... params) {
+    public DefaultSQLSelectBuilder avg(Serializable... params) {
         this.gammars.add("fun");
         this.commonFunWhere("AVG", params);
         return this;
     }
 
     @Override
-    public Object sum(Serializable... params) {
+    public DefaultSQLSelectBuilder sum(Serializable... params) {
         this.gammars.add("fun");
         this.commonFunWhere("SUM", params);
         return this;
     }
 
     @Override
-    public Object min(Serializable... params) {
+    public DefaultSQLSelectBuilder min(Serializable... params) {
         this.gammars.add("fun");
         this.commonFunWhere("MIN", params);
         return this;
     }
 
     @Override
-    public Object concat(Serializable... params) {
+    public DefaultSQLSelectBuilder concat(Serializable... params) {
         this.gammars.add("fun");
         this.commonFunWhere("CONCAT", params);
         return this;
     }
 
     @Override
-    public Object substring(Serializable param, int pos, int len) {
+    public DefaultSQLSelectBuilder substring(Serializable param, int pos, int len) {
         this.gammars.add("fun");
         this.commonFunWhere("SUBSTRING", param, pos, len);
         return this;

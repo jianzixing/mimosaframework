@@ -208,11 +208,12 @@ public class PlatformExecutor {
 
     public void modifyField(MappingGlobalWrapper mappingGlobalWrapper,
                             DataSourceWrapper dswrapper,
+                            TableStructure tableStructure,
                             MappingTable mappingTable,
                             MappingField mappingField,
                             TableColumnStructure columnStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
-        dialect.define(new DataDefinition(DataDefinitionType.MODIFY_COLUMN, mappingTable, mappingField, columnStructure));
+        dialect.define(new DataDefinition(DataDefinitionType.MODIFY_COLUMN, tableStructure, mappingTable, mappingField, columnStructure));
     }
 
     public void dropField(MappingGlobalWrapper mappingGlobalWrapper,

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DefaultSQLDeleteBuilder
         extends
-        CommonOperatorSQLBuilder
+        CommonOperatorSQLBuilder<DefaultSQLDeleteBuilder>
         implements
         RedefineDeleteBuilder {
 
@@ -21,13 +21,13 @@ public class DefaultSQLDeleteBuilder
     protected StampOrderBy lastOrderBy = null;
 
     @Override
-    public Object delete() {
+    public DefaultSQLDeleteBuilder delete() {
         this.addPoint("delete");
         return this;
     }
 
     @Override
-    public Object table(Class table) {
+    public DefaultSQLDeleteBuilder table(Class table) {
         this.gammars.add("table");
         if (this.point.equals("from")) {
             this.stampFrom = new StampFrom(table);
@@ -37,33 +37,33 @@ public class DefaultSQLDeleteBuilder
     }
 
     @Override
-    public Object from() {
+    public DefaultSQLDeleteBuilder from() {
         this.addPoint("from");
         return this;
     }
 
     @Override
-    public Object where() {
+    public DefaultSQLDeleteBuilder where() {
         this.addPoint("where");
         return this;
     }
 
     @Override
-    public Object column(Serializable field) {
+    public DefaultSQLDeleteBuilder column(Serializable field) {
         this.gammars.add("column");
         this.column(null, null, field);
         return this;
     }
 
     @Override
-    public Object column(Class table, Serializable field) {
+    public DefaultSQLDeleteBuilder column(Class table, Serializable field) {
         this.gammars.add("column");
         this.column(null, table, field);
         return this;
     }
 
     @Override
-    public Object column(String aliasName, Serializable field) {
+    public DefaultSQLDeleteBuilder column(String aliasName, Serializable field) {
         this.gammars.add("column");
         this.column(aliasName, null, field);
         return this;
@@ -99,13 +99,13 @@ public class DefaultSQLDeleteBuilder
     }
 
     @Override
-    public Object and() {
+    public DefaultSQLDeleteBuilder and() {
         this.gammars.add("and");
         this.lastWhere.nextLogic = KeyLogic.AND;
         return this;
     }
 
-    public Object limit(int len) {
+    public DefaultSQLDeleteBuilder limit(int len) {
         // this.addPoint("limit");
         // this.stampDelete.limit = new StampLimit(0, len);
         // 不支持删除指定行数
@@ -113,21 +113,21 @@ public class DefaultSQLDeleteBuilder
     }
 
     @Override
-    public Object or() {
+    public DefaultSQLDeleteBuilder or() {
         this.gammars.add("or");
         this.lastWhere.nextLogic = KeyLogic.OR;
         return this;
     }
 
     @Override
-    public Object asc() {
+    public DefaultSQLDeleteBuilder asc() {
         this.gammars.add("asc");
         this.lastOrderBy.sortType = KeySortType.ASC;
         return this;
     }
 
     @Override
-    public Object desc() {
+    public DefaultSQLDeleteBuilder desc() {
         this.gammars.add("desc");
         this.lastOrderBy.sortType = KeySortType.DESC;
         return this;

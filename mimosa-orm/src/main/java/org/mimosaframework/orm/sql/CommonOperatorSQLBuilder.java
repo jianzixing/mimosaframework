@@ -7,7 +7,7 @@ import org.mimosaframework.orm.sql.stamp.StampWhere;
 
 import java.io.Serializable;
 
-public abstract class CommonOperatorSQLBuilder
+public abstract class CommonOperatorSQLBuilder<T extends CommonOperatorSQLBuilder>
         extends
         AbstractSQLBuilder
         implements
@@ -20,7 +20,7 @@ public abstract class CommonOperatorSQLBuilder
     protected StampWhere lastWhere = null;
 
     @Override
-    public Object wrapper(UnifyBuilder builder) {
+    public T wrapper(UnifyBuilder builder) {
         this.gammars.add("wrapper");
         if (builder instanceof AboutChildBuilder) {
             StampWhere where = new StampWhere();
@@ -29,139 +29,139 @@ public abstract class CommonOperatorSQLBuilder
             this.lastWhere.whereType = KeyWhereType.WRAP;
             this.lastWhere.wrapWhere = ((AboutChildBuilder) builder).getStampWhere();
         }
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object eq() {
+    public T eq() {
         this.gammars.add("operator");
         this.lastWhere.operator = "=";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object in() {
+    public T in() {
         this.gammars.add("operator");
         this.lastWhere.operator = "in";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object nin() {
+    public T nin() {
         this.gammars.add("operator");
         this.lastWhere.not = true;
         this.lastWhere.operator = "in";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object like() {
+    public T like() {
         this.gammars.add("operator");
         this.lastWhere.operator = "like";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object ne() {
+    public T ne() {
         this.gammars.add("operator");
         this.lastWhere.operator = "!=";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object gt() {
+    public T gt() {
         this.gammars.add("operator");
         this.lastWhere.operator = ">";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object gte() {
+    public T gte() {
         this.gammars.add("operator");
         this.lastWhere.operator = ">=";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object lt() {
+    public T lt() {
         this.gammars.add("operator");
         this.lastWhere.operator = "<";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object lte() {
+    public T lte() {
         this.gammars.add("operator");
         this.lastWhere.operator = "<=";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public BetweenValueBuilder between() {
+    public T between() {
         this.gammars.add("between");
         this.lastWhere.operator = "between";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public BetweenValueBuilder notBetween() {
+    public T notBetween() {
         this.gammars.add("notBetween");
         this.lastWhere.not = true;
         this.lastWhere.operator = "between";
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object section(Serializable valueA, Serializable valueB) {
+    public T section(Serializable valueA, Serializable valueB) {
         this.gammars.add("section");
         this.lastWhere.rightValue = valueA;
         this.lastWhere.rightValueEnd = valueB;
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object value(Object value) {
+    public T value(Object value) {
         this.gammars.add("value");
         this.lastWhere.whereType = KeyWhereType.NORMAL;
         this.lastWhere.rightValue = value;
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object isNull(Serializable field) {
+    public T isNull(Serializable field) {
         this.gammars.add("operator");
         StampWhere where = new StampWhere();
         this.lastWhere.next = where;
         this.lastWhere = where;
         this.lastWhere.whereType = KeyWhereType.FUN;
         this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(field));
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object isNull(Class table, Serializable field) {
+    public T isNull(Class table, Serializable field) {
         this.gammars.add("operator");
         StampWhere where = new StampWhere();
         this.lastWhere.next = where;
         this.lastWhere = where;
         this.lastWhere.whereType = KeyWhereType.FUN;
         this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(table, field));
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object isNull(String aliasName, Serializable field) {
+    public T isNull(String aliasName, Serializable field) {
         this.gammars.add("operator");
         StampWhere where = new StampWhere();
         this.lastWhere.next = where;
         this.lastWhere = where;
         this.lastWhere.whereType = KeyWhereType.FUN;
         this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object isNotNull(Serializable field) {
+    public T isNotNull(Serializable field) {
         this.gammars.add("operator");
         StampWhere where = new StampWhere();
         this.lastWhere.next = where;
@@ -169,11 +169,11 @@ public abstract class CommonOperatorSQLBuilder
         this.lastWhere.whereType = KeyWhereType.FUN;
         this.lastWhere.not = true;
         this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(field));
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object isNotNull(Class table, Serializable field) {
+    public T isNotNull(Class table, Serializable field) {
         this.gammars.add("operator");
         StampWhere where = new StampWhere();
         this.lastWhere.next = where;
@@ -181,11 +181,11 @@ public abstract class CommonOperatorSQLBuilder
         this.lastWhere.whereType = KeyWhereType.FUN;
         this.lastWhere.not = true;
         this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(table, field));
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Object isNotNull(String aliasName, Serializable field) {
+    public T isNotNull(String aliasName, Serializable field) {
         this.gammars.add("operator");
         StampWhere where = new StampWhere();
         this.lastWhere.next = where;
@@ -193,6 +193,6 @@ public abstract class CommonOperatorSQLBuilder
         this.lastWhere.whereType = KeyWhereType.FUN;
         this.lastWhere.not = true;
         this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
-        return this;
+        return (T) this;
     }
 }

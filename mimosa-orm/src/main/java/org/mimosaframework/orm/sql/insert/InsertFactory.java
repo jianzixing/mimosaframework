@@ -6,4 +6,8 @@ public class InsertFactory {
     public static InsertStartBuilder insert() {
         return SQLActionFactory.insert();
     }
+
+    public static DefaultSQLInsertBuilder origin() {
+        return new DefaultSQLInsertBuilder();
+    }
 }

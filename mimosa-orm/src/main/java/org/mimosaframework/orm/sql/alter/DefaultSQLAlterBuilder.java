@@ -22,13 +22,13 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object alter() {
+    public DefaultSQLAlterBuilder alter() {
         this.addPoint("alter");
         return this;
     }
 
     @Override
-    public Object name(Serializable value) {
+    public DefaultSQLAlterBuilder name(Serializable value) {
         this.gammars.add("name");
         if (this.previous("index") || this.previous("unique")) {
             StampAlterItem item = this.getLastItem();
@@ -41,7 +41,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object charset(String charset) {
+    public DefaultSQLAlterBuilder charset(String charset) {
         this.gammars.add("charset");
         this.stampAlter.charset = charset;
         if ("alter".equals(this.getPrePoint()) && this.point.equals("table")) {
@@ -55,21 +55,21 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object collate(String collate) {
+    public DefaultSQLAlterBuilder collate(String collate) {
         this.gammars.add("collate");
         this.stampAlter.collate = collate;
         return this;
     }
 
     @Override
-    public Object database() {
+    public DefaultSQLAlterBuilder database() {
         this.addPoint("database");
         this.stampAlter.target = KeyTarget.DATABASE;
         return this;
     }
 
     @Override
-    public Object column(Serializable field) {
+    public DefaultSQLAlterBuilder column(Serializable field) {
         this.gammars.add("column");
         StampAlterItem item = this.getLastItem();
         if (this.previous("after")) {
@@ -91,7 +91,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object columns(Serializable... fields) {
+    public DefaultSQLAlterBuilder columns(Serializable... fields) {
         this.gammars.add("columns");
         StampColumn[] columns = new StampColumn[fields.length];
         int i = 0;
@@ -105,7 +105,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object table(Class table) {
+    public DefaultSQLAlterBuilder table(Class table) {
         this.addPoint("table");
         this.stampAlter.target = KeyTarget.TABLE;
         this.stampAlter.table = table;
@@ -113,13 +113,13 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object after() {
+    public DefaultSQLAlterBuilder after() {
         this.gammars.add("after");
         return this;
     }
 
     @Override
-    public Object autoIncrement() {
+    public DefaultSQLAlterBuilder autoIncrement() {
         this.gammars.add("autoIncrement");
         if (this.previous("table")) {
             StampAlterItem item = new StampAlterItem();
@@ -133,7 +133,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object column() {
+    public DefaultSQLAlterBuilder column() {
         this.gammars.add("column");
         if (this.previous("rename")) {
             StampAlterItem item = this.getLastItem();
@@ -143,7 +143,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object add() {
+    public DefaultSQLAlterBuilder add() {
         this.addPoint("add");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.ADD;
@@ -152,7 +152,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object intType() {
+    public DefaultSQLAlterBuilder intType() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.INT;
@@ -160,7 +160,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object varchar(int len) {
+    public DefaultSQLAlterBuilder varchar(int len) {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.VARCHAR;
@@ -169,7 +169,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object charType(int len) {
+    public DefaultSQLAlterBuilder charType(int len) {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.CHAR;
@@ -178,7 +178,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object blob() {
+    public DefaultSQLAlterBuilder blob() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.BLOB;
@@ -186,7 +186,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object text() {
+    public DefaultSQLAlterBuilder text() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.TEXT;
@@ -194,7 +194,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object tinyint() {
+    public DefaultSQLAlterBuilder tinyint() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.TINYINT;
@@ -202,7 +202,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object smallint() {
+    public DefaultSQLAlterBuilder smallint() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.SMALLINT;
@@ -210,7 +210,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object bigint() {
+    public DefaultSQLAlterBuilder bigint() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.BIGINT;
@@ -218,7 +218,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object floatType() {
+    public DefaultSQLAlterBuilder floatType() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.FLOAT;
@@ -226,7 +226,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object doubleType() {
+    public DefaultSQLAlterBuilder doubleType() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.DOUBLE;
@@ -234,7 +234,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object decimal(int len, int scale) {
+    public DefaultSQLAlterBuilder decimal(int len, int scale) {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.DECIMAL;
@@ -244,7 +244,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object booleanType() {
+    public DefaultSQLAlterBuilder booleanType() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.DOUBLE;
@@ -252,7 +252,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object date() {
+    public DefaultSQLAlterBuilder date() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.DATE;
@@ -260,7 +260,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object time() {
+    public DefaultSQLAlterBuilder time() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.TIME;
@@ -268,7 +268,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object datetime() {
+    public DefaultSQLAlterBuilder datetime() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.DATETIME;
@@ -276,7 +276,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object timestamp() {
+    public DefaultSQLAlterBuilder timestamp() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.TIMESTAMP;
@@ -284,7 +284,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object comment(String comment) {
+    public DefaultSQLAlterBuilder comment(String comment) {
         this.gammars.add("comment");
         StampAlterItem item = this.getLastItem();
         item.comment = comment;
@@ -292,7 +292,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object index() {
+    public DefaultSQLAlterBuilder index() {
         this.gammars.add("index");
         StampAlterItem item = this.getLastItem();
         item.struct = KeyAlterStruct.INDEX;
@@ -310,7 +310,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object drop() {
+    public DefaultSQLAlterBuilder drop() {
         this.addPoint("drop");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.DROP;
@@ -319,7 +319,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object key() {
+    public DefaultSQLAlterBuilder key() {
         this.gammars.add("key");
         if (this.previous("primary")) {
             StampAlterItem item = this.getLastItem();
@@ -341,19 +341,19 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object primary() {
+    public DefaultSQLAlterBuilder primary() {
         this.gammars.add("primary");
         return this;
     }
 
     @Override
-    public Object to() {
+    public DefaultSQLAlterBuilder to() {
         this.gammars.add("to");
         return this;
     }
 
     @Override
-    public Object change() {
+    public DefaultSQLAlterBuilder change() {
         this.addPoint("change");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.CHANGE;
@@ -362,7 +362,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object modify() {
+    public DefaultSQLAlterBuilder modify() {
         this.addPoint("modify");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.MODIFY;
@@ -371,7 +371,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object newColumn(Serializable field) {
+    public DefaultSQLAlterBuilder newColumn(Serializable field) {
         this.gammars.add("column");
         StampAlterItem item = this.getLastItem();
         item.column = new StampColumn(field);
@@ -379,7 +379,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object oldColumn(Serializable field) {
+    public DefaultSQLAlterBuilder oldColumn(Serializable field) {
         this.gammars.add("column");
         StampAlterItem item = this.getLastItem();
         item.oldColumn = new StampColumn(field);
@@ -387,7 +387,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object rename() {
+    public DefaultSQLAlterBuilder rename() {
         this.addPoint("rename");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.RENAME;
@@ -396,7 +396,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object unique() {
+    public DefaultSQLAlterBuilder unique() {
         this.gammars.add("unique");
         if (this.getPointNext(1).equals("unique")) {
             StampAlterItem item = this.getLastItem();
@@ -407,7 +407,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object value(int number) {
+    public DefaultSQLAlterBuilder value(int number) {
         this.gammars.add("value");
         if (this.point.equals("table")) {
             StampAlterItem item = this.getLastItem();
@@ -425,13 +425,13 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object not() {
+    public DefaultSQLAlterBuilder not() {
         this.gammars.add("not");
         return this;
     }
 
     @Override
-    public Object nullable() {
+    public DefaultSQLAlterBuilder nullable() {
         this.gammars.add("nullable");
         if (this.previous("not")) {
             StampAlterItem item = this.getLastItem();
@@ -441,7 +441,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object defaultValue(String value) {
+    public DefaultSQLAlterBuilder defaultValue(String value) {
         this.gammars.add("defaultValue");
         StampAlterItem item = this.getLastItem();
         item.defaultValue = value;
@@ -449,7 +449,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public Object table(String name) {
+    public DefaultSQLAlterBuilder table(String name) {
         this.addPoint("table");
         this.stampAlter.target = KeyTarget.TABLE;
         this.stampAlter.name = name;

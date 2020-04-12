@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DefaultSQLUpdateBuilder
         extends
-        CommonOperatorSQLBuilder
+        CommonOperatorSQLBuilder<DefaultSQLUpdateBuilder>
         implements
         RedefineUpdateBuilder {
 
@@ -30,13 +30,13 @@ public class DefaultSQLUpdateBuilder
     }
 
     @Override
-    public Object update() {
+    public DefaultSQLUpdateBuilder update() {
         this.addPoint("update");
         return this;
     }
 
     @Override
-    public Object table(Class table) {
+    public DefaultSQLUpdateBuilder table(Class table) {
         this.gammars.add("table");
         if (this.point.equals("update")) {
             stampUpdate.table = new StampFrom(table);
@@ -47,21 +47,21 @@ public class DefaultSQLUpdateBuilder
     }
 
     @Override
-    public Object column(Serializable field) {
+    public DefaultSQLUpdateBuilder column(Serializable field) {
         this.gammars.add("column");
         this.column(null, null, field);
         return this;
     }
 
     @Override
-    public Object column(Class table, Serializable field) {
+    public DefaultSQLUpdateBuilder column(Class table, Serializable field) {
         this.gammars.add("column");
         this.column(null, table, field);
         return this;
     }
 
     @Override
-    public Object column(String aliasName, Serializable field) {
+    public DefaultSQLUpdateBuilder column(String aliasName, Serializable field) {
         this.gammars.add("column");
         this.column(aliasName, null, field);
         return this;
@@ -101,7 +101,7 @@ public class DefaultSQLUpdateBuilder
     }
 
     @Override
-    public Object eq() {
+    public DefaultSQLUpdateBuilder eq() {
         if (this.point.equals("set")) {
             return this;
         } else {
@@ -110,7 +110,7 @@ public class DefaultSQLUpdateBuilder
     }
 
     @Override
-    public Object value(Object value) {
+    public DefaultSQLUpdateBuilder value(Object value) {
         if (this.point.equals("set")) {
             StampUpdateItem item = this.getLastItem();
             item.value = value;
@@ -120,7 +120,7 @@ public class DefaultSQLUpdateBuilder
         }
     }
 
-    public Object limit(int len) {
+    public DefaultSQLUpdateBuilder limit(int len) {
         // this.gammars.add("limit");
         // stampUpdate.limit = new StampLimit(0, len);
         // 不支持删除指定行数
@@ -128,33 +128,33 @@ public class DefaultSQLUpdateBuilder
     }
 
     @Override
-    public Object orderBy() {
+    public DefaultSQLUpdateBuilder orderBy() {
         this.addPoint("orderBy");
         return this;
     }
 
     @Override
-    public Object set() {
+    public DefaultSQLUpdateBuilder set() {
         this.addPoint("set");
         return this;
     }
 
     @Override
-    public Object asc() {
+    public DefaultSQLUpdateBuilder asc() {
         this.gammars.add("asc");
         this.lastOrderBy.sortType = KeySortType.ASC;
         return this;
     }
 
     @Override
-    public Object desc() {
+    public DefaultSQLUpdateBuilder desc() {
         this.gammars.add("desc");
         this.lastOrderBy.sortType = KeySortType.DESC;
         return this;
     }
 
     @Override
-    public Object where() {
+    public DefaultSQLUpdateBuilder where() {
         this.addPoint("where");
         return this;
     }

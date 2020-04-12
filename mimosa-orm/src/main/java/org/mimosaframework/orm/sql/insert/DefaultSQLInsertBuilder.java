@@ -19,13 +19,13 @@ public class DefaultSQLInsertBuilder
     protected List<Object[]> values = new ArrayList<>();
 
     @Override
-    public Object insert() {
+    public DefaultSQLInsertBuilder insert() {
         this.gammars.add("insert");
         return this;
     }
 
     @Override
-    public Object columns(Serializable... fields) {
+    public DefaultSQLInsertBuilder columns(Serializable... fields) {
         this.gammars.add("columns");
         StampColumn[] columns = new StampColumn[fields.length];
         int i = 0;
@@ -38,26 +38,26 @@ public class DefaultSQLInsertBuilder
     }
 
     @Override
-    public Object table(Class table) {
+    public DefaultSQLInsertBuilder table(Class table) {
         this.gammars.add("table");
         stampInsert.table = table;
         return this;
     }
 
     @Override
-    public Object into() {
+    public DefaultSQLInsertBuilder into() {
         this.gammars.add("into");
         return this;
     }
 
     @Override
-    public Object values() {
+    public DefaultSQLInsertBuilder values() {
         this.gammars.add("values");
         return this;
     }
 
     @Override
-    public Object row(Object... values) {
+    public DefaultSQLInsertBuilder row(Object... values) {
         this.gammars.add("row");
         this.values.add(values);
         return this;

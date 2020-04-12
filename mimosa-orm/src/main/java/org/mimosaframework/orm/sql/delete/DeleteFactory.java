@@ -6,4 +6,8 @@ public class DeleteFactory {
     public static DeleteStartBuilder delete() {
         return SQLActionFactory.delete();
     }
+
+    public static DefaultSQLDeleteBuilder origin() {
+        return new DefaultSQLDeleteBuilder();
+    }
 }
