@@ -78,12 +78,20 @@ public class TableColumnStructure {
         return isNullable;
     }
 
+    public boolean isNullable() {
+        return "Y".equals(isNullable);
+    }
+
     public void setIsNullable(String isNullable) {
         this.isNullable = isNullable;
     }
 
     public String getAutoIncrement() {
         return autoIncrement;
+    }
+
+    public boolean isAutoIncrement() {
+        return "Y".equals(autoIncrement);
     }
 
     public void setAutoIncrement(String autoIncrement) {

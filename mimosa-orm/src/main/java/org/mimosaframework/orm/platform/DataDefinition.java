@@ -105,4 +105,20 @@ public class DataDefinition {
     public void setTableStructure(TableStructure tableStructure) {
         this.tableStructure = tableStructure;
     }
+
+    public MappingIndex getMappingIndex() {
+        return mappingIndex;
+    }
+
+    public void setMappingIndex(MappingIndex mappingIndex) {
+        this.mappingIndex = mappingIndex;
+    }
+
+    public TableIndexStructure getIndexStructure() {
+        return indexStructure;
+    }
+
+    public void setIndexStructure(TableIndexStructure indexStructure) {
+        this.indexStructure = indexStructure;
+    }
 }

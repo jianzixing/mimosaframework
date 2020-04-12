@@ -346,4 +346,13 @@ public class DefaultSQLCreateBuilder
         this.stampCreate.comment = comment;
         return this;
     }
+
+    @Override
+    public Object table(String name) {
+        this.gammars.add("table");
+        if (this.point.equals("index")) {
+            this.stampCreate.name = name;
+        }
+        return this;
+    }
 }

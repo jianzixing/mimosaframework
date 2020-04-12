@@ -4,6 +4,7 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.sql.StructureBuilder;
 import org.mimosaframework.orm.sql.UnifyBuilder;
@@ -289,6 +290,27 @@ public abstract class PlatformDialect {
     protected StampAlter commonDropColumn(MappingTable mappingTable, TableColumnStructure structure) {
         return (StampAlter) AlterFactory.alter().table(mappingTable.getMappingTableName())
                 .drop().column(structure.getColumnName()).compile();
+    }
+
+    protected StampCreate commonAddIndex(MappingTable mappingTable, MappingIndex mappingIndex) {
+        String tableName = mappingTable.getMappingTableName();
+        String indexName = mappingIndex.getIndexName();
+        List<MappingField> fields = mappingIndex.getIndexColumns();
+        String[] columns = new String[fields.size()];
+        int i = 0;
+        for (MappingField field : fields) {
+            columns[i] = field.getMappingColumnName();
+            i++;
+        }
+        StampCreate sql = (StampCreate) CreateFactory.create()
+                .index().name(indexName).on().table(tableName).columns(columns).compile();
+        return sql;
+    }
+
+    protected StampDrop commonDropIndex(MappingTable mappingTable, TableIndexStructure structure) {
+        String tableName = mappingTable.getMappingTableName();
+        String indexName = structure.getIndexName();
+        return (StampDrop) DropFactory.drop().index().name(indexName).on().table(tableName);
     }
 
     public abstract SQLBuilderCombine alter(StampAlter alter);

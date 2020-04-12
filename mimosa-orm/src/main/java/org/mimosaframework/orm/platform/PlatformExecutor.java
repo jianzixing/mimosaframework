@@ -7,8 +7,6 @@ import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.sql.stamp.*;
 
-import java.math.BigDecimal;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -72,7 +70,7 @@ public class PlatformExecutor {
                                     }
 
                                     if (StringTools.isEmpty(columnStructure.getIsNullable()) != currField.isMappingFieldNullable()
-                                            || columnStructure.getIsNullable().equals("Y") != currField.isMappingFieldNullable()) {
+                                            || columnStructure.isNullable() != currField.isMappingFieldNullable()) {
                                         columnEditTypes.add(ColumnEditType.ISNULL);
                                     }
                                     if ((StringTools.isEmpty(columnStructure.getDefaultValue()) && StringTools.isNotEmpty(currField.getMappingFieldDefaultValue()))
@@ -81,7 +79,7 @@ public class PlatformExecutor {
                                         columnEditTypes.add(ColumnEditType.DEF_VALUE);
                                     }
                                     if (StringTools.isNotEmpty(columnStructure.getAutoIncrement()) == currField.isMappingAutoIncrement()
-                                            || !columnStructure.getAutoIncrement().equals("Y") != currField.isMappingAutoIncrement()) {
+                                            || !columnStructure.isAutoIncrement() != currField.isMappingAutoIncrement()) {
                                         columnEditTypes.add(ColumnEditType.AUTO_INCREMENT);
                                     }
                                     if ((StringTools.isEmpty(columnStructure.getComment()) && StringTools.isNotEmpty(currField.getMappingFieldComment()))

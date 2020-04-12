@@ -98,20 +98,25 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 this.runner(stampAlter);
             }
             if (type == DataDefinitionType.MODIFY_COLUMN) {
-
+                
             }
             if (type == DataDefinitionType.DROP_COLUMN) {
                 StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), definition.getColumnStructure());
                 this.runner(stampAlter);
             }
             if (type == DataDefinitionType.ADD_INDEX) {
-
+                StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
+                this.runner(sql);
             }
             if (type == DataDefinitionType.MODIFY_INDEX) {
-
+                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexStructure());
+                this.runner(stampDrop);
+                StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
+                this.runner(sql);
             }
             if (type == DataDefinitionType.DROP_INDEX) {
-
+                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexStructure());
+                this.runner(stampDrop);
             }
         }
     }

@@ -6,5 +6,5 @@ public interface DropAnyBuilder
         extends
         DatabaseBuilder<DropDatabaseBuilder<UnifyBuilder>>,
         TableBuilder<DropTableBuilder<UnifyBuilder>>,
-        IndexBuilder<AbsNameBuilder<OnBuilder<AbsTableBuilder<UnifyBuilder>>>> {
+        IndexBuilder<AbsNameBuilder<OnBuilder<DropTableNameBuilder<UnifyBuilder>>>> {
 }
