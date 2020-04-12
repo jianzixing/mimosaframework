@@ -35,15 +35,22 @@ public class DataDefinition {
         this.tableStructure = tableStructure;
     }
 
-    public DataDefinition(DataDefinitionType type, MappingTable mappingTable, MappingField mappingField) {
+    public DataDefinition(DataDefinitionType type,
+                          MappingTable mappingTable,
+                          TableStructure tableStructure,
+                          MappingField mappingField) {
         this.type = type;
+        this.tableStructure = tableStructure;
         this.mappingTable = mappingTable;
         this.mappingField = mappingField;
     }
 
-    public DataDefinition(DataDefinitionType type, MappingTable mappingTable, TableColumnStructure columnStructure) {
+    public DataDefinition(DataDefinitionType type, MappingTable mappingTable,
+                          TableStructure tableStructure,
+                          TableColumnStructure columnStructure) {
         this.type = type;
         this.mappingTable = mappingTable;
+        this.tableStructure = tableStructure;
         this.columnStructure = columnStructure;
     }
 

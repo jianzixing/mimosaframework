@@ -9,6 +9,8 @@ import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
 
 public class MysqlPlatformDialect extends PlatformDialect {
     public MysqlPlatformDialect() {
@@ -90,6 +92,13 @@ public class MysqlPlatformDialect extends PlatformDialect {
                     stampCreate.extra = "ENGINE=InnoDB";
                 }
                 this.runner(stampCreate);
+                Set<MappingField> mappingFields = mappingTable.getMappingFields();
+                for (MappingField mappingField : mappingFields) {
+                    if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
+                        this.triggerIncrAndKeys(type, definition.getMappingTable(),
+                                null, mappingField, null);
+                    }
+                }
             }
             if (type == DataDefinitionType.DROP_TABLE) {
                 TableStructure tableStructure = definition.getTableStructure();
@@ -99,6 +108,9 @@ public class MysqlPlatformDialect extends PlatformDialect {
             if (type == DataDefinitionType.ADD_COLUMN) {
                 StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), definition.getMappingField());
                 this.runner(stampAlter);
+
+                this.triggerIncrAndKeys(type, definition.getMappingTable(), definition.getTableStructure(),
+                        definition.getMappingField(), null);
             }
             if (type == DataDefinitionType.MODIFY_COLUMN) {
                 TableStructure tableStructure = definition.getTableStructure();
@@ -131,13 +143,6 @@ public class MysqlPlatformDialect extends PlatformDialect {
                     }
                 }
 
-                if (mappingField.isMappingFieldPrimaryKey() == tableStructure.isPrimaryKeyColumn(columnStructure.getColumnName())) {
-                    // ColumnEditType.PRIMARY_KEY
-                    if (mappingField.isMappingFieldPrimaryKey()) {
-                        
-                    }
-                }
-
                 if ((StringTools.isEmpty(columnStructure.getDefaultValue()) && StringTools.isNotEmpty(mappingField.getMappingFieldDefaultValue()))
                         || (StringTools.isNotEmpty(columnStructure.getDefaultValue())
                         && !columnStructure.getDefaultValue().equals(mappingField.getMappingFieldDefaultValue()))) {
@@ -161,10 +166,15 @@ public class MysqlPlatformDialect extends PlatformDialect {
                         sql.comment(mappingField.getMappingFieldComment());
                     }
                 }
+
+                this.triggerIncrAndKeys(type, definition.getMappingTable(), definition.getTableStructure(),
+                        definition.getMappingField(), columnStructure);
             }
             if (type == DataDefinitionType.DROP_COLUMN) {
                 StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), definition.getColumnStructure());
                 this.runner(stampAlter);
+                this.triggerIncrAndKeys(type, definition.getMappingTable(), definition.getTableStructure(),
+                        definition.getMappingField(), definition.getColumnStructure());
             }
             if (type == DataDefinitionType.ADD_INDEX) {
                 StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
@@ -181,5 +191,22 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 this.runner(stampDrop);
             }
         }
+    }
+
+    @Override
+    protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) {
+        
+    }
+
+    @Override
+    protected void rebuildAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) {
+    }
+
+    @Override
+    protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) {
+    }
+
+    @Override
+    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) {
     }
 }

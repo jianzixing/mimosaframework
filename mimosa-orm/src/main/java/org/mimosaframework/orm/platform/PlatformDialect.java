@@ -254,6 +254,45 @@ public abstract class PlatformDialect {
         JavaType2ColumnType.getColumnTypeByJava(type, typeBuilder, length, scale);
     }
 
+    protected List<MappingField> getPrimaryKeyByMappingTable(MappingTable mappingTable) {
+        return mappingTable.getMappingPrimaryKeyFields();
+    }
+
+    protected boolean isSamePrimaryKey(MappingTable mappingTable, TableStructure structure) {
+        List<MappingField> mappingFields = this.getPrimaryKeyByMappingTable(mappingTable);
+        List<TableConstraintStructure> constraintStructures = structure.getConstraintStructures();
+        if (mappingFields.size() == constraintStructures.size()) {
+            for (MappingField mappingField : mappingFields) {
+                boolean is = false;
+                for (TableConstraintStructure cs : constraintStructures) {
+                    if (mappingField.getMappingColumnName().equalsIgnoreCase(cs.getColumnName())) {
+                        is = true;
+                        break;
+                    }
+                }
+                if (!is) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected boolean isSameAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) {
+        Set<MappingField> mappingFields = mappingTable.getMappingFields();
+        List<TableColumnStructure> columnStructures = tableStructure.getColumnStructures();
+        for (MappingField mappingField : mappingFields) {
+            for (TableColumnStructure columnStructure : columnStructures) {
+                if (mappingField.isMappingAutoIncrement()
+                        && columnStructure.isAutoIncrement()
+                        && mappingField.getMappingColumnName().equalsIgnoreCase(columnStructure.getColumnName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     protected StampDrop commonDropTable(TableStructure structure) {
         return (StampDrop) DropFactory.drop().table().table(structure.getTableName()).compile();
     }
@@ -277,7 +316,7 @@ public abstract class PlatformDialect {
             sql.not();
             sql.nullable();
         }
-        if (pk) {
+        if (pk && this.getPrimaryKeyByMappingTable(mappingTable).size() == 1) {
             sql.primary().key();
         }
         if (autoIncr) sql.autoIncrement();
@@ -315,6 +354,111 @@ public abstract class PlatformDialect {
         String tableName = mappingTable.getMappingTableName();
         String indexName = structure.getIndexName();
         return (StampDrop) DropFactory.drop().index().name(indexName).on().table(tableName);
+    }
+
+    protected void triggerIncrAndKeys(DataDefinitionType type,
+                                      MappingTable mappingTable,
+                                      TableStructure tableStructure,
+                                      MappingField mappingField,
+                                      TableColumnStructure columnStructure) {
+
+        if (type == DataDefinitionType.ADD_COLUMN || type == DataDefinitionType.MODIFY_INDEX) {
+            if (mappingTable != null && tableStructure != null) {
+                boolean isSamePK = this.isSamePrimaryKey(mappingTable, tableStructure);
+                if (!isSamePK) {
+                    // 重新修改主键
+                    this.rebuildPrimaryKey(mappingTable, tableStructure);
+                }
+                boolean isSameIncr = this.isSameAutoIncrement(mappingTable, tableStructure);
+                if (!isSameIncr) {
+                    // 重新修改自增列
+                    this.rebuildAutoIncrement(mappingTable, tableStructure);
+                }
+            }
+        }
+
+        if (type == DataDefinitionType.MODIFY_COLUMN
+                || type == DataDefinitionType.ADD_COLUMN
+                || type == DataDefinitionType.CREATE_TABLE) {
+            if (mappingField != null) {
+                boolean onlyPK = false;
+                if (tableStructure != null) {
+                    onlyPK = tableStructure.isOnlyPrimaryKey(mappingField.getMappingColumnName());
+                }
+                boolean unique = false;
+                if (tableStructure != null) {
+                    unique = tableStructure.isOnlyUniqueIndex(mappingField.getMappingColumnName());
+                }
+                boolean index = false;
+                if (tableStructure != null) {
+                    index = tableStructure.isOnlyNormalIndex(mappingField.getMappingColumnName());
+                }
+
+                List<MappingField> pkFields = mappingTable.getMappingPrimaryKeyFields();
+                if (!(pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey())
+                        && mappingField.isMappingFieldUnique() != unique) {
+                    if (mappingField.isMappingFieldUnique()) {
+                        this.createIndex(mappingTable, mappingField, true);
+                    }
+                    if (unique) {
+                        this.dropIndex(mappingTable, mappingField);
+                    }
+                }
+
+                if (!(pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey())
+                        && !mappingField.isMappingFieldUnique()) {
+                    if (mappingField.isMappingFieldIndex() != index) {
+                        this.createIndex(mappingTable, mappingField, false);
+                    }
+                }
+
+                if (((pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey()) && (unique || index))
+                        || (mappingField.isMappingFieldUnique() && index)) {
+                    this.dropIndex(mappingTable, mappingField);
+                }
+            }
+        }
+    }
+
+    /**
+     * 修改删除表字段时可能需要重新创建主键
+     *
+     * @param mappingTable
+     * @param tableStructure
+     */
+    protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) {
+
+    }
+
+    /**
+     * 修改删除表字段时可能需要重新创建自增列
+     *
+     * @param mappingTable
+     * @param tableStructure
+     */
+    protected void rebuildAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) {
+
+    }
+
+    /**
+     * 修改删除表字段时可能需要重新创建单列索引
+     *
+     * @param mappingTable
+     * @param mappingField
+     * @param unique
+     */
+    protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) {
+
+    }
+
+    /**
+     * 修改删除表字段时可能需要重新删除单列索引
+     *
+     * @param mappingTable
+     * @param mappingField
+     */
+    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) {
+
     }
 
     public abstract SQLBuilderCombine alter(StampAlter alter);

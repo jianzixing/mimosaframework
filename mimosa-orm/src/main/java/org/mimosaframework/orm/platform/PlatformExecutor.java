@@ -201,15 +201,16 @@ public class PlatformExecutor {
     public void createField(MappingGlobalWrapper mappingGlobalWrapper,
                             DataSourceWrapper dswrapper,
                             MappingTable mappingTable,
+                            TableStructure tableStructure,
                             MappingField mappingField) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
-        dialect.define(new DataDefinition(DataDefinitionType.ADD_COLUMN, mappingTable, mappingField));
+        dialect.define(new DataDefinition(DataDefinitionType.ADD_COLUMN, mappingTable, tableStructure, mappingField));
     }
 
     public void modifyField(MappingGlobalWrapper mappingGlobalWrapper,
                             DataSourceWrapper dswrapper,
-                            TableStructure tableStructure,
                             MappingTable mappingTable,
+                            TableStructure tableStructure,
                             MappingField mappingField,
                             TableColumnStructure columnStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
@@ -219,9 +220,10 @@ public class PlatformExecutor {
     public void dropField(MappingGlobalWrapper mappingGlobalWrapper,
                           DataSourceWrapper dswrapper,
                           MappingTable mappingTable,
+                          TableStructure tableStructure,
                           TableColumnStructure columnStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
-        dialect.define(new DataDefinition(DataDefinitionType.DROP_COLUMN, mappingTable, columnStructure));
+        dialect.define(new DataDefinition(DataDefinitionType.DROP_COLUMN, mappingTable, tableStructure, columnStructure));
     }
 
     public void createIndex(MappingGlobalWrapper mappingGlobalWrapper,

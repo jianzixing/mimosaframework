@@ -26,6 +26,8 @@ public interface MappingField {
 
     boolean isMappingAutoIncrement();
 
+    boolean isMappingFieldIndex();
+
     boolean isMappingFieldUnique();
 
     void applyFromClassField(MappingField field);

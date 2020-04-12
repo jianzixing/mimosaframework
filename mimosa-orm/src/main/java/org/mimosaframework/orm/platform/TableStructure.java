@@ -125,4 +125,97 @@ public class TableStructure {
         }
         return false;
     }
+
+    public List<TableConstraintStructure> getPrimaryKey() {
+        if (constraintStructures != null) {
+            List<TableConstraintStructure> structures = new ArrayList<>();
+            for (TableConstraintStructure constraintStructure : constraintStructures) {
+                if ("P".equals(constraintStructure.getType())) {
+                    structures.add(constraintStructure);
+                }
+            }
+            return structures;
+        }
+        return null;
+    }
+
+    public boolean isUniqueColumn(String mappingColumnName) {
+        if (constraintStructures != null) {
+            for (TableConstraintStructure constraintStructure : constraintStructures) {
+                if (mappingColumnName.equalsIgnoreCase(constraintStructure.getColumnName())
+                        && "U".equals(constraintStructure.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isOnlyNormalIndex(String mappingColumnName) {
+        if (indexStructures != null) {
+            int c = 0;
+            for (TableIndexStructure indexStructure : indexStructures) {
+                if (mappingColumnName.equalsIgnoreCase(indexStructure.getColumnName())
+                        && "D".equals(indexStructure.getType())) {
+                    c++;
+                }
+            }
+            if (c == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isOnlyUniqueIndex(String mappingColumnName) {
+        if (indexStructures != null) {
+            int c = 0;
+            for (TableIndexStructure indexStructure : indexStructures) {
+                if (mappingColumnName.equalsIgnoreCase(indexStructure.getColumnName())
+                        && "U".equals(indexStructure.getType())) {
+                    c++;
+                }
+            }
+            if (c == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isOnlyPrimaryKey(String mappingColumnName) {
+        if (constraintStructures != null) {
+            int c = 0;
+            for (TableConstraintStructure constraintStructure : constraintStructures) {
+                if (mappingColumnName.equalsIgnoreCase(constraintStructure.getColumnName())
+                        && "P".equals(constraintStructure.getType())) {
+                    c++;
+                }
+            }
+            if (c == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isOnlyNotNormalIndex(String mappingColumnName) {
+        if (indexStructures != null) {
+            int c1 = 0, c2 = 0;
+            for (TableIndexStructure indexStructure : indexStructures) {
+                if (mappingColumnName.equalsIgnoreCase(indexStructure.getColumnName())
+                        && "P".equals(indexStructure.getType())) {
+                    c1++;
+                }
+                if (mappingColumnName.equalsIgnoreCase(indexStructure.getColumnName())
+                        && "U".equals(indexStructure.getType())) {
+                    c2++;
+                }
+            }
+            if (c1 == 1 || c2 == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
