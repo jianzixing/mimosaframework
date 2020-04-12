@@ -142,7 +142,6 @@ public class BeanAppContext implements Context {
     }
 
     protected void checkDBMapping() throws ContextException {
-
         try {
             MimosaDataSource dataSource = this.contextValues.getDefaultDataSourceWrapper(false).getDataSource();
             FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(dataSource);
@@ -152,6 +151,7 @@ public class BeanAppContext implements Context {
             if (mappingDatabase != null) {
                 StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
                         contextValues.getMappingLevel(),
+                        contextValues.mappingGlobalWrapper,
                         contextValues.getDefaultDataSourceWrapper(false)
                 );
                 compareMapping.doMapping();

@@ -155,21 +155,26 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
                                   MappingGlobalWrapper wrapper,
                                   StampAlter alter,
                                   StampAlterItem column) {
-        sb.append(" " + this.getColumnName(wrapper, alter, column.column));
-        if (column.columnType != null) {
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
-        }
-        if (!column.nullable) {
-            sb.append(" NOT NULL");
-        }
-        if (column.autoIncrement) {
-            sb.append(" AUTO_INCREMENT");
-        }
-        if (column.pk) {
-            sb.append(" PRIMARY KEY");
-        }
-        if (StringTools.isNotEmpty(column.defaultValue)) {
-            sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+        if (column.timeForUpdate) {
+            sb.append(" TIMESTAMP");
+            sb.append(" NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+        } else {
+            sb.append(" " + this.getColumnName(wrapper, alter, column.column));
+            if (column.columnType != null) {
+                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            }
+            if (!column.nullable) {
+                sb.append(" NOT NULL");
+            }
+            if (column.autoIncrement) {
+                sb.append(" AUTO_INCREMENT");
+            }
+            if (column.pk) {
+                sb.append(" PRIMARY KEY");
+            }
+            if (StringTools.isNotEmpty(column.defaultValue)) {
+                sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+            }
         }
         if (StringTools.isNotEmpty(column.comment)) {
             sb.append(" COMMENT \"" + column.comment + "\"");

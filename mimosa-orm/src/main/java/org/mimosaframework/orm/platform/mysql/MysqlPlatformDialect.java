@@ -9,7 +9,6 @@ import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Set;
 
 public class MysqlPlatformDialect extends PlatformDialect {
@@ -17,8 +16,6 @@ public class MysqlPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.INT, "INT");
         registerColumnType(KeyColumnType.VARCHAR, "VARCHAR");
         registerColumnType(KeyColumnType.CHAR, "CHAR");
-        registerColumnType(KeyColumnType.BLOB, "BLOB");
-        registerColumnType(KeyColumnType.TEXT, "TEXT");
         registerColumnType(KeyColumnType.TINYINT, "TINYINT");
         registerColumnType(KeyColumnType.SMALLINT, "SMALLINT");
         registerColumnType(KeyColumnType.BIGINT, "BIGINT");
@@ -30,6 +27,13 @@ public class MysqlPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.TIME, "TIME");
         registerColumnType(KeyColumnType.DATETIME, "DATETIME");
         registerColumnType(KeyColumnType.TIMESTAMP, "TIMESTAMP");
+
+        registerColumnType(KeyColumnType.BLOB, "BLOB");
+        registerColumnType(KeyColumnType.MEDIUMBLOB, "MEDIUMBLOB");
+        registerColumnType(KeyColumnType.LONGBLOB, "LONGBLOB");
+        registerColumnType(KeyColumnType.TEXT, "TEXT");
+        registerColumnType(KeyColumnType.MEDIUMTEXT, "MEDIUMTEXT");
+        registerColumnType(KeyColumnType.LONGTEXT, "LONGTEXT");
     }
 
     @Override

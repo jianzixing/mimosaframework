@@ -23,7 +23,7 @@ public class SessionTemplateTesting {
             if (1 == 2) {
                 config = "/db2-template-mimosa.xml";
             }
-            if (1 == 1) {
+            if (1 == 2) {
                 config = "/oracle-template-mimosa.xml";
             }
             if (1 == 2) {
@@ -40,6 +40,11 @@ public class SessionTemplateTesting {
             template = new MimosaSessionTemplate();
             ((MimosaSessionTemplate) template).setSessionFactory(sessionFactory);
         }
+    }
+
+    @Test
+    public void testEmpty() {
+        System.out.println("");
     }
 
     @Test

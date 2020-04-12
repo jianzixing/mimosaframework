@@ -83,7 +83,7 @@ public class MysqlStampStructure implements StampCombineBuilder {
                             " WHEN A.CONSTRAINT_TYPE = 'CHECK' THEN 'C'" +
                             " WHEN A.CONSTRAINT_TYPE = 'FOREIGN KEY' THEN 'F' END) AS TYPE " +
                             "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS A " +
-                            "LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND A.TABLE_SCHEMA = B.TABLE_SCHEMA " +
+                            "LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME AND A.TABLE_SCHEMA = B.TABLE_SCHEMA AND A.TABLE_NAME=B.TABLE_NAME " +
                             "WHERE A.TABLE_NAME IN (" + this.getTableNames(structure) + ")"
             );
             if (StringTools.isNotEmpty(schema)) {

@@ -48,6 +48,7 @@ public class DataSourceWrapper {
                 return;
             }
             this.connection.close();
+            this.connection = null;
         }
     }
 

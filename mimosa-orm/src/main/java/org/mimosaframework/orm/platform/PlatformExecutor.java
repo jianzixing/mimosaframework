@@ -1,6 +1,9 @@
 package org.mimosaframework.orm.platform;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
@@ -15,6 +18,7 @@ import java.util.*;
  * 以及CURD操作
  */
 public class PlatformExecutor {
+    private static final Log logger = LogFactory.getLog(PlatformExecutor.class);
 
     public void compareTableStructure(MappingGlobalWrapper mapping,
                                       DataSourceWrapper dswrapper,
@@ -50,7 +54,7 @@ public class PlatformExecutor {
                             if (mappingFields != null) {
                                 MappingField currField = null;
                                 for (MappingField field : mappingFields) {
-                                    String mappingFieldName = field.getMappingFieldName();
+                                    String mappingFieldName = field.getMappingColumnName();
                                     String fieldName = columnStructure.getColumnName();
                                     if (mappingFieldName.equalsIgnoreCase(fieldName)) {
                                         currField = field;
@@ -63,32 +67,36 @@ public class PlatformExecutor {
                                 if (currField != null) {
                                     List<ColumnEditType> columnEditTypes = new ArrayList<>();
                                     ColumnType columnType = dialect.getColumnType(JavaType2ColumnType.getColumnTypeByJava(currField.getMappingFieldType()));
-                                    if (columnStructure.getTypeName()
-                                            .equalsIgnoreCase(columnType.getTypeName())
+                                    if (columnType == null) {
+                                        throw new IllegalArgumentException(I18n.print("platform_executor_empty_type", currField.getMappingFieldType().getSimpleName()));
+                                    }
+                                    if (!columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName())
                                             || columnStructure.getLength() != currField.getMappingFieldLength()
                                             || columnStructure.getScale() != currField.getDatabaseColumnDecimalDigits()) {
                                         columnEditTypes.add(ColumnEditType.TYPE);
                                     }
 
-                                    if (StringTools.isEmpty(columnStructure.getIsNullable()) != currField.isMappingFieldNullable()
-                                            || columnStructure.isNullable() != currField.isMappingFieldNullable()) {
+                                    boolean nullable = columnStructure.isNullable();
+                                    boolean isPk = structure.isPrimaryKeyColumn(columnStructure.getColumnName());
+                                    if (!isPk && nullable != currField.isMappingFieldNullable()) {
                                         columnEditTypes.add(ColumnEditType.ISNULL);
                                     }
-                                    if ((StringTools.isEmpty(columnStructure.getDefaultValue()) && StringTools.isNotEmpty(currField.getMappingFieldDefaultValue()))
-                                            || (StringTools.isNotEmpty(columnStructure.getDefaultValue())
-                                            && !columnStructure.getDefaultValue().equals(currField.getMappingFieldDefaultValue()))) {
+
+                                    String defA = currField.getMappingFieldDefaultValue();
+                                    String defB = columnStructure.getDefaultValue();
+                                    if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
                                         columnEditTypes.add(ColumnEditType.DEF_VALUE);
                                     }
-                                    if (StringTools.isNotEmpty(columnStructure.getAutoIncrement()) == currField.isMappingAutoIncrement()
-                                            || !columnStructure.isAutoIncrement() != currField.isMappingAutoIncrement()) {
+                                    if (columnStructure.isAutoIncrement() != currField.isMappingAutoIncrement()) {
                                         columnEditTypes.add(ColumnEditType.AUTO_INCREMENT);
                                     }
-                                    if ((StringTools.isEmpty(columnStructure.getComment()) && StringTools.isNotEmpty(currField.getMappingFieldComment()))
-                                            || (StringTools.isNotEmpty(columnStructure.getComment())
-                                            && !columnStructure.getComment().equals(currField.getMappingFieldComment()))) {
+
+                                    String cmtA = currField.getMappingFieldComment();
+                                    String cmtB = columnStructure.getComment();
+                                    if ((StringTools.isNotEmpty(cmtA) && !cmtA.equals(cmtB)) || (StringTools.isNotEmpty(cmtB) && !cmtB.equals(cmtA))) {
                                         columnEditTypes.add(ColumnEditType.COMMENT);
                                     }
-                                    if (currField.isMappingFieldPrimaryKey() == structure.isPrimaryKeyColumn(columnStructure.getColumnName())) {
+                                    if (currField.isMappingFieldPrimaryKey() != isPk) {
                                         columnEditTypes.add(ColumnEditType.PRIMARY_KEY);
                                     }
 

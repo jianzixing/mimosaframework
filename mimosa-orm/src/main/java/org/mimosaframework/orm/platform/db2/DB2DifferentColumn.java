@@ -2,13 +2,12 @@ package org.mimosaframework.orm.platform.db2;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.platform.DifferentColumn;
-import org.mimosaframework.orm.platform.MediumText;
-import org.mimosaframework.orm.platform.Text;
+import org.mimosaframework.orm.platform.SupportMediumText;
+import org.mimosaframework.orm.platform.SupportText;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,8 +19,8 @@ public class DB2DifferentColumn implements DifferentColumn {
     protected static final Map<Class, String> TYPES_MAPPING = new HashMap<Class, String>();
 
     static {
-        TYPES_MAPPING.put(Text.class, "CLOB");
-        TYPES_MAPPING.put(MediumText.class, "CLOB");
+        TYPES_MAPPING.put(SupportText.class, "CLOB");
+        TYPES_MAPPING.put(SupportMediumText.class, "CLOB");
         TYPES_MAPPING.put(Double.class, "DOUBLE");
         TYPES_MAPPING.put(double.class, "DOUBLE");
         TYPES_MAPPING.put(BigDecimal.class, "DECIMAL");
@@ -151,8 +150,8 @@ public class DB2DifferentColumn implements DifferentColumn {
         if (typeClass.equals(BigDecimal.class)) return true;
         if (typeClass.equals(String.class)) return true;
         if (typeClass.equals(char.class)) return true;
-        if (typeClass.equals(Text.class)) return true;
-        if (typeClass.equals(MediumText.class)) return true;
+        if (typeClass.equals(SupportText.class)) return true;
+        if (typeClass.equals(SupportMediumText.class)) return true;
         return false;
     }
 
@@ -170,9 +169,9 @@ public class DB2DifferentColumn implements DifferentColumn {
                     }
                     return "" + maxLength + "," + field.getMappingFieldDecimalDigits();
                 }
-            } else if (field.getMappingFieldType() == Text.class) {
+            } else if (field.getMappingFieldType() == SupportText.class) {
                 return "64K";
-            } else if (field.getMappingFieldType() == MediumText.class) {
+            } else if (field.getMappingFieldType() == SupportMediumText.class) {
                 return "16M";
             } else {
                 return "" + field.getMappingFieldLength();

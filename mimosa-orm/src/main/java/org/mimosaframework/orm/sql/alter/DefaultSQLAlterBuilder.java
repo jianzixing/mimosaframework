@@ -186,10 +186,42 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
+    public Object mediumBlob() {
+        this.gammars.add("type");
+        StampAlterItem item = this.getLastItem();
+        item.columnType = KeyColumnType.MEDIUMBLOB;
+        return this;
+    }
+
+    @Override
+    public Object longBlob() {
+        this.gammars.add("type");
+        StampAlterItem item = this.getLastItem();
+        item.columnType = KeyColumnType.LONGBLOB;
+        return this;
+    }
+
+    @Override
     public DefaultSQLAlterBuilder text() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
         item.columnType = KeyColumnType.TEXT;
+        return this;
+    }
+
+    @Override
+    public Object mediumText() {
+        this.gammars.add("type");
+        StampAlterItem item = this.getLastItem();
+        item.columnType = KeyColumnType.MEDIUMTEXT;
+        return this;
+    }
+
+    @Override
+    public Object longText() {
+        this.gammars.add("type");
+        StampAlterItem item = this.getLastItem();
+        item.columnType = KeyColumnType.LONGTEXT;
         return this;
     }
 

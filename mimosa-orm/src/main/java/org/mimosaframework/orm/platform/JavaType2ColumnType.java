@@ -5,6 +5,7 @@ import org.mimosaframework.orm.sql.stamp.KeyColumnType;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
+import java.sql.Clob;
 
 public class JavaType2ColumnType {
     public static KeyColumnType getColumnTypeByJava(Class c) {
@@ -27,13 +28,29 @@ public class JavaType2ColumnType {
             if (builder != null) builder.charType(length);
             return KeyColumnType.CHAR;
         }
-        if (c.equals(Blob.class)) {
+        if (c.equals(Blob.class) || c.equals(SupportBlob.class)) {
             if (builder != null) builder.blob();
             return KeyColumnType.BLOB;
         }
-        if (c.equals(Text.class)) {
+        if (c.equals(SupportMediumBlob.class)) {
+            if (builder != null) builder.blob();
+            return KeyColumnType.MEDIUMBLOB;
+        }
+        if (c.equals(SupportLongBlob.class)) {
+            if (builder != null) builder.blob();
+            return KeyColumnType.LONGBLOB;
+        }
+        if (c.equals(Clob.class) || c.equals(SupportText.class)) {
             if (builder != null) builder.text();
             return KeyColumnType.TEXT;
+        }
+        if (c.equals(SupportMediumText.class)) {
+            if (builder != null) builder.text();
+            return KeyColumnType.MEDIUMTEXT;
+        }
+        if (c.equals(SupportLongText.class)) {
+            if (builder != null) builder.text();
+            return KeyColumnType.LONGTEXT;
         }
         if (c.equals(Byte.class) || c.equals(byte.class)) {
             if (builder != null) builder.tinyint();

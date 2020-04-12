@@ -12,4 +12,6 @@ public class StampTableColumn {
     public boolean pk = false;
     public boolean key = false;
     public String comment;
+
+    public boolean timeForUpdate = false;
 }

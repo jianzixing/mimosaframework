@@ -236,10 +236,42 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
+    public Object mediumBlob() {
+        this.gammars.add("type");
+        StampCreateColumn column = this.getLastColumn();
+        column.columnType = KeyColumnType.MEDIUMBLOB;
+        return this;
+    }
+
+    @Override
+    public Object longBlob() {
+        this.gammars.add("type");
+        StampCreateColumn column = this.getLastColumn();
+        column.columnType = KeyColumnType.LONGBLOB;
+        return this;
+    }
+
+    @Override
     public DefaultSQLCreateBuilder text() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();
         column.columnType = KeyColumnType.TEXT;
+        return this;
+    }
+
+    @Override
+    public Object mediumText() {
+        this.gammars.add("type");
+        StampCreateColumn column = this.getLastColumn();
+        column.columnType = KeyColumnType.MEDIUMTEXT;
+        return this;
+    }
+
+    @Override
+    public Object longText() {
+        this.gammars.add("type");
+        StampCreateColumn column = this.getLastColumn();
+        column.columnType = KeyColumnType.LONGTEXT;
         return this;
     }
 
@@ -352,6 +384,14 @@ public class DefaultSQLCreateBuilder
         this.gammars.add("table");
         if (this.point.equals("index")) {
             this.stampCreate.name = name;
+        }
+        return this;
+    }
+
+    public DefaultSQLCreateBuilder timeForUpdate() {
+        StampCreateColumn column = this.getLastColumn();
+        if (column != null) {
+            column.timeForUpdate = true;
         }
         return this;
     }

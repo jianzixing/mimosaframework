@@ -1,12 +1,11 @@
 package org.mimosaframework.orm.platform.postgresql;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.platform.DifferentColumn;
-import org.mimosaframework.orm.platform.MediumText;
-import org.mimosaframework.orm.platform.Text;
+import org.mimosaframework.orm.platform.SupportMediumText;
+import org.mimosaframework.orm.platform.SupportText;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -18,8 +17,8 @@ public class PostgreSQLDifferentColumn implements DifferentColumn {
 
     static {
         // postgre text 无长度限制
-        TYPES_MAPPING.put(Text.class, "TEXT");
-        TYPES_MAPPING.put(MediumText.class, "TEXT");
+        TYPES_MAPPING.put(SupportText.class, "TEXT");
+        TYPES_MAPPING.put(SupportMediumText.class, "TEXT");
         TYPES_MAPPING.put(Boolean.class, "BOOLEAN");
         TYPES_MAPPING.put(boolean.class, "BOOLEAN");
         TYPES_MAPPING.put(Double.class, "DOUBLE PRECISION");

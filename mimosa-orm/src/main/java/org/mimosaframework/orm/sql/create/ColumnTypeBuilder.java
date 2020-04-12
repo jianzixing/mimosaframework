@@ -37,10 +37,6 @@ public interface ColumnTypeBuilder<T> {
 
     T charType(int len);
 
-    T blob();
-
-    T text();
-
     T tinyint();
 
     T smallint();
@@ -62,4 +58,16 @@ public interface ColumnTypeBuilder<T> {
     T datetime();
 
     T timestamp();
+
+    T blob();
+
+    T mediumBlob();
+
+    T longBlob();
+
+    T text();
+
+    T mediumText();
+
+    T longText();
 }

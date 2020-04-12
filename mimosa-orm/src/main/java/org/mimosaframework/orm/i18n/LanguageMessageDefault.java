@@ -276,6 +276,9 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("compare_mapping_warn_index_update", "需要重置表 %s 的索引 %s");
         words.put("compare_mapping_warn_index_add", "需要向表 %s 添加索引 %s");
 
+        // PlatformExecutor
+        words.put("platform_executor_empty_type", "不支持的映射类型 %s");
+
         messageWords.add(new MessageWords(PROJECT, words));
     }
 

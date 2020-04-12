@@ -122,25 +122,30 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             for (StampCreateColumn column : columns) {
                 sb.append(this.getColumnName(wrapper, create, column.column));
 
-                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                if (column.timeForUpdate) {
+                    sb.append(" TIMESTAMP");
+                    sb.append(" NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+                } else {
+                    sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
 
-                if (!column.nullable) {
-                    sb.append(" NOT NULL");
-                }
-                if (column.autoIncrement) {
-                    sb.append(" AUTO_INCREMENT");
-                }
-                if (column.pk) {
-                    sb.append(" PRIMARY KEY");
-                }
-                if (column.unique) {
-                    sb.append(" UNIQUE");
-                }
-                if (column.key) {
-                    sb.append(" KEY");
-                }
-                if (StringTools.isNotEmpty(column.defaultValue)) {
-                    sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+                    if (!column.nullable) {
+                        sb.append(" NOT NULL");
+                    }
+                    if (column.autoIncrement) {
+                        sb.append(" AUTO_INCREMENT");
+                    }
+                    if (column.pk) {
+                        sb.append(" PRIMARY KEY");
+                    }
+                    if (column.unique) {
+                        sb.append(" UNIQUE");
+                    }
+                    if (column.key) {
+                        sb.append(" KEY");
+                    }
+                    if (StringTools.isNotEmpty(column.defaultValue)) {
+                        sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+                    }
                 }
                 if (StringTools.isNotEmpty(column.comment)) {
                     sb.append(" COMMENT \"" + column.comment + "\"");

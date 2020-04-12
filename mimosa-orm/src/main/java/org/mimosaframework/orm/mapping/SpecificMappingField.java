@@ -2,6 +2,8 @@ package org.mimosaframework.orm.mapping;
 
 import org.mimosaframework.orm.annotation.Column;
 
+import java.math.BigDecimal;
+
 public class SpecificMappingField implements MappingField {
     private MappingTable mappingTable;
     private MappingField previous;
@@ -213,7 +215,15 @@ public class SpecificMappingField implements MappingField {
     }
 
     public void setMappingFieldLength(int mappingFieldLength) {
-        this.mappingFieldLength = mappingFieldLength;
+        if (mappingFieldLength == 255 && this.mappingFieldType.equals(BigDecimal.class)) {
+            this.mappingFieldLength = 32;
+        } else if (this.mappingFieldType.equals(String.class)
+                || this.mappingFieldType.equals(Character.class)
+                || this.mappingFieldType.equals(char.class)) {
+            this.mappingFieldLength = mappingFieldLength;
+        } else {
+            this.mappingFieldLength = 0;
+        }
     }
 
     public int getMappingFieldDecimalDigits() {

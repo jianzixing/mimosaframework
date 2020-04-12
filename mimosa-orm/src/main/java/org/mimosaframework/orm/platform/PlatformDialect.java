@@ -8,12 +8,10 @@ import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.sql.StructureBuilder;
 import org.mimosaframework.orm.sql.UnifyBuilder;
-import org.mimosaframework.orm.sql.alter.AlterFactory;
 import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
-import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
-import org.mimosaframework.orm.sql.drop.DropFactory;
+import org.mimosaframework.orm.sql.drop.DefaultSQLDropBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.Connection;
@@ -167,7 +165,9 @@ public abstract class PlatformDialect {
         StampCombineBuilder combineBuilder = PlatformFactory
                 .getStampAlterBuilder(this.dataSourceWrapper.getDatabaseTypeEnum(), action);
         SQLBuilderCombine builderCombine = combineBuilder.getSqlBuilder(this.mappingGlobalWrapper, action);
-        return this.runner(new JDBCTraversing(builderCombine.getSql(), builderCombine.getPlaceholders()));
+        JDBCTraversing jdbcTraversing = new JDBCTraversing(builderCombine.getSql(), builderCombine.getPlaceholders());
+        jdbcTraversing.setTypeForRunner(TypeForRunner.SELECT);
+        return this.runner(jdbcTraversing);
     }
 
     public Object runner(JDBCTraversing traversing) throws SQLException {
@@ -193,13 +193,22 @@ public abstract class PlatformDialect {
         Connection connection = null;
         try {
             connection = dataSourceWrapper.getConnection();
-            String catalog = connection.getCatalog();
-            String schema = connection.getSchema();
-            return (StringTools.isNotEmpty(catalog) ? catalog + "." : "") + schema;
-        } finally {
-            if (connection != null) {
-                connection.close();
+            String catalog = null;
+            try {
+                catalog = connection.getCatalog();
+            } catch (Exception exception) {
+
             }
+            String schema = null;
+            try {
+                schema = connection.getSchema();
+            } catch (Exception exception) {
+
+            }
+            return (StringTools.isNotEmpty(catalog) ? catalog : "") +
+                    (StringTools.isNotEmpty(schema) ? (StringTools.isNotEmpty(catalog) ? "." : "") + schema : "");
+        } finally {
+            dataSourceWrapper.close();
         }
     }
 
@@ -211,8 +220,8 @@ public abstract class PlatformDialect {
         Class table = mappingTable.getMappingClass();
         Set<MappingField> mappingFields = mappingTable.getMappingFields();
         if (mappingFields != null && mappingFields.size() > 0) {
-            DefaultSQLCreateBuilder sql = (DefaultSQLCreateBuilder) CreateFactory.create()
-                    .table().ifNotExist().name(table);
+            DefaultSQLCreateBuilder sql = new DefaultSQLCreateBuilder();
+            sql.create().table().ifNotExist().name(table);
             for (MappingField mappingField : mappingFields) {
                 String field = mappingField.getMappingColumnName();
                 Class type = mappingField.getMappingFieldType();
@@ -221,6 +230,7 @@ public abstract class PlatformDialect {
                 String defVal = mappingField.getMappingFieldDefaultValue();
                 boolean nullable = mappingField.isMappingFieldNullable();
                 boolean autoIncr = mappingField.isMappingAutoIncrement();
+                boolean timeForUpdate = mappingField.isMappingFieldTimeForUpdate();
                 String comment = mappingField.getMappingFieldComment();
 
                 sql.column(field);
@@ -236,6 +246,8 @@ public abstract class PlatformDialect {
                 if (StringTools.isNotEmpty(comment)) {
                     sql.comment(comment);
                 }
+
+                if (timeForUpdate) sql.timeForUpdate();
             }
 
             if (StringTools.isNotEmpty(mappingTable.getEncoding())) {
@@ -294,7 +306,8 @@ public abstract class PlatformDialect {
     }
 
     protected StampDrop commonDropTable(TableStructure structure) {
-        return (StampDrop) DropFactory.drop().table().table(structure.getTableName()).compile();
+        DefaultSQLDropBuilder sql = new DefaultSQLDropBuilder();
+        return (StampDrop) sql.drop().table().table(structure.getTableName()).compile();
     }
 
     protected StampAlter commonAddColumn(MappingTable mappingTable, MappingField mappingField) {
@@ -308,8 +321,8 @@ public abstract class PlatformDialect {
         boolean autoIncr = mappingField.isMappingAutoIncrement();
         String comment = mappingField.getMappingFieldComment();
 
-        DefaultSQLAlterBuilder sql = (DefaultSQLAlterBuilder) AlterFactory.alter()
-                .table(mappingTable.getMappingClass()).add().column(field);
+        DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
+        sql.alter().table(mappingTable.getMappingClass()).add().column(field);
 
         this.setSQLType(sql, type, length, scale);
         if (!nullable) {
@@ -317,7 +330,8 @@ public abstract class PlatformDialect {
             sql.nullable();
         }
         if (pk && this.getPrimaryKeyByMappingTable(mappingTable).size() == 1) {
-            sql.primary().key();
+            sql.primary();
+            sql.key();
         }
         if (autoIncr) sql.autoIncrement();
         if (StringTools.isNotEmpty(defVal)) {
@@ -331,7 +345,8 @@ public abstract class PlatformDialect {
     }
 
     protected StampAlter commonDropColumn(MappingTable mappingTable, TableColumnStructure structure) {
-        return (StampAlter) AlterFactory.alter().table(mappingTable.getMappingTableName())
+        DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
+        return (StampAlter) sql.alter().table(mappingTable.getMappingTableName())
                 .drop().column(structure.getColumnName()).compile();
     }
 
@@ -345,14 +360,16 @@ public abstract class PlatformDialect {
             columns[i] = field.getMappingColumnName();
             i++;
         }
-        StampCreate sql = (StampCreate) CreateFactory.create()
+        DefaultSQLCreateBuilder sqlCreateBuilder = new DefaultSQLCreateBuilder();
+        StampCreate sql = (StampCreate) sqlCreateBuilder.create()
                 .index().name(indexName).on().table(tableName).columns(columns).compile();
         return sql;
     }
 
     protected StampDrop commonDropIndex(MappingTable mappingTable, String indexName) {
         String tableName = mappingTable.getMappingTableName();
-        return (StampDrop) DropFactory.drop().index().name(indexName).on().table(tableName);
+        DefaultSQLDropBuilder sql = new DefaultSQLDropBuilder();
+        return (StampDrop) sql.drop().index().name(indexName).on().table(tableName).compile();
     }
 
     protected void triggerIncrAndKeys(DataDefinitionType type,

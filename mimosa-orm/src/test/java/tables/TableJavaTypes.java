@@ -2,8 +2,8 @@ package tables;
 
 import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.annotation.Table;
-import org.mimosaframework.orm.platform.MediumText;
-import org.mimosaframework.orm.platform.Text;
+import org.mimosaframework.orm.platform.SupportMediumText;
+import org.mimosaframework.orm.platform.SupportText;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 
 import java.math.BigDecimal;
@@ -16,9 +16,9 @@ import java.util.Date;
 public enum TableJavaTypes {
     @Column(pk = true, strategy = AutoIncrementStrategy.class)
     id,
-    @Column(type = Text.class)
+    @Column(type = SupportText.class)
     text,
-    @Column(type = MediumText.class)
+    @Column(type = SupportMediumText.class)
     mediumText,
     @Column(type = double.class)
     doubleType,
