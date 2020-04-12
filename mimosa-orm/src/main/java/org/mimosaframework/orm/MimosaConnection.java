@@ -1,7 +1,7 @@
 package org.mimosaframework.orm;
 
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
@@ -32,8 +32,7 @@ public class MimosaConnection implements InvocationHandler {
                     new MimosaConnection(dataSource)
             );
         } else {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaConnection.class, "must_ds"));
+            throw new IllegalArgumentException(I18n.print("must_ds"));
         }
     }
 

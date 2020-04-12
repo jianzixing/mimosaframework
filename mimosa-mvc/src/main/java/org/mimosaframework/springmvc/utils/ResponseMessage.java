@@ -7,6 +7,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.springmvc.exception.ModuleException;
 import org.mimosaframework.springmvc.exception.StockCode;
+import org.mimosaframework.springmvc.i18n.I18n;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -58,7 +59,7 @@ public class ResponseMessage {
 
     public ResponseMessage() {
         this.code = 100;
-        this.msg = Messages.get("mimosa_mvc", ResponseMessage.class, "success");
+        this.msg = I18n.print("success");
     }
 
     public ResponseMessage(int code) {
@@ -92,7 +93,7 @@ public class ResponseMessage {
                 if (causedBy == null) break;
             }
             if (!this.setMatchMessage(causedBy)) {
-                this.msg = Messages.get("mimosa_mvc", ResponseMessage.class, "access_fail") + "," + causedBy.getClass().getSimpleName() +
+                this.msg = I18n.print("access_fail") + "," + causedBy.getClass().getSimpleName() +
                         ":" + causedBy.getMessage();
             }
             ((Exception) data).printStackTrace();
@@ -117,7 +118,7 @@ public class ResponseMessage {
             }
             String msg = throwable.getMessage();
             if (!this.setMatchMessage(throwable)) {
-                this.msg = Messages.get("mimosa_mvc", ResponseMessage.class, "trans_fail") + "," + throwable.getClass().getSimpleName() + ":" + msg;
+                this.msg = I18n.print("trans_fail") + "," + throwable.getClass().getSimpleName() + ":" + msg;
             }
             ((Exception) data).printStackTrace();
         } else if (data instanceof InvocationTargetException) {
@@ -146,7 +147,7 @@ public class ResponseMessage {
     private boolean setMatchMessage(Throwable throwable) {
         if (throwable != null) {
             if (throwable.getMessage() != null && throwable.getMessage().indexOf("Duplicate entry") >= 0) {
-                this.msg = Messages.get("mimosa_mvc", ResponseMessage.class, "duplicate_unique_field") + ": " + throwable.getMessage();
+                this.msg = I18n.print("duplicate_unique_field") + ": " + throwable.getMessage();
                 return true;
             }
         }

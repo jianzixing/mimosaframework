@@ -5,7 +5,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.*;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -38,8 +38,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     private void checkMappingTableInDatabase(MappingTable table) {
         if (table != null) {
             if (StringTools.isEmpty(table.getDatabaseTableName())) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        PlatformWrapperImpl.class, "not_fount_db_table",
+                throw new IllegalArgumentException(I18n.print("not_fount_db_table",
                         table.getMappingClassName(), table.getMappingTableName()));
             }
         }

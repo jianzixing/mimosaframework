@@ -5,7 +5,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -34,7 +34,7 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
             try {
                 dsClass = (Class<? extends DataSource>) Class.forName(clazz);
             } catch (Exception e) {
-                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT, AbstractConfigBuilder.class, "data_source_fail"), e);
+                throw new ContextException(I18n.print("data_source_fail"), e);
             }
             DataSource ds = ModelObject.toJavaObject(new ModelObject(map), dsClass);
             return ds;

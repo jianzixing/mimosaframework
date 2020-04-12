@@ -28,13 +28,13 @@ public final class Messages {
         }
     }
 
-    public static String get(String project, Class c, String key, String... replaces) {
+    public static String get(String project, String key, String... replaces) {
         Locale locale = Locale.getDefault();
         String language = locale.getLanguage();
 
         Map<String, String> map = i18n.get(language);
         if (map != null) {
-            String value = map.get(project + "_" + c.getName() + "_" + key);
+            String value = map.get(project + "_" + key);
             if (value != null) {
                 if (replaces != null) {
                     value = String.format(value, replaces);

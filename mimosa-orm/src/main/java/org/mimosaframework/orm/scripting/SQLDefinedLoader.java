@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.scripting;
 
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,14 +37,12 @@ public class SQLDefinedLoader {
             if (path.endsWith(".xml")) {
                 url = this.getClass().getResource(path);
                 if (url == null) {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            SQLDefinedLoader.class, "not_fount_resource", path));
+                    throw new IllegalArgumentException(I18n.print("not_fount_resource", path));
                 }
             } else {
                 url = this.getClass().getResource("/" + path.replace(".", "/"));
                 if (url == null) {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            SQLDefinedLoader.class, "not_fount_resource", path));
+                    throw new IllegalArgumentException(I18n.print("not_fount_resource", path));
                 }
             }
             String protocol = url.getProtocol();
@@ -100,8 +98,7 @@ public class SQLDefinedLoader {
                 url = SQLDefinedLoader.class.getResource("/" + packName.replace(".", "/")).toURI();
             }
         } catch (Exception e1) {
-            throw new RuntimeException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SQLDefinedLoader.class, "not_fount_resource", packName));
+            throw new RuntimeException(I18n.print("not_fount_resource", packName));
         }
 
         final File file = new File(url);

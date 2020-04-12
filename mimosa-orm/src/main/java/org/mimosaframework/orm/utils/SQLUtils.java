@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -32,11 +32,9 @@ public class SQLUtils {
             } else if (metaData.getDriverName().toUpperCase().indexOf(DatabaseTypes.SQLITE.name()) != -1) {
                 return DatabaseTypes.SQLITE;
             }
-            throw new SQLException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SQLUtils.class, "not_support_db", metaData.getDriverName()));
+            throw new SQLException(I18n.print("not_support_db", metaData.getDriverName()));
         } else {
-            throw new SQLException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SQLUtils.class, "must_create_ds"));
+            throw new SQLException(I18n.print("must_create_ds"));
         }
     }
 

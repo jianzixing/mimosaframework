@@ -20,16 +20,16 @@ public class AutonomouslyUtils {
         JDBCTraversing structure = null;
         if (action.equalsIgnoreCase("select")) {
             structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-            structure.setChangerClassify(TypeForRunner.SELECT);
+            structure.setTypeForRunner(TypeForRunner.SELECT);
         } else if (action.equalsIgnoreCase("update")) {
             structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-            structure.setChangerClassify(TypeForRunner.UPDATE);
+            structure.setTypeForRunner(TypeForRunner.UPDATE);
         } else if (action.equalsIgnoreCase("delete")) {
             structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-            structure.setChangerClassify(TypeForRunner.DELETE);
+            structure.setTypeForRunner(TypeForRunner.DELETE);
         } else if (action.equalsIgnoreCase("insert")) {
             structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-            structure.setChangerClassify(TypeForRunner.ADD_OBJECT);
+            structure.setTypeForRunner(TypeForRunner.ADD_OBJECT);
         }
         return structure;
     }

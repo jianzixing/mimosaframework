@@ -7,7 +7,7 @@ import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.Session;
 import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.exception.StrategyException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
@@ -68,8 +68,7 @@ public class StrategyFactory {
                             try {
                                 strategys.put(c, c.newInstance());
                             } catch (Exception e) {
-                                throw new StrategyException(Messages.get(LanguageMessageFactory.PROJECT,
-                                        StrategyFactory.class, "create_strategy_error"), e);
+                                throw new StrategyException(I18n.print("create_strategy_error"), e);
                             }
                         }
                     }

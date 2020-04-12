@@ -2,7 +2,7 @@ package org.mimosaframework.orm.criteria;
 
 
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -139,12 +139,12 @@ public class DefaultJoin implements Join {
         DefaultJoin dj = ((DefaultJoin) join);
         if (dj.getMainTable() == null) {
             if (this.table == null) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultJoin.class, "join_must_table"));
+                throw new IllegalArgumentException(I18n.print("join_must_table"));
             }
             dj.setMainTable(this.table);
         }
         if (dj.getMainTable() != this.table) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultJoin.class, "join_table_diff",
+            throw new IllegalArgumentException(I18n.print("join_table_diff",
                     dj.getMainTable().getSimpleName(), this.table.getSimpleName()));
         }
 
@@ -183,7 +183,7 @@ public class DefaultJoin implements Join {
         if (filter instanceof DefaultFilter) {
             this.valueFilters.add(filter);
         } else {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultJoin.class, "just_filter"));
+            throw new IllegalArgumentException(I18n.print("just_filter"));
         }
         return this;
     }
@@ -198,7 +198,7 @@ public class DefaultJoin implements Join {
     private void checkFieldClass(Object self, Object mainField) {
         if (self.getClass().equals(mainTable)
                 && mainField.getClass().equals(table) && mainTable != table) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultJoin.class, "rel_reversal"));
+            throw new IllegalArgumentException(I18n.print("rel_reversal"));
         }
     }
 

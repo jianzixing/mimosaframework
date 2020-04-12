@@ -6,7 +6,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.StrategyException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -45,17 +45,16 @@ public class DefaultSession implements Session {
     @Override
     public ModelObject save(ModelObject objSource) {
         if (objSource == null || objSource.size() == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultSession.class, "save_empty"));
+            throw new IllegalArgumentException(I18n.print("save_empty"));
         }
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         if (c == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultSession.class, "miss_table_class"));
+            throw new IllegalArgumentException(I18n.print("miss_table_class"));
         }
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, obj);
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         // 开始类型矫正
         TypeCorrectUtils.correct(obj, mappingTable);
@@ -64,8 +63,7 @@ public class DefaultSession implements Session {
             try {
                 StrategyFactory.applyStrategy(this.context, mappingTable, obj, this);
             } catch (StrategyException e) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "id_strategy_error"), e.getCause());
+                throw new IllegalArgumentException(I18n.print("id_strategy_error"), e.getCause());
             }
             // 转换成数据库的字段
             obj = convert.convert(c, obj);
@@ -76,8 +74,7 @@ public class DefaultSession implements Session {
             try {
                 id = platformWrapper.insert(mappingTable, obj);
             } catch (SQLException e) {
-                throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "add_data_error"), e);
+                throw new IllegalStateException(I18n.print("add_data_error"), e);
             }
             SessionUtils.applyAutoIncrementValue(mappingTable, id, objSource);
 
@@ -90,16 +87,15 @@ public class DefaultSession implements Session {
     @Override
     public ModelObject saveAndUpdate(ModelObject objSource) {
         if (objSource == null || objSource.size() == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultSession.class, "save_empty"));
+            throw new IllegalArgumentException(I18n.print("save_empty"));
         }
         if (objSource.getObjectClass() == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultSession.class, "miss_table_class"));
+            throw new IllegalArgumentException(I18n.print("miss_table_class"));
         }
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         Query query = Criteria.query(c);
@@ -135,7 +131,7 @@ public class DefaultSession implements Session {
     @Override
     public void save(List<ModelObject> objectSources) {
         if (objectSources == null || objectSources.size() == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultSession.class, "save_empty"));
+            throw new IllegalArgumentException(I18n.print("save_empty"));
         }
 
         List<ModelObject> objects = new ArrayList<ModelObject>(objectSources);
@@ -145,16 +141,14 @@ public class DefaultSession implements Session {
         SessionUtils.checkReference(objects);
         for (ModelObject object : objects) {
             if (object == null || object.size() == 0) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "batch_save_empty"));
+                throw new IllegalArgumentException(I18n.print("batch_save_empty"));
             }
             Class c = object.getObjectClass();
             SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, object);
 
             if (tableClass == null) tableClass = c;
             if (tableClass != null && tableClass != c) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "batch_save_table_diff",
+                throw new IllegalArgumentException(I18n.print("batch_save_table_diff",
                         tableClass.getSimpleName(), c.getSimpleName()));
             }
             tableClass = c;
@@ -162,14 +156,12 @@ public class DefaultSession implements Session {
             if (mappingTable == null) {
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
             }
-            AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "not_found_mapping", c.getName()));
+            AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
             try {
                 StrategyFactory.applyStrategy(this.context, mappingTable, object, this);
             } catch (StrategyException e) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "id_strategy_error"), e.getCause());
+                throw new IllegalArgumentException(I18n.print("id_strategy_error"), e.getCause());
             }
 
             // 开始类型矫正
@@ -186,8 +178,7 @@ public class DefaultSession implements Session {
         try {
             ids = platformWrapper.inserts(mappingTable, saves);
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "batch_save_data_error"), e);
+            throw new IllegalStateException(I18n.print("batch_save_data_error"), e);
         }
         SessionUtils.applyAutoIncrementValue(mappingTable, ids, objectSources);
     }
@@ -195,17 +186,15 @@ public class DefaultSession implements Session {
     @Override
     public void update(ModelObject obj) {
         if (obj == null || obj.size() == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "update_empty"));
+            throw new IllegalArgumentException(I18n.print("update_empty"));
         }
         obj = Clone.cloneModelObject(obj);
         Class c = obj.getObjectClass();
         if (c == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultSession.class, "miss_table_class"));
+            throw new IllegalArgumentException(I18n.print("miss_table_class"));
         }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         updateSkipReset.skip(obj, mappingTable);
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, obj.getObjectClass(), obj);
@@ -216,8 +205,7 @@ public class DefaultSession implements Session {
             return;
         }
         if (!SessionUtils.checkPrimaryKey(pks, obj)) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "update_set_id"));
+            throw new IllegalArgumentException(I18n.print("update_set_id"));
         }
 
         // 开始类型矫正
@@ -228,8 +216,7 @@ public class DefaultSession implements Session {
         try {
             platformWrapper.update(mappingTable, obj);
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "update_fail"), e);
+            throw new IllegalStateException(I18n.print("update_fail"), e);
         }
     }
 
@@ -244,21 +231,18 @@ public class DefaultSession implements Session {
     public long update(Update update) {
         DefaultUpdate u = (DefaultUpdate) update;
         if (u.getLogicWraps() == null || u.getValues().size() == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "update_filter_empty"));
+            throw new IllegalArgumentException(I18n.print("update_filter_empty"));
         }
         Class c = u.getTableClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
         int count = 0;
         try {
             count = platformWrapper.update(mappingTable, u);
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "update_fail"), e);
+            throw new IllegalStateException(I18n.print("update_fail"), e);
         }
 
         return count;
@@ -269,12 +253,10 @@ public class DefaultSession implements Session {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         if (!SessionUtils.checkPrimaryKey(mappingTable.getMappingPrimaryKeyFields(), obj)) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "delete_id"));
+            throw new IllegalArgumentException(I18n.print("delete_id"));
         }
 
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
@@ -283,8 +265,7 @@ public class DefaultSession implements Session {
         try {
             platformWrapper.delete(mappingTable, obj);
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "delete_fail"), e);
+            throw new IllegalStateException(I18n.print("delete_fail"), e);
         }
     }
 
@@ -299,35 +280,30 @@ public class DefaultSession implements Session {
     public long delete(Delete delete) {
         DefaultDelete d = (DefaultDelete) delete;
         if (d.getLogicWraps() == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "delete_filter_empty"));
+            throw new IllegalArgumentException(I18n.print("delete_filter_empty"));
         }
 
         Class c = d.getTableClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
         try {
             return platformWrapper.delete(mappingTable, d);
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "delete_fail"), e);
+            throw new IllegalStateException(I18n.print("delete_fail"), e);
         }
     }
 
     @Override
     public void delete(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
 
         if (pks.size() != 1) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "delete_only_pk", c.getSimpleName(), "" + pks.size()));
+            throw new IllegalArgumentException(I18n.print("delete_only_pk", c.getSimpleName(), "" + pks.size()));
         }
 
         Delete delete = new DefaultDelete(c, this);
@@ -338,13 +314,11 @@ public class DefaultSession implements Session {
     @Override
     public ModelObject get(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         if (pks.size() != 1) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "delete_only_pk", c.getSimpleName(), "" + pks.size()));
+            throw new IllegalArgumentException(I18n.print("delete_only_pk", c.getSimpleName(), "" + pks.size()));
         }
 
         Query query = new DefaultQuery(c);
@@ -353,8 +327,7 @@ public class DefaultSession implements Session {
 
         if (results != null) {
             if (results.size() > 1) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "query_only_pk", "" + results.size()));
+                throw new IllegalArgumentException(I18n.print("query_only_pk", "" + results.size()));
             } else if (results.size() == 1) {
                 return (ModelObject) results.get(0);
             }
@@ -388,8 +361,7 @@ public class DefaultSession implements Session {
         try {
             objects = platformWrapper.select(tables, dq, convert);
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "get_data_fail"), e);
+            throw new IllegalStateException(I18n.print("get_data_fail"), e);
         }
 
         return objects;
@@ -408,8 +380,7 @@ public class DefaultSession implements Session {
         try {
             count = platformWrapper.count(tables, dq);
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "get_data_count_fail"), e);
+            throw new IllegalStateException(I18n.print("get_data_count_fail"), e);
         }
 
         return count;
@@ -428,8 +399,7 @@ public class DefaultSession implements Session {
     @Override
     public ZipperTable<ModelObject> getZipperTable(Class c) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         MimosaDataSource ds = this.wrapper.getDataSource();
         return new SingleZipperTable<ModelObject>(context, c, ds, mappingTable.getDatabaseTableName());
@@ -439,17 +409,14 @@ public class DefaultSession implements Session {
     public AutoResult calculate(Function function) {
         DefaultFunction f = (DefaultFunction) function;
         if (f.getTableClass() == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "not_fount_class"));
+            throw new IllegalArgumentException(I18n.print("not_fount_class"));
         }
 
         if (f.getFuns() == null || f.getFuns().size() == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "not_found_query"));
+            throw new IllegalArgumentException(I18n.print("not_found_query"));
         }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(f.getTableClass());
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", f.getTableClass().getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", f.getTableClass().getName()));
 
         Set<MappingField> fields = mappingTable.getMappingFields();
         Iterator<FunctionField> iterator = f.getFuns().iterator();
@@ -465,8 +432,7 @@ public class DefaultSession implements Session {
                 }
             }
             if (!isContains) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "include_not_exist"));
+                throw new IllegalArgumentException(I18n.print("include_not_exist"));
             }
         }
         wrapper.setMaster(f.isMaster());
@@ -479,8 +445,7 @@ public class DefaultSession implements Session {
             }
             return null;
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "query_data_fail"), e);
+            throw new IllegalStateException(I18n.print("query_data_fail"), e);
         }
     }
 
@@ -529,8 +494,7 @@ public class DefaultSession implements Session {
         if (definedLoader != null) {
             DynamicSqlSource sqlSource = definedLoader.getDynamicSqlSource(autonomously.getName());
             if (sqlSource == null) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "not_found_file_sql"));
+                throw new IllegalArgumentException(I18n.print("not_found_file_sql"));
             }
             DBRunner carryHandler = PlatformFactory.getCarryHandler(wrapper);
             BoundSql boundSql = sqlSource.getBoundSql(autonomously.getParameter());
@@ -539,16 +503,16 @@ public class DefaultSession implements Session {
             JDBCTraversing structure = null;
             if (action.equalsIgnoreCase("select")) {
                 structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setChangerClassify(TypeForRunner.SELECT);
+                structure.setTypeForRunner(TypeForRunner.SELECT);
             } else if (action.equalsIgnoreCase("update")) {
                 structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setChangerClassify(TypeForRunner.UPDATE);
+                structure.setTypeForRunner(TypeForRunner.UPDATE);
             } else if (action.equalsIgnoreCase("delete")) {
                 structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setChangerClassify(TypeForRunner.DELETE);
+                structure.setTypeForRunner(TypeForRunner.DELETE);
             } else if (action.equalsIgnoreCase("insert")) {
                 structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setChangerClassify(TypeForRunner.ADD_OBJECT);
+                structure.setTypeForRunner(TypeForRunner.ADD_OBJECT);
             }
 
             if (structure != null) {
@@ -556,12 +520,10 @@ public class DefaultSession implements Session {
                 // 这里返回的原生的字段，不会逆向转换
                 return new AutoResult(convert, object);
             } else {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        DefaultSession.class, "not_support_action"));
+                throw new IllegalArgumentException(I18n.print("not_support_action"));
             }
         } else {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "not_found_file_sql"));
+            throw new IllegalArgumentException(I18n.print("not_found_file_sql"));
         }
     }
 
@@ -573,8 +535,7 @@ public class DefaultSession implements Session {
         List<DataSourceTableName> names = new ArrayList<>();
 
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, Messages.get(LanguageMessageFactory.PROJECT,
-                DefaultSession.class, "not_found_mapping", c.getName()));
+        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         DataSourceTableName dataSourceTableName = new DataSourceTableName(mimosaDataSource.getName(), mappingTable.getDatabaseTableName());
         if (mimosaDataSource.getSlaves() != null) {
@@ -595,8 +556,7 @@ public class DefaultSession implements Session {
         try {
             this.wrapper.close();
         } catch (SQLException e) {
-            throw new IOException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultSession.class, "close_db_fail"), e);
+            throw new IOException(I18n.print("close_db_fail"), e);
         }
     }
 }

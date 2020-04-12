@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.criteria.Keyword;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.utils.SQLUtils;
 
 import java.sql.*;
@@ -61,7 +61,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
 
 
     private void logger(JDBCTraversing structure) {
-        if (isShowSql && structure.getChangerClassify() != TypeForRunner.SILENT) {
+        if (isShowSql && structure.getTypeForRunner() != TypeForRunner.SILENT) {
             SQLBuilder sqlBuilder = structure.getSqlBuilder();
             String sqlStr = structure.getSql();
 
@@ -69,7 +69,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
                 SQLBuilderCombine sql = sqlBuilder.toSQLString();
 
                 StringBuilder sb = new StringBuilder();
-                sb.append("\r\nSQL-LOG Action: " + structure.getChangerClassify().name());
+                sb.append("\r\nSQL-LOG Action: " + structure.getTypeForRunner().name());
                 sb.append("\r\nSQL-LOG String: ");
                 sb.append(sql.getSql());
 
@@ -296,8 +296,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
                         result.add(object);
                     }
                 } else {
-                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
-                            DefaultJDBCExecutor.class, "result_set_empty"));
+                    logger.warn(I18n.print("result_set_empty"));
                 }
             }
             return result;

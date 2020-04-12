@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
@@ -195,8 +195,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             }
             sb.append(")");
         } else {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    StampAction.class, "miss_index_columns"));
+            throw new IllegalArgumentException(I18n.print("miss_index_columns"));
         }
 
         // oracle 没有所以注释 common on

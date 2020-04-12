@@ -2,7 +2,7 @@ package org.mimosaframework.orm.platform.oracle;
 
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.platform.DifferentColumn;
 import org.mimosaframework.orm.platform.MediumText;
@@ -56,8 +56,7 @@ public class OracleDifferentColumn implements DifferentColumn {
     public boolean isLikeTypeName(String typeName, Class type, int dataType) {
         String mappingTypeName = TYPES_MAPPING.get(type);
         if (mappingTypeName == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    OracleDifferentColumn.class, "not_support_type",
+            throw new IllegalArgumentException(I18n.print("not_support_type",
                     type.getSimpleName()));
         }
         if (mappingTypeName.equalsIgnoreCase(typeName)) {

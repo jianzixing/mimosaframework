@@ -5,9 +5,7 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.json.ModelObjectChecker;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.annotation.Column;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.mapping.DefaultDisassembleMappingClass;
-import org.mimosaframework.orm.mapping.DisassembleMappingClass;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 
@@ -40,15 +38,13 @@ public class ModelMeasureChecker implements ModelObjectChecker {
     @Override
     public void checkerUpdate(ModelObject object, String[] removed) throws ModelCheckerException {
         if (tables == null || object.getObjectClass() == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                    ModelMeasureChecker.class, "not_found_mapping_class"));
+            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), I18n.print("not_found_mapping_class"));
         }
 
         Class c = object.getObjectClass();
         MappingTable table = tables.get(c);
         if (table == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                    ModelMeasureChecker.class, "not_in_table", c.getSimpleName()));
+            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), I18n.print("not_in_table", c.getSimpleName()));
         }
 
         Set<MappingField> fields = table.getMappingFields();
@@ -60,13 +56,11 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                     String value = object.getString(field.getMappingFieldName());
                     if (value == null && "".equals(value)) {
                         throw new ModelCheckerException(field.getMappingFieldName(),
-                                Code.PK_NULL.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                                ModelMeasureChecker.class, "pk_must", field.getMappingFieldName()));
+                                Code.PK_NULL.toString(), I18n.print("pk_must", field.getMappingFieldName()));
                     }
                 } else {
                     throw new ModelCheckerException(field.getMappingFieldName(),
-                            Code.PK_NULL.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                            ModelMeasureChecker.class, "pk_must", field.getMappingFieldName()));
+                            Code.PK_NULL.toString(), I18n.print("pk_must", field.getMappingFieldName()));
                 }
             }
 
@@ -94,14 +88,12 @@ public class ModelMeasureChecker implements ModelObjectChecker {
 
     private void checkerValid(ModelObject object, String[] removed) throws ModelCheckerException {
         if (tables == null || object.getObjectClass() == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                    ModelMeasureChecker.class, "not_found_mapping_class"));
+            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), I18n.print("not_found_mapping_class"));
         }
         Class c = object.getObjectClass();
         MappingTable table = tables.get(c);
         if (table == null) {
-            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                    ModelMeasureChecker.class, "not_in_table", c.getSimpleName()));
+            throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), I18n.print("not_in_table", c.getSimpleName()));
         }
 
         Set<MappingField> fields = table.getMappingFields();
@@ -132,19 +124,16 @@ public class ModelMeasureChecker implements ModelObjectChecker {
             if (String.class.isAssignableFrom(type)) {
                 Object o = object.get(javaName);
                 if (o != null && String.valueOf(o).length() > length) {
-                    throw new ModelCheckerException(javaName, Code.MAX_LENGTH.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                            ModelMeasureChecker.class, "field_max_len", javaName));
+                    throw new ModelCheckerException(javaName, Code.MAX_LENGTH.toString(), I18n.print("field_max_len", javaName));
                 }
 
                 if (extMinLength > -1 && o != null && String.valueOf(o).length() < extMinLength) {
-                    throw new ModelCheckerException(javaName, Code.MIN_LENGTH.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                            ModelMeasureChecker.class, "field_min_len", javaName));
+                    throw new ModelCheckerException(javaName, Code.MIN_LENGTH.toString(), I18n.print("field_min_len", javaName));
                 }
             }
 
             if (!isNullable && defaultValue == null && object.get(javaName) == null) {
-                throw new ModelCheckerException(javaName, Code.NULL_VALUE.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                        ModelMeasureChecker.class, "field_empty", javaName));
+                throw new ModelCheckerException(javaName, Code.NULL_VALUE.toString(), I18n.print("field_empty", javaName));
             }
 
             /*如果更新的时候这个就不能给加入了*/
@@ -162,8 +151,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                         object.put(javaName, Double.parseDouble(s));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        throw new ModelCheckerException(javaName, Code.PARSE_NUMBER.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                                ModelMeasureChecker.class, "field_format", javaName));
+                        throw new ModelCheckerException(javaName, Code.PARSE_NUMBER.toString(), I18n.print("field_format", javaName));
                     }
                 }
             }
@@ -174,8 +162,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                     Pattern regex = Pattern.compile(extRegExp);
                     Matcher matcher = regex.matcher(s);
                     if (!matcher.matches()) {
-                        throw new ModelCheckerException(javaName, Code.REG_EXP_MATCH.toString(), Messages.get(LanguageMessageFactory.PROJECT,
-                                ModelMeasureChecker.class, "field_regx", javaName, s, extRegExp));
+                        throw new ModelCheckerException(javaName, Code.REG_EXP_MATCH.toString(), I18n.print("field_regx", javaName, s, extRegExp));
                     }
                 }
             }

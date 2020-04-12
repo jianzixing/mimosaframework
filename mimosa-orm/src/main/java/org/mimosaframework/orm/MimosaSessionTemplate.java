@@ -7,7 +7,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.*;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionCallback;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -201,8 +200,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
             if (e instanceof TransactionException) {
                 throw (TransactionException) e;
             } else {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        MimosaSessionTemplate.class, "fail_rollback"), e);
+                throw new TransactionException(I18n.print("fail_rollback"), e);
             }
         }
     }
@@ -246,8 +244,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "create_factory_error"), e);
+            throw new IllegalArgumentException(I18n.print("create_factory_error"), e);
         }
     }
 
@@ -303,8 +300,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<CacheFactory> factoryBuilder = this.factoryBuilderMap.get(name);
             if (factoryBuilder == null) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        MimosaSessionTemplate.class, "not_found_cache"));
+                throw new IllegalArgumentException(I18n.print("not_found_cache"));
             }
             CacheFactory cacheFactory = factoryBuilder.getFactory();
 
@@ -323,8 +319,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<MQFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "not_found_mq"));
+            if (factoryBuilder == null) throw new IllegalArgumentException(I18n.print("not_found_mq"));
             MQFactory mqFactory = factoryBuilder.getFactory();
 
             return mqFactory.buildProducer(group);
@@ -342,8 +337,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<MQFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "not_found_mq"));
+            if (factoryBuilder == null) throw new IllegalArgumentException(I18n.print("not_found_mq"));
             MQFactory mqFactory = factoryBuilder.getFactory();
             mqFactory.registerConsumer(consumer);
         }
@@ -359,8 +353,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<SearchEngineFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "not_found_search"));
+            if (factoryBuilder == null) throw new IllegalArgumentException(I18n.print("not_found_search"));
             SearchEngineFactory searchEngineFactory = factoryBuilder.getFactory();
             return searchEngineFactory.build(group);
         }
@@ -377,8 +370,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<RPCFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "not_found_rpc"));
+            if (factoryBuilder == null) throw new IllegalArgumentException(I18n.print("not_found_rpc"));
             RPCFactory rpcFactory = factoryBuilder.getFactory();
             return rpcFactory.getObject(tClass);
         }
@@ -395,8 +387,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<RPCFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "not_found_rpc"));
+            if (factoryBuilder == null) throw new IllegalArgumentException(I18n.print("not_found_rpc"));
             RPCFactory rpcFactory = factoryBuilder.getFactory();
             rpcFactory.register(o);
         }
@@ -412,8 +403,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<MonitoringFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "not_found_monitor"));
+            if (factoryBuilder == null) throw new IllegalArgumentException(I18n.print("not_found_monitor"));
             MonitoringFactory monitoringFactory = factoryBuilder.getFactory();
             monitoringFactory.build(group);
         }
@@ -430,8 +420,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<SwitchFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "not_found_center"));
+            if (factoryBuilder == null) throw new IllegalArgumentException(I18n.print("not_found_center"));
             SwitchFactory switchFactory = factoryBuilder.getFactory();
             return switchFactory.build(group);
         }
@@ -448,8 +437,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.initFactoryBuilder();
         if (this.factoryBuilderMap != null) {
             FactoryBuilder<SwitchFactory> factoryBuilder = this.factoryBuilderMap.get(name);
-            if (factoryBuilder == null) throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "not_found_center"));
+            if (factoryBuilder == null) throw new IllegalArgumentException(I18n.print("not_found_center"));
             SwitchFactory switchFactory = factoryBuilder.getFactory();
             switchFactory.registerNotify(listener);
         }
@@ -458,8 +446,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
     private class SessionInterceptor implements InvocationHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            AssistUtils.notNull(sessionFactory, Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaSessionTemplate.class, "must_set_factory"));
+            AssistUtils.notNull(sessionFactory, I18n.print("must_set_factory"));
             Session session = sessionFactory.openSession();
             Object object = null;
             try {

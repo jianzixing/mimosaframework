@@ -2,7 +2,7 @@ package org.mimosaframework.orm.platform.mysql;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
@@ -143,8 +143,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             }
             sb.append(")");
         } else {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    StampAction.class, "miss_index_columns"));
+            throw new IllegalArgumentException(I18n.print("miss_index_columns"));
         }
 
         if (StringTools.isNotEmpty(item.comment)) {

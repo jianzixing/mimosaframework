@@ -3,7 +3,7 @@ package org.mimosaframework.orm.transaction;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,8 +41,7 @@ public class RequiredTransactionPropagation implements TransactionPropagation {
                         connection.setTransactionIsolation(it.getCode());
                     }
                 } catch (SQLException e) {
-                    throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                            RequiredTransactionPropagation.class, "create_trans_fail"), e);
+                    throw new TransactionException(I18n.print("create_trans_fail"), e);
                 }
             }
             return connection;
@@ -56,8 +55,7 @@ public class RequiredTransactionPropagation implements TransactionPropagation {
                 connection.commit();
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        RequiredTransactionPropagation.class, "submit_trans_fail"), e);
+                throw new TransactionException(I18n.print("submit_trans_fail"), e);
             }
         }
     }
@@ -68,8 +66,7 @@ public class RequiredTransactionPropagation implements TransactionPropagation {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        RequiredTransactionPropagation.class, "rollback_trans_fail"), e);
+                throw new TransactionException(I18n.print("rollback_trans_fail"), e);
             }
         }
     }
@@ -80,8 +77,7 @@ public class RequiredTransactionPropagation implements TransactionPropagation {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        RequiredTransactionPropagation.class, "close_db_fail"), e);
+                throw new TransactionException(I18n.print("close_db_fail"), e);
             }
         }
     }

@@ -3,7 +3,7 @@ package org.mimosaframework.orm.transaction;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,15 +27,13 @@ public class NeverTransactionPropagation implements TransactionPropagation {
     @Override
     public Connection getConnection() throws TransactionException {
         if (this.previousTransaction != null && this.previousTransaction.isAutoCommit(dataSource)) {
-            throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                    NeverTransactionPropagation.class, "found_trans"));
+            throw new TransactionException(I18n.print("found_trans"));
         }
         if (connection == null) {
             try {
                 connection = dataSource.getConnection(true, null, true);
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NeverTransactionPropagation.class, "create_trans_fail"), e);
+                throw new TransactionException(I18n.print("create_trans_fail"), e);
             }
         }
         return connection;
@@ -57,8 +55,7 @@ public class NeverTransactionPropagation implements TransactionPropagation {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NeverTransactionPropagation.class, "close_trans_fail"), e);
+                throw new TransactionException(I18n.print("close_trans_fail"), e);
             }
         }
     }

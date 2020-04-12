@@ -7,7 +7,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.*;
 import org.mimosaframework.orm.exception.ContextException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.*;
 
 import java.sql.SQLException;
@@ -20,7 +20,7 @@ public class BeanAppContext implements Context {
     private ConfigBuilder configBuilder = null;
 
     static {
-        LanguageMessageFactory.register();
+        I18n.register();
     }
 
     public BeanAppContext() {
@@ -103,8 +103,7 @@ public class BeanAppContext implements Context {
             try {
                 dslist = this.configBuilder.getDataSources();
             } catch (SQLException e) {
-                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
-                        BeanAppContext.class, "get_ds_list_fail"), e);
+                throw new ContextException(I18n.print("get_ds_list_fail"), e);
             }
             if (dslist != null) {
                 for (MimosaDataSource ds : dslist) {
@@ -128,8 +127,7 @@ public class BeanAppContext implements Context {
             try {
                 factoryBuilder = this.configBuilder.getAuxFactoryBuilder();
             } catch (Exception e) {
-                throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
-                        BeanAppContext.class, "init_tool_error"), e);
+                throw new ContextException(I18n.print("init_tool_error"), e);
             }
             contextValues.setFactoryBuilderList(factoryBuilder);
         }
@@ -146,27 +144,21 @@ public class BeanAppContext implements Context {
     protected void checkDBMapping() throws ContextException {
 
         try {
-            MappingTableWrapper tableWrapper = new MappingTableWrapper(this.contextValues.getMappingTables());
-
             MimosaDataSource dataSource = this.contextValues.getDefaultDataSourceWrapper(false).getDataSource();
             FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(dataSource);
             fetchDatabaseMapping.loading();
 
             MappingDatabase mappingDatabase = fetchDatabaseMapping.getDatabaseMapping();
             if (mappingDatabase != null) {
-                NotMatchObject notMatchObject = tableWrapper.getMissingObject(dataSource, mappingDatabase);
-
                 StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
                         contextValues.getMappingLevel(),
-                        contextValues.getDefaultDataSourceWrapper(false),
-                        notMatchObject
+                        contextValues.getDefaultDataSourceWrapper(false)
                 );
                 compareMapping.doMapping();
             }
             contextValues.matchWholeMappingDatabase();
         } catch (SQLException e) {
-            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
-                    BeanAppContext.class, "compare_db_error"), e);
+            throw new ContextException(I18n.print("compare_db_error"), e);
         }
     }
 }

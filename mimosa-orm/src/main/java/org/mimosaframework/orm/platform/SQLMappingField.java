@@ -2,7 +2,7 @@ package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -58,16 +58,14 @@ public class SQLMappingField {
             MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(table);
             if (mappingTable == null) {
                 throw new IllegalArgumentException(
-                        Messages.get(LanguageMessageFactory.PROJECT,
-                                CommonSQLBuilder.class, "miss_table_mapping", table.getName())
+                        I18n.print("miss_table_mapping", table.getName())
                 );
             }
 
             MappingField mappingField = mappingTable.getMappingFieldByName(field.toString());
             if (mappingField == null) {
                 throw new IllegalArgumentException(
-                        Messages.get(LanguageMessageFactory.PROJECT,
-                                CommonSQLBuilder.class, "miss_field_mapping", table.getName(), field.toString())
+                        I18n.print("miss_field_mapping", table.getName(), field.toString())
                 );
             }
             String field = mappingField.getMappingColumnName();

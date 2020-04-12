@@ -6,7 +6,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.BeanSession;
 import org.mimosaframework.orm.Paging;
 import org.mimosaframework.orm.Session;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import java.util.*;
 
@@ -172,12 +172,12 @@ public class DefaultQuery<T> implements Query<T> {
         DefaultJoin dj = ((DefaultJoin) join);
         if (dj.getMainTable() == null) {
             if (this.tableClass == null) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "not_found_table"));
+                throw new IllegalArgumentException(I18n.print("not_found_table"));
             }
             dj.setMainTable(this.tableClass);
         }
         if (dj.getMainTable() != this.tableClass) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "sub_table_diff",
+            throw new IllegalArgumentException(I18n.print("sub_table_diff",
                     dj.getMainTable().getSimpleName(), this.tableClass.getSimpleName()));
         }
         this.leftJoin.add(join);
@@ -204,7 +204,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public Join subjoin(Class<?> table) {
         if (this.tableClass == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "not_found_table"));
+            throw new IllegalArgumentException(I18n.print("not_found_table"));
         }
         Join join = new DefaultJoin(this, this.tableClass, table);
         this.leftJoin.add(join);
@@ -241,7 +241,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public List<T> list() {
         if (this.tableClass.isEnum()) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "not_allow_java_bean"));
+            throw new IllegalArgumentException(I18n.print("not_allow_java_bean"));
         }
         if (this.session != null) {
             return this.beanSession.list(this);
@@ -283,7 +283,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public T get() {
         if (this.tableClass.isEnum()) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "not_allow_java_bean"));
+            throw new IllegalArgumentException(I18n.print("not_allow_java_bean"));
         }
         if (this.session != null) {
             return this.beanSession.get(this);
@@ -392,7 +392,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public Query in(Object key, Iterable values) {
         if (values == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "must_value"));
+            throw new IllegalArgumentException(I18n.print("must_value"));
         }
         Filter filter = new DefaultFilter().in(key, values);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
@@ -402,7 +402,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public Query in(Object key, Object... values) {
         if (key == null || values == null || values.length == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "in_must_key_value"));
+            throw new IllegalArgumentException(I18n.print("in_must_key_value"));
         }
         Filter filter = new DefaultFilter().in(key, values);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
@@ -412,7 +412,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public Query nin(Object key, Iterable values) {
         if (values == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "not_in_must_value"));
+            throw new IllegalArgumentException(I18n.print("not_in_must_value"));
         }
         Filter filter = new DefaultFilter().nin(key, values);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
@@ -422,7 +422,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public Query nin(Object key, Object... values) {
         if (key == null || values == null || values.length == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "not_in_must_key_value"));
+            throw new IllegalArgumentException(I18n.print("not_in_must_key_value"));
         }
         Filter filter = new DefaultFilter().nin(key, values);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
@@ -533,7 +533,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public Query fields(List fields) {
         if (tableClass == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "not_found_table"));
+            throw new IllegalArgumentException(I18n.print("not_found_table"));
         }
         return this.fields(tableClass, fields);
     }
@@ -565,7 +565,7 @@ public class DefaultQuery<T> implements Query<T> {
     @Override
     public Query excludes(List fields) {
         if (tableClass == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultQuery.class, "not_found_table"));
+            throw new IllegalArgumentException(I18n.print("not_found_table"));
         }
         return this.excludes(tableClass, fields);
     }
@@ -671,8 +671,7 @@ public class DefaultQuery<T> implements Query<T> {
             for (Join join : joins) {
                 DefaultJoin dj = (DefaultJoin) join;
                 if (dj.getOnFilters() == null || dj.getOnFilters().size() == 0) {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            DefaultQuery.class, "join_not_have_filter", dj.getTable().getSimpleName()));
+                    throw new IllegalArgumentException(I18n.print("join_not_have_filter", dj.getTable().getSimpleName()));
                 }
             }
         }

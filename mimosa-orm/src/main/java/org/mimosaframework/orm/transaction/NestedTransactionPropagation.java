@@ -3,7 +3,7 @@ package org.mimosaframework.orm.transaction;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,8 +43,7 @@ public class NestedTransactionPropagation implements TransactionPropagation {
                     connection.setTransactionIsolation(it.getCode());
                 }
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NestedTransactionPropagation.class, "create_trans_fail"), e);
+                throw new TransactionException(I18n.print("create_trans_fail"), e);
             }
             isNewCreate = true;
         } else {
@@ -52,8 +51,7 @@ public class NestedTransactionPropagation implements TransactionPropagation {
                 try {
                     this.savepoint = connection.setSavepoint(UUID.randomUUID().toString().replaceAll("-", ""));
                 } catch (SQLException e) {
-                    throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                            NestedTransactionPropagation.class, "create_trans_point_fail"), e);
+                    throw new TransactionException(I18n.print("create_trans_point_fail"), e);
                 }
                 isNewCreate = false;
             }
@@ -68,8 +66,7 @@ public class NestedTransactionPropagation implements TransactionPropagation {
                 connection.commit();
                 connection.setAutoCommit(true);
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NestedTransactionPropagation.class, "submit_trans_fail"), e);
+                throw new TransactionException(I18n.print("submit_trans_fail"), e);
             }
         }
     }
@@ -80,8 +77,7 @@ public class NestedTransactionPropagation implements TransactionPropagation {
             try {
                 connection.rollback();
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NestedTransactionPropagation.class, "rollback_trans_fail"), e);
+                throw new TransactionException(I18n.print("rollback_trans_fail"), e);
             }
         } else {
             try {
@@ -89,8 +85,7 @@ public class NestedTransactionPropagation implements TransactionPropagation {
                     connection.rollback(savepoint);
                 }
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NestedTransactionPropagation.class, "rollback_trans_point_fail"), e);
+                throw new TransactionException(I18n.print("rollback_trans_point_fail"), e);
             }
         }
     }
@@ -101,8 +96,7 @@ public class NestedTransactionPropagation implements TransactionPropagation {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NestedTransactionPropagation.class, "close_db_fail"), e);
+                throw new TransactionException(I18n.print("close_db_fail"), e);
             }
         }
     }

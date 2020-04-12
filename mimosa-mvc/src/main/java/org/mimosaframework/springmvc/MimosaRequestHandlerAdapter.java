@@ -1,6 +1,6 @@
 package org.mimosaframework.springmvc;
 
-import org.mimosaframework.springmvc.i18n.LanguageMessageFactory;
+import org.mimosaframework.springmvc.i18n.I18n;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.mvc.method.annotation.*;
@@ -14,7 +14,7 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
     private String defaultContentType = null;
 
     static {
-        LanguageMessageFactory.register();
+        I18n.register();
     }
 
     public void setDefaultContentType(String defaultContentType) {

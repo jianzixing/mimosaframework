@@ -2,13 +2,9 @@ package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.DefaultSession;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.mapping.MappingField;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.mapping.MappingTable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -667,9 +663,7 @@ public class CommonSQLBuilder implements SQLBuilder {
             String tableName = ((SQLMappingTable) o).getDatabaseTableName(mappingGlobalWrapper);
             if (StringTools.isEmpty(tableName)) {
                 throw new IllegalArgumentException(
-                        Messages.get(LanguageMessageFactory.PROJECT,
-                                CommonSQLBuilder.class, "miss_table_mapping",
-                                ((SQLMappingTable) o).getTable().getName())
+                        I18n.print("miss_table_mapping", ((SQLMappingTable) o).getTable().getName())
                 );
             }
             sb.append(tableName);

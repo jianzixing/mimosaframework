@@ -18,7 +18,7 @@ public class SQLServerCarryHandler extends DBRunner {
     public Object doHandler(JDBCTraversing structure) throws SQLException {
         JDBCExecutor dbSession = dswrapper.getDBChanger();
         try {
-            TypeForRunner changerClassify = structure.getChangerClassify();
+            TypeForRunner changerClassify = structure.getTypeForRunner();
             if (changerClassify == TypeForRunner.CREATE_TABLE
                     || changerClassify == TypeForRunner.CREATE_FIELD
                     || changerClassify == TypeForRunner.DROP_TABLE

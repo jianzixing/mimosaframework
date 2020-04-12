@@ -17,7 +17,7 @@ public class DefaultDBRunner extends DBRunner {
     public Object doHandler(JDBCTraversing structure) throws SQLException {
         JDBCExecutor dbSession = dswrapper.getDBChanger();
         try {
-            TypeForRunner changerClassify = structure.getChangerClassify();
+            TypeForRunner changerClassify = structure.getTypeForRunner();
             if (changerClassify == TypeForRunner.CREATE
                     || changerClassify == TypeForRunner.DROP
                     || changerClassify == TypeForRunner.ALTER) {

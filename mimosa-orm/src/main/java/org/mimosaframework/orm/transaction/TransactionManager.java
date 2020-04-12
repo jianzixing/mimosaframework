@@ -6,7 +6,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import java.sql.Connection;
 import java.util.*;
@@ -67,11 +67,11 @@ public class TransactionManager implements Transaction {
 
         List<MimosaDataSource> ds = this.context.getGlobalDataSource();
         if (logger.isDebugEnabled()) {
-            logger.debug(Messages.get(LanguageMessageFactory.PROJECT, this.getClass(), "check_db_size", "" + ds.size()));
+            logger.debug(I18n.print("check_db_size", "" + ds.size()));
         }
 
         if (ds == null) {
-            throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT, this.getClass(), "create_trans_fail"));
+            throw new TransactionException(I18n.print("create_trans_fail"));
         }
 
         for (MimosaDataSource dataSource : ds) {

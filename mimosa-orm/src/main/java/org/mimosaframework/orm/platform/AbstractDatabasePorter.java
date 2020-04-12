@@ -7,7 +7,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.BasicFunction;
 import org.mimosaframework.orm.criteria.*;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -187,8 +187,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     protected void changeTableField(MappingField field, boolean isModify) throws SQLException {
         MappingTable table = field.getMappingTable();
         if (table == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    AbstractDatabasePorter.class, "lack_mapping_table"));
+            throw new IllegalArgumentException(I18n.print("lack_mapping_table"));
         }
         String tableName = table.getMappingTableName();
         String fieldName = field.getMappingColumnName();
@@ -251,8 +250,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             String fieldName = String.valueOf(key);
             MappingField mappingField = table.getMappingFieldByName(fieldName);
             if (mappingField == null) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        AbstractDatabasePorter.class, "not_found_field", fieldName));
+                throw new IllegalArgumentException(I18n.print("not_found_field", fieldName));
             }
 
             boolean isInset = this.addDataPlaceholder(valueBuilder, fieldName, value, mappingField);
@@ -342,16 +340,14 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
         List<String> fields = this.getFieldByTable(table);
         if (fields.size() == 0)
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    AbstractDatabasePorter.class, "empty_data"));
+            throw new IllegalArgumentException(I18n.print("empty_data"));
         return insertBuildValues(objects, insertBuilder, fields);
     }
 
     protected List<String> clearAutoIncrement(MappingTable table) {
         List<String> fields = this.getFieldByTable(table);
         if (fields.size() == 0)
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    AbstractDatabasePorter.class, "empty_data"));
+            throw new IllegalArgumentException(I18n.print("empty_data"));
         // 去除自增主键列，条件是有自增列
         List<MappingField> pkfields = table.getMappingPrimaryKeyFields();
         if (pkfields != null && pkfields.size() > 0) {
@@ -676,8 +672,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     funPSQLBuilder.addFun(fun.name(), funField.getMappingColumnName(), alias);
                     funCSQLBuilder.addFun(fun.name(), funField.getMappingColumnName(), funField.getMappingColumnName());
                 } else {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            AbstractDatabasePorter.class, "not_found_field", String.valueOf(f)));
+                    throw new IllegalArgumentException(I18n.print("not_found_field", String.valueOf(f)));
                 }
             }
 
@@ -1027,13 +1022,11 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             MappingField onMainField = mainTable.getMappingFieldByName(String.valueOf(value));
 
             if (onSelfField == null) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        AbstractDatabasePorter.class, "not_found_table_field",
+                throw new IllegalArgumentException(I18n.print("not_found_table_field",
                         joinTable.getMappingClass().getSimpleName(), "" + key));
             }
             if (onMainField == null) {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        AbstractDatabasePorter.class, "not_found_table_field",
+                throw new IllegalArgumentException(I18n.print("not_found_table_field",
                         joinTable.getMappingClass().getSimpleName(), "" + value));
             }
 
@@ -1261,8 +1254,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 String fieldName = String.valueOf(order.getField());
                 MappingField field = table.getMappingFieldByName(fieldName);
                 if (field == null) {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            AbstractDatabasePorter.class, "order_not_in_table", fieldName));
+                    throw new IllegalArgumentException(I18n.print("order_not_in_table", fieldName));
                 }
                 String columnName = field.getDatabaseColumnName();
 
@@ -1545,31 +1537,31 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             JDBCTraversing porterStructure = new JDBCTraversing(combine.getSql(), combine.getPlaceholders());
             if (StringTools.isNotEmpty(porterStructure.getSql())) {
                 if (stampAction instanceof StampDelete) {
-                    porterStructure.setChangerClassify(TypeForRunner.DELETE);
+                    porterStructure.setTypeForRunner(TypeForRunner.DELETE);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampAlter) {
-                    porterStructure.setChangerClassify(TypeForRunner.ALTER);
+                    porterStructure.setTypeForRunner(TypeForRunner.ALTER);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampCreate) {
-                    porterStructure.setChangerClassify(TypeForRunner.CREATE);
+                    porterStructure.setTypeForRunner(TypeForRunner.CREATE);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampDrop) {
-                    porterStructure.setChangerClassify(TypeForRunner.DROP);
+                    porterStructure.setTypeForRunner(TypeForRunner.DROP);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampInsert) {
-                    porterStructure.setChangerClassify(TypeForRunner.INSERT);
+                    porterStructure.setTypeForRunner(TypeForRunner.INSERT);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampSelect || stampAction instanceof StampStructure) {
-                    porterStructure.setChangerClassify(TypeForRunner.SELECT);
+                    porterStructure.setTypeForRunner(TypeForRunner.SELECT);
                     return this.carryHandler.doHandler(porterStructure);
                 }
                 if (stampAction instanceof StampUpdate) {
-                    porterStructure.setChangerClassify(TypeForRunner.UPDATE);
+                    porterStructure.setTypeForRunner(TypeForRunner.UPDATE);
                     return this.carryHandler.doHandler(porterStructure);
                 }
             }

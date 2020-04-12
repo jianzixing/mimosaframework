@@ -3,7 +3,7 @@ package org.mimosaframework.orm.transaction;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -30,8 +30,7 @@ public class NotSupportedTransactionPropagation implements TransactionPropagatio
             try {
                 connection = dataSource.getConnection(true, null, false);
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NotSupportedTransactionPropagation.class, "create_trans_fail"), e);
+                throw new TransactionException(I18n.print("create_trans_fail"), e);
             }
         }
         return connection;
@@ -53,8 +52,7 @@ public class NotSupportedTransactionPropagation implements TransactionPropagatio
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new TransactionException(Messages.get(LanguageMessageFactory.PROJECT,
-                        NotSupportedTransactionPropagation.class, "close_db_fail"), e);
+                throw new TransactionException(I18n.print("close_db_fail"), e);
             }
         }
     }

@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 
 /**
  * @author yangankang
@@ -116,10 +116,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "=";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("value_not_allow_null"));
         }
         return this;
     }
@@ -130,10 +130,10 @@ public class DefaultFilter implements Filter {
         this.value = values;
         this.symbol = "in";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (values == null || !values.iterator().hasNext()) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_gt0"));
+            throw new IllegalArgumentException(I18n.print("value_must_gt0"));
         }
         return this;
     }
@@ -144,10 +144,10 @@ public class DefaultFilter implements Filter {
         this.value = values;
         this.symbol = "in";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (values == null || values.length == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_gt0"));
+            throw new IllegalArgumentException(I18n.print("value_must_gt0"));
         }
         return this;
     }
@@ -158,10 +158,10 @@ public class DefaultFilter implements Filter {
         this.value = values;
         this.symbol = "notIn";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (values == null || !values.iterator().hasNext()) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_gt0"));
+            throw new IllegalArgumentException(I18n.print("value_must_gt0"));
         }
         return this;
     }
@@ -172,10 +172,10 @@ public class DefaultFilter implements Filter {
         this.value = values;
         this.symbol = "notIn";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (values == null || values.length == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_gt0"));
+            throw new IllegalArgumentException(I18n.print("value_must_gt0"));
         }
         return this;
     }
@@ -186,10 +186,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "like";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
+            throw new IllegalArgumentException(I18n.print("value_must_have"));
         }
         return this;
     }
@@ -200,10 +200,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "!=";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("value_not_allow_null"));
         }
         return this;
     }
@@ -214,10 +214,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = ">";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
+            throw new IllegalArgumentException(I18n.print("value_must_have"));
         }
         return this;
     }
@@ -228,10 +228,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = ">=";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
+            throw new IllegalArgumentException(I18n.print("value_must_have"));
         }
         return this;
     }
@@ -242,10 +242,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "<";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
+            throw new IllegalArgumentException(I18n.print("value_must_have"));
         }
         return this;
     }
@@ -256,10 +256,10 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "<=";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (value == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_must_have"));
+            throw new IllegalArgumentException(I18n.print("value_must_have"));
         }
         return this;
     }
@@ -271,10 +271,10 @@ public class DefaultFilter implements Filter {
         this.endValue = end;
         this.symbol = "between";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         if (start == null || end == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "value_between_must"));
+            throw new IllegalArgumentException(I18n.print("value_between_must"));
         }
         return this;
     }
@@ -285,7 +285,7 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "isNull";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         return this;
     }
@@ -296,7 +296,7 @@ public class DefaultFilter implements Filter {
         this.value = value;
         this.symbol = "notNull";
         if (key == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, DefaultFilter.class, "key_not_allow_null"));
+            throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
         return this;
     }

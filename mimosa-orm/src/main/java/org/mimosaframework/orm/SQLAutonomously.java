@@ -2,21 +2,17 @@ package org.mimosaframework.orm;
 
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
-import org.mimosaframework.orm.platform.PlatformFactory;
-import org.mimosaframework.orm.sql.AlterBuilder;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.sql.SQLActionFactory;
 import org.mimosaframework.orm.sql.StructureBuilder;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.sql.alter.AlterAnyBuilder;
-import org.mimosaframework.orm.sql.alter.AlterFactory;
 import org.mimosaframework.orm.sql.create.CreateAnyBuilder;
 import org.mimosaframework.orm.sql.delete.DeleteStartBuilder;
 import org.mimosaframework.orm.sql.drop.DropAnyBuilder;
 import org.mimosaframework.orm.sql.insert.InsertStartBuilder;
 import org.mimosaframework.orm.sql.select.SelectStartBuilder;
 import org.mimosaframework.orm.sql.update.UpdateStartBuilder;
-import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -141,22 +137,19 @@ public class SQLAutonomously implements Serializable {
     }
 
     public void add(String dataSourceName, String sql) {
-        AssistUtils.notNull(dataSourceName, Messages.get(LanguageMessageFactory.PROJECT,
-                SQLAutonomously.class, "not_empty"));
+        AssistUtils.notNull(dataSourceName, I18n.print("not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql));
     }
 
     public void add(String dataSourceName, String sql, boolean isMaster) {
-        AssistUtils.notNull(dataSourceName, Messages.get(LanguageMessageFactory.PROJECT,
-                SQLAutonomously.class, "not_empty"));
+        AssistUtils.notNull(dataSourceName, I18n.print("not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql, isMaster));
     }
 
     public void add(String dataSourceName, String sql, String slaveName) {
-        AssistUtils.notNull(dataSourceName, Messages.get(LanguageMessageFactory.PROJECT,
-                SQLAutonomously.class, "not_empty"));
+        AssistUtils.notNull(dataSourceName, I18n.print("not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql, slaveName));
     }

@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.platform.SQLBuilder;
 import org.mimosaframework.orm.platform.SQLBuilderFactory;
 import org.mimosaframework.orm.utils.SQLUtils;
@@ -38,8 +38,7 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
             connections.add(c);
             return new SingleZipperTableIterator(c);
         } catch (SQLException e) {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SingleZipperTable.class, "get_ds_fail"), e);
+            throw new IllegalStateException(I18n.print("get_ds_fail"), e);
         }
     }
 
@@ -56,8 +55,7 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
 
     @Override
     public void setFetchSize(int size) {
-        logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
-                SingleZipperTable.class, "mysql_version"));
+        logger.warn(I18n.print("mysql_version"));
         this.fetchSize = size;
     }
 
@@ -89,8 +87,7 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
                 }
                 return hasNext;
             } catch (SQLException e) {
-                throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                        SingleZipperTable.class, "next_fail"), e);
+                throw new IllegalStateException(I18n.print("next_fail"), e);
             }
         }
 
@@ -113,8 +110,7 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
 
         @Override
         public void remove() {
-            throw new IllegalStateException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SingleZipperTable.class, "zipper_not_allow_del"));
+            throw new IllegalStateException(I18n.print("zipper_not_allow_del"));
         }
     }
 }

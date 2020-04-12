@@ -8,7 +8,7 @@ import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionPropagationType;
@@ -92,8 +92,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public void setCenterConfigSetting(CenterConfigSetting centerConfigSetting) throws ContextException {
         this.centerConfigSetting = centerConfigSetting;
         if (!this.centerConfigSetting.valid()) {
-            throw new ContextException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SpringMimosaSessionFactory.class, "center_config_fail"));
+            throw new ContextException(I18n.print("center_config_fail"));
         }
     }
 
@@ -268,8 +267,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
             this.dataSources.addAll(dataSources);
         }
         if (this.dataSources == null || this.dataSources.size() == 0) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SpringMimosaSessionFactory.class, "ds_miss"));
+            throw new IllegalArgumentException(I18n.print("ds_miss"));
         }
         boolean is = false;
         for (MimosaDataSource mimosaDataSource : this.dataSources) {
@@ -278,8 +276,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
             }
         }
         if (!is) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    SpringMimosaSessionFactory.class, "ds_default_miss"));
+            throw new IllegalArgumentException(I18n.print("ds_default_miss"));
         }
     }
 

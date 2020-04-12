@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
@@ -145,8 +145,7 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                 }
                 sb.append(")");
             } else {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        StampAction.class, "miss_index_columns"));
+                throw new IllegalArgumentException(I18n.print("miss_index_columns"));
             }
         } else {
             logger.warn("sqlite can't create primary key");

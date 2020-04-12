@@ -7,7 +7,7 @@ import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.NamingConvert;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.DataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
@@ -128,8 +128,7 @@ public class NormalContextContainer implements ContextContainer {
                     MappingTable mappingTable = disassembleMappingClass.getMappingTable();
                     mappingTables.add(mappingTable);
                     if (names.containsKey(mappingTable.getMappingTableName())) {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                NormalContextContainer.class, "conflict_name",
+                        throw new IllegalArgumentException(I18n.print("conflict_name",
                                 mappingTable.getMappingTableName(), names.get(mappingTable.getMappingTableName()).getName(),
                                 mappingTable.getMappingClass().getName()));
                     }
@@ -138,11 +137,11 @@ public class NormalContextContainer implements ContextContainer {
 
                 this.mappingGlobalWrapper.setMappingTables(mappingTables);
             } else {
-                logger.warn(Messages.get(LanguageMessageFactory.PROJECT, NormalContextContainer.class, "empty_mapping_class"));
+                logger.warn(I18n.print("empty_mapping_class"));
             }
         } else {
             this.mappingGlobalWrapper.setMappingTables(new LinkedHashSet<MappingTable>());
-            logger.warn(Messages.get(LanguageMessageFactory.PROJECT, NormalContextContainer.class, "not_scan_class"));
+            logger.warn(I18n.print("not_scan_class"));
         }
     }
 
@@ -159,7 +158,7 @@ public class NormalContextContainer implements ContextContainer {
 
     public DataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew) {
         if (defaultDataSource == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT, NormalContextContainer.class, "please_set_ds"));
+            throw new IllegalArgumentException(I18n.print("please_set_ds"));
         }
         if (isCreateNew) {
             return this.defaultDataSource.newDataSourceWrapper();
@@ -202,8 +201,7 @@ public class NormalContextContainer implements ContextContainer {
 
     public void addMimosaDataSource(MimosaDataSource dataSource) {
         if (StringTools.isEmpty(dataSource.getName())) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    NormalContextContainer.class, "must_ds_name"));
+            throw new IllegalArgumentException(I18n.print("must_ds_name"));
         }
         globalDataSource.add(dataSource);
 

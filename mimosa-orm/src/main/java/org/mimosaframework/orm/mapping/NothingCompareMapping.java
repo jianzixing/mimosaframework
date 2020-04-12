@@ -1,21 +1,16 @@
 package org.mimosaframework.orm.mapping;
 
 import org.mimosaframework.orm.platform.DataSourceWrapper;
+import org.mimosaframework.orm.platform.PlatformExecutor;
 
 import java.sql.SQLException;
 
 public class NothingCompareMapping implements StartCompareMapping {
     protected DataSourceWrapper dataSourceWrapper;
-    protected NotMatchObject notMatchObject;
+    protected PlatformExecutor executor = new PlatformExecutor();
 
-    public NothingCompareMapping(DataSourceWrapper dataSourceWrapper, NotMatchObject notMatchObject) {
+    public NothingCompareMapping(DataSourceWrapper dataSourceWrapper) {
         this.dataSourceWrapper = dataSourceWrapper;
-        this.notMatchObject = notMatchObject;
-
-        if (notMatchObject.getMimosaDataSource() != null) {
-            dataSourceWrapper.setDataSource(notMatchObject.getMimosaDataSource());
-            dataSourceWrapper.setMaster(true);
-        }
     }
 
     @Override

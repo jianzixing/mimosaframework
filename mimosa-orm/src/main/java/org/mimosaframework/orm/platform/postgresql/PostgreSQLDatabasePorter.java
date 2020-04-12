@@ -6,7 +6,7 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
@@ -141,8 +141,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                                 Long maxValue = o.getLong("max");
                                 if (maxValue != null) {
                                     maxValue = maxValue + 1;
-                                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
-                                            PostgreSQLDatabasePorter.class, "reset_incr_field"));
+                                    logger.warn(I18n.print("reset_incr_field"));
 
                                     SQLBuilder resetSeq = this.createSQLBuilder().ALTER().addString("sequence")
                                             .addString(tableName + "_" + field.getMappingColumnName() + "_seq")
@@ -155,8 +154,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    PostgreSQLDatabasePorter.class, "reset_incr_field_error"), e);
+            throw new IllegalArgumentException(I18n.print("reset_incr_field_error"), e);
         }
     }
 
@@ -181,8 +179,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
                 String fieldName = String.valueOf(key);
                 MappingField mappingField = table.getMappingFieldByName(fieldName);
                 if (mappingField == null) {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            PostgreSQLDatabasePorter.class, "not_fount_field", fieldName));
+                    throw new IllegalArgumentException(I18n.print("not_fount_field", fieldName));
                 }
 
                 this.addDataPlaceholder(insertBuilder, fieldName, value, mappingField);

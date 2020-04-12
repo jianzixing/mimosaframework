@@ -8,7 +8,7 @@ import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.convert.ConvertType;
 import org.mimosaframework.orm.convert.NamingConvert;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 
 import java.lang.annotation.Annotation;
@@ -62,8 +62,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                     }
                 }
                 if (c > 1) {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            DefaultDisassembleMappingClass.class, "incr_field_one", tableName));
+                    throw new IllegalArgumentException(I18n.print("incr_field_one", tableName));
                 }
             }
             return mappingTable;
@@ -91,23 +90,20 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
 
                 if (column.type().equals(Timestamp.class)) {
                     if (timestamp != null && timestamp.equals(Timestamp.class)) {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                DefaultDisassembleMappingClass.class, "timestamp_one"));
+                        throw new IllegalArgumentException(I18n.print("timestamp_one"));
                     }
                     timestamp = Timestamp.class;
                 }
 
                 if (column.strategy().equals(AutoIncrementStrategy.class)) {
                     if (strategy != null && strategy.equals(AutoIncrementStrategy.class)) {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                DefaultDisassembleMappingClass.class, "incr_field_one",
+                        throw new IllegalArgumentException(I18n.print("incr_field_one",
                                 mappingTable.getMappingTableName()));
                     }
                     strategy = AutoIncrementStrategy.class;
 
                     if (!column.pk()) {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                DefaultDisassembleMappingClass.class, "auto_strategy_pk",
+                        throw new IllegalArgumentException(I18n.print("auto_strategy_pk",
                                 mappingClass.getSimpleName() + "." + fieldName));
                     }
                 }
@@ -128,8 +124,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
 
                 if (column.strategy().equals(AutoIncrementStrategy.class)) {
                     if (strategy != null && strategy.equals(AutoIncrementStrategy.class)) {
-                        throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                DefaultDisassembleMappingClass.class, "incr_field_one", mappingTable.getMappingTableName()));
+                        throw new IllegalArgumentException(I18n.print("incr_field_one", mappingTable.getMappingTableName()));
                     }
                     strategy = AutoIncrementStrategy.class;
                 }
@@ -177,8 +172,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
 
         if (mappingField.getMappingFieldType().equals(BigDecimal.class)
                 && mappingField.getMappingFieldLength() == 255) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    DefaultDisassembleMappingClass.class, "must_set_decimal"));
+            throw new IllegalArgumentException(I18n.print("must_set_decimal"));
         }
 
         return mappingField;

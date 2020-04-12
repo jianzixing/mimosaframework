@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.i18n.LanguageMessageFactory;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 import org.mimosaframework.orm.utils.SQLUtils;
 
@@ -55,8 +55,7 @@ public class MimosaDataSource implements Closeable {
                     try {
                         ((Closeable) dataSource).close();
                     } catch (IOException e) {
-                        logger.error(Messages.get(LanguageMessageFactory.PROJECT,
-                                MimosaDataSource.class, "close_ds_error"), e);
+                        logger.error(I18n.print("close_ds_error"), e);
                     }
                 }
             }
@@ -92,8 +91,7 @@ public class MimosaDataSource implements Closeable {
 
     public DataSource getMaster() {
         if (master == null) {
-            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                    MimosaDataSource.class, "not_found_master"));
+            throw new IllegalArgumentException(I18n.print("not_found_master"));
         }
         return master;
     }
@@ -131,13 +129,11 @@ public class MimosaDataSource implements Closeable {
         } else {
             if (isIgnoreEmptySlave) {
                 if (logger.isWarnEnabled()) {
-                    logger.warn(Messages.get(LanguageMessageFactory.PROJECT,
-                            MimosaDataSource.class, "not_found_slave"));
+                    logger.warn(I18n.print("not_found_slave"));
                 }
                 return master;
             } else {
-                throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                        MimosaDataSource.class, "not_found_slave_please"));
+                throw new IllegalArgumentException(I18n.print("not_found_slave_please"));
             }
         }
     }
@@ -161,8 +157,7 @@ public class MimosaDataSource implements Closeable {
                         return this.randomSlave(true);
                     } else {
                         if (!isIgnoreEmptySlave) {
-                            throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                                    MimosaDataSource.class, "not_found_slave_config", name, name));
+                            throw new IllegalArgumentException(I18n.print("not_found_slave_config", name, name));
                         } else {
                             return this.getMaster();
                         }
@@ -172,8 +167,7 @@ public class MimosaDataSource implements Closeable {
                 }
             } else {
                 if (!isIgnoreEmptySlave) {
-                    throw new IllegalArgumentException(Messages.get(LanguageMessageFactory.PROJECT,
-                            MimosaDataSource.class, "not_found_slave_config", name, name));
+                    throw new IllegalArgumentException(I18n.print("not_found_slave_config", name, name));
                 } else {
                     return this.getMaster();
                 }
@@ -266,8 +260,7 @@ public class MimosaDataSource implements Closeable {
                         try {
                             m.invoke(this.master);
                         } catch (Exception e) {
-                            throw new IOException(Messages.get(LanguageMessageFactory.PROJECT,
-                                    MimosaDataSource.class, "run_close_db_error"), e);
+                            throw new IOException(I18n.print("run_close_db_error"), e);
                         }
                     }
                 }
@@ -288,8 +281,7 @@ public class MimosaDataSource implements Closeable {
                                 try {
                                     m.invoke(ds);
                                 } catch (Exception e) {
-                                    throw new IOException(Messages.get(LanguageMessageFactory.PROJECT,
-                                            MimosaDataSource.class, "run_close_db_error"), e);
+                                    throw new IOException(I18n.print("run_close_db_error"), e);
                                 }
                             }
                         }
