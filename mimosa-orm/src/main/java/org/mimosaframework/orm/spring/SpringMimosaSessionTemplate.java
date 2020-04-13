@@ -255,7 +255,7 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public <T> Query<T> query(Class<T> clazz) {
+    public Query query(Class clazz) {
         return sessionTemplate.query(clazz);
     }
 

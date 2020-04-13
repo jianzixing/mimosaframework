@@ -27,6 +27,10 @@ public class DefaultJoin implements Join {
     public DefaultJoin() {
     }
 
+    public DefaultJoin(Class<?> table) {
+        this.table = table;
+    }
+
     public DefaultJoin(Class<?> mainTable, Class<?> selfTable) {
         this.table = selfTable;
         this.mainTable = mainTable;

@@ -6,7 +6,7 @@ import org.mimosaframework.orm.criteria.Query;
 import org.mimosaframework.orm.criteria.Update;
 
 public interface Template {
-    <T> Query<T> query(Class<T> clazz);
+    Query query(Class clazz);
 
     Delete delete(Class clazz);
 

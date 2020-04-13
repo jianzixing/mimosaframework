@@ -306,8 +306,8 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException(I18n.print("delete_only_pk", c.getSimpleName(), "" + pks.size()));
         }
 
-        Delete delete = new DefaultDelete(c, this);
-        delete.addFilter().eq(pks.get(0).getMappingFieldName(), id);
+        Delete delete = new DefaultDelete(c);
+        delete.eq(pks.get(0).getMappingFieldName(), id);
         this.delete(delete);
     }
 

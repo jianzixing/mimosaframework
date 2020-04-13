@@ -26,6 +26,10 @@ public class DefaultQuery implements LogicQuery {
     private boolean isMaster = true;
     private String slaveName;
 
+    public DefaultQuery(Class<?> tableClass) {
+        this.tableClass = tableClass;
+    }
+    
     public DefaultQuery(LogicWraps<Filter> logicWraps, Class<?> tableClass) {
         this.logicWraps = logicWraps;
         this.tableClass = tableClass;
@@ -46,10 +50,6 @@ public class DefaultQuery implements LogicQuery {
         query.isMaster = isMaster;
         query.slaveName = slaveName;
         return query;
-    }
-
-    public DefaultQuery(Class<?> table) {
-        this.tableClass = table;
     }
 
     public Class<?> getTableClass() {

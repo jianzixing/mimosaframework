@@ -1081,8 +1081,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 this.setJoinBuilderHasAs(builder).addWrapString(selfAliasName);
             }
 
-            List<OnField> onFields = j.getOnFilters();
-            List<Filter> valueFilters = j.getValueFilters();
+            List<OnField> onFields = null;
+            List<Filter> valueFilters = null;
             builder.ON();
 
             if (onFields != null && onFields.size() > 0) {
@@ -1448,8 +1448,8 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 MappingTable joinTable = tables.get(join);
                 String joinTableName = joinTable.getDatabaseTableName();
                 String joinTableAlias = aliasMap.get(join);
-                List<OnField> onFields = j.getOnFilters();
-                List<Filter> valueFilters = j.getValueFilters();
+                List<OnField> onFields = null;
+                List<Filter> valueFilters = null;
 
                 if (j.getMainTable() == query.getTableClass()) {
                     if (onFields != null && onFields.size() > 0) {

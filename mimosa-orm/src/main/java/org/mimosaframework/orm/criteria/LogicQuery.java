@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
 public interface LogicQuery extends Query {
-    Query and();
+    Query<LogicQuery> and();
 
-    Query or();
+    Query<LogicQuery> or();
 }

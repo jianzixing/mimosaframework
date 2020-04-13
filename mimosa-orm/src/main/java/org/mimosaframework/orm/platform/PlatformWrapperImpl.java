@@ -139,7 +139,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
                 List<Join> innerJoins = query.getInnerJoin();
                 if (innerJoins != null && innerJoins.size() > 0) {
                     for (Join join : innerJoins) {
-                        newQuery.addSubjoin(join);
+                        newQuery.subjoin(join);
                     }
                 }
 
@@ -154,11 +154,11 @@ public class PlatformWrapperImpl implements PlatformWrapper {
                     newQuery.in(fields.get(0).getMappingFieldName(), new ArrayList<>(idvalues));
                 } else if (fields.size() > 1) {
                     for (ModelObject id : ids) {
-                        LogicLinked logicLinked = LogicLinked.getInstance();
+                        LogicLinked logicLinked = new LogicLinked();
                         for (MappingField f : fields) {
-                            logicLinked.and(Criteria.filter().eq(f.getMappingFieldName(), id.get(f.getDatabaseColumnName())));
+                            logicLinked.and().eq(f.getMappingFieldName(), id.get(f.getDatabaseColumnName()));
                         }
-                        newQuery.orLinked(logicLinked);
+                        newQuery.or().linked(logicLinked);
                     }
                 }
                 //重新组建tables
@@ -279,7 +279,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
                 jm.setMainTable(c1);
                 jm.setSelfTable(c2);
-                jm.setTableAliasName(j.getTableClassAliasName());
+                //  jm.setTableAliasName(j.getTableClassAliasName());
 
                 if (references != null) {
                     List<SelectFieldAliasReference> fields = references.get(join);

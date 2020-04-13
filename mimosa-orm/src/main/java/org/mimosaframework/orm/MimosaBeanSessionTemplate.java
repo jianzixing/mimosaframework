@@ -77,22 +77,22 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T get(Query<T> query) {
+    public <T> T get(Query query) {
         return null;
     }
 
     @Override
-    public <T> List<T> list(Query<T> query) {
+    public <T> List<T> list(Query query) {
         return null;
     }
 
     @Override
-    public <T> long count(Query<T> query) {
+    public long count(Query query) {
         return 0;
     }
 
     @Override
-    public <T> Paging<T> paging(Query<T> query) {
+    public <T> Paging<T> paging(Query query) {
         return null;
     }
 
@@ -108,21 +108,21 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
 
     @Override
-    public <T> Query<T> query(Class<T> clazz) {
-        Query<T> query = new DefaultQuery<T>(clazz, this);
+    public Query query(Class clazz) {
+        Query query = new DefaultQuery(clazz);
         return query;
     }
 
 
     @Override
     public Delete delete(Class clazz) {
-        Delete delete = new DefaultDelete(clazz, this);
+        Delete delete = new DefaultDelete(clazz);
         return delete;
     }
 
     @Override
     public Update update(Class clazz) {
-        Update update = new DefaultUpdate(clazz, this);
+        Update update = new DefaultUpdate(clazz);
         return update;
     }
 

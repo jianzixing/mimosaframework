@@ -5,7 +5,7 @@ package org.mimosaframework.orm.criteria;
  */
 public final class Criteria {
 
-    public static final Query query(Class c) {
+    public static final Query<LogicQuery> query(Class c) {
         return new DefaultQuery(c);
     }
 

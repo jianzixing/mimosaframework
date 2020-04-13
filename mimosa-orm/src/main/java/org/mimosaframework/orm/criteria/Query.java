@@ -5,29 +5,29 @@ import java.util.List;
 /**
  * @author yangankang
  */
-public interface Query extends Filter<Query> {
+public interface Query<T extends Query> extends Filter<T> {
 
-    Query linked(LogicLinked linked);
+    T linked(LogicLinked linked);
 
-    Query subjoin(Join join);
+    T subjoin(Join join);
 
-    Query order(Order order);
+    T order(Order order);
 
-    Query order(Object field, boolean isAsc);
+    T order(Object field, boolean isAsc);
 
-    Query order(Class tableClass, Object field, boolean isAsc);
+    T order(Class tableClass, Object field, boolean isAsc);
 
-    Query limit(Limit limit);
+    T limit(Limit limit);
 
-    Query limit(long start, long limit);
+    T limit(long start, long limit);
 
-    Query setTableClass(Class c);
+    T setTableClass(Class c);
 
-    Query master();
+    T master();
 
-    Query slave();
+    T slave();
 
-    Query slave(String name);
+    T slave(String name);
 
     /**
      * 只查询当前字段值
@@ -36,13 +36,13 @@ public interface Query extends Filter<Query> {
      * @param fields
      * @return
      */
-    Query fields(Object... fields);
+    T fields(Object... fields);
 
-    Query fields(Class tableClass, Object... fields);
+    T fields(Class tableClass, Object... fields);
 
-    Query fields(List fields);
+    T fields(List fields);
 
-    Query fields(Class tableClass, List fields);
+    T fields(Class tableClass, List fields);
 
     /**
      * 从映射表中排除当前字段值
@@ -51,13 +51,13 @@ public interface Query extends Filter<Query> {
      * @param fields
      * @return
      */
-    Query excludes(Object... fields);
+    T excludes(Object... fields);
 
-    Query excludes(Class tableClass, Object... fields);
+    T excludes(Class tableClass, Object... fields);
 
-    Query excludes(List fields);
+    T excludes(List fields);
 
-    Query excludes(Class tableClass, List fields);
+    T excludes(Class tableClass, List fields);
 
     Class getTableClass();
 }

@@ -151,21 +151,21 @@ public class MimosaSessionTemplate implements SessionTemplate {
 
 
     @Override
-    public <T> Query<T> query(Class<T> clazz) {
-        Query<T> query = new DefaultQuery<T>(clazz, this);
+    public Query query(Class clazz) {
+        Query query = new DefaultQuery(clazz);
         return query;
     }
 
 
     @Override
     public Delete delete(Class clazz) {
-        Delete delete = new DefaultDelete(clazz, this);
+        Delete delete = new DefaultDelete(clazz);
         return delete;
     }
 
     @Override
     public Update update(Class clazz) {
-        Update update = new DefaultUpdate(clazz, this);
+        Update update = new DefaultUpdate(clazz);
         return update;
     }
 
