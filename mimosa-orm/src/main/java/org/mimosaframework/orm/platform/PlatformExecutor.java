@@ -2,7 +2,12 @@ package org.mimosaframework.orm.platform;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.ModelObjectConvertKey;
+import org.mimosaframework.orm.criteria.DefaultDelete;
+import org.mimosaframework.orm.criteria.DefaultQuery;
+import org.mimosaframework.orm.criteria.DefaultUpdate;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
@@ -248,6 +253,30 @@ public class PlatformExecutor {
                                 TableStructure structure) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.ending(mappingTable, structure);
+    }
+
+    public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
+        return null;
+    }
+
+    public Integer update(MappingTable table, DefaultUpdate update) throws SQLException {
+        return null;
+    }
+
+    public Integer delete(MappingTable table, DefaultDelete delete) throws SQLException {
+
+        return null;
+    }
+
+    public List<ModelObject> select(MappingGlobalWrapper mappingGlobalWrapper,
+                                    DefaultQuery query,
+                                    ModelObjectConvertKey convert) throws SQLException {
+        return null;
+    }
+
+    public long count(MappingGlobalWrapper mappingGlobalWrapper,
+                      DefaultQuery query) throws SQLException {
+        return 0;
     }
 
     public Object dialect(MappingGlobalWrapper mappingGlobalWrapper,

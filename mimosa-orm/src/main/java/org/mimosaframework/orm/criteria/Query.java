@@ -1,100 +1,27 @@
 package org.mimosaframework.orm.criteria;
 
-import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.Paging;
-
 import java.util.List;
 
 /**
  * @author yangankang
  */
-public interface Query<T> extends OpFilter<Query>, OpLimit {
+public interface Query extends Filter<Query> {
 
-    Query addLinked(LogicLinked linked);
+    Query linked(LogicLinked linked);
 
-    Query andLinked(LogicLinked linked);
+    Query subjoin(Join join);
 
-    Query orLinked(LogicLinked linked);
+    Query order(Order order);
 
-    Query and(Filter filter);
+    Query order(Object field, boolean isAsc);
 
-    Query or(Filter filter);
+    Query order(Class tableClass, Object field, boolean isAsc);
 
-    Filter addFilter();
+    Query limit(Limit limit);
 
-    Query addSubjoin(Join join);
-
-    Join subjoin(Class<?> table);
-
-    Query addOrder(Order order);
-
-    Order order();
-
-    Query addLimit(Limit limit);
-
-    LimitInterface limit();
-
-    List<T> list();
-
-    List<ModelObject> queries();
-
-    ModelObject query();
-
-    boolean hasWhere();
-
-    long count();
-
-    Paging paging();
-
-    T get();
+    Query limit(long start, long limit);
 
     Query setTableClass(Class c);
-
-    Query from(ModelObject object);
-
-    Query fromBean(Object o);
-
-    @Override
-    Query eq(Object key, Object value);
-
-    @Override
-    Query in(Object key, Iterable values);
-
-    @Override
-    Query in(Object key, Object... values);
-
-    @Override
-    Query nin(Object key, Iterable values);
-
-    @Override
-    Query nin(Object key, Object... values);
-
-    @Override
-    Query like(Object key, Object value);
-
-    @Override
-    Query ne(Object key, Object value);
-
-    @Override
-    Query gt(Object key, Object value);
-
-    @Override
-    Query gte(Object key, Object value);
-
-    @Override
-    Query lt(Object key, Object value);
-
-    @Override
-    Query lte(Object key, Object value);
-
-    @Override
-    Query between(Object key, Object start, Object end);
-
-    @Override
-    Query isNull(Object key);
-
-    @Override
-    Query isNotNull(Object key);
 
     Query master();
 
@@ -131,8 +58,6 @@ public interface Query<T> extends OpFilter<Query>, OpLimit {
     Query excludes(List fields);
 
     Query excludes(Class tableClass, List fields);
-
-    List<Join> getSubjoins();
 
     Class getTableClass();
 }

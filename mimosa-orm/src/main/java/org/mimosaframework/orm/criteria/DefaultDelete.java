@@ -1,31 +1,14 @@
 package org.mimosaframework.orm.criteria;
 
-import org.mimosaframework.orm.BeanSession;
-import org.mimosaframework.orm.Session;
-
-import java.util.List;
-
 /**
  * @author yangankang
  */
 public class DefaultDelete implements Delete {
     private LogicWraps<Filter> logicWraps;
     private Class tableClass;
-    private Session session;
-    private BeanSession beanSession;
 
     public DefaultDelete(Class tableClass) {
         this.tableClass = tableClass;
-    }
-
-    public DefaultDelete(Class tableClass, Session session) {
-        this.tableClass = tableClass;
-        this.session = session;
-    }
-
-    public DefaultDelete(Class tableClass, BeanSession beanSession) {
-        this.tableClass = tableClass;
-        this.beanSession = beanSession;
     }
 
     public Class getTableClass() {
@@ -56,7 +39,7 @@ public class DefaultDelete implements Delete {
     }
 
     @Override
-    public Delete addLinked(LogicLinked linked) {
+    public Delete linked(LogicLinked linked) {
         LogicWraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new LogicWraps<>();
@@ -67,57 +50,23 @@ public class DefaultDelete implements Delete {
     }
 
     @Override
-    public Delete andLinked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
-        if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+    public Delete and() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.AND);
         }
-        this.logicWraps.addLastLink(lw);
         return this;
     }
 
     @Override
-    public Delete orLinked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
-        if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+    public Delete or() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.OR);
         }
-        this.logicWraps.addLastLink(lw, CriteriaLogic.OR);
         return this;
     }
 
     @Override
-    public Delete and(Filter filter) {
-        this.add(filter, CriteriaLogic.AND);
-        return this;
-    }
-
-    @Override
-    public Delete or(Filter filter) {
-        this.add(filter, CriteriaLogic.OR);
-        return this;
-    }
-
-    @Override
-    public Filter addFilter() {
-        Filter filter = new DefaultFilter(this);
-        this.add(filter, CriteriaLogic.AND);
-        return filter;
-    }
-
-    @Override
-    public void delete() {
-        if (this.session != null) {
-            this.session.delete(this);
-        }
-
-        if (this.beanSession != null) {
-            this.beanSession.delete(this);
-        }
-    }
-
-    @Override
-    public Query query() {
+    public Query covert2query() {
         DefaultQuery query = new DefaultQuery(logicWraps, this.tableClass);
         return query;
     }

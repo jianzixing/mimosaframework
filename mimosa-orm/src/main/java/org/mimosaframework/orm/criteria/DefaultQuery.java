@@ -1,11 +1,5 @@
 package org.mimosaframework.orm.criteria;
 
-import org.mimosaframework.core.json.ModelArray;
-import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
-import org.mimosaframework.orm.BeanSession;
-import org.mimosaframework.orm.Paging;
-import org.mimosaframework.orm.Session;
 import org.mimosaframework.orm.i18n.I18n;
 
 import java.util.*;
@@ -13,7 +7,7 @@ import java.util.*;
 /**
  * @author yangankang
  */
-public class DefaultQuery<T> implements Query<T> {
+public class DefaultQuery implements LogicQuery {
 
     private LogicWraps<Filter> logicWraps;
 
@@ -31,8 +25,6 @@ public class DefaultQuery<T> implements Query<T> {
     private Class<?> tableClass;
     private boolean isMaster = true;
     private String slaveName;
-    private Session session;
-    private BeanSession beanSession;
 
     public DefaultQuery(LogicWraps<Filter> logicWraps, Class<?> tableClass) {
         this.logicWraps = logicWraps;
@@ -43,7 +35,7 @@ public class DefaultQuery<T> implements Query<T> {
     }
 
     @Override
-    public Query<T> clone() {
+    public Query clone() {
         DefaultQuery query = new DefaultQuery(tableClass);
         query.logicWraps = logicWraps;
         query.leftJoin = leftJoin;
@@ -51,7 +43,6 @@ public class DefaultQuery<T> implements Query<T> {
         query.fields = fields;
         query.limit = limit;
         query.tableClass = tableClass;
-        query.session = session;
         query.isMaster = isMaster;
         query.slaveName = slaveName;
         return query;
@@ -97,16 +88,6 @@ public class DefaultQuery<T> implements Query<T> {
         this.tableClass = table;
     }
 
-    public DefaultQuery(Class<?> table, Session session) {
-        this.tableClass = table;
-        this.session = session;
-    }
-
-    public DefaultQuery(Class<?> table, BeanSession beanSession) {
-        this.tableClass = table;
-        this.beanSession = beanSession;
-    }
-
     public Class<?> getTableClass() {
         return tableClass;
     }
@@ -116,7 +97,7 @@ public class DefaultQuery<T> implements Query<T> {
     }
 
     @Override
-    public Query addLinked(LogicLinked linked) {
+    public Query linked(LogicLinked linked) {
         if (linked != null) {
             if (this.logicWraps == null) {
                 this.logicWraps = new LogicWraps<>();
@@ -127,48 +108,23 @@ public class DefaultQuery<T> implements Query<T> {
     }
 
     @Override
-    public Query andLinked(LogicLinked linked) {
-        if (linked != null) {
-            if (this.logicWraps == null) {
-                this.logicWraps = new LogicWraps<>();
-            }
-            this.logicWraps.addLastLink(linked.getLogicWraps());
+    public Query and() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.AND);
         }
         return this;
     }
 
     @Override
-    public Query orLinked(LogicLinked linked) {
-        if (linked != null) {
-            if (this.logicWraps == null) {
-                this.logicWraps = new LogicWraps<>();
-            }
-            this.logicWraps.addLastLink(linked.getLogicWraps(), CriteriaLogic.OR);
+    public Query or() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.OR);
         }
         return this;
     }
 
     @Override
-    public Query and(Filter filter) {
-        this.addFilterInLinked(filter, CriteriaLogic.AND);
-        return this;
-    }
-
-    @Override
-    public Query or(Filter filter) {
-        this.addFilterInLinked(filter, CriteriaLogic.OR);
-        return this;
-    }
-
-    @Override
-    public Filter addFilter() {
-        Filter filter = new DefaultFilter(this);
-        this.addFilterInLinked(filter, CriteriaLogic.AND);
-        return filter;
-    }
-
-    @Override
-    public Query addSubjoin(Join join) {
+    public Query subjoin(Join join) {
         DefaultJoin dj = ((DefaultJoin) join);
         if (dj.getMainTable() == null) {
             if (this.tableClass == null) {
@@ -202,151 +158,22 @@ public class DefaultQuery<T> implements Query<T> {
     }
 
     @Override
-    public Join subjoin(Class<?> table) {
-        if (this.tableClass == null) {
-            throw new IllegalArgumentException(I18n.print("not_found_table"));
-        }
-        Join join = new DefaultJoin(this, this.tableClass, table);
-        this.leftJoin.add(join);
-        return join;
-    }
-
-    @Override
-    public Query addOrder(Order order) {
+    public Query order(Order order) {
         order.setOrderTableClass(tableClass);
         this.orders.add(order);
         return this;
     }
 
     @Override
-    public Order order() {
-        Order order = new Order();
-        order.setOrderTableClass(tableClass);
-        this.orders.add(order);
-        return order;
-    }
-
-    @Override
-    public Query addLimit(Limit limit) {
+    public Query limit(Limit limit) {
         this.limit = limit;
         return this;
-    }
-
-    @Override
-    public LimitInterface limit() {
-        this.limit = new Limit(this);
-        return this.limit;
-    }
-
-    @Override
-    public List<T> list() {
-        if (this.tableClass.isEnum()) {
-            throw new IllegalArgumentException(I18n.print("not_allow_java_bean"));
-        }
-        if (this.session != null) {
-            return this.beanSession.list(this);
-        }
-        return null;
-    }
-
-    @Override
-    public List<ModelObject> queries() {
-        if (this.session != null) {
-            return this.session.list(this);
-        }
-        return null;
-    }
-
-    @Override
-    public ModelObject query() {
-        if (this.session != null) {
-            return this.session.get(this);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean hasWhere() {
-        return logicWraps == null ? false : !logicWraps.isEmpty();
-    }
-
-    @Override
-    public long count() {
-        return this.session.count(this);
-    }
-
-    @Override
-    public Paging paging() {
-        return this.session.paging(this);
-    }
-
-    @Override
-    public T get() {
-        if (this.tableClass.isEnum()) {
-            throw new IllegalArgumentException(I18n.print("not_allow_java_bean"));
-        }
-        if (this.session != null) {
-            return this.beanSession.get(this);
-        }
-        return null;
     }
 
     @Override
     public Query setTableClass(Class c) {
         this.tableClass = c;
         return this;
-    }
-
-    @Override
-    public Query from(ModelObject object) {
-        if (object == null) {
-            return this;
-        }
-        object.clearEmpty();
-
-        Set set = object.keySet();
-        for (Object key : set) {
-            String k = String.valueOf(key);
-            if (k.startsWith("eq_")) {
-                this.eq(k.replaceFirst("eq_", ""), object.get(key));
-            } else if (k.startsWith("in_")) {
-                ModelArray array = object.getModelArray(String.valueOf(key));
-                if (array != null) {
-                    this.in(k.replaceFirst("in_", ""), array);
-                }
-            } else if (k.startsWith("like_")) {
-                this.like(k.replaceFirst("like_", ""), "%" + object.get(key) + "%");
-            } else if (k.startsWith("neq_")) {
-                this.ne(k.replaceFirst("neq_", ""), object.get(key));
-            } else if (k.startsWith("gt_")) {
-                this.gt(k.replaceFirst("gt_", ""), object.get(key));
-            } else if (k.startsWith("gteq_")) {
-                this.gte(k.replaceFirst("gteq_", ""), object.get(key));
-            } else if (k.startsWith("lt_")) {
-                this.lt(k.replaceFirst("lt_", ""), object.get(key));
-            } else if (k.startsWith("lteq_")) {
-                this.lte(k.replaceFirst("lteq_", ""), object.get(key));
-            } else if (k.startsWith("btn_")) {
-                ModelObject b = object.getModelObject(String.valueOf(key));
-                if (b != null) {
-                    this.between(k.replaceFirst("btn_", ""), b.get("start"), b.get("end"));
-                }
-            } else {
-                Object o = object.get(key);
-                if (o instanceof List) {
-                    this.in(k, (List<?>) o);
-                } else {
-                    this.eq(k, o);
-                }
-            }
-        }
-
-        return this;
-    }
-
-    @Override
-    public Query fromBean(Object o) {
-        return this.from((ModelObject) ModelObject.toJSON(o));
     }
 
     public LogicWraps<Filter> getLogicWraps() {
@@ -584,11 +411,6 @@ public class DefaultQuery<T> implements Query<T> {
         return this;
     }
 
-    @Override
-    public List<Join> getSubjoins() {
-        return new ArrayList<>(this.leftJoin);
-    }
-
     public Map<Class, List<String>> getFields() {
         return fields;
     }
@@ -631,20 +453,20 @@ public class DefaultQuery<T> implements Query<T> {
 
     @Override
     public Query limit(long start, long count) {
-        Limit limit = new Limit(this);
+        Limit limit = new Limit();
         limit.limit(start, count);
-        this.addLimit(limit);
+        this.limit(limit);
         return this;
     }
 
     @Override
     public Query order(Object field, boolean isAsc) {
-        return this.addOrder(new Order(isAsc, field));
+        return this.order(new Order(isAsc, field));
     }
 
     @Override
     public Query order(Class tableClass, Object field, boolean isAsc) {
-        return this.addOrder(new Order(tableClass, field, isAsc));
+        return this.order(new Order(tableClass, field, isAsc));
     }
 
     public void clearLeftJoin() {

@@ -1,13 +1,8 @@
 package org.mimosaframework.orm.criteria;
 
 public class Order {
-
-    private Query query;
-
     private boolean isAsc;
-
     private Object field;
-
     private Class orderTableClass;
 
     /**
@@ -30,14 +25,6 @@ public class Order {
         this.isAsc = isAsc;
         this.field = field;
         this.orderTableClass = tableClass;
-    }
-
-    public Order(Query query) {
-        this.query = query;
-    }
-
-    Query query() {
-        return this.query;
     }
 
     public boolean isAsc() {

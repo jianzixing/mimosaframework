@@ -2,9 +2,7 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.BasicFunction;
 
-import java.util.List;
-
-public interface Function extends OpFilter<Function> {
+public interface Function extends Filter {
     Function addFunction(BasicFunction function, Object field);
 
     Function addFunction(BasicFunction function, Object field, String alias);

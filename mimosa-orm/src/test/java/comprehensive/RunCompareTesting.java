@@ -3,10 +3,13 @@ package comprehensive;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.junit.Test;
 import org.mimosaframework.orm.*;
+import org.mimosaframework.orm.annotation.Table;
+import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.DataSourceWrapper;
 
+import javax.management.Query;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.*;
@@ -29,6 +32,7 @@ public class RunCompareTesting {
              this.test5();
 //            this.test6();
         }
+        Criteria.query(Table.class)
     }
 
     private DataSource getMysqlDataSource() {

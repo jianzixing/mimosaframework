@@ -1,7 +1,5 @@
 package org.mimosaframework.orm.criteria;
 
-import java.util.List;
-
 /**
  * 单条查询语句中包含的所有条件,条件列表：
  * static final String operationEqual = "=";
@@ -15,41 +13,32 @@ import java.util.List;
  *
  * @author yangankang
  */
-public interface Filter {
+public interface Filter<T> {
+    T eq(Object key, Object value);
 
-    Query query();
+    T in(Object key, Iterable values);
 
-    Join join();
+    T in(Object key, Object... values);
 
-    Update update();
+    T nin(Object key, Iterable values);
 
-    Delete delete();
+    T nin(Object key, Object... values);
 
-    Filter eq(Object key, Object value);
+    T like(Object key, Object value);
 
-    Filter in(Object key, Iterable values);
+    T ne(Object key, Object value);
 
-    Filter in(Object key, Object... values);
+    T gt(Object key, Object value);
 
-    Filter nin(Object key, Iterable values);
+    T gte(Object key, Object value);
 
-    Filter nin(Object key, Object... values);
+    T lt(Object key, Object value);
 
-    Filter like(Object key, Object value);
+    T lte(Object key, Object value);
 
-    Filter ne(Object key, Object value);
+    T between(Object key, Object start, Object end);
 
-    Filter gt(Object key, Object value);
+    T isNull(Object key);
 
-    Filter gte(Object key, Object value);
-
-    Filter lt(Object key, Object value);
-
-    Filter lte(Object key, Object value);
-
-    Filter between(Object key, Object start, Object end);
-
-    Filter isNull(Object key);
-
-    Filter isNotNull(Object key);
+    T isNotNull(Object key);
 }

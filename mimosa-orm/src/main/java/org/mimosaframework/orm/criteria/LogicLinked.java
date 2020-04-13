@@ -3,45 +3,25 @@ package org.mimosaframework.orm.criteria;
 public class LogicLinked implements Filter {
     private LogicWraps<Filter> logicWraps;
 
-    public static final LogicLinked getInstance() {
-        return new LogicLinked();
-    }
-
-    public static final LogicLinked getInstance(Filter filter) {
-        LogicLinked logicLinked = new LogicLinked();
-        logicLinked.and(filter);
-        return logicLinked;
-    }
-
     public LogicWraps<Filter> getLogicWraps() {
         return logicWraps;
     }
 
-    public LogicLinked and(Filter filter) {
-        if (filter != null) {
-            if (logicWraps == null) {
-                this.logicWraps = new LogicWraps<>();
-            }
-            this.logicWraps.addLast(new LogicWrapObject(filter), CriteriaLogic.AND);
+    public LogicLinked and() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.AND);
         }
         return this;
     }
 
-    public LogicLinked wrap(LogicLinked linked) {
-        return this.andwrap(linked);
-    }
-
-    public LogicLinked or(Filter filter) {
-        if (filter != null) {
-            if (logicWraps == null) {
-                this.logicWraps = new LogicWraps<>();
-            }
-            this.logicWraps.addLast(new LogicWrapObject(filter), CriteriaLogic.OR);
+    public LogicLinked or() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.OR);
         }
         return this;
     }
 
-    public LogicLinked andwrap(LogicLinked linked) {
+    public LogicLinked linked(LogicLinked linked) {
         LogicWraps lw = linked.logicWraps;
 
         if (logicWraps == null) {
@@ -49,39 +29,6 @@ public class LogicLinked implements Filter {
         }
         this.logicWraps.addLastLink(lw);
         return this;
-    }
-
-    public LogicLinked orwrap(LogicLinked linked) {
-        LogicWraps lw = linked.logicWraps;
-        if (logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
-        }
-        this.logicWraps.addLastLink(lw, CriteriaLogic.OR);
-        return this;
-    }
-
-    public void setLogicWraps(LogicWraps<Filter> logicWraps) {
-        this.logicWraps = logicWraps;
-    }
-
-    @Override
-    public Query query() {
-        return null;
-    }
-
-    @Override
-    public Join join() {
-        return null;
-    }
-
-    @Override
-    public Update update() {
-        return null;
-    }
-
-    @Override
-    public Delete delete() {
-        return null;
     }
 
     private void addFilterInLinked(Filter filter, CriteriaLogic logic) {

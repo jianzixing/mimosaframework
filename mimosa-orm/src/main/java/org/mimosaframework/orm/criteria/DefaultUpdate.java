@@ -1,8 +1,5 @@
 package org.mimosaframework.orm.criteria;
 
-import org.mimosaframework.orm.BeanSession;
-import org.mimosaframework.orm.Session;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,24 +10,12 @@ public class DefaultUpdate implements Update {
     private LogicWraps<Filter> logicWraps;
     private Map<Object, Object> values = new LinkedHashMap<Object, Object>();
     private Class tableClass;
-    private Session session;
-    private BeanSession beanSession;
 
     public DefaultUpdate() {
     }
 
     public DefaultUpdate(Class tableClass) {
         this.tableClass = tableClass;
-    }
-
-    public DefaultUpdate(Class tableClass, Session session) {
-        this.tableClass = tableClass;
-        this.session = session;
-    }
-
-    public DefaultUpdate(Class tableClass, BeanSession beanSession) {
-        this.tableClass = tableClass;
-        this.beanSession = beanSession;
     }
 
     public Class getTableClass() {
@@ -62,13 +47,7 @@ public class DefaultUpdate implements Update {
     }
 
     @Override
-    public Update add(Object key, Object value) {
-        values.put(key, value);
-        return this;
-    }
-
-    @Override
-    public Update value(Object key, Object value) {
+    public Update set(Object key, Object value) {
         values.put(key, value);
         return this;
     }
@@ -132,7 +111,7 @@ public class DefaultUpdate implements Update {
     }
 
     @Override
-    public Update addLinked(LogicLinked linked) {
+    public Update linked(LogicLinked linked) {
         LogicWraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new LogicWraps<>();
@@ -143,57 +122,24 @@ public class DefaultUpdate implements Update {
     }
 
     @Override
-    public Update andLinked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
-        if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+    public Update and() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.AND);
         }
-        this.logicWraps.addLastLink(lw);
         return this;
     }
 
     @Override
-    public Update orLinked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
-        if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+    public Update or() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.OR);
         }
-        this.logicWraps.addLastLink(lw, CriteriaLogic.OR);
         return this;
     }
 
-    @Override
-    public Update and(Filter filter) {
-        this.add(filter, CriteriaLogic.AND);
-        return this;
-    }
 
     @Override
-    public Update or(Filter filter) {
-        this.add(filter, CriteriaLogic.OR);
-        return this;
-    }
-
-    @Override
-    public Filter addFilter() {
-        Filter filter = new DefaultFilter(this);
-        this.add(filter, CriteriaLogic.AND);
-        return filter;
-    }
-
-    @Override
-    public void update() {
-        if (this.session != null) {
-            this.session.update(this);
-        }
-
-        if (this.beanSession != null) {
-            this.beanSession.update(this);
-        }
-    }
-
-    @Override
-    public Query query() {
+    public Query covert2query() {
         DefaultQuery query = new DefaultQuery(logicWraps, this.tableClass);
         return query;
     }
