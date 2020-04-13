@@ -36,7 +36,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     private void checkMappingTableInDatabase(MappingTable table) {
         if (table != null) {
-            if (StringTools.isEmpty(table.getDatabaseTableName())) {
+            if (StringTools.isEmpty(table.getMappingTableName())) {
                 throw new IllegalArgumentException(I18n.print("not_fount_db_table",
                         table.getMappingClassName(), table.getMappingTableName()));
             }
@@ -57,7 +57,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
     @Override
     public void addField(String table, MappingField field) throws SQLException {
         SpecificMappingTable mytable = new SpecificMappingTable();
-        mytable.setDatabaseTableName(table);
+        mytable.setMappingTableName(table);
         field.setMappingTable(mytable);
         databasePorter.createField(field);
     }
@@ -148,14 +148,14 @@ public class PlatformWrapperImpl implements PlatformWrapper {
                 if (fields.size() == 1) {
                     Set idvalues = new LinkedHashSet();
                     for (ModelObject idobject : ids) {
-                        idvalues.add(idobject.get(fields.get(0).getDatabaseColumnName()));
+                        idvalues.add(idobject.get(fields.get(0).getMappingColumnName()));
                     }
                     newQuery.in(fields.get(0).getMappingFieldName(), new ArrayList<>(idvalues));
                 } else if (fields.size() > 1) {
                     for (ModelObject id : ids) {
                         WrapsLinked logicLinked = new DefaultWrapsLinked();
                         for (MappingField f : fields) {
-                            logicLinked.eq(f.getMappingFieldName(), id.get(f.getDatabaseColumnName()));
+                            logicLinked.eq(f.getMappingFieldName(), id.get(f.getMappingColumnName()));
                         }
                         newQuery.or().linked(logicLinked);
                     }

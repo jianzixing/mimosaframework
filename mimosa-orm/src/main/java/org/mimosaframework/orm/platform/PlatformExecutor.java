@@ -243,19 +243,35 @@ public class PlatformExecutor {
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
         PlatformDialect dialect = this.getDialect();
         if (objects != null && objects.size() > 0) {
+            Set<MappingField> fields = table.getMappingFields();
+            DefaultSQLInsertBuilder insertBuilder = new DefaultSQLInsertBuilder();
+            insertBuilder.insert().into().table(table.getMappingTableName());
+            String[] columns = null;
+            Set<Object> keys = null;
+            int i = 0;
             if (objects.size() == 1) {
                 ModelObject object = objects.get(0);
-                Set<Object> keys = object.keySet();
-                DefaultSQLInsertBuilder insertBuilder = new DefaultSQLInsertBuilder();
-                insertBuilder.insert().into().table(table.getMappingTableName());
-                String[] columns = new String[keys.size()];
-                int i = 0;
+                keys = object.keySet();
+                columns = new String[keys.size()];
                 for (Object key : keys) {
                     MappingField mappingField = table.getMappingFieldByJavaName(String.valueOf(key));
                     columns[i] = mappingField.getMappingColumnName();
                     i++;
                 }
-                insertBuilder.columns(columns).values();
+            } else {
+                keys = new LinkedHashSet<>();
+                columns = new String[fields.size()];
+                i = 0;
+                for (MappingField mappingField : fields) {
+                    String javaName = mappingField.getMappingFieldName();
+                    String columnName = mappingField.getMappingColumnName();
+                    keys.add(javaName);
+                    columns[i] = columnName;
+                    i++;
+                }
+            }
+            insertBuilder.columns(columns).values();
+            for (ModelObject object : objects) {
                 Object[] values = new Object[keys.size()];
                 i = 0;
                 for (Object key : keys) {
@@ -263,10 +279,10 @@ public class PlatformExecutor {
                     i++;
                 }
                 insertBuilder.row(values);
-                dialect.insert(insertBuilder.compile());
-            } else {
-
             }
+
+            dialect.insert(insertBuilder.compile());
+
         }
         return null;
     }

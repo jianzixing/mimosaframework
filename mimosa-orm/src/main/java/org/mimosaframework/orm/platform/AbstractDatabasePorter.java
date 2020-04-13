@@ -97,17 +97,17 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     }
 
     protected List<String> getFieldByTable(MappingTable table) {
-        Set<MappingField> fields = table.getMappingColumns();
+        Set<MappingField> fields = table.getMappingFields();
         List<String> fieldString = new ArrayList<>(fields.size());
         for (MappingField f : fields) {
-            fieldString.add(f.getDatabaseColumnName());
+            fieldString.add(f.getMappingColumnName());
         }
         return fieldString;
     }
 
     protected boolean isContains(List<MappingField> fields, String fieldName) {
         for (MappingField field : fields) {
-            if (field.getDatabaseColumnName().equalsIgnoreCase(fieldName)) {
+            if (field.getMappingColumnName().equalsIgnoreCase(fieldName)) {
                 return true;
             }
         }
@@ -227,7 +227,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
     @Override
     public void dropField(String table, MappingField field) throws SQLException {
         SQLBuilder dropFieldBuilder = this.createSQLBuilder();
-        dropFieldBuilder.ALTER().TABLE(table).DROP().addWrapString(field.getDatabaseColumnName());
+        dropFieldBuilder.ALTER().TABLE(table).DROP().addWrapString(field.getMappingColumnName());
         carryHandler.doHandler(new JDBCTraversing(TypeForRunner.DROP_FIELD, dropFieldBuilder));
     }
 
@@ -258,7 +258,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 if (iterator.hasNext()) {
                     valueBuilder.addSplit();
                 }
-                inObjectFields.add(mappingField.getDatabaseColumnName());
+                inObjectFields.add(mappingField.getMappingColumnName());
             } else {
                 if (!iterator.hasNext()) {
                     valueBuilder.removeLast();
@@ -325,7 +325,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
     @Override
     public Long insert(MappingTable table, ModelObject object) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
         this.insertAddValue(insertBuilder, table, object);
         Long id = (Long) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.ADD_OBJECT, insertBuilder));
@@ -334,7 +334,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
     @Override
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
 
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
         List<String> fields = this.getFieldByTable(table);
@@ -432,7 +432,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
     @Override
     public Integer update(MappingTable table, ModelObject object) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
         List<MappingField> primaryKeyFields = table.getMappingPrimaryKeyFields();
         SQLBuilder updateBuilder = this.createSQLBuilder();
         updateBuilder.UPDATE().addString(tableName).SET();
@@ -479,7 +479,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
     @Override
     public Integer update(MappingTable table, DefaultUpdate update) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.UPDATE().addString(tableName).SET();
 
@@ -492,7 +492,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 Object value = entry.getValue();
                 String fieldName = String.valueOf(key);
                 MappingField mappingField = table.getMappingFieldByName(fieldName);
-                String columnName = mappingField.getDatabaseColumnName();
+                String columnName = mappingField.getMappingColumnName();
 
                 if (value instanceof UpdateSetValue) {
                     UpdateSetValue usv = (UpdateSetValue) value;
@@ -538,7 +538,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
     @Override
     public Integer delete(MappingTable table, ModelObject object) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
         List<MappingField> primaryKeyFields = table.getMappingPrimaryKeyFields();
         SQLBuilder deleteBuilder = this.createSQLBuilder();
         deleteBuilder.DELETE().FROM().addString(tableName);
@@ -572,7 +572,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
 
     @Override
     public Integer delete(MappingTable table, DefaultDelete delete) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
         SQLBuilder sqlBuilder = this.createSQLBuilder();
         sqlBuilder.DELETE().FROM().addString(tableName);
 
@@ -687,7 +687,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             sqlBuilder.addParenthesisStart();
             sqlBuilder.SELECT();
             sqlBuilder.addSQLBuilder(funCSQLBuilder);
-            sqlBuilder.FROM().addWrapString(table.getDatabaseTableName());
+            sqlBuilder.FROM().addWrapString(table.getMappingTableName());
 
             Wraps wraps = function.getLogicWraps();
             if (wraps != null) {
@@ -736,7 +736,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 }
             }
         } else {
-            sqlBuilder.addWrapString(table.getDatabaseTableName());
+            sqlBuilder.addWrapString(table.getMappingTableName());
 
             Wraps wraps = function.getLogicWraps();
             if (wraps != null) {
@@ -790,7 +790,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         }
 
         MappingTable table = tables.get(query);
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
 
         if (innerJoins != null && innerJoins.size() > 0) {
             SQLBuilder builder = this.buildSelectInnerJoin(tables, query, aliasMap, false, false);
@@ -878,7 +878,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 selectClassFields = selectFields.get(tableClass);
             }
 
-            Set<MappingField> fields = table.getMappingColumns();
+            Set<MappingField> fields = table.getMappingFields();
             if (fields != null) {
                 List<SelectFieldAliasReference> references = new ArrayList<>(fields.size());
                 for (MappingField field : fields) {
@@ -890,7 +890,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     }
                     SelectFieldAliasReference reference = new SelectFieldAliasReference(mainClass, tableClass);
                     reference.setTableAliasName(tableAliasName);
-                    reference.setFieldName(field.getDatabaseColumnName());
+                    reference.setFieldName(field.getMappingColumnName());
                     reference.setFieldAliasName("f" + (i++));
                     reference.setJavaFieldName(mappingFieldName);
                     reference.setPrimaryKey(field.isMappingFieldPrimaryKey());
@@ -925,12 +925,12 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         MappingField mappingField = table.getMappingFieldByName(fieldName);
 
         if (mappingField != null) {
-            String columnName = mappingField.getDatabaseColumnName();
+            String columnName = mappingField.getMappingColumnName();
             SQLBuilder whereBuilder = this.createSQLBuilder();
             if (StringTools.isNotEmpty(tableAliasName)) {
-                whereBuilder.addTableWrapField(tableAliasName, mappingField.getDatabaseColumnName());
+                whereBuilder.addTableWrapField(tableAliasName, mappingField.getMappingColumnName());
             } else {
-                whereBuilder.addWrapString(mappingField.getDatabaseColumnName());
+                whereBuilder.addWrapString(mappingField.getMappingColumnName());
             }
 
             String symbol = filter.getSymbol();
@@ -986,9 +986,9 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 whereBuilder.addString(">=").addDataPlaceholder(columnName, start);
                 whereBuilder.AND();
                 if (StringTools.isNotEmpty(tableAliasName)) {
-                    whereBuilder.addTableWrapField(tableAliasName, mappingField.getDatabaseColumnName());
+                    whereBuilder.addTableWrapField(tableAliasName, mappingField.getMappingColumnName());
                 } else {
-                    whereBuilder.addWrapString(mappingField.getDatabaseColumnName());
+                    whereBuilder.addWrapString(mappingField.getMappingColumnName());
                 }
                 whereBuilder.addString("<=").addDataPlaceholder(columnName, end);
             } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
@@ -1029,9 +1029,9 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                         joinTable.getMappingClass().getSimpleName(), "" + value));
             }
 
-            builder.addTableWrapField(selfAliasName, onSelfField.getDatabaseColumnName());
+            builder.addTableWrapField(selfAliasName, onSelfField.getMappingColumnName());
             builder.addString(symbol);
-            builder.addTableWrapField(mainAliasName, onMainField.getDatabaseColumnName());
+            builder.addTableWrapField(mainAliasName, onMainField.getMappingColumnName());
             if (onFieldIterator.hasNext()) {
                 builder.AND();
             }
@@ -1071,7 +1071,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             DefaultJoin j = (DefaultJoin) self;
             MappingTable joinTable = tables.get(self);
             String selfAliasName = aliasMap.get(self);
-            String selfTableName = joinTable.getDatabaseTableName();
+            String selfTableName = joinTable.getMappingTableName();
             if (isInnerJoin) {
                 builder.INNER().JOIN().addWrapString(selfTableName);
                 this.setJoinBuilderHasAs(builder).addWrapString(selfAliasName);
@@ -1110,7 +1110,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         sqlBuilder.SELECT();
 
         MappingTable mainTable = tables.get(query);
-        String mainTableName = mainTable.getDatabaseTableName();
+        String mainTableName = mainTable.getMappingTableName();
         String mainTableAlias = aliasMap.get(query);
 
         List<Join> leftJoins = query.getLeftJoin();
@@ -1255,7 +1255,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 if (field == null) {
                     throw new IllegalArgumentException(I18n.print("order_not_in_table", fieldName));
                 }
-                String columnName = field.getDatabaseColumnName();
+                String columnName = field.getMappingColumnName();
 
                 if (StringTools.isNotEmpty(aliasTableName)) {
                     orderBuilder.addTableWrapField(aliasTableName, columnName);
@@ -1378,7 +1378,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         sqlBuilder.SELECT();
         List<Join> innerJoins = query.getInnerJoin();
         MappingTable mainTable = tables.get(query);
-        String mainTableName = mainTable.getDatabaseTableName();
+        String mainTableName = mainTable.getMappingTableName();
         String mainTableAlias = aliasMap.get(query);
 
         List<MappingField> pks = mainTable.getMappingPrimaryKeyFields();
@@ -1388,12 +1388,12 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
              * 如果不是则表示查询主表的主键值，只把主键字段加入到语句中
              */
             if (isSelectTableFields) {
-                Set<MappingField> columns = mainTable.getMappingColumns();
+                Set<MappingField> columns = mainTable.getMappingFields();
                 if (columns != null) {
                     Iterator<MappingField> iterator = columns.iterator();
                     while (iterator.hasNext()) {
                         MappingField field = iterator.next();
-                        String columnName = field.getDatabaseColumnName();
+                        String columnName = field.getMappingColumnName();
                         sqlBuilder.addTableWrapField(mainTableAlias, columnName)
                                 .AS().addWrapString(columnName);
                         if (iterator.hasNext()) {
@@ -1406,7 +1406,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     Iterator<MappingField> iterator = pks.iterator();
                     while (iterator.hasNext()) {
                         MappingField field = iterator.next();
-                        String columnName = field.getDatabaseColumnName();
+                        String columnName = field.getMappingColumnName();
                         sqlBuilder.addTableWrapField(mainTableAlias, columnName)
                                 .AS().addWrapString(columnName);
                         if (iterator.hasNext()) {
@@ -1425,7 +1425,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             for (Join join : innerJoins) {
                 DefaultJoin j = (DefaultJoin) join;
                 MappingTable joinTable = tables.get(join);
-                String joinTableName = joinTable.getDatabaseTableName();
+                String joinTableName = joinTable.getMappingTableName();
                 String joinTableAlias = aliasMap.get(join);
 
                 sqlBuilder.addSplit();
@@ -1445,7 +1445,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 Join join = iterator.next();
                 DefaultJoin j = (DefaultJoin) join;
                 MappingTable joinTable = tables.get(join);
-                String joinTableName = joinTable.getDatabaseTableName();
+                String joinTableName = joinTable.getMappingTableName();
                 String joinTableAlias = aliasMap.get(join);
                 List<OnField> onFields = null;
                 List<Filter> valueFilters = null;
@@ -1484,7 +1484,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             sqlBuilder.GROUP().BY();
             while (iterator.hasNext()) {
                 MappingField field = iterator.next();
-                String columnName = field.getDatabaseColumnName();
+                String columnName = field.getMappingColumnName();
                 sqlBuilder.addTableWrapField(mainTableAlias, columnName);
                 if (iterator.hasNext()) {
                     sqlBuilder.addSplit();

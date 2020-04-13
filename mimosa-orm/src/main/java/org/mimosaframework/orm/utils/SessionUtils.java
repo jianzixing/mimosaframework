@@ -27,7 +27,7 @@ public final class SessionUtils {
         Set<Object> keys = object.keySet();
         List<Object> removed = new ArrayList<>();
         for (Object o : keys) {
-            if (!mappingDatabaseWrapper.contains(tableFromClass, String.valueOf(o), true)) {
+            if (!mappingDatabaseWrapper.contains(tableFromClass, String.valueOf(o))) {
                 removed.add(o);
             }
         }
@@ -99,49 +99,6 @@ public final class SessionUtils {
         }
     }
 
-    public static Map<Object, MappingTable> getUsedMappingTable(MappingGlobalWrapper mappingGlobalWrapper,
-                                                                DefaultQuery query,
-                                                                MimosaDataSource dataSource,
-                                                                String databaseTableName) {
-        Class c = query.getTableClass();
-        List innerJoins = query.getInnerJoin();
-        List leftJoins = query.getLeftJoin();
-
-        int totalAliasTables = 0;
-        if (innerJoins != null) totalAliasTables += innerJoins.size();
-        if (leftJoins != null) totalAliasTables += leftJoins.size();
-
-        MappingTable table = mappingGlobalWrapper.getMappingDatabaseTable(dataSource, databaseTableName);
-        if (table != null) {
-            Map<Object, MappingTable> tables = new LinkedHashMap<>(totalAliasTables + 1);
-            tables.put(query, table);
-            if (innerJoins != null) {
-                for (Object join : innerJoins) {
-                    DefaultJoin j = (DefaultJoin) join;
-                    List<MappingTable> joinTable = mappingGlobalWrapper.getMappingDatabaseTable(j.getTable());
-                    if (joinTable != null && joinTable.size() > 0) {
-                        tables.put(join, joinTable.get(0));
-                    } else {
-                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
-                    }
-                }
-                for (Object join : leftJoins) {
-                    DefaultJoin j = (DefaultJoin) join;
-                    List<MappingTable> joinTable = mappingGlobalWrapper.getMappingDatabaseTable(j.getTable());
-                    if (joinTable != null && joinTable.size() > 0) {
-                        tables.put(join, joinTable.get(0));
-                    } else {
-                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
-                    }
-                }
-            }
-
-            return tables;
-        } else {
-            throw new IllegalArgumentException("没有找到和" + c.getSimpleName() + "对应的数据库映射表");
-        }
-    }
-
     public static Map<Object, MappingTable> getUsedMappingTable(MappingGlobalWrapper mappingGlobalWrapper, DefaultQuery query) {
         return getUsedMappingTable(mappingGlobalWrapper, query, null);
     }
@@ -157,8 +114,7 @@ public final class SessionUtils {
         if (innerJoins != null) totalAliasTables += innerJoins.size();
         if (leftJoins != null) totalAliasTables += leftJoins.size();
 
-        MappingTable table = mappingGlobalWrapper.getMappingDatabaseTable(c,
-                aliasNames != null ? aliasNames.get(query) : null);
+        MappingTable table = mappingGlobalWrapper.getMappingTable(c);
 
         if (table != null) {
             Map<Object, MappingTable> tables = new LinkedHashMap<>(totalAliasTables + 1);
@@ -166,8 +122,7 @@ public final class SessionUtils {
             if (innerJoins != null) {
                 for (Object join : innerJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    MappingTable joinTable = mappingGlobalWrapper.getMappingDatabaseTable(j.getTable(),
-                            aliasNames != null ? aliasNames.get(join) : null);
+                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
 
                     if (joinTable != null) {
                         tables.put(join, joinTable);
@@ -177,8 +132,7 @@ public final class SessionUtils {
                 }
                 for (Object join : leftJoins) {
                     DefaultJoin j = (DefaultJoin) join;
-                    MappingTable joinTable = mappingGlobalWrapper.getMappingDatabaseTable(j.getTable(),
-                            aliasNames != null ? aliasNames.get(join) : null);
+                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
 
                     if (joinTable != null) {
                         tables.put(join, joinTable);

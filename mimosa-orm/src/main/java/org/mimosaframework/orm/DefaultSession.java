@@ -402,7 +402,7 @@ public class DefaultSession implements Session {
         AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         MimosaDataSource ds = this.wrapper.getDataSource();
-        return new SingleZipperTable<ModelObject>(context, c, ds, mappingTable.getDatabaseTableName());
+        return new SingleZipperTable<ModelObject>(context, c, ds, mappingTable.getMappingTableName());
     }
 
     @Override
@@ -537,7 +537,7 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
-        DataSourceTableName dataSourceTableName = new DataSourceTableName(mimosaDataSource.getName(), mappingTable.getDatabaseTableName());
+        DataSourceTableName dataSourceTableName = new DataSourceTableName(mimosaDataSource.getName(), mappingTable.getMappingTableName());
         if (mimosaDataSource.getSlaves() != null) {
             List<String> slaves = new ArrayList<>();
             Set<Map.Entry<String, DataSource>> set = mimosaDataSource.getSlaves().entrySet();

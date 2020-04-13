@@ -520,7 +520,7 @@ public abstract class PlatformDialect {
         }
         if (!columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName())
                 || columnStructure.getLength() != currField.getMappingFieldLength()
-                || columnStructure.getScale() != currField.getDatabaseColumnDecimalDigits()) {
+                || columnStructure.getScale() != currField.getMappingFieldDecimalDigits()) {
             columnEditTypes.add(ColumnEditType.TYPE);
         }
 

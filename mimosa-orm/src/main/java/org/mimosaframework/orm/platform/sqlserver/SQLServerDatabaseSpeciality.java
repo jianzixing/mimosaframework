@@ -44,7 +44,6 @@ public class SQLServerDatabaseSpeciality implements DatabaseSpeciality {
         int dataType = columnResultSet.getInt("DATA_TYPE");
         try {
             String isAutoincrement = columnResultSet.getString("IS_AUTOINCREMENT");
-            ((SpecificMappingField) mappingField).setDatabaseColumnAutoIncrement(isAutoincrement);
         } catch (Exception e) {
         }
         int length = columnResultSet.getInt("COLUMN_SIZE");
@@ -53,16 +52,6 @@ public class SQLServerDatabaseSpeciality implements DatabaseSpeciality {
         String defaultValue = columnResultSet.getString("COLUMN_DEF");
         String comment = columnResultSet.getString("REMARKS");
 
-
-        ((SpecificMappingField) mappingField).setDatabaseColumnName(columnName.trim());
-        ((SpecificMappingField) mappingField).setDatabaseColumnTypeName(typeName);
-        ((SpecificMappingField) mappingField).setDatabaseColumnDataType(dataType);
-
-        ((SpecificMappingField) mappingField).setDatabaseColumnLength(length);
-        ((SpecificMappingField) mappingField).setDatabaseColumnDecimalDigits(decimalDigits);
-        ((SpecificMappingField) mappingField).setDatabaseColumnNullable(nullable);
-        ((SpecificMappingField) mappingField).setDatabaseColumnDefaultValue(defaultValue);
-        ((SpecificMappingField) mappingField).setDatabaseColumnComment(comment);
         return mappingField;
     }
 
@@ -73,18 +62,6 @@ public class SQLServerDatabaseSpeciality implements DatabaseSpeciality {
 
     @Override
     public void loadMappingColumns(Connection connection, DatabaseMetaData databaseMetaData, MappingTable table) throws SQLException {
-        ResultSet columnResultSet = null;
-        try {
-            String tableName = table.getDatabaseTableName();
-            columnResultSet = databaseMetaData.getColumns(connection.getCatalog(), "%", tableName, "%");
-            while (columnResultSet.next()) {
-                MappingField mappingField = getDatabaseMappingField(table, columnResultSet);
-                table.addDatabaseColumnField(mappingField);
-            }
-        } finally {
-            if (columnResultSet != null) {
-                columnResultSet.close();
-            }
-        }
+
     }
 }

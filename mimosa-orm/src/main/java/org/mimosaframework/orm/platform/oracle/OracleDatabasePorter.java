@@ -84,7 +84,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
         SQLBuilder sqlBuilder = SQLBuilderFactory.createQMSQLBuilder();
         sqlBuilder.SELECT();
         MappingTable mainTable = tables.get(query);
-        String mainTableName = mainTable.getDatabaseTableName();
+        String mainTableName = mainTable.getMappingTableName();
         String mainTableAlias = aliasMap.get(query);
 
         List<Join> leftJoins = query.getLeftJoin();
@@ -220,7 +220,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
         Limit limit = query.getLimit();
         boolean hasLimit = limit != null ? true : false;
 
-        String tableName = mappingTable.getDatabaseTableName();
+        String tableName = mappingTable.getMappingTableName();
         SQLBuilder sqlBuilder = SQLBuilderFactory.createQMSQLBuilder();
         sqlBuilder.SELECT();
         if (hasLimit) {
@@ -424,7 +424,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
 
     @Override
     public Long insert(MappingTable table, ModelObject object) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
         SQLBuilder insertBuilder = SQLBuilderFactory.createQMSQLBuilder().INSERT().INTO().addString(tableName);
 
         List<String> inObjectFields = new ArrayList<>();
@@ -470,7 +470,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
             if (mappingField == null) {
                 throw new IllegalArgumentException("没有找到字段" + fieldName + "映射字段");
             }
-            inObjectFields.add(mappingField.getDatabaseColumnName());
+            inObjectFields.add(mappingField.getMappingColumnName());
         }
 
         if (!isAutoIncrement && autoIncrementValue != null) {
@@ -500,7 +500,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
 
     @Override
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
         List<String> fields = this.getFieldByTable(table);
 
         String autoIncrementValue = null;

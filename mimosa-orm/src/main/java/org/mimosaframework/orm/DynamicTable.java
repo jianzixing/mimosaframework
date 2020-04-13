@@ -77,7 +77,6 @@ public class DynamicTable {
 
     public MappingTable toMappingTable() {
         SpecificMappingTable table = new SpecificMappingTable();
-        table.setDatabaseTableName(tableName);
         table.setMappingTableName(tableName);
         table.setSourceMappingTableName(tableName);
         table.setEncoding(charset);

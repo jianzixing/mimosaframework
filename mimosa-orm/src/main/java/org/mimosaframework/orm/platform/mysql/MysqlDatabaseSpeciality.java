@@ -36,15 +36,6 @@ public class MysqlDatabaseSpeciality implements DatabaseSpeciality {
         String comment = columnResultSet.getString("REMARKS");
 
         MappingField mappingField = new SpecificMappingField(table);
-        ((SpecificMappingField) mappingField).setDatabaseColumnName(columnName.trim());
-        ((SpecificMappingField) mappingField).setDatabaseColumnTypeName(typeName);
-        ((SpecificMappingField) mappingField).setDatabaseColumnDataType(dataType);
-        ((SpecificMappingField) mappingField).setDatabaseColumnAutoIncrement(isAutoincrement);
-        ((SpecificMappingField) mappingField).setDatabaseColumnLength(length);
-        ((SpecificMappingField) mappingField).setDatabaseColumnDecimalDigits(decimalDigits);
-        ((SpecificMappingField) mappingField).setDatabaseColumnNullable(nullable);
-        ((SpecificMappingField) mappingField).setDatabaseColumnDefaultValue(defaultValue);
-        ((SpecificMappingField) mappingField).setDatabaseColumnComment(comment);
         return mappingField;
     }
 
@@ -55,18 +46,5 @@ public class MysqlDatabaseSpeciality implements DatabaseSpeciality {
 
     @Override
     public void loadMappingColumns(Connection connection, DatabaseMetaData databaseMetaData, MappingTable table) throws SQLException {
-        ResultSet columnResultSet = null;
-        try {
-            String tableName = table.getDatabaseTableName();
-            columnResultSet = databaseMetaData.getColumns(connection.getCatalog(), "%", tableName, "%");
-            while (columnResultSet.next()) {
-                MappingField mappingField = getDatabaseMappingField(table, columnResultSet);
-                table.addDatabaseColumnField(mappingField);
-            }
-        } finally {
-            if (columnResultSet != null) {
-                columnResultSet.close();
-            }
-        }
     }
 }

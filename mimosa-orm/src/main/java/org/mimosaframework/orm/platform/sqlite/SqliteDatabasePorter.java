@@ -131,7 +131,7 @@ public class SqliteDatabasePorter extends AbstractDatabasePorter {
 
     @Override
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
 
         SQLBuilder insertBuilder = SQLBuilderFactory.createQMSQLBuilder().INSERT().INTO().addString(tableName);
         List<String> fields = this.clearAutoIncrement(table);

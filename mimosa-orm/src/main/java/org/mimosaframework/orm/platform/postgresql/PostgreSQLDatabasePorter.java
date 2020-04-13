@@ -113,7 +113,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
 
     @Override
     public Long insert(MappingTable table, ModelObject object) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
         SQLBuilder insertBuilder = this.createSQLBuilder().INSERT().INTO().addString(tableName);
         this.insertAddValue(insertBuilder, table, object);
         Long id = (Long) carryHandler.doHandler(new JDBCTraversing(TypeForRunner.ADD_OBJECT, insertBuilder));
@@ -160,7 +160,7 @@ public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
 
     @Override
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
 
         SQLBuilder insertBuilder = SQLBuilderFactory.createQMSQLBuilder().INSERT().INTO().addString(tableName);
         List<String> fields = this.clearAutoIncrement(table);

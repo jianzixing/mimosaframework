@@ -4,23 +4,13 @@ import java.util.List;
 import java.util.Set;
 
 public interface MappingTable {
-    void applyFromClassMappingTable(MappingTable table);
-
     Class getMappingClass();
-
-    String getDatabaseTableName();
-
-    void addDatabaseColumnField(MappingField field);
-
+    
     void addMappingField(MappingField field);
-
-    void setMappingDatabase(MappingDatabase mappingDatabase);
 
     Set<MappingField> getMappingFields();
 
     Set<MappingIndex> getMappingIndexes();
-
-    Set<MappingField> getMappingColumns();
 
     /**
      * 如果注解@Table有自定义名称,则就是这个值
@@ -56,14 +46,6 @@ public interface MappingTable {
     MappingField getMappingFieldByName(String fieldName);
 
     MappingField getMappingFieldByJavaName(String fieldName);
-
-    /**
-     * 通过数据库字段获取完整的信息
-     *
-     * @param fieldName
-     * @return
-     */
-    MappingField getMappingFieldByDBName(String fieldName);
 
     String getMappingClassName();
 

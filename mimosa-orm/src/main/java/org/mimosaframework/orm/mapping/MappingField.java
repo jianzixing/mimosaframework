@@ -22,25 +22,13 @@ public interface MappingField {
      */
     String getMappingColumnName();
 
-    String getDatabaseColumnName();
-
     boolean isMappingAutoIncrement();
 
     boolean isMappingFieldIndex();
 
     boolean isMappingFieldUnique();
 
-    void applyFromClassField(MappingField field);
-
-    void applyFromColumnField(MappingField field);
-
-    String getDatabaseColumnTypeName();
-
     Class getMappingFieldType();
-
-    int getDatabaseColumnDataType();
-
-    String getDatabaseColumnAutoIncrement();
 
     boolean isMappingFieldAutoIncrement();
 
@@ -48,21 +36,11 @@ public interface MappingField {
 
     int getMappingFieldDecimalDigits();
 
-    int getDatabaseColumnLength();
-
-    int getDatabaseColumnDecimalDigits();
-
-    String getDatabaseColumnNullable();
-
     boolean isMappingFieldNullable();
-
-    String getDatabaseColumnDefaultValue();
 
     String getMappingFieldDefaultValue();
 
     String getMappingFieldComment();
-
-    String getDatabaseColumnComment();
 
     boolean isMappingFieldTimeForUpdate();
 

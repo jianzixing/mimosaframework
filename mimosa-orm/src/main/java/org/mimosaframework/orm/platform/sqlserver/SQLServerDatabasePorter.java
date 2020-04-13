@@ -41,7 +41,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
         SQLBuilder sqlBuilder = SQLBuilderFactory.createBraceSQLBuilder();
         sqlBuilder.SELECT();
         MappingTable mainTable = tables.get(query);
-        String mainTableName = mainTable.getDatabaseTableName();
+        String mainTableName = mainTable.getMappingTableName();
         String mainTableAlias = aliasMap.get(query);
 
         Limit limit = query.getLimit();
@@ -217,7 +217,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
         }
 
         if (!hasLimit) {
-            sqlBuilder.FROM().addWrapString(mappingTable.getDatabaseTableName());
+            sqlBuilder.FROM().addWrapString(mappingTable.getMappingTableName());
             Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 sqlBuilder.WHERE();
@@ -227,7 +227,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             SQLBuilder orderByBuilder = this.buildOrderBy(mappingTable, query, null);
             sqlBuilder.addSQLBuilder(orderByBuilder);
         } else {
-            String mainTableName = mappingTable.getDatabaseTableName();
+            String mainTableName = mappingTable.getMappingTableName();
             List<Order> orders = query.getOrders();
             SQLBuilder sqlserverLimitBuilder = SQLBuilderFactory.createBraceSQLBuilder();
             sqlserverLimitBuilder.SELECT().addString("ROW_NUMBER() OVER");
@@ -299,7 +299,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
 
     @Override
     public Long insert(MappingTable table, ModelObject object) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
 
         // 如果自增主键保存时有值
         // 就必须设置  set IDENTITY_INSERT mimosa.dbo.t_user on 然后关闭
@@ -335,7 +335,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
 
     @Override
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
-        String tableName = table.getDatabaseTableName();
+        String tableName = table.getMappingTableName();
 
         SQLBuilder insertBuilder = SQLBuilderFactory.createBraceSQLBuilder().INSERT().INTO().addString(tableName);
         List<String> fields = this.clearAutoIncrement(table);
