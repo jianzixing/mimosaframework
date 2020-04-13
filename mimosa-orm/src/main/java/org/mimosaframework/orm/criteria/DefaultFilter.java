@@ -1,18 +1,11 @@
 package org.mimosaframework.orm.criteria;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.I18n;
 
 /**
  * @author yangankang
  */
 public class DefaultFilter implements Filter {
-
-    private Query query;
-    private Join join;
-    private Update update;
-    private Delete delete;
-    private Function function;
     private Object key;
     private Object value;
     private Object startValue;
@@ -22,32 +15,12 @@ public class DefaultFilter implements Filter {
     public DefaultFilter() {
     }
 
-    public DefaultFilter(Query query) {
-        this.query = query;
-    }
-
     public DefaultFilter(Object key, Object value, String symbol) {
         this.key = key;
         this.value = value;
         if (symbol != null) {
             this.symbol = symbol.trim();
         }
-    }
-
-    public DefaultFilter(Join join) {
-        this.join = join;
-    }
-
-    public DefaultFilter(Update update) {
-        this.update = update;
-    }
-
-    public DefaultFilter(Delete delete) {
-        this.delete = delete;
-    }
-
-    public DefaultFilter(Function function) {
-        this.function = function;
     }
 
     public Object getKey() {
@@ -88,26 +61,6 @@ public class DefaultFilter implements Filter {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
-    }
-
-    @Override
-    public Query query() {
-        return this.query;
-    }
-
-    @Override
-    public Join join() {
-        return this.join;
-    }
-
-    @Override
-    public Update update() {
-        return this.update;
-    }
-
-    @Override
-    public Delete delete() {
-        return this.delete;
     }
 
     @Override

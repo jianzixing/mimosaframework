@@ -48,42 +48,6 @@ public class DefaultQuery implements LogicQuery {
         return query;
     }
 
-    public DefaultFilter hasFilterByField(String field) {
-        if (logicWraps != null) {
-            boolean isAllAnd = true;
-            DefaultFilter r = null;
-            for (LogicWrapObject lwo : logicWraps) {
-                DefaultFilter f = (DefaultFilter) lwo.getWhere();
-                if (f == null) {
-                    isAllAnd = false;
-                } else {
-                    if (lwo.getLogic() != CriteriaLogic.AND) {
-                        isAllAnd = false;
-                    }
-                    if (String.valueOf(f.getKey()).equals(field) && f.getSymbol().equals("=")) {
-                        r = f;
-                    }
-                }
-            }
-            if (isAllAnd && r != null) {
-                return r;
-            }
-        }
-        return null;
-    }
-
-    public DefaultFilter getFilterByField(String field) {
-        if (logicWraps != null) {
-            for (LogicWrapObject lwo : logicWraps) {
-                DefaultFilter f = (DefaultFilter) lwo.getWhere();
-                if (f.getKey().equals(field)) {
-                    return f;
-                }
-            }
-        }
-        return null;
-    }
-
     public DefaultQuery(Class<?> table) {
         this.tableClass = table;
     }
@@ -146,8 +110,6 @@ public class DefaultQuery implements LogicQuery {
         if (this.leftJoin != null && !this.leftJoin.contains(dj)) {
             this.leftJoin.add(dj);
         }
-
-        dj.setQuery(this);
 
         Set<Join> joins = dj.getChildJoin();
         if (joins != null) {
@@ -481,18 +443,12 @@ public class DefaultQuery implements LogicQuery {
         this.logicWraps = null;
     }
 
-    public void clearInnerJoin() {
-        if (this.innerJoin != null) {
-            this.innerJoin = new ArrayList<>(1);
-        }
-    }
-
     private void checkJoinHasOnFilter(List<Join> joins) {
         if (joins != null
                 && joins.size() > 0) {
             for (Join join : joins) {
                 DefaultJoin dj = (DefaultJoin) join;
-                if (dj.getOnFilters() == null || dj.getOnFilters().size() == 0) {
+                if (dj.getOns() == null || dj.getOns().size() == 0) {
                     throw new IllegalArgumentException(I18n.print("join_not_have_filter", dj.getTable().getSimpleName()));
                 }
             }
@@ -501,15 +457,6 @@ public class DefaultQuery implements LogicQuery {
 
     public void checkQuery() {
         this.checkJoinHasOnFilter(leftJoin);
-    }
-
-    public boolean checkHasFilter() {
-        for (LogicWrapObject<Filter> lw : logicWraps) {
-            if (lw.getWhere() != null && ((DefaultFilter) lw.getWhere()).getKey() != null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean hasInnerJoin() {

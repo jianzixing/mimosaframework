@@ -12,9 +12,9 @@ public class OnField {
     private Object value;
     private String symbol;
 
-    public OnField(Object key, Object value, String symbol) {
-        this.key = key;
-        this.value = value;
+    public OnField(Object self, Object main, String symbol) {
+        this.key = self;
+        this.value = main;
         this.symbol = symbol;
     }
 

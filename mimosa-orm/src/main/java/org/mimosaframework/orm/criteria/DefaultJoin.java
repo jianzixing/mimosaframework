@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.criteria;
 
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.I18n;
 
 import java.util.ArrayList;
@@ -13,11 +12,8 @@ import java.util.Set;
  * @author yangankang
  */
 public class DefaultJoin implements Join {
-
-    private List<Filter> valueFilters = new ArrayList<Filter>();
-    private List<OnField> onFilters = new ArrayList<OnField>();
+    private List<JoinOnFilter> ons = new ArrayList<JoinOnFilter>();
     private String aliasName;
-    private Query query;
     private Class<?> table;
     private Class<?> mainTable;
     /**
@@ -27,24 +23,6 @@ public class DefaultJoin implements Join {
     private boolean isMulti = true;
     private Join parentJoin;
     private Set<Join> childJoin;
-    private String mainClassAliasName;
-    private String tableClassAliasName;
-
-    public String getMainClassAliasName() {
-        return mainClassAliasName;
-    }
-
-    public void setMainClassAliasName(String mainClassAliasName) {
-        this.mainClassAliasName = mainClassAliasName;
-    }
-
-    public String getTableClassAliasName() {
-        return tableClassAliasName;
-    }
-
-    public void setTableClassAliasName(String tableClassAliasName) {
-        this.tableClassAliasName = tableClassAliasName;
-    }
 
     public DefaultJoin() {
     }
@@ -54,88 +32,36 @@ public class DefaultJoin implements Join {
         this.mainTable = mainTable;
     }
 
-    public DefaultJoin(Query query, Class<?> table) {
-        this.query = query;
-        this.table = table;
-    }
-
-    public DefaultJoin(Query query, Class<?> mainTable, Class<?> selfTable) {
-        this.query = query;
-        this.table = selfTable;
-        this.mainTable = mainTable;
-    }
-
-    public Class<?> getMainTable() {
-        return mainTable;
-    }
-
-    public void setMainTable(Class<?> mainTable) {
-        this.mainTable = mainTable;
-    }
-
-    public DefaultJoin(Class<?> table) {
-        this.table = table;
-    }
-
-    public Class<?> getTable() {
-        return table;
-    }
-
-    public List<Filter> getValueFilters() {
-        return valueFilters;
-    }
-
-    public List<OnField> getOnFilters() {
-        return onFilters;
+    public List<JoinOnFilter> getOns() {
+        return ons;
     }
 
     public String getAliasName() {
         return aliasName;
     }
 
-
-    public void setValueFilters(List<Filter> valueFilters) {
-        this.valueFilters = valueFilters;
+    public Class<?> getTable() {
+        return table;
     }
 
-    public void setOnFilters(List<OnField> onFilters) {
-        this.onFilters = onFilters;
-    }
-
-    public void setAliasName(String aliasName) {
-        this.aliasName = aliasName;
-    }
-
-    public void setTable(Class<?> table) {
-        this.table = table;
-    }
-
-    public void setChildJoin(Set<Join> childJoin) {
-        this.childJoin = childJoin;
+    public Class<?> getMainTable() {
+        return mainTable;
     }
 
     public Join getParentJoin() {
         return parentJoin;
     }
 
-    @Override
-    public Query query() {
-        return this.query;
+    public void setTable(Class<?> table) {
+        this.table = table;
+    }
+
+    public void setMainTable(Class<?> mainTable) {
+        this.mainTable = mainTable;
     }
 
     @Override
-    public Join parent() {
-        return this.getParentJoin();
-    }
-
-    @Override
-    public Join setQuery(Query query) {
-        this.query = query;
-        return this;
-    }
-
-    @Override
-    public Join addChildJoin(Join join) {
+    public Join childJoin(Join join) {
         DefaultJoin dj = ((DefaultJoin) join);
         if (dj.getMainTable() == null) {
             if (this.table == null) {
@@ -149,50 +75,7 @@ public class DefaultJoin implements Join {
         }
 
         this.createSetChildJoin(join);
-
-        DefaultQuery query = ((DefaultQuery) this.query);
-        if (query != null) {
-            List<Join> joins = query.getLeftJoin();
-            if (joins != null) {
-                joins.add(join);
-                return join;
-            }
-        }
-
         return this;
-    }
-
-    @Override
-    public Join childJoin(Class<?> table) {
-        Join join = new DefaultJoin(query, this.table, table);
-        this.createSetChildJoin(join);
-
-        DefaultQuery query = ((DefaultQuery) this.query);
-        if (query != null) {
-            List<Join> joins = query.getLeftJoin();
-            if (joins != null) {
-                joins.add(join);
-                return join;
-            }
-        }
-        return join;
-    }
-
-    @Override
-    public Join add(Filter filter) {
-        if (filter instanceof DefaultFilter) {
-            this.valueFilters.add(filter);
-        } else {
-            throw new IllegalArgumentException(I18n.print("just_filter"));
-        }
-        return this;
-    }
-
-    @Override
-    public Filter filter() {
-        Filter filter = new DefaultFilter(this);
-        this.valueFilters.add(filter);
-        return filter;
     }
 
     private void checkFieldClass(Object self, Object mainField) {
@@ -203,78 +86,48 @@ public class DefaultJoin implements Join {
     }
 
     @Override
-    public Join join(Object self, Object value) {
-        if (value instanceof Value) {
-            this.valueFilters.add(new DefaultFilter(self, ((Value) value).getValue(), "="));
-        } else {
-            this.onFilters.add(new OnField(self, value, "="));
-        }
-        this.checkFieldClass(self, value);
-        return this;
+    public Join on(Object mainField, Object self) {
+        return this.eq(mainField, self);
     }
 
     @Override
-    public Join eq(Object self, Object mainField) {
-        if (mainField instanceof Value) {
-            this.valueFilters.add(new DefaultFilter(self, ((Value) mainField).getValue(), "="));
-        } else {
-            this.onFilters.add(new OnField(self, mainField, "="));
-        }
+    public Join jeq(Object mainField, Object self) {
+        this.ons.add(new JoinOnFilter(new OnField(self, mainField, "=")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join ne(Object self, Object mainField) {
-        if (mainField instanceof Value) {
-            this.valueFilters.add(new DefaultFilter(self, ((Value) mainField).getValue(), "!="));
-        } else {
-            this.onFilters.add(new OnField(self, mainField, "!="));
-        }
+    public Join jne(Object mainField, Object self) {
+        this.ons.add(new JoinOnFilter(new OnField(self, mainField, "!=")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join gt(Object self, Object mainField) {
-        if (mainField instanceof Value) {
-            this.valueFilters.add(new DefaultFilter(self, ((Value) mainField).getValue(), ">"));
-        } else {
-            this.onFilters.add(new OnField(self, mainField, ">"));
-        }
+    public Join jgt(Object mainField, Object self) {
+        this.ons.add(new JoinOnFilter(new OnField(self, mainField, ">")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join gte(Object self, Object queryField) {
-        if (queryField instanceof Value) {
-            this.valueFilters.add(new DefaultFilter(self, ((Value) queryField).getValue(), ">="));
-        } else {
-            this.onFilters.add(new OnField(self, queryField, ">="));
-        }
-        this.checkFieldClass(self, queryField);
-        return this;
-    }
-
-    @Override
-    public Join lt(Object self, Object mainField) {
-        if (mainField instanceof Value) {
-            this.valueFilters.add(new DefaultFilter(self, ((Value) mainField).getValue(), "<"));
-        } else {
-            this.onFilters.add(new OnField(self, mainField, "<"));
-        }
+    public Join jge(Object mainField, Object self) {
+        this.ons.add(new JoinOnFilter(new OnField(self, mainField, ">=")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join lte(Object self, Object mainField) {
-        if (mainField instanceof Value) {
-            this.valueFilters.add(new DefaultFilter(self, ((Value) mainField).getValue(), "<="));
-        } else {
-            this.onFilters.add(new OnField(self, mainField, "<="));
-        }
+    public Join jlt(Object mainField, Object self) {
+        this.ons.add(new JoinOnFilter(new OnField(self, mainField, "<")));
+        this.checkFieldClass(self, mainField);
+        return this;
+    }
+
+    @Override
+    public Join jle(Object mainField, Object self) {
+        this.ons.add(new JoinOnFilter(new OnField(self, mainField, "<=")));
         this.checkFieldClass(self, mainField);
         return this;
     }
@@ -291,14 +144,14 @@ public class DefaultJoin implements Join {
         return this;
     }
 
-    public boolean isMulti() {
-        return isMulti;
+    @Override
+    public Join multiple() {
+        this.isMulti = true;
+        return this;
     }
 
-    @Override
-    public Join setMulti(boolean is) {
-        this.isMulti = is;
-        return this;
+    public boolean isMulti() {
+        return isMulti;
     }
 
     @Override
@@ -326,21 +179,111 @@ public class DefaultJoin implements Join {
 
     public Join clone() {
         DefaultJoin join = new DefaultJoin();
-        join.valueFilters = valueFilters;
-        join.onFilters = onFilters;
+        join.ons = ons;
         join.aliasName = aliasName;
-        join.query = query;
         join.table = table;
         join.mainTable = mainTable;
         join.isMulti = isMulti;
         join.parentJoin = parentJoin;
         join.childJoin = childJoin;
-        join.mainClassAliasName = mainClassAliasName;
-        join.tableClassAliasName = tableClassAliasName;
         return join;
     }
 
-    public void setParentJoin(Join parentJoin) {
-        this.parentJoin = parentJoin;
+    @Override
+    public Join eq(Object key, Object value) {
+        Filter filter = new DefaultFilter().eq(key, value);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join in(Object key, Iterable values) {
+        Filter filter = new DefaultFilter().in(key, values);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join in(Object key, Object... values) {
+        Filter filter = new DefaultFilter().in(key, values);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join nin(Object key, Iterable values) {
+        Filter filter = new DefaultFilter().nin(key, values);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join nin(Object key, Object... values) {
+        Filter filter = new DefaultFilter().nin(key, values);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join like(Object key, Object value) {
+        Filter filter = new DefaultFilter().like(key, value);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join ne(Object key, Object value) {
+        Filter filter = new DefaultFilter().ne(key, value);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join gt(Object key, Object value) {
+        Filter filter = new DefaultFilter().gt(key, value);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join gte(Object key, Object value) {
+        Filter filter = new DefaultFilter().gte(key, value);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join lt(Object key, Object value) {
+        Filter filter = new DefaultFilter().lt(key, value);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join lte(Object key, Object value) {
+        Filter filter = new DefaultFilter().lte(key, value);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join between(Object key, Object start, Object end) {
+        Filter filter = new DefaultFilter().between(key, start, end);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join isNull(Object key) {
+        Filter filter = new DefaultFilter().isNull(key);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
+    }
+
+    @Override
+    public Join isNotNull(Object key) {
+        Filter filter = new DefaultFilter().isNull(key);
+        this.ons.add(new JoinOnFilter(filter));
+        return this;
     }
 }

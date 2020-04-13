@@ -3,52 +3,28 @@ package org.mimosaframework.orm.criteria;
 /**
  * @author yangankang
  */
-public interface Join {
+public interface Join extends Filter<Join> {
+    Join childJoin(Join join);
 
-    Query query();
+    Join on(Object mainField, Object self);
 
-    Join parent();
+    Join jeq(Object mainField, Object self);
 
-    Join setQuery(Query query);
+    Join jne(Object mainField, Object self);
 
-    Join addChildJoin(Join join);
+    Join jgt(Object mainField, Object self);
 
-    Join childJoin(Class<?> table);
+    Join jge(Object mainField, Object self);
 
-    /**
-     * 添加过滤条件，不是on条件
-     *
-     * @param filter
-     * @return
-     */
-    Join add(Filter filter);
+    Join jlt(Object mainField, Object self);
 
-    /**
-     * 添加过滤条件，不是on条件
-     *
-     * @return
-     */
-    Filter filter();
-
-    Join join(Object self, Object value);
-
-    Join eq(Object self, Object mainField);
-
-    Join ne(Object self, Object mainField);
-
-    Join gt(Object self, Object mainField);
-
-    Join gte(Object self, Object mainField);
-
-    Join lt(Object self, Object mainField);
-
-    Join lte(Object self, Object mainField);
+    Join jle(Object mainField, Object self);
 
     Join aliasName(Object s);
 
     Join single();
 
-    Join setMulti(boolean is);
+    Join multiple();
 
     Class getTableClass();
 

@@ -78,7 +78,7 @@ public class DefaultFunction implements Function {
     }
 
     @Override
-    public Function addLinked(LogicLinked linked) {
+    public Function linked(LogicLinked linked) {
         LogicWraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new LogicWraps<>();
@@ -89,34 +89,18 @@ public class DefaultFunction implements Function {
     }
 
     @Override
-    public Function andLinked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
-        if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+    public Function and() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.AND);
         }
-        this.logicWraps.addLastLink(lw);
         return this;
     }
 
     @Override
-    public Function orLinked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
-        if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+    public Function or() {
+        if (this.logicWraps != null && this.logicWraps.size() > 0) {
+            this.logicWraps.getLast().setLogic(CriteriaLogic.OR);
         }
-        this.logicWraps.addLastLink(lw, CriteriaLogic.OR);
-        return this;
-    }
-
-    @Override
-    public Function and(Filter filter) {
-        this.add(filter, CriteriaLogic.AND);
-        return this;
-    }
-
-    @Override
-    public Function or(Filter filter) {
-        this.add(filter, CriteriaLogic.OR);
         return this;
     }
 
@@ -154,14 +138,7 @@ public class DefaultFunction implements Function {
     }
 
     @Override
-    public Filter addFilter() {
-        Filter filter = new DefaultFilter(this);
-        this.add(filter, CriteriaLogic.AND);
-        return filter;
-    }
-
-    @Override
-    public Query query() {
+    public Query covert2query() {
         DefaultQuery query = new DefaultQuery(logicWraps, this.tableClass);
         return query;
     }
