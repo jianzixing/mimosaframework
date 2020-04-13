@@ -1,31 +1,31 @@
 package org.mimosaframework.orm.criteria;
 
-public class LogicLinked implements Filter {
-    private LogicWraps<Filter> logicWraps;
+public class DefaultWrapsLinked implements LogicWrapsLinked {
+    private Wraps<Filter> logicWraps;
 
-    public LogicWraps<Filter> getLogicWraps() {
+    public Wraps<Filter> getLogicWraps() {
         return logicWraps;
     }
 
-    public LogicLinked and() {
+    public WrapsLinked and() {
         if (this.logicWraps != null && this.logicWraps.size() > 0) {
             this.logicWraps.getLast().setLogic(CriteriaLogic.AND);
         }
         return this;
     }
 
-    public LogicLinked or() {
+    public WrapsLinked or() {
         if (this.logicWraps != null && this.logicWraps.size() > 0) {
             this.logicWraps.getLast().setLogic(CriteriaLogic.OR);
         }
         return this;
     }
 
-    public LogicLinked linked(LogicLinked linked) {
-        LogicWraps lw = linked.logicWraps;
+    public WrapsLinked linked(WrapsLinked linked) {
+        Wraps lw = ((DefaultWrapsLinked) linked).logicWraps;
 
         if (logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+            this.logicWraps = new Wraps<>();
         }
         this.logicWraps.addLastLink(lw);
         return this;
@@ -33,27 +33,27 @@ public class LogicLinked implements Filter {
 
     private void addFilterInLinked(Filter filter, CriteriaLogic logic) {
         if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+            this.logicWraps = new Wraps<>();
         }
-        this.logicWraps.addLast(new LogicWrapObject<Filter>(filter), logic);
+        this.logicWraps.addLast(new WrapsObject<Filter>(filter), logic);
     }
 
     @Override
-    public LogicLinked eq(Object key, Object value) {
+    public WrapsLinked eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked in(Object key, Iterable values) {
+    public WrapsLinked in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked in(Object key, Object... values) {
+    public WrapsLinked in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
@@ -74,63 +74,63 @@ public class LogicLinked implements Filter {
     }
 
     @Override
-    public LogicLinked like(Object key, Object value) {
+    public WrapsLinked like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked ne(Object key, Object value) {
+    public WrapsLinked ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked gt(Object key, Object value) {
+    public WrapsLinked gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked gte(Object key, Object value) {
+    public WrapsLinked gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked lt(Object key, Object value) {
+    public WrapsLinked lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked lte(Object key, Object value) {
+    public WrapsLinked lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked between(Object key, Object start, Object end) {
+    public WrapsLinked between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked isNull(Object key) {
+    public WrapsLinked isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public LogicLinked isNotNull(Object key) {
+    public WrapsLinked isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;

@@ -1,18 +1,18 @@
 package org.mimosaframework.orm.criteria;
 
-public class LogicWrapObject<T> {
+public class WrapsObject<T> {
     private T where;
-    private LogicWraps link;
+    private Wraps link;
     private CriteriaLogic logic = CriteriaLogic.AND;
 
-    public LogicWrapObject() {
+    public WrapsObject() {
     }
 
-    public LogicWrapObject(LogicWraps link) {
+    public WrapsObject(Wraps link) {
         this.link = link;
     }
 
-    public LogicWrapObject(T where) {
+    public WrapsObject(T where) {
         this.where = where;
     }
 
@@ -28,11 +28,11 @@ public class LogicWrapObject<T> {
         this.logic = logic;
     }
 
-    public LogicWraps getLink() {
+    public Wraps getLink() {
         return link;
     }
 
-    public void setLink(LogicWraps link) {
+    public void setLink(Wraps link) {
         this.link = link;
     }
 

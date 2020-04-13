@@ -3,7 +3,6 @@ package org.mimosaframework.orm.platform;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.BasicFunction;
 import org.mimosaframework.orm.criteria.*;
@@ -528,7 +527,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         return null;
     }
 
-    private void selectBuildWhere(MappingTable table, SQLBuilder sqlBuilder, LogicWraps<Filter> logicWraps) {
+    private void selectBuildWhere(MappingTable table, SQLBuilder sqlBuilder, Wraps<Filter> logicWraps) {
         if (logicWraps != null) {
             sqlBuilder.WHERE();
 
@@ -690,7 +689,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             sqlBuilder.addSQLBuilder(funCSQLBuilder);
             sqlBuilder.FROM().addWrapString(table.getDatabaseTableName());
 
-            LogicWraps wraps = function.getLogicWraps();
+            Wraps wraps = function.getLogicWraps();
             if (wraps != null) {
                 SQLBuilder where = this.buildWhereByLogicWraps(table, wraps, null);
                 sqlBuilder.WHERE();
@@ -739,7 +738,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         } else {
             sqlBuilder.addWrapString(table.getDatabaseTableName());
 
-            LogicWraps wraps = function.getLogicWraps();
+            Wraps wraps = function.getLogicWraps();
             if (wraps != null) {
                 SQLBuilder where = this.buildWhereByLogicWraps(table, wraps, null);
                 sqlBuilder.WHERE();
@@ -801,7 +800,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             this.countTableAsBuilder(countBuilder);
         } else {
             countBuilder.addWrapString(tableName);
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 SQLBuilder whereBuilder = this.buildWhereByLogicWraps(table, logicWraps, null);
                 countBuilder.WHERE();
@@ -1179,7 +1178,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                 }
             }
 
-        LogicWraps<Filter> logicWraps = query.getLogicWraps();
+        Wraps<Filter> logicWraps = query.getLogicWraps();
         if (logicWraps != null) {
             sqlBuilder.WHERE();
             if (!this.hasJoins(query)) {
@@ -1277,13 +1276,13 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
         return null;
     }
 
-    protected SQLBuilder buildWhereByLogicWraps(MappingTable table, LogicWraps<Filter> logicWraps, String tableAliasName) {
+    protected SQLBuilder buildWhereByLogicWraps(MappingTable table, Wraps<Filter> logicWraps, String tableAliasName) {
         if (logicWraps != null && table != null) {
             SQLBuilder whereBuilder = this.createSQLBuilder();
 
-            Iterator<LogicWrapObject<Filter>> iterator = logicWraps.iterator();
+            Iterator<WrapsObject<Filter>> iterator = logicWraps.iterator();
             while (iterator.hasNext()) {
-                LogicWrapObject<Filter> lwo = iterator.next();
+                WrapsObject<Filter> lwo = iterator.next();
                 Filter filter = lwo.getWhere();
                 if (filter != null) {
                     SQLBuilder filterBuilder = this.buildWhereByFilter(table, (DefaultFilter) filter, tableAliasName);
@@ -1292,7 +1291,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
                     }
                 }
 
-                LogicWraps linked = lwo.getLink();
+                Wraps linked = lwo.getLink();
                 if (linked != null && filter != null) {
                     whereBuilder.AND();
                 }
@@ -1434,7 +1433,7 @@ public abstract class AbstractDatabasePorter implements DatabasePorter {
             }
         }
 
-        LogicWraps<Filter> logicWraps = query.getLogicWraps();
+        Wraps<Filter> logicWraps = query.getLogicWraps();
         if (this.hasInnerJoin(query) || logicWraps != null) {
             sqlBuilder.WHERE();
         }

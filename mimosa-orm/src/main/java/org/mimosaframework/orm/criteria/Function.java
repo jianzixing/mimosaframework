@@ -2,30 +2,26 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.BasicFunction;
 
-public interface Function extends Filter<Function> {
-    Function addFunction(BasicFunction function, Object field);
+public interface Function<T extends Function> extends Filter<T> {
+    T addFunction(BasicFunction function, Object field);
 
-    Function addFunction(BasicFunction function, Object field, String alias);
+    T addFunction(BasicFunction function, Object field, String alias);
 
-    Function addFunction(FunctionField function);
+    T addFunction(FunctionField function);
 
-    Function master();
+    T master();
 
-    Function slave();
+    T slave();
 
-    Function slave(String name);
+    T slave(String name);
 
-    Function linked(LogicLinked linked);
+    T linked(WrapsLinked linked);
 
-    Function and();
+    T groupBy(Object field);
 
-    Function or();
+    T orderBy(Object field, boolean isAsc);
 
-    Function groupBy(Object field);
-
-    Function orderBy(Object field, boolean isAsc);
-
-    Function childGroupBy(Object field);
+    T childGroupBy(Object field);
 
     Query covert2query();
 

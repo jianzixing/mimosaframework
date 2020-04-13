@@ -136,7 +136,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             sqlserverLimitBuilder.addAsterisk();
             sqlserverLimitBuilder.FROM().addWrapString(mainTableName);
 
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 sqlserverLimitBuilder.WHERE();
                 SQLBuilder whereBuilder = this.buildWhereByLogicWraps(mainTable, logicWraps, null);
@@ -160,7 +160,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
                 }
             }
 
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 sqlBuilder.WHERE();
                 if (leftJoins == null) {
@@ -218,7 +218,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
 
         if (!hasLimit) {
             sqlBuilder.FROM().addWrapString(mappingTable.getDatabaseTableName());
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 sqlBuilder.WHERE();
                 SQLBuilder whereBuilder = this.buildWhereByLogicWraps(mappingTable, logicWraps, null);
@@ -259,7 +259,7 @@ public class SQLServerDatabasePorter extends AbstractDatabasePorter {
             sqlserverLimitBuilder.addAsterisk();
             sqlserverLimitBuilder.FROM().addWrapString(mainTableName);
 
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 sqlserverLimitBuilder.WHERE();
                 SQLBuilder whereBuilder = this.buildWhereByLogicWraps(mappingTable, logicWraps, null);

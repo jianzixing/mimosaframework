@@ -3,7 +3,6 @@ package org.mimosaframework.orm.platform.oracle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.i18n.I18n;
@@ -163,7 +162,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
         }
 
         if (hasLimit) {
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             sqlBuilder.addParenthesisStart();
             SQLBuilder oracleChildSelect = SQLBuilderFactory.createQMSQLBuilder();
             oracleChildSelect.SELECT().addWrapString(mainTableName).addString(".*")
@@ -194,7 +193,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
                     .AND()
                     .addString((limit.getStart() + limit.getLimit()) + "");
         } else {
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 sqlBuilder.WHERE();
                 if (leftJoins == null) {
@@ -268,7 +267,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
             SQLBuilder oracleChildBuilder = SQLBuilderFactory.createQMSQLBuilder();
             oracleChildBuilder.SELECT().addWrapString(tableName).addString(".*")
                     .addSplit().addString("rownum rn").FROM().addWrapString(tableName);
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 oracleChildBuilder.WHERE();
                 SQLBuilder whereBuilder = this.buildWhereByLogicWraps(mappingTable, logicWraps, null);
@@ -287,7 +286,7 @@ public class OracleDatabasePorter extends AbstractDatabasePorter {
             return sqlBuilder;
         } else {
             sqlBuilder.FROM().addWrapString(tableName);
-            LogicWraps<Filter> logicWraps = query.getLogicWraps();
+            Wraps<Filter> logicWraps = query.getLogicWraps();
             if (logicWraps != null) {
                 sqlBuilder.WHERE();
                 SQLBuilder whereBuilder = this.buildWhereByLogicWraps(mappingTable, logicWraps, null);

@@ -256,6 +256,7 @@ public class PlatformExecutor {
     }
 
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
+        
         return null;
     }
 

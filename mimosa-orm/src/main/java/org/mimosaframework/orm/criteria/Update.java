@@ -3,28 +3,24 @@ package org.mimosaframework.orm.criteria;
 /**
  * @author yangankang
  */
-public interface Update extends Filter<Update> {
-    Update setTableClass(Class c);
+public interface Update<T extends Update> extends Filter<T> {
+    T setTableClass(Class c);
 
-    Update linked(LogicLinked linked);
+    T linked(WrapsLinked linked);
 
-    Update and();
+    T set(Object key, Object value);
 
-    Update or();
+    T addSelf(Object key);
 
-    Update set(Object key, Object value);
+    T subSelf(Object key);
 
-    Update addSelf(Object key);
+    T addSelf(Object key, Integer step);
 
-    Update subSelf(Object key);
+    T subSelf(Object key, Integer step);
 
-    Update addSelf(Object key, Integer step);
+    T addSelf(Object key, String step);
 
-    Update subSelf(Object key, Integer step);
-
-    Update addSelf(Object key, String step);
-
-    Update subSelf(Object key, String step);
+    T subSelf(Object key, String step);
 
     Query covert2query();
 }

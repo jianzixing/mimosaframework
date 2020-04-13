@@ -3,14 +3,10 @@ package org.mimosaframework.orm.criteria;
 /**
  * @author yangankang
  */
-public interface Delete extends Filter<Delete> {
-    Delete setTableClass(Class c);
+public interface Delete<T extends Delete> extends Filter<T> {
+    T setTableClass(Class c);
 
-    Delete linked(LogicLinked linked);
-
-    Delete and();
-
-    Delete or();
+    T linked(WrapsLinked linked);
 
     Query covert2query();
 }

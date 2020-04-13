@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class DefaultQuery implements LogicQuery {
 
-    private LogicWraps<Filter> logicWraps;
+    private Wraps<Filter> logicWraps;
 
     /**
      * 包含所有的join查询，每个join查询拥有独立的父子结构，
@@ -29,8 +29,8 @@ public class DefaultQuery implements LogicQuery {
     public DefaultQuery(Class<?> tableClass) {
         this.tableClass = tableClass;
     }
-    
-    public DefaultQuery(LogicWraps<Filter> logicWraps, Class<?> tableClass) {
+
+    public DefaultQuery(Wraps<Filter> logicWraps, Class<?> tableClass) {
         this.logicWraps = logicWraps;
         this.tableClass = tableClass;
     }
@@ -61,10 +61,10 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query linked(LogicLinked linked) {
+    public Query linked(WrapsLinked linked) {
         if (linked != null) {
             if (this.logicWraps == null) {
-                this.logicWraps = new LogicWraps<>();
+                this.logicWraps = new Wraps<>();
             }
             this.logicWraps.addLastLink(linked.getLogicWraps());
         }
@@ -138,7 +138,7 @@ public class DefaultQuery implements LogicQuery {
         return this;
     }
 
-    public LogicWraps<Filter> getLogicWraps() {
+    public Wraps<Filter> getLogicWraps() {
         return logicWraps;
     }
 
@@ -283,10 +283,10 @@ public class DefaultQuery implements LogicQuery {
 
     private void addFilterInLinked(Filter filter, CriteriaLogic logic) {
         if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
-            this.logicWraps.add(new LogicWrapObject<Filter>(filter));
+            this.logicWraps = new Wraps<>();
+            this.logicWraps.add(new WrapsObject<Filter>(filter));
         } else {
-            logicWraps.addLast(new LogicWrapObject<Filter>(filter), logic);
+            logicWraps.addLast(new WrapsObject<Filter>(filter), logic);
         }
     }
 
@@ -389,7 +389,7 @@ public class DefaultQuery implements LogicQuery {
         return slaveName;
     }
 
-    public void setLogicWraps(LogicWraps<Filter> logicWraps) {
+    public void setLogicWraps(Wraps<Filter> logicWraps) {
         this.logicWraps = logicWraps;
     }
 

@@ -21,7 +21,7 @@ public class SearchForm {
 
     public Delete getDelete() {
         if (this.query != null) {
-            LogicWraps wraps = ((DefaultQuery) this.query).getLogicWraps();
+            Wraps wraps = ((DefaultQuery) this.query).getLogicWraps();
             DefaultDelete delete = new DefaultDelete(null);
             delete.setLogicWraps(wraps);
             return delete;
@@ -31,7 +31,7 @@ public class SearchForm {
 
     public Update getUpdate() {
         if (this.query != null) {
-            LogicWraps wraps = ((DefaultQuery) this.query).getLogicWraps();
+            Wraps wraps = ((DefaultQuery) this.query).getLogicWraps();
             DefaultUpdate update = new DefaultUpdate(null);
             update.setLogicWraps(wraps);
             return update;

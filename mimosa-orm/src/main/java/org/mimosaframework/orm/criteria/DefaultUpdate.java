@@ -6,8 +6,8 @@ import java.util.Map;
 /**
  * @author yangankang
  */
-public class DefaultUpdate implements Update {
-    private LogicWraps<Filter> logicWraps;
+public class DefaultUpdate implements LogicUpdate {
+    private Wraps<Filter> logicWraps;
     private Map<Object, Object> values = new LinkedHashMap<Object, Object>();
     private Class tableClass;
 
@@ -30,19 +30,19 @@ public class DefaultUpdate implements Update {
         this.values = values;
     }
 
-    public LogicWraps<Filter> getLogicWraps() {
+    public Wraps<Filter> getLogicWraps() {
         return logicWraps;
     }
 
-    public void setLogicWraps(LogicWraps<Filter> logicWraps) {
+    public void setLogicWraps(Wraps<Filter> logicWraps) {
         this.logicWraps = logicWraps;
     }
 
     private Update add(Filter filter, CriteriaLogic logic) {
         if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+            this.logicWraps = new Wraps<>();
         }
-        this.logicWraps.addLast(new LogicWrapObject<Filter>(filter), logic);
+        this.logicWraps.addLast(new WrapsObject<Filter>(filter), logic);
         return this;
     }
 
@@ -111,10 +111,10 @@ public class DefaultUpdate implements Update {
     }
 
     @Override
-    public Update linked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
+    public Update linked(WrapsLinked linked) {
+        Wraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+            this.logicWraps = new Wraps<>();
         }
 
         this.logicWraps.addLastLink(lw);

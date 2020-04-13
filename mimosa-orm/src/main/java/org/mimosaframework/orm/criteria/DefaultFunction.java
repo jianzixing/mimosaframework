@@ -5,12 +5,12 @@ import org.mimosaframework.orm.BasicFunction;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultFunction implements Function {
+public class DefaultFunction implements LogicFunction {
     private List<FunctionField> funs = null;
     private Class tableClass;
     private boolean isMaster = true;
     private String slaveName;
-    private LogicWraps<Filter> logicWraps;
+    private Wraps<Filter> logicWraps;
     private List groupBy = null;
     private List<Order> orderBy = null;
     private List childGroupBy = null;
@@ -70,18 +70,18 @@ public class DefaultFunction implements Function {
 
     private Function add(Filter filter, CriteriaLogic logic) {
         if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+            this.logicWraps = new Wraps<>();
         }
 
-        this.logicWraps.addLast(new LogicWrapObject<Filter>(filter), logic);
+        this.logicWraps.addLast(new WrapsObject<Filter>(filter), logic);
         return this;
     }
 
     @Override
-    public Function linked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
+    public Function linked(WrapsLinked linked) {
+        Wraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+            this.logicWraps = new Wraps<>();
         }
 
         this.logicWraps.addLastLink(lw);
@@ -257,7 +257,7 @@ public class DefaultFunction implements Function {
         return funs;
     }
 
-    public LogicWraps<Filter> getLogicWraps() {
+    public Wraps<Filter> getLogicWraps() {
         return logicWraps;
     }
 
@@ -289,7 +289,7 @@ public class DefaultFunction implements Function {
         this.slaveName = slaveName;
     }
 
-    public void setLogicWraps(LogicWraps<Filter> logicWraps) {
+    public void setLogicWraps(Wraps<Filter> logicWraps) {
         this.logicWraps = logicWraps;
     }
 

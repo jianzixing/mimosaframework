@@ -6,29 +6,29 @@ import java.util.*;
  * 使用链结构
  * 每一条链对应的一个括号括起来的高优先级条件
  */
-public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
+public class Wraps<T> extends LinkedList<WrapsObject<T>> {
 
-    public void addLast(LogicWraps<T> lw) {
-        for (LogicWrapObject<T> lwo : lw) {
+    public void addLast(Wraps<T> lw) {
+        for (WrapsObject<T> lwo : lw) {
             this.addLast(lwo);
         }
     }
 
-    public void addLast(LogicWraps<T> lw, CriteriaLogic logic) {
+    public void addLast(Wraps<T> lw, CriteriaLogic logic) {
         if (lw != null) {
-            LogicWrapObject<T> last = this.getLast();
+            WrapsObject<T> last = this.getLast();
             if (last != null) {
                 last.setLogic(logic);
             }
-            for (LogicWrapObject<T> lwo : lw) {
+            for (WrapsObject<T> lwo : lw) {
                 this.addLast(lwo);
             }
         }
     }
 
-    public void addLast(LogicWrapObject<T> lwo, CriteriaLogic logic) {
+    public void addLast(WrapsObject<T> lwo, CriteriaLogic logic) {
         if (lwo != null) {
-            LogicWrapObject<T> last = this.getLast();
+            WrapsObject<T> last = this.getLast();
             if (last != null) {
                 last.setLogic(logic);
             }
@@ -36,30 +36,30 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
         }
     }
 
-    public void addLastLink(LogicWraps<T> lw) {
+    public void addLastLink(Wraps<T> lw) {
         if (lw != null) {
             this.addLastLink(lw, CriteriaLogic.AND);
         }
     }
 
-    public void addLastLink(LogicWraps<T> lw, CriteriaLogic logic) {
+    public void addLastLink(Wraps<T> lw, CriteriaLogic logic) {
         if (lw != null) {
-            LogicWrapObject<T> newLwo = new LogicWrapObject<>(lw);
+            WrapsObject<T> newLwo = new WrapsObject<>(lw);
             newLwo.setLink(lw);
             this.addLast(newLwo, logic);
         }
     }
 
-    public LogicWraps() {
+    public Wraps() {
         super();
     }
 
-    public LogicWraps(Collection<? extends LogicWrapObject<T>> c) {
+    public Wraps(Collection<? extends WrapsObject<T>> c) {
         super(c);
     }
 
     @Override
-    public LogicWrapObject<T> getFirst() {
+    public WrapsObject<T> getFirst() {
         try {
             return super.getFirst();
         } catch (NoSuchElementException e) {
@@ -68,7 +68,7 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
     }
 
     @Override
-    public LogicWrapObject<T> getLast() {
+    public WrapsObject<T> getLast() {
         try {
             return super.getLast();
         } catch (NoSuchElementException e) {
@@ -77,22 +77,22 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
     }
 
     @Override
-    public LogicWrapObject<T> removeFirst() {
+    public WrapsObject<T> removeFirst() {
         return super.removeFirst();
     }
 
     @Override
-    public LogicWrapObject<T> removeLast() {
+    public WrapsObject<T> removeLast() {
         return super.removeLast();
     }
 
     @Override
-    public void addFirst(LogicWrapObject<T> tLogicWrapObject) {
+    public void addFirst(WrapsObject<T> tLogicWrapObject) {
         super.addFirst(tLogicWrapObject);
     }
 
     @Override
-    public void addLast(LogicWrapObject<T> tLogicWrapObject) {
+    public void addLast(WrapsObject<T> tLogicWrapObject) {
         super.addLast(tLogicWrapObject);
     }
 
@@ -107,7 +107,7 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
     }
 
     @Override
-    public boolean add(LogicWrapObject<T> tLogicWrapObject) {
+    public boolean add(WrapsObject<T> tLogicWrapObject) {
         return super.add(tLogicWrapObject);
     }
 
@@ -117,12 +117,12 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends LogicWrapObject<T>> c) {
+    public boolean addAll(Collection<? extends WrapsObject<T>> c) {
         return super.addAll(c);
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends LogicWrapObject<T>> c) {
+    public boolean addAll(int index, Collection<? extends WrapsObject<T>> c) {
         return super.addAll(index, c);
     }
 
@@ -132,22 +132,22 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
     }
 
     @Override
-    public LogicWrapObject<T> get(int index) {
+    public WrapsObject<T> get(int index) {
         return super.get(index);
     }
 
     @Override
-    public LogicWrapObject<T> set(int index, LogicWrapObject<T> element) {
+    public WrapsObject<T> set(int index, WrapsObject<T> element) {
         return super.set(index, element);
     }
 
     @Override
-    public void add(int index, LogicWrapObject<T> element) {
+    public void add(int index, WrapsObject<T> element) {
         super.add(index, element);
     }
 
     @Override
-    public LogicWrapObject<T> remove(int index) {
+    public WrapsObject<T> remove(int index) {
         return super.remove(index);
     }
 
@@ -162,67 +162,67 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
     }
 
     @Override
-    public LogicWrapObject<T> peek() {
+    public WrapsObject<T> peek() {
         return super.peek();
     }
 
     @Override
-    public LogicWrapObject<T> element() {
+    public WrapsObject<T> element() {
         return super.element();
     }
 
     @Override
-    public LogicWrapObject<T> poll() {
+    public WrapsObject<T> poll() {
         return super.poll();
     }
 
     @Override
-    public LogicWrapObject<T> remove() {
+    public WrapsObject<T> remove() {
         return super.remove();
     }
 
     @Override
-    public boolean offer(LogicWrapObject<T> tLogicWrapObject) {
+    public boolean offer(WrapsObject<T> tLogicWrapObject) {
         return super.offer(tLogicWrapObject);
     }
 
     @Override
-    public boolean offerFirst(LogicWrapObject<T> tLogicWrapObject) {
+    public boolean offerFirst(WrapsObject<T> tLogicWrapObject) {
         return super.offerFirst(tLogicWrapObject);
     }
 
     @Override
-    public boolean offerLast(LogicWrapObject<T> tLogicWrapObject) {
+    public boolean offerLast(WrapsObject<T> tLogicWrapObject) {
         return super.offerLast(tLogicWrapObject);
     }
 
     @Override
-    public LogicWrapObject<T> peekFirst() {
+    public WrapsObject<T> peekFirst() {
         return super.peekFirst();
     }
 
     @Override
-    public LogicWrapObject<T> peekLast() {
+    public WrapsObject<T> peekLast() {
         return super.peekLast();
     }
 
     @Override
-    public LogicWrapObject<T> pollFirst() {
+    public WrapsObject<T> pollFirst() {
         return super.pollFirst();
     }
 
     @Override
-    public LogicWrapObject<T> pollLast() {
+    public WrapsObject<T> pollLast() {
         return super.pollLast();
     }
 
     @Override
-    public void push(LogicWrapObject<T> tLogicWrapObject) {
+    public void push(WrapsObject<T> tLogicWrapObject) {
         super.push(tLogicWrapObject);
     }
 
     @Override
-    public LogicWrapObject<T> pop() {
+    public WrapsObject<T> pop() {
         return super.pop();
     }
 
@@ -237,12 +237,12 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
     }
 
     @Override
-    public ListIterator<LogicWrapObject<T>> listIterator(int index) {
+    public ListIterator<WrapsObject<T>> listIterator(int index) {
         return super.listIterator(index);
     }
 
     @Override
-    public Iterator<LogicWrapObject<T>> descendingIterator() {
+    public Iterator<WrapsObject<T>> descendingIterator() {
         return super.descendingIterator();
     }
 
@@ -262,17 +262,17 @@ public class LogicWraps<T> extends LinkedList<LogicWrapObject<T>> {
     }
 
     @Override
-    public Iterator<LogicWrapObject<T>> iterator() {
+    public Iterator<WrapsObject<T>> iterator() {
         return super.iterator();
     }
 
     @Override
-    public ListIterator<LogicWrapObject<T>> listIterator() {
+    public ListIterator<WrapsObject<T>> listIterator() {
         return super.listIterator();
     }
 
     @Override
-    public List<LogicWrapObject<T>> subList(int fromIndex, int toIndex) {
+    public List<WrapsObject<T>> subList(int fromIndex, int toIndex) {
         return super.subList(fromIndex, toIndex);
     }
 

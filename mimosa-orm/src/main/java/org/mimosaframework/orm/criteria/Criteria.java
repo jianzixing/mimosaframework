@@ -25,7 +25,7 @@ public final class Criteria {
         return new DefaultUpdate(c);
     }
 
-    public static final Delete delete(Class c) {
+    public static final Delete<LogicDelete> delete(Class c) {
         return new DefaultDelete(c);
     }
 

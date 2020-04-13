@@ -7,7 +7,7 @@ import java.util.List;
  */
 public interface Query<T extends Query> extends Filter<T> {
 
-    T linked(LogicLinked linked);
+    T linked(WrapsLinked linked);
 
     T subjoin(Join join);
 

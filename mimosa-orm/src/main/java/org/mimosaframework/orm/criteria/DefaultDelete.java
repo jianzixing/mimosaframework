@@ -3,8 +3,8 @@ package org.mimosaframework.orm.criteria;
 /**
  * @author yangankang
  */
-public class DefaultDelete implements Delete {
-    private LogicWraps<Filter> logicWraps;
+public class DefaultDelete implements LogicDelete {
+    private Wraps<Filter> logicWraps;
     private Class tableClass;
 
     public DefaultDelete(Class tableClass) {
@@ -15,20 +15,20 @@ public class DefaultDelete implements Delete {
         return tableClass;
     }
 
-    public LogicWraps<Filter> getLogicWraps() {
+    public Wraps<Filter> getLogicWraps() {
         return logicWraps;
     }
 
-    public void setLogicWraps(LogicWraps<Filter> logicWraps) {
+    public void setLogicWraps(Wraps<Filter> logicWraps) {
         this.logicWraps = logicWraps;
     }
 
     private Delete add(Filter filter, CriteriaLogic logic) {
         if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+            this.logicWraps = new Wraps<>();
         }
 
-        this.logicWraps.addLast(new LogicWrapObject<Filter>(filter), logic);
+        this.logicWraps.addLast(new WrapsObject<Filter>(filter), logic);
         return this;
     }
 
@@ -39,10 +39,10 @@ public class DefaultDelete implements Delete {
     }
 
     @Override
-    public Delete linked(LogicLinked linked) {
-        LogicWraps lw = linked.getLogicWraps();
+    public Delete linked(WrapsLinked linked) {
+        Wraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
-            this.logicWraps = new LogicWraps<>();
+            this.logicWraps = new Wraps<>();
         }
 
         this.logicWraps.addLastLink(lw);

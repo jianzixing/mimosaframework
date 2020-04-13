@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.*;
@@ -154,9 +153,9 @@ public class PlatformWrapperImpl implements PlatformWrapper {
                     newQuery.in(fields.get(0).getMappingFieldName(), new ArrayList<>(idvalues));
                 } else if (fields.size() > 1) {
                     for (ModelObject id : ids) {
-                        LogicLinked logicLinked = new LogicLinked();
+                        WrapsLinked logicLinked = new DefaultWrapsLinked();
                         for (MappingField f : fields) {
-                            logicLinked.and().eq(f.getMappingFieldName(), id.get(f.getDatabaseColumnName()));
+                            logicLinked.eq(f.getMappingFieldName(), id.get(f.getDatabaseColumnName()));
                         }
                         newQuery.or().linked(logicLinked);
                     }
