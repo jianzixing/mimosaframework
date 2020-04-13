@@ -73,4 +73,6 @@ public interface MappingTable {
      * @return
      */
     String getSourceMappingTableName();
+
+    MappingField getAutoIncrementField();
 }

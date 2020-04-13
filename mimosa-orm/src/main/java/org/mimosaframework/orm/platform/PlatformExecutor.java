@@ -65,45 +65,26 @@ public class PlatformExecutor {
                                 }
 
                                 if (currField != null) {
-                                    List<ColumnEditType> columnEditTypes = new ArrayList<>();
-                                    ColumnType columnType = dialect.getColumnType(JavaType2ColumnType.getColumnTypeByJava(currField.getMappingFieldType()));
-                                    if (columnType == null) {
-                                        throw new IllegalArgumentException(I18n.print("platform_executor_empty_type", currField.getMappingFieldType().getSimpleName()));
-                                    }
-                                    if (!columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName())
-                                            || columnStructure.getLength() != currField.getMappingFieldLength()
-                                            || columnStructure.getScale() != currField.getDatabaseColumnDecimalDigits()) {
-                                        columnEditTypes.add(ColumnEditType.TYPE);
-                                    }
-
-                                    boolean nullable = columnStructure.isNullable();
-                                    boolean isPk = structure.isPrimaryKeyColumn(columnStructure.getColumnName());
-                                    if (!isPk && nullable != currField.isMappingFieldNullable()) {
-                                        columnEditTypes.add(ColumnEditType.ISNULL);
-                                    }
-
-                                    String defA = currField.getMappingFieldDefaultValue();
-                                    String defB = columnStructure.getDefaultValue();
-                                    if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
-                                        columnEditTypes.add(ColumnEditType.DEF_VALUE);
-                                    }
-                                    if (columnStructure.isAutoIncrement() != currField.isMappingAutoIncrement()) {
-                                        columnEditTypes.add(ColumnEditType.AUTO_INCREMENT);
-                                    }
-
-                                    String cmtA = currField.getMappingFieldComment();
-                                    String cmtB = columnStructure.getComment();
-                                    if ((StringTools.isNotEmpty(cmtA) && !cmtA.equals(cmtB)) || (StringTools.isNotEmpty(cmtB) && !cmtB.equals(cmtA))) {
-                                        columnEditTypes.add(ColumnEditType.COMMENT);
-                                    }
-                                    if (currField.isMappingFieldPrimaryKey() != isPk) {
-                                        columnEditTypes.add(ColumnEditType.PRIMARY_KEY);
-                                    }
+                                    List<ColumnEditType> columnEditTypes = dialect.compareColumnChange(
+                                            structure, currField, columnStructure
+                                    );
 
                                     if (columnEditTypes.size() > 0) {
                                         // 需要修改字段
-                                        updateFields.put(currField, columnEditTypes);
-                                        updateColumnsStructures.put(currField, columnStructure);
+                                        if (currField.isMappingAutoIncrement() == false && columnStructure.isAutoIncrement()) {
+                                            // 如果是从自增列变为非自增列，则需要先处理为非自增列，所有修改一下顺序
+                                            Map<MappingField, List<ColumnEditType>> updateFieldsCopy = new LinkedHashMap<>();
+                                            Map<MappingField, TableColumnStructure> updateColumnsStructuresCopy = new LinkedHashMap<>();
+                                            updateFieldsCopy.put(currField, columnEditTypes);
+                                            updateColumnsStructuresCopy.put(currField, columnStructure);
+                                            updateFieldsCopy.putAll(updateFields);
+                                            updateColumnsStructuresCopy.putAll(updateColumnsStructures);
+                                            updateFields = updateFieldsCopy;
+                                            updateColumnsStructures = updateColumnsStructuresCopy;
+                                        } else {
+                                            updateFields.put(currField, columnEditTypes);
+                                            updateColumnsStructures.put(currField, columnStructure);
+                                        }
                                     }
                                 }
                             }
@@ -175,6 +156,8 @@ public class PlatformExecutor {
                         }
                     }
                 }
+
+                doDialectEnding(mapping, dswrapper, currTable, structure);
             }
             mappingTables.removeAll(rmTab);
             if (mappingTables.size() != 0) {
@@ -187,6 +170,8 @@ public class PlatformExecutor {
                     if (mappingIndex != null && mappingIndex.size() > 0) {
                         compare.indexAdd(mapping, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
                     }
+
+                    doDialectEnding(mapping, dswrapper, mappingTable, null);
                 }
             }
         }
@@ -255,6 +240,14 @@ public class PlatformExecutor {
                           String indexName) throws SQLException {
         PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
         dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexName));
+    }
+
+    public void doDialectEnding(MappingGlobalWrapper mappingGlobalWrapper,
+                                DataSourceWrapper dswrapper,
+                                MappingTable mappingTable,
+                                TableStructure structure) throws SQLException {
+        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        dialect.ending(mappingTable, structure);
     }
 
     public Object dialect(MappingGlobalWrapper mappingGlobalWrapper,

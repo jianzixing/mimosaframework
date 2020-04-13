@@ -174,6 +174,18 @@ public class SpecificMappingTable implements MappingTable {
         return this.sourceMappingTableName;
     }
 
+    @Override
+    public MappingField getAutoIncrementField() {
+        if (mappingFields != null) {
+            for (MappingField mappingField : mappingFields.values()) {
+                if (mappingField.isMappingFieldAutoIncrement()) {
+                    return mappingField;
+                }
+            }
+        }
+        return null;
+    }
+
     public void setMappingClassName(String mappingClassName) {
         this.mappingClassName = mappingClassName;
     }

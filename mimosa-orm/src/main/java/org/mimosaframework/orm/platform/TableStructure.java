@@ -218,4 +218,20 @@ public class TableStructure {
         }
         return false;
     }
+
+    public List<TableColumnStructure> getAutoIncrement() {
+        if (columnStructures != null) {
+            List<TableColumnStructure> columnStructures = null;
+            for (TableColumnStructure columnStructure : this.columnStructures) {
+                if (columnStructure.isAutoIncrement()) {
+                    if (columnStructures == null) {
+                        columnStructures = new ArrayList<>();
+                    }
+                    columnStructures.add(columnStructure);
+                }
+            }
+            return columnStructures;
+        }
+        return null;
+    }
 }

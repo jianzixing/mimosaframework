@@ -277,7 +277,7 @@ public abstract class PlatformDialect {
 
     protected boolean isSamePrimaryKey(MappingTable mappingTable, TableStructure structure) {
         List<MappingField> mappingFields = this.getPrimaryKeyByMappingTable(mappingTable);
-        List<TableConstraintStructure> constraintStructures = structure.getConstraintStructures();
+        List<TableConstraintStructure> constraintStructures = structure.getPrimaryKey();
         if (mappingFields.size() == constraintStructures.size()) {
             for (MappingField mappingField : mappingFields) {
                 boolean is = false;
@@ -289,6 +289,8 @@ public abstract class PlatformDialect {
                 }
                 if (!is) {
                     return false;
+                } else {
+                    return true;
                 }
             }
         }
@@ -296,9 +298,12 @@ public abstract class PlatformDialect {
     }
 
     protected boolean isSameAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) {
-        Set<MappingField> mappingFields = mappingTable.getMappingFields();
-        List<TableColumnStructure> columnStructures = tableStructure.getColumnStructures();
-        for (MappingField mappingField : mappingFields) {
+        MappingField mappingField = mappingTable.getAutoIncrementField();
+        List<TableColumnStructure> columnStructures = tableStructure.getAutoIncrement();
+        if (mappingField == null && columnStructures == null) {
+            return true;
+        }
+        if (columnStructures != null) {
             for (TableColumnStructure columnStructure : columnStructures) {
                 if (mappingField.isMappingAutoIncrement()
                         && columnStructure.isAutoIncrement()
@@ -377,66 +382,76 @@ public abstract class PlatformDialect {
         return (StampDrop) sql.drop().index().name(indexName).on().table(tableName).compile();
     }
 
-    protected void triggerIncrAndKeys(DataDefinitionType type,
-                                      MappingTable mappingTable,
-                                      TableStructure tableStructure,
-                                      MappingField mappingField,
-                                      TableColumnStructure columnStructure) {
+    /**
+     * 检查表自增列和主键
+     *
+     * @param mappingTable
+     * @param tableStructure
+     */
+    protected void triggerIncrAndKeys(MappingTable mappingTable,
+                                      TableStructure tableStructure) throws SQLException {
 
-        if (type == DataDefinitionType.ADD_COLUMN || type == DataDefinitionType.MODIFY_INDEX) {
-            if (mappingTable != null && tableStructure != null) {
-                boolean isSamePK = this.isSamePrimaryKey(mappingTable, tableStructure);
-                if (!isSamePK) {
-                    // 重新修改主键
-                    this.rebuildPrimaryKey(mappingTable, tableStructure);
-                }
-                boolean isSameIncr = this.isSameAutoIncrement(mappingTable, tableStructure);
-                if (!isSameIncr) {
-                    // 重新修改自增列
-                    this.rebuildAutoIncrement(mappingTable, tableStructure);
-                }
+        if (mappingTable != null && tableStructure != null) {
+            boolean isSamePK = this.isSamePrimaryKey(mappingTable, tableStructure);
+            if (!isSamePK) {
+                // 重新修改主键
+                this.rebuildPrimaryKey(mappingTable, tableStructure);
+            }
+            boolean isSameIncr = this.isSameAutoIncrement(mappingTable, tableStructure);
+            if (!isSameIncr) {
+                // 重新修改自增列
+                this.rebuildAutoIncrement(mappingTable, tableStructure);
             }
         }
+    }
 
-        if (type == DataDefinitionType.MODIFY_COLUMN
-                || type == DataDefinitionType.ADD_COLUMN
-                || type == DataDefinitionType.CREATE_TABLE) {
-            if (mappingField != null) {
-                boolean onlyPK = false;
-                if (tableStructure != null) {
-                    onlyPK = tableStructure.isOnlyPrimaryKey(mappingField.getMappingColumnName());
-                }
-                boolean unique = false;
-                if (tableStructure != null) {
-                    unique = tableStructure.isOnlyUniqueIndex(mappingField.getMappingColumnName());
-                }
-                boolean index = false;
-                if (tableStructure != null) {
-                    index = tableStructure.isOnlyNormalIndex(mappingField.getMappingColumnName());
-                }
+    /**
+     * 检查表的索引
+     *
+     * @param mappingTable
+     * @param tableStructure
+     * @param mappingField
+     * @param columnStructure
+     */
+    protected void triggerIndex(MappingTable mappingTable,
+                                TableStructure tableStructure,
+                                MappingField mappingField,
+                                TableColumnStructure columnStructure) {
+        if (mappingField != null) {
+            boolean onlyPK = false;
+            if (tableStructure != null) {
+                onlyPK = tableStructure.isOnlyPrimaryKey(mappingField.getMappingColumnName());
+            }
+            boolean unique = false;
+            if (tableStructure != null) {
+                unique = tableStructure.isOnlyUniqueIndex(mappingField.getMappingColumnName());
+            }
+            boolean index = false;
+            if (tableStructure != null) {
+                index = tableStructure.isOnlyNormalIndex(mappingField.getMappingColumnName());
+            }
 
-                List<MappingField> pkFields = mappingTable.getMappingPrimaryKeyFields();
-                if (!(pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey())
-                        && mappingField.isMappingFieldUnique() != unique) {
-                    if (mappingField.isMappingFieldUnique()) {
-                        this.createIndex(mappingTable, mappingField, true);
-                    }
-                    if (unique) {
-                        this.dropIndex(mappingTable, mappingField);
-                    }
+            List<MappingField> pkFields = mappingTable.getMappingPrimaryKeyFields();
+            if (!(pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey())
+                    && mappingField.isMappingFieldUnique() != unique) {
+                if (mappingField.isMappingFieldUnique()) {
+                    this.createIndex(mappingTable, mappingField, true);
                 }
-
-                if (!(pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey())
-                        && !mappingField.isMappingFieldUnique()) {
-                    if (mappingField.isMappingFieldIndex() != index) {
-                        this.createIndex(mappingTable, mappingField, false);
-                    }
-                }
-
-                if (((pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey()) && (unique || index))
-                        || (mappingField.isMappingFieldUnique() && index)) {
+                if (unique) {
                     this.dropIndex(mappingTable, mappingField);
                 }
+            }
+
+            if (!(pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey())
+                    && !mappingField.isMappingFieldUnique()) {
+                if (mappingField.isMappingFieldIndex() != index) {
+                    this.createIndex(mappingTable, mappingField, false);
+                }
+            }
+
+            if (((pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey()) && (unique || index))
+                    || (mappingField.isMappingFieldUnique() && index)) {
+                this.dropIndex(mappingTable, mappingField);
             }
         }
     }
@@ -447,7 +462,7 @@ public abstract class PlatformDialect {
      * @param mappingTable
      * @param tableStructure
      */
-    protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) {
+    protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
 
     }
 
@@ -482,6 +497,50 @@ public abstract class PlatformDialect {
 
     }
 
+    public List<ColumnEditType> compareColumnChange(TableStructure structure,
+                                                    MappingField currField,
+                                                    TableColumnStructure columnStructure) {
+        List<ColumnEditType> columnEditTypes = new ArrayList<>();
+        ColumnType columnType = this.getColumnType(JavaType2ColumnType.getColumnTypeByJava(currField.getMappingFieldType()));
+        if (columnType == null) {
+            throw new IllegalArgumentException(I18n.print("platform_executor_empty_type", currField.getMappingFieldType().getSimpleName()));
+        }
+        if (!columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName())
+                || columnStructure.getLength() != currField.getMappingFieldLength()
+                || columnStructure.getScale() != currField.getDatabaseColumnDecimalDigits()) {
+            columnEditTypes.add(ColumnEditType.TYPE);
+        }
+
+        boolean nullable = columnStructure.isNullable();
+        boolean isPk = structure.isPrimaryKeyColumn(columnStructure.getColumnName());
+        if (!isPk && nullable != currField.isMappingFieldNullable()) {
+            columnEditTypes.add(ColumnEditType.ISNULL);
+        }
+
+        String defA = currField.getMappingFieldDefaultValue();
+        String defB = columnStructure.getDefaultValue();
+        if (!(StringTools.isEmpty(defA) && StringTools.isEmpty(defB))
+                && !(StringTools.isEmpty(defA) && "0".equals(defB))) {  // int bigint 等 数据库默认值总是0
+            if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
+                columnEditTypes.add(ColumnEditType.DEF_VALUE);
+            }
+        }
+
+        if (columnStructure.isAutoIncrement() != currField.isMappingAutoIncrement()) {
+            columnEditTypes.add(ColumnEditType.AUTO_INCREMENT);
+        }
+
+        String cmtA = currField.getMappingFieldComment();
+        String cmtB = columnStructure.getComment();
+        if ((StringTools.isNotEmpty(cmtA) && !cmtA.equals(cmtB)) || (StringTools.isNotEmpty(cmtB) && !cmtB.equals(cmtA))) {
+            columnEditTypes.add(ColumnEditType.COMMENT);
+        }
+        if (currField.isMappingFieldPrimaryKey() != isPk) {
+            columnEditTypes.add(ColumnEditType.PRIMARY_KEY);
+        }
+        return columnEditTypes;
+    }
+
     public abstract SQLBuilderCombine alter(StampAlter alter);
 
     public abstract SQLBuilderCombine create(StampCreate create);
@@ -496,5 +555,18 @@ public abstract class PlatformDialect {
 
     public abstract SQLBuilderCombine update(StampUpdate update);
 
+    /**
+     * 处理单个单元相关的属性
+     *
+     * @param definition
+     * @throws SQLException
+     */
     public abstract void define(DataDefinition definition) throws SQLException;
+
+    /**
+     * 处理需要后处理的属性，比如表的主键或自增列
+     *
+     * @throws SQLException
+     */
+    public abstract void ending(MappingTable mappingTable, TableStructure tableStructure) throws SQLException;
 }

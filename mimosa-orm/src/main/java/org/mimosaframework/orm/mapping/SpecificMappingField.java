@@ -211,6 +211,12 @@ public class SpecificMappingField implements MappingField {
     }
 
     public int getMappingFieldLength() {
+        if (this.mappingFieldLength == 0
+                && (this.mappingFieldType.equals(String.class)
+                || this.mappingFieldType.equals(Character.class)
+                || this.mappingFieldType.equals(char.class))) {
+            return 255;
+        }
         return mappingFieldLength;
     }
 

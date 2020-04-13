@@ -6,9 +6,11 @@ import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.alter.AlterFactory;
 import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
+import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 
 public class MysqlPlatformDialect extends PlatformDialect {
@@ -99,7 +101,7 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 Set<MappingField> mappingFields = mappingTable.getMappingFields();
                 for (MappingField mappingField : mappingFields) {
                     if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
-                        this.triggerIncrAndKeys(type, definition.getMappingTable(),
+                        this.triggerIndex(definition.getMappingTable(),
                                 null, mappingField, null);
                     }
                 }
@@ -113,7 +115,7 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), definition.getMappingField());
                 this.runner(stampAlter);
 
-                this.triggerIncrAndKeys(type, definition.getMappingTable(), definition.getTableStructure(),
+                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
                         definition.getMappingField(), null);
             }
             if (type == DataDefinitionType.MODIFY_COLUMN) {
@@ -129,45 +131,53 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
                 sql.alter().table(tableName).modify().column(columnName);
 
-
-                // ColumnEditType.TYPE;
-                this.setSQLType(sql, mappingField.getMappingFieldType(),
-                        mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
+                List<ColumnEditType> columnEditTypes = this.compareColumnChange(tableStructure, mappingField, columnStructure);
+                columnEditTypes.remove(ColumnEditType.AUTO_INCREMENT);
+                columnEditTypes.remove(ColumnEditType.PRIMARY_KEY);
 
                 boolean isPk = tableStructure.isPrimaryKeyColumn(columnStructure.getColumnName());
-                if (!isPk) {
-                    if (!mappingField.isMappingFieldNullable()) {
-                        sql.not();
-                        sql.nullable();
+                if (columnEditTypes.size() > 0) {
+                    // ColumnEditType.TYPE;
+                    this.setSQLType(sql, mappingField.getMappingFieldType(),
+                            mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
+
+                    if (!isPk) {
+                        if (!mappingField.isMappingFieldNullable()) {
+                            sql.not();
+                            sql.nullable();
+                        }
                     }
-                }
 
-                String def = mappingField.getMappingFieldDefaultValue();
-                if (StringTools.isNotEmpty(def)) {
-                    sql.defaultValue(def);
-                }
+                    String def = mappingField.getMappingFieldDefaultValue();
+                    if (StringTools.isNotEmpty(def)) {
+                        sql.defaultValue(def);
+                    }
 
-                String cmt = mappingField.getMappingFieldComment();
-                if (StringTools.isNotEmpty(cmt)) {
-                    sql.comment(cmt);
+                    String cmt = mappingField.getMappingFieldComment();
+                    if (StringTools.isNotEmpty(cmt)) {
+                        sql.comment(cmt);
+                    }
+
+                    this.runner(sql.compile());
                 }
 
                 // 需要单独修改
-                if (columnStructure.isAutoIncrement() != mappingField.isMappingAutoIncrement()) {
+                if (mappingField.isMappingAutoIncrement()) {
                     // ColumnEditType.AUTO_INCREMENT;
                 }
+
                 // 需要单独修改
                 if (mappingField.isMappingFieldPrimaryKey() != isPk) {
                     // ColumnEditType.PRIMARY_KEY;
                 }
 
-                this.triggerIncrAndKeys(type, definition.getMappingTable(), definition.getTableStructure(),
+                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
                         definition.getMappingField(), columnStructure);
             }
             if (type == DataDefinitionType.DROP_COLUMN) {
                 StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), definition.getColumnStructure());
                 this.runner(stampAlter);
-                this.triggerIncrAndKeys(type, definition.getMappingTable(), definition.getTableStructure(),
+                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
                         definition.getMappingField(), definition.getColumnStructure());
             }
             if (type == DataDefinitionType.ADD_INDEX) {
@@ -188,19 +198,64 @@ public class MysqlPlatformDialect extends PlatformDialect {
     }
 
     @Override
-    protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) {
+    public void ending(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
+        if (mappingTable != null && tableStructure != null) {
+            // 校验表的自增列和主键
+            this.triggerIncrAndKeys(mappingTable, tableStructure);
+        }
+    }
 
+    @Override
+    protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
+        List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
+        String[] fields = new String[pks.size()];
+        for (int i = 0; i < pks.size(); i++) {
+            fields[i] = pks.get(i).getMappingColumnName();
+        }
+        StampAction stampAction = AlterFactory.origin().alter().table(mappingTable.getMappingTableName())
+                .drop().primary().key().compile();
+        this.runner(stampAction);
+        stampAction = AlterFactory.origin().alter().table(mappingTable.getMappingTableName())
+                .add().primary().key().columns(fields).compile();
+        this.runner(stampAction);
     }
 
     @Override
     protected void rebuildAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) {
+        MappingField mappingField = mappingTable.getAutoIncrementField();
+        if (mappingField != null && mappingField.isMappingFieldAutoIncrement()) {
+            DefaultSQLAlterBuilder sql = AlterFactory.origin();
+            sql.alter().table(mappingTable.getMappingTableName()).modify()
+                    .column(mappingField.getMappingColumnName());
+            this.setSQLType(sql, mappingField.getMappingFieldType(),
+                    mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
+            if (!mappingField.isMappingFieldNullable()) {
+                sql.not().nullable();
+            }
+
+            if (mappingField.isMappingAutoIncrement()) {
+                sql.autoIncrement();
+            }
+
+            String def = mappingField.getMappingFieldDefaultValue();
+            if (StringTools.isNotEmpty(def)) {
+                sql.defaultValue(def);
+            }
+
+            String cmt = mappingField.getMappingFieldComment();
+            if (StringTools.isNotEmpty(cmt)) {
+                sql.comment(cmt);
+            }
+        }
     }
 
     @Override
     protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) {
+        System.out.println();
     }
 
     @Override
     protected void dropIndex(MappingTable mappingTable, MappingField mappingField) {
+        System.out.println();
     }
 }
