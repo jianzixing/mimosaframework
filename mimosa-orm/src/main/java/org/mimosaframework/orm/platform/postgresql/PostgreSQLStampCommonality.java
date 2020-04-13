@@ -369,8 +369,8 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
         Class table = null;
         String tableStr = null;
         if (action instanceof StampAlter) {
-            table = ((StampAlter) action).table;
-            tableStr = ((StampAlter) action).name;
+            table = ((StampAlter) action).tableClass;
+            tableStr = ((StampAlter) action).tableName;
         }
         if (action instanceof StampCreate) {
             table = ((StampCreate) action).table;

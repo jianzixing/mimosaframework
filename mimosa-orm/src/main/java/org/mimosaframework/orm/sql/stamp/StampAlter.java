@@ -6,8 +6,10 @@ import java.util.List;
 public class StampAlter implements StampAction {
     public KeyTarget target;
 
-    public String name;
-    public Class table;
+    public String tableName;
+    public Class tableClass;
+
+    public String databaseName;
 
     public StampAlterItem[] items;
 
@@ -17,8 +19,8 @@ public class StampAlter implements StampAction {
     @Override
     public List<STItem> getTables() {
         List<STItem> items = new ArrayList<>();
-        if (table != null) {
-            items.add(new STItem(table));
+        if (tableClass != null) {
+            items.add(new STItem(tableClass));
         }
         return items;
     }

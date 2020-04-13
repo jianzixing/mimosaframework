@@ -59,7 +59,7 @@ public class MysqlStampStructure implements StampCombineBuilder {
                             "TABLE_SCHEMA AS TABSCHEMA," +
                             "INDEX_NAME AS INDNAME," +
                             "TABLE_NAME AS TABNAME," +
-                            "(CASE WHEN NON_UNIQUE=1 THEN 'U' WHEN INDEX_NAME='PRIMARY' THEN 'P' ELSE 'D' END) AS TYPE," +
+                            "(CASE WHEN INDEX_NAME = 'PRIMARY' THEN 'P' WHEN NON_UNIQUE = 0 THEN 'U' ELSE 'D' END) AS TYPE," +
                             "COLUMN_NAME AS COLNAME," +
                             "INDEX_COMMENT AS COMMENT " +
                             "FROM INFORMATION_SCHEMA.STATISTICS " +

@@ -12,8 +12,8 @@ public class StampAlterItem extends StampTableColumn {
 
     // index
     public KeyIndexType indexType;
-    // index && rename
-    public String name;
+    // index
+    public String indexName;
 
     // column change && column rename
     public StampColumn oldColumn;
@@ -21,10 +21,14 @@ public class StampAlterItem extends StampTableColumn {
     // drop
     public KeyAlterDropType dropType;
 
-    // rename
+    // (index || column || table) rename
     public KeyAlterRenameType renameType;
     public String oldName;
+    public String newName;
 
     // set primary key = ?
     public Object value;
+
+    // set charset
+    public String charset;
 }

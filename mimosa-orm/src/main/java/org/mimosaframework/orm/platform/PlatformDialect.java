@@ -303,7 +303,8 @@ public abstract class PlatformDialect {
         if (mappingField == null && columnStructures == null) {
             return true;
         }
-        if (columnStructures != null) {
+        if (columnStructures != null && columnStructures.size() > 0) {
+            if (mappingField == null) return false;
             for (TableColumnStructure columnStructure : columnStructures) {
                 if (mappingField.isMappingAutoIncrement()
                         && columnStructure.isAutoIncrement()
@@ -385,16 +386,33 @@ public abstract class PlatformDialect {
     protected void triggerIncrAndKeys(MappingTable mappingTable,
                                       TableStructure tableStructure) throws SQLException {
 
+        boolean isTriggerKeys = this.triggerIncr(mappingTable, tableStructure);
+        if (isTriggerKeys) {
+            this.triggerKeys(mappingTable, tableStructure);
+        }
+    }
+
+    protected boolean triggerIncr(MappingTable mappingTable,
+                                  TableStructure tableStructure) throws SQLException {
+
+        if (mappingTable != null && tableStructure != null) {
+            boolean isSameIncr = this.isSameAutoIncrement(mappingTable, tableStructure);
+            if (!isSameIncr) {
+                // 重新修改自增列
+                return this.rebuildAutoIncrement(mappingTable, tableStructure);
+            }
+        }
+        return true;
+    }
+
+    protected void triggerKeys(MappingTable mappingTable,
+                               TableStructure tableStructure) throws SQLException {
+
         if (mappingTable != null && tableStructure != null) {
             boolean isSamePK = this.isSamePrimaryKey(mappingTable, tableStructure);
             if (!isSamePK) {
                 // 重新修改主键
                 this.rebuildPrimaryKey(mappingTable, tableStructure);
-            }
-            boolean isSameIncr = this.isSameAutoIncrement(mappingTable, tableStructure);
-            if (!isSameIncr) {
-                // 重新修改自增列
-                this.rebuildAutoIncrement(mappingTable, tableStructure);
             }
         }
     }
@@ -410,7 +428,7 @@ public abstract class PlatformDialect {
     protected void triggerIndex(MappingTable mappingTable,
                                 TableStructure tableStructure,
                                 MappingField mappingField,
-                                TableColumnStructure columnStructure) {
+                                TableColumnStructure columnStructure) throws SQLException {
         if (mappingField != null) {
             boolean onlyPK = false;
             if (tableStructure != null) {
@@ -465,9 +483,10 @@ public abstract class PlatformDialect {
      *
      * @param mappingTable
      * @param tableStructure
+     * @return 返回false则不再验证主键(不再调用triggerKeys方法)
      */
-    protected void rebuildAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) {
-
+    protected boolean rebuildAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
+        return true;
     }
 
     /**
@@ -477,7 +496,7 @@ public abstract class PlatformDialect {
      * @param mappingField
      * @param unique
      */
-    protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) {
+    protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) throws SQLException {
 
     }
 
@@ -487,7 +506,7 @@ public abstract class PlatformDialect {
      * @param mappingTable
      * @param mappingField
      */
-    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) {
+    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) throws SQLException {
 
     }
 

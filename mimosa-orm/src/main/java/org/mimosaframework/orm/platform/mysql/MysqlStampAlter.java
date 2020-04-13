@@ -18,7 +18,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
         if (alter.target == KeyTarget.DATABASE) {
             sb.append(" DATABASE");
 
-            sb.append(" " + RS + alter.name + RE);
+            sb.append(" " + RS + alter.databaseName + RE);
 
             if (StringTools.isNotEmpty(alter.charset)) {
                 sb.append(" CHARSET " + alter.charset);
@@ -30,7 +30,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
         if (alter.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
 
-            sb.append(" " + this.getTableName(wrapper, alter.table, alter.name));
+            sb.append(" " + this.getTableName(wrapper, alter.tableClass, alter.tableName));
 
             if (alter.items != null) {
                 for (StampAlterItem item : alter.items) {
@@ -80,7 +80,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             }
             if (item.dropType == KeyAlterDropType.INDEX) {
                 sb.append(" INDEX");
-                sb.append(" " + item.name);
+                sb.append(" " + item.indexName);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.append(" PRIMARY KEY");
@@ -99,10 +99,10 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
                 sb.append(" INDEX");
                 sb.append(" " + item.oldName);
                 sb.append(" TO");
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
         }
 
@@ -110,7 +110,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             sb.append(" AUTO_INCREMENT = " + item.value);
         }
         if (item.action == KeyAction.CHARACTER_SET) {
-            sb.append(" CHARACTER SET = " + item.name);
+            sb.append(" CHARACTER SET = " + item.charset);
         }
         if (item.action == KeyAction.COMMENT) {
             sb.append(" COMMENT = \"" + item.comment + "\"");
@@ -129,8 +129,8 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             sb.append(" INDEX");
         }
 
-        if (StringTools.isNotEmpty(item.name)) {
-            sb.append(" " + item.name);
+        if (StringTools.isNotEmpty(item.indexName)) {
+            sb.append(" " + item.indexName);
         }
 
         if (item.columns != null) {

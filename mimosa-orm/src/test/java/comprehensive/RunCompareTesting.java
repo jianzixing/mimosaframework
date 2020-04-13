@@ -25,8 +25,9 @@ public class RunCompareTesting {
             // this.test1();
             // this.test2();
             // this.test3();
-//             this.test4();
-            this.test5();
+            // this.test4();
+             this.test5();
+//            this.test6();
         }
     }
 
@@ -232,6 +233,50 @@ public class RunCompareTesting {
         mappingField2.setMappingFieldLength(20);
         mappingField2.setMappingFieldComment("测试name备注");
         mappingFields.put("name", mappingField2);
+
+        mappingTable.setMappingFields(mappingFields);
+
+        StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        compareMapping.doMapping();
+    }
+
+
+    // 测试增加多列主键并增加单列索引
+    public void test6() throws SQLException {
+        SpecificMappingTable mappingTable = new SpecificMappingTable();
+        mappingTable.setMappingClass(RunCompareTesting.class);
+        mappingTable.setMappingTableName("t_run_test");
+        mappingTable.setEncoding("utf8");
+        Map<String, MappingField> mappingFields = new LinkedHashMap<>();
+
+        SpecificMappingField mappingField1 = new SpecificMappingField();
+        mappingField1.setMappingColumnName("id");
+        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldPrimaryKey(true);
+        mappingField1.setMappingFieldAutoIncrement(true);
+        mappingField1.setMappingFieldComment("测试id备注");
+        mappingFields.put("id", mappingField1);
+
+        SpecificMappingField mappingField2 = new SpecificMappingField();
+        mappingField2.setMappingColumnName("name");
+        mappingField2.setMappingFieldType(String.class);
+        mappingField2.setMappingFieldNullable(false);
+        mappingField1.setMappingFieldPrimaryKey(true);
+        mappingField2.setMappingFieldLength(20);
+        mappingField2.setMappingFieldComment("测试name备注");
+        mappingFields.put("name", mappingField2);
+
+        SpecificMappingField mappingField3 = new SpecificMappingField();
+        mappingField3.setMappingColumnName("age");
+        mappingField3.setMappingFieldType(byte.class);
+        mappingField3.setMappingFieldLength(30);
+        mappingField3.setMappingFieldPrimaryKey(true);
+        mappingField3.setMappingFieldAutoIncrement(true);
+        mappingField3.setMappingFieldNullable(false);
+        mappingField3.setMappingFieldIndex(true);
+        mappingField3.setMappingFieldComment("测试age2备注");
+        mappingFields.put("age", mappingField3);
+
 
         mappingTable.setMappingFields(mappingFields);
 

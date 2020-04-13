@@ -33,9 +33,9 @@ public class DefaultSQLAlterBuilder
         if (this.previous("index") || this.previous("unique")) {
             StampAlterItem item = this.getLastItem();
             item.dropType = KeyAlterDropType.INDEX;
-            item.name = value.toString();
-        } else {
-            this.stampAlter.name = value.toString();
+            item.indexName = value.toString();
+        } else if (this.previous("database")) {
+            this.stampAlter.databaseName = value.toString();
         }
         return this;
     }
@@ -48,7 +48,7 @@ public class DefaultSQLAlterBuilder
             StampAlterItem item = new StampAlterItem();
             this.stampAlter.target = KeyTarget.TABLE;
             item.action = KeyAction.CHARACTER_SET;
-            item.name = charset;
+            item.charset = charset;
             this.items.add(item);
         }
         return this;
@@ -108,7 +108,7 @@ public class DefaultSQLAlterBuilder
     public DefaultSQLAlterBuilder table(Class table) {
         this.addPoint("table");
         this.stampAlter.target = KeyTarget.TABLE;
-        this.stampAlter.table = table;
+        this.stampAlter.tableClass = table;
         return this;
     }
 
@@ -484,7 +484,7 @@ public class DefaultSQLAlterBuilder
     public DefaultSQLAlterBuilder table(String name) {
         this.addPoint("table");
         this.stampAlter.target = KeyTarget.TABLE;
-        this.stampAlter.name = name;
+        this.stampAlter.tableName = name;
         return this;
     }
 }

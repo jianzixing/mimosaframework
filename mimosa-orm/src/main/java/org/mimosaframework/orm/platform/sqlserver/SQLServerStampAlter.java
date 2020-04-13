@@ -20,7 +20,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         StringBuilder sb = new StringBuilder();
         if (alter.target == KeyTarget.DATABASE) {
             if (StringTools.isNotEmpty(alter.charset)) {
-                sb.append("ALTER DATABASE " + alter.name + " COLLATE " + alter.charset);
+                sb.append("ALTER DATABASE " + alter.databaseName + " COLLATE " + alter.charset);
             }
         }
         if (alter.target == KeyTarget.TABLE) {
@@ -37,7 +37,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                 StringBuilder sb,
                                 StampAlter alter,
                                 StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         if (item.action == KeyAction.ADD) {
             if (item.struct == KeyAlterStruct.COLUMN) {
                 sb.append("ALTER");
@@ -52,7 +52,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         }
 
         if (item.action == KeyAction.CHANGE) {
-            String tableOutName = this.getTableName(wrapper, alter.table, alter.name, false);
+            String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
             String columnName = this.getColumnName(wrapper, alter, item.column, false);
             String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn, false);
             this.buildAlterColumn(sb, wrapper, alter, item, 2);
@@ -80,11 +80,11 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
             if (item.dropType == KeyAlterDropType.INDEX) {
                 sb.append("DROP");
                 sb.append(" INDEX");
-                sb.append(" " + item.name);
+                sb.append(" " + item.indexName);
                 sb.append(" ON " + tableName);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
-                String tableOutName = this.getTableName(wrapper, alter.table, alter.name, false);
+                String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
                 this.getDeclares().add("@PK_INDEXNAME VARCHAR(MAX)");
                 this.getBegins().add(new ExecuteImmediate()
                         .setProcedure("SELECT @PK_INDEXNAME=(SELECT A.NAME INDEXNAME " +
@@ -100,7 +100,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
 
         if (item.action == KeyAction.RENAME) {
             if (item.renameType == KeyAlterRenameType.COLUMN) {
-                String tableOutName = this.getTableName(wrapper, alter.table, alter.name, false);
+                String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
                 sb.append("EXEC SP_RENAME ");
                 sb.append("\"" + tableOutName + "." + this.getColumnName(wrapper, alter, item.oldColumn, false) + "\"");
                 sb.append(",");
@@ -115,15 +115,15 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 sb.append(" INDEX");
                 sb.append(" " + item.oldName);
                 sb.append(" TO");
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
         }
 
         if (item.action == KeyAction.AUTO_INCREMENT) {
-            String tableOutName = this.getTableName(wrapper, alter.table, alter.name, false);
+            String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
             sb.append("DBCC CHECKIDENT('" + tableOutName + "',RESEED," + item.value + ")");
         }
         if (item.action == KeyAction.CHARACTER_SET) {
@@ -142,7 +142,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                  MappingGlobalWrapper wrapper,
                                  StampAlter alter,
                                  StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         if (item.indexType != KeyIndexType.PRIMARY_KEY) {
             sb.append("CREATE");
         }
@@ -151,16 +151,16 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
             sb.append(" INDEX");
         } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
             sb.append("ALTER TABLE " + tableName + " ADD");
-            if (StringTools.isNotEmpty(item.name)) {
-                sb.append(" CONSTRAINT " + item.name);
+            if (StringTools.isNotEmpty(item.indexName)) {
+                sb.append(" CONSTRAINT " + item.indexName);
             }
             sb.append(" PRIMARY KEY");
         } else {
             sb.append(" INDEX");
         }
 
-        if (item.indexType != KeyIndexType.PRIMARY_KEY && StringTools.isNotEmpty(item.name)) {
-            sb.append(" " + item.name);
+        if (item.indexType != KeyIndexType.PRIMARY_KEY && StringTools.isNotEmpty(item.indexName)) {
+            sb.append(" " + item.indexName);
         }
 
         if (item.indexType != KeyIndexType.PRIMARY_KEY) {
@@ -190,7 +190,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                   StampAlter alter,
                                   StampAlterItem column,
                                   int type) {
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         String columnName = this.getColumnName(wrapper, alter, column.column);
 
         if (type == 3 || type == 2) {

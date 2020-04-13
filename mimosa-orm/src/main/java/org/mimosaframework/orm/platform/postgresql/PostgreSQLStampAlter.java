@@ -21,8 +21,8 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         if (alter.target == KeyTarget.DATABASE) {
 
             if (StringTools.isNotEmpty(alter.charset)) {
-                sb.append("UPDATE PG_DATABASE SET ENCODING = PG_CHAR_TO_ENCODING('UTF8') " +
-                        "WHERE DATNAME = '" + alter.name + "'");
+                sb.append("UPDATE PG_DATABASE SET ENCODING = PG_CHAR_TO_ENCODING('" + alter.charset + "') " +
+                        "WHERE DATNAME = '" + alter.databaseName + "'");
             }
         }
         if (alter.target == KeyTarget.TABLE) {
@@ -41,7 +41,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                 StampAlterItem item) {
         sb.append("ALTER");
         sb.append(" TABLE");
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         sb.append(" " + tableName);
         if (item.action == KeyAction.ADD) {
             sb.append(" ADD");
@@ -79,11 +79,11 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                 sb.setLength(0);
                 sb.append("DROP");
                 sb.append(" INDEX");
-                sb.append(" " + item.name);
+                sb.append(" " + item.indexName);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.setLength(0);
-                String outTableName = this.getTableName(wrapper, alter.table, alter.name, false);
+                String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
                 this.getDeclares().add("PK_INDEX_NAME VARCHAR(5000)");
                 this.getBegins().add(new ExecuteImmediate()
                         .setProcedure("PK_INDEX_NAME = (SELECT CONNAME FROM PG_CONSTRAINT A, PG_CLASS B " +
@@ -106,16 +106,16 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                 sb.append(" INDEX");
                 sb.append(" " + item.oldName);
                 sb.append(" TO");
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
         }
 
         if (item.action == KeyAction.AUTO_INCREMENT) {
             sb.setLength(0);
-            String outTableName = this.getTableName(wrapper, alter.table, alter.name, false);
+            String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
             this.getDeclares().add("AUTO_INCRE_SEQ_NAME VARCHAR(5000)");
             this.getBegins().add(new ExecuteImmediate().setProcedure(
                     "AUTO_INCRE_SEQ_NAME = (SELECT ARRAY_TO_STRING(REGEXP_MATCHES(COLUMN_DEFAULT, '[\"|''](.*)[\"|'']','gi'),'') " +
@@ -138,8 +138,8 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                  MappingGlobalWrapper wrapper,
                                  StampAlter alter,
                                  StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
-        String outTableName = this.getTableName(wrapper, alter.table, alter.name, false);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
         sb.setLength(0);
         if (item.indexType != KeyIndexType.PRIMARY_KEY) {
             sb.append("CREATE");
@@ -155,8 +155,8 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             sb.append(" INDEX");
         }
 
-        if (StringTools.isNotEmpty(item.name)) {
-            sb.append(" " + item.name);
+        if (StringTools.isNotEmpty(item.indexName)) {
+            sb.append(" " + item.indexName);
         } else {
             sb.append(" " + outTableName + "_pkey");
         }
@@ -204,7 +204,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         }
         if (column.autoIncrement) {
             if (type == 3) {
-                String outTableName = this.getTableName(wrapper, alter.table, alter.name, false);
+                String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
                 String outColumnName = this.getColumnName(wrapper, alter, column.column, false);
                 this.getDeclares().add("IS_AUTOINCRE INT");
                 this.getDeclares().add("HAS_SEQUENCE_AI INT");

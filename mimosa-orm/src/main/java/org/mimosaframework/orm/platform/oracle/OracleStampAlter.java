@@ -27,7 +27,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (alter.target == KeyTarget.DATABASE) {
             sb.append(" DATABASE");
 
-            sb.append(" " + RS + alter.name + RE);
+            sb.append(" " + RS + alter.databaseName + RE);
 
             if (StringTools.isNotEmpty(alter.charset)) {
                 sb.append(" CHARACTER SET " + alter.charset);
@@ -39,7 +39,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (alter.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
 
-            sb.append(" " + this.getTableName(wrapper, alter.table, alter.name));
+            sb.append(" " + this.getTableName(wrapper, alter.tableClass, alter.tableName));
 
             if (alter.items != null) {
                 for (StampAlterItem item : alter.items) {
@@ -79,7 +79,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             if (!oldColumnName.equalsIgnoreCase(newColumnName)) {
                 StringBuilder rnsb = new StringBuilder();
                 rnsb.append("ALTER TABLE");
-                rnsb.append(" " + this.getTableName(wrapper, alter.table, alter.name));
+                rnsb.append(" " + this.getTableName(wrapper, alter.tableClass, alter.tableName));
                 rnsb.append(" RENAME COLUMN " + oldColumnName + " TO " + newColumnName);
                 this.getBuilders().add(new ExecuteImmediate(rnsb));
             }
@@ -103,7 +103,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 sb.setLength(0);
                 sb.append("DROP");
                 sb.append(" INDEX");
-                sb.append(" " + RS + item.name + RE);
+                sb.append(" " + RS + item.indexName + RE);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.append(" PRIMARY KEY");
@@ -123,17 +123,17 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 sb.append(" INDEX");
                 sb.append(" " + item.oldName);
                 sb.append(" TO");
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
         }
 
         if (item.action == KeyAction.AUTO_INCREMENT) {
             totalAction++;
             this.noNeedSource = true;
-            String tableName = this.getTableName(wrapper, alter.table, alter.name);
+            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
             String seqName = tableName + "_SEQ";
 
             this.getDeclares().add("CACHE_CUR_SEQ NUMBER");
@@ -145,7 +145,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
         if (item.action == KeyAction.CHARACTER_SET) {
             totalAction++;
-            sb.append(" CHARACTER SET = " + item.name);
+            sb.append(" CHARACTER SET = " + item.charset);
         }
         if (item.action == KeyAction.COMMENT) {
             totalAction++;
@@ -170,12 +170,12 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" INDEX");
         }
 
-        if (StringTools.isNotEmpty(item.name)) {
-            sb.append(" " + RS + item.name + RE);
+        if (StringTools.isNotEmpty(item.indexName)) {
+            sb.append(" " + RS + item.indexName + RE);
         }
         if (item.indexType != KeyIndexType.PRIMARY_KEY) {
             sb.append(" ON ");
-            sb.append(this.getTableName(wrapper, alter.table, alter.name));
+            sb.append(this.getTableName(wrapper, alter.tableClass, alter.tableName));
         }
 
         List<String> fullTextIndexNames = new ArrayList<>();
@@ -217,7 +217,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" NOT NULL");
         }
         if (column.autoIncrement) {
-            this.addAutoIncrement(wrapper, alter.table, alter.name);
+            this.addAutoIncrement(wrapper, alter.tableClass, alter.tableName);
         }
         if (column.pk) {
             sb.append(" PRIMARY KEY");

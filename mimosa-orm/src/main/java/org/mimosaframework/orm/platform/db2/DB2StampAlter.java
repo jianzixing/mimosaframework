@@ -56,7 +56,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
         if (item.action == KeyAction.ADD) {
             if (item.struct == KeyAlterStruct.COLUMN) {
                 sb.append("ALTER TABLE");
-                String tableName = this.getTableName(wrapper, alter.table, alter.name);
+                String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
                 sb.append(" " + tableName);
                 sb.append(" ADD COLUMN");
                 this.buildAlterColumn(sb, wrapper, alter, item, 1);
@@ -67,7 +67,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
         }
 
         if (item.action == KeyAction.CHANGE) {
-            String tableName = this.getTableName(wrapper, alter.table, alter.name);
+            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
             String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn);
             String newColumnName = this.getColumnName(wrapper, alter, item.column);
 
@@ -81,14 +81,14 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
         }
 
         if (item.action == KeyAction.MODIFY) {
-            String tableName = this.getTableName(wrapper, alter.table, alter.name);
+            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
             this.buildAlterColumn(null, wrapper, alter, item, 3);
             this.getBuilders().add(new ExecuteImmediate().setProcedure
                     ("call sysproc.admin_cmd ('reorg table db2inst1." + tableName + "')"));
         }
 
         if (item.action == KeyAction.DROP) {
-            String tableName = this.getTableName(wrapper, alter.table, alter.name);
+            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
 
             if (item.dropType == KeyAlterDropType.COLUMN) {
                 sb.append("ALTER TABLE");
@@ -100,7 +100,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
             if (item.dropType == KeyAlterDropType.INDEX) {
                 sb.append(" DROP");
                 sb.append(" INDEX");
-                sb.append(" " + RS + item.name + RE);
+                sb.append(" " + RS + item.indexName + RE);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.append("ALTER TABLE");
@@ -112,7 +112,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
 
         if (item.action == KeyAction.RENAME) {
             sb.append("ALTER TABLE");
-            String tableName = this.getTableName(wrapper, alter.table, alter.name);
+            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
             sb.append(" " + tableName);
             sb.append(" RENAME");
             if (item.renameType == KeyAlterRenameType.COLUMN) {
@@ -125,10 +125,10 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" INDEX");
                 sb.append(" " + item.oldName);
                 sb.append(" TO");
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
             }
         }
 
@@ -138,7 +138,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                     "FROM SYSIBM.SYSCOLUMNS WHERE TBNAME='T_USER' AND IDENTITY='Y'"));
 
             sb.append("ALTER TABLE");
-            String tableName = this.getTableName(wrapper, alter.table, alter.name);
+            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
             sb.append(" " + tableName);
             sb.append(" ALTER COLUMN \"'||IDENTITY_NAME||'\" RESTART WITH " + item.value);
         }
@@ -154,7 +154,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                                  MappingGlobalWrapper wrapper,
                                  StampAlter alter,
                                  StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         if (item.indexType != KeyIndexType.PRIMARY_KEY) {
             sb.append("CREATE");
         }
@@ -169,12 +169,12 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
             sb.append(" INDEX");
         }
 
-        if (StringTools.isNotEmpty(item.name)) {
-            sb.append(" " + RS + item.name + RE);
+        if (StringTools.isNotEmpty(item.indexName)) {
+            sb.append(" " + RS + item.indexName + RE);
         }
 
         if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-            if (StringTools.isEmpty(item.name)) {
+            if (StringTools.isEmpty(item.indexName)) {
                 StringBuilder indexName = new StringBuilder();
                 int m = 0;
                 for (StampColumn column : item.columns) {
@@ -213,7 +213,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                                   StampAlter alter,
                                   StampAlterItem column, int type) {
         StringBuilder actionSql = new StringBuilder();
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         if (type == 3 || type == 2) {
             String columnName = this.getColumnName(wrapper, alter, type == 2 ? column.oldColumn : column.column);
             actionSql.append(" ALTER COLUMN");

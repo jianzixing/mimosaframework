@@ -40,7 +40,7 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                                 StringBuilder sb,
                                 StampAlter alter,
                                 StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         if (item.action == KeyAction.ADD) {
 
             if (item.struct == KeyAlterStruct.COLUMN) {
@@ -77,7 +77,7 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
             if (item.dropType == KeyAlterDropType.INDEX) {
                 sb.append(" DROP");
                 sb.append(" INDEX");
-                sb.append(" " + item.name);
+                sb.append(" " + item.indexName);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.setLength(0);
@@ -95,7 +95,7 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
             if (item.renameType == KeyAlterRenameType.TABLE) {
                 sb.append("ALTER");
                 sb.append(" TABLE");
-                sb.append(" " + item.name);
+                sb.append(" " + item.newName);
                 sb.append(" RENAME");
                 sb.append(" TO " + tableName);
             }
@@ -117,7 +117,7 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                                  StampAlter alter,
                                  StampAlterItem item) {
         sb.setLength(0);
-        String tableName = this.getTableName(wrapper, alter.table, alter.name);
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         if (item.indexType != KeyIndexType.PRIMARY_KEY) {
             sb.append("CREATE");
 
@@ -128,8 +128,8 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                 sb.append(" INDEX");
             }
 
-            if (StringTools.isNotEmpty(item.name)) {
-                sb.append(" " + item.name);
+            if (StringTools.isNotEmpty(item.indexName)) {
+                sb.append(" " + item.indexName);
             }
 
             sb.append(" ON ");

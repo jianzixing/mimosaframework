@@ -6,7 +6,9 @@ import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.alter.AlterFactory;
 import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
+import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
+import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
@@ -234,42 +236,89 @@ public class MysqlPlatformDialect extends PlatformDialect {
         }
     }
 
+    /**
+     * 1. 如果数据库存在自增列，映射表不存在映射列则删除所有自增列
+     * 2. 如果数据库存在自增列且于映射表自增列不一致则删除已有自增列新建新的自增列
+     * 3. 如果数据库不存在自增列则新建映射表中的自增列
+     *
+     * @param mappingTable
+     * @param tableStructure
+     * @return
+     * @throws SQLException
+     */
     @Override
-    protected void rebuildAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) {
+    protected boolean rebuildAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
         MappingField mappingField = mappingTable.getAutoIncrementField();
-        if (mappingField != null && mappingField.isMappingFieldAutoIncrement()) {
-            DefaultSQLAlterBuilder sql = AlterFactory.origin();
-            sql.alter().table(mappingTable.getMappingTableName()).modify()
-                    .column(mappingField.getMappingColumnName());
-            this.setSQLType(sql, mappingField.getMappingFieldType(),
-                    mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
-            if (!mappingField.isMappingFieldNullable()) {
-                sql.not().nullable();
-            }
+        List<TableColumnStructure> columnStructures = tableStructure.getAutoIncrement();
+        Set<MappingField> mappingFields = mappingTable.getMappingFields();
 
-            if (mappingField.isMappingAutoIncrement()) {
-                sql.autoIncrement();
-            }
 
-            String def = mappingField.getMappingFieldDefaultValue();
-            if (StringTools.isNotEmpty(def)) {
-                sql.defaultValue(def);
-            }
-
-            String cmt = mappingField.getMappingFieldComment();
-            if (StringTools.isNotEmpty(cmt)) {
-                sql.comment(cmt);
+        if (columnStructures != null) {
+            // 删除数据库中的自增列
+            for (TableColumnStructure columnStructure : columnStructures) {
+                for (MappingField mf : mappingFields) {
+                    if (mf.getMappingColumnName().equals(columnStructure.getColumnName())
+                            && mf != mappingField) {
+                        this.rebuildAutoIncrement(mappingTable, mf);
+                    }
+                }
             }
         }
+
+        if (mappingField != null && mappingField.isMappingFieldAutoIncrement()) {
+            // 新建自增列，新建之前先创建主键以免自增列不为key
+            this.triggerKeys(mappingTable, tableStructure);
+            this.rebuildAutoIncrement(mappingTable, mappingField);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean rebuildAutoIncrement(MappingTable mappingTable,
+                                         MappingField mappingField) throws SQLException {
+        DefaultSQLAlterBuilder sql = AlterFactory.origin();
+        sql.alter().table(mappingTable.getMappingTableName()).modify()
+                .column(mappingField.getMappingColumnName());
+        this.setSQLType(sql, mappingField.getMappingFieldType(),
+                mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
+        if (!mappingField.isMappingFieldNullable()) {
+            sql.not().nullable();
+        }
+
+        if (mappingField.isMappingAutoIncrement()) {
+            sql.autoIncrement();
+        }
+
+        String def = mappingField.getMappingFieldDefaultValue();
+        if (StringTools.isNotEmpty(def)) {
+            sql.defaultValue(def);
+        }
+
+        String cmt = mappingField.getMappingFieldComment();
+        if (StringTools.isNotEmpty(cmt)) {
+            sql.comment(cmt);
+        }
+
+        this.runner(sql.compile());
+        return true;
     }
 
     @Override
-    protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) {
-        System.out.println();
+    protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) throws SQLException {
+        String tableName = mappingTable.getMappingTableName();
+        String indexName = "idx_" + mappingField.getMappingColumnName();
+        StampAction stampAction = CreateFactory.create()
+                .index().name(indexName).on().table(tableName)
+                .columns(mappingField.getMappingColumnName()).compile();
+        this.runner(stampAction);
     }
 
     @Override
-    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) {
-        System.out.println();
+    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) throws SQLException {
+        String tableName = mappingTable.getMappingTableName();
+        String indexName = "idx_" + mappingField.getMappingColumnName();
+        StampAction stampAction = DropFactory.drop().index()
+                .name(indexName).on().table(tableName).compile();
+        this.runner(stampAction);
     }
 }
