@@ -17,7 +17,7 @@ public class NothingCompareMapping implements StartCompareMapping {
     protected DataSourceWrapper dataSourceWrapper;
     protected PlatformExecutor executor = new PlatformExecutor();
 
-    protected MappingLevel mappingLevel;
+    protected MappingLevel mappingLevel = MappingLevel.NOTHING;
 
     public NothingCompareMapping(MappingGlobalWrapper mappingGlobalWrapper, DataSourceWrapper dataSourceWrapper) {
         this.mappingGlobalWrapper = mappingGlobalWrapper;

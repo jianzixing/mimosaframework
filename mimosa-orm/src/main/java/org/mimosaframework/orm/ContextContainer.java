@@ -49,8 +49,6 @@ public interface ContextContainer {
 
     boolean isShowSQL();
 
-    void matchWholeMappingDatabase() throws SQLException;
-
     DatabaseTypes getDatabaseType();
 
     void clearMimosaDataSources();

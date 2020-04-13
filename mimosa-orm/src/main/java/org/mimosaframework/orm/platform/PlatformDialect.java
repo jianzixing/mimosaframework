@@ -2,6 +2,7 @@ package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
@@ -230,6 +231,7 @@ public abstract class PlatformDialect {
                 String defVal = mappingField.getMappingFieldDefaultValue();
                 boolean nullable = mappingField.isMappingFieldNullable();
                 boolean autoIncr = mappingField.isMappingAutoIncrement();
+                boolean isPk = mappingField.isMappingFieldPrimaryKey();
                 boolean timeForUpdate = mappingField.isMappingFieldTimeForUpdate();
                 String comment = mappingField.getMappingFieldComment();
 
@@ -239,6 +241,7 @@ public abstract class PlatformDialect {
                     sql.not();
                     sql.nullable();
                 }
+                if (isPk) sql.primary().key();
                 if (autoIncr) sql.autoIncrement();
                 if (StringTools.isNotEmpty(defVal)) {
                     sql.defaultValue(defVal);
@@ -255,8 +258,10 @@ public abstract class PlatformDialect {
             }
 
             return (StampCreate) ((UnifyBuilder) sql).compile();
+        } else {
+            throw new IllegalArgumentException(I18n.print("platform_dialect_miss_fields",
+                    mappingTable.getMappingTableName()));
         }
-        return null;
     }
 
     protected void setSQLType(ColumnTypeBuilder typeBuilder,

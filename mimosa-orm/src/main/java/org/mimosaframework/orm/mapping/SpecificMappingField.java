@@ -43,7 +43,7 @@ public class SpecificMappingField implements MappingField {
     /**
      * 从映射类中读取是否为空
      */
-    private boolean mappingFieldNullable;
+    private boolean mappingFieldNullable = true;
 
     /**
      * 如果@Column有别名，则使用别名，如果不是别名则是转换后的字段名称

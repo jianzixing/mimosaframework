@@ -126,49 +126,39 @@ public class MysqlPlatformDialect extends PlatformDialect {
 
                 String tableName = mappingTable.getMappingTableName();
                 String columnName = mappingField.getMappingColumnName();
-                DefaultSQLAlterBuilder sql = (DefaultSQLAlterBuilder) AlterFactory.alter().table(tableName)
-                        .modify().column(columnName);
+                DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
+                sql.alter().table(tableName).modify().column(columnName);
 
-                if (columnStructure.getTypeName()
-                        .equalsIgnoreCase(columnType.getTypeName())
-                        || columnStructure.getLength() != mappingField.getMappingFieldLength()
-                        || columnStructure.getScale() != mappingField.getDatabaseColumnDecimalDigits()) {
-                    // ColumnEditType.TYPE
-                    this.setSQLType(sql, mappingField.getMappingFieldType(),
-                            mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
-                }
 
-                if (StringTools.isEmpty(columnStructure.getIsNullable()) != mappingField.isMappingFieldNullable()
-                        || columnStructure.isNullable() != mappingField.isMappingFieldNullable()) {
-                    // ColumnEditType.ISNULL
+                // ColumnEditType.TYPE;
+                this.setSQLType(sql, mappingField.getMappingFieldType(),
+                        mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
+
+                boolean isPk = tableStructure.isPrimaryKeyColumn(columnStructure.getColumnName());
+                if (!isPk) {
                     if (!mappingField.isMappingFieldNullable()) {
                         sql.not();
                         sql.nullable();
                     }
                 }
 
-                if ((StringTools.isEmpty(columnStructure.getDefaultValue()) && StringTools.isNotEmpty(mappingField.getMappingFieldDefaultValue()))
-                        || (StringTools.isNotEmpty(columnStructure.getDefaultValue())
-                        && !columnStructure.getDefaultValue().equals(mappingField.getMappingFieldDefaultValue()))) {
-                    // ColumnEditType.DEF_VALUE
-                    if (StringTools.isNotEmpty(mappingField.getMappingFieldDefaultValue())) {
-                        sql.defaultValue(mappingField.getMappingFieldDefaultValue());
-                    }
+                String def = mappingField.getMappingFieldDefaultValue();
+                if (StringTools.isNotEmpty(def)) {
+                    sql.defaultValue(def);
                 }
-                if (StringTools.isNotEmpty(columnStructure.getAutoIncrement()) == mappingField.isMappingAutoIncrement()
-                        || !columnStructure.isAutoIncrement() != mappingField.isMappingAutoIncrement()) {
-                    // ColumnEditType.AUTO_INCREMENT
-                    if (mappingField.isMappingAutoIncrement()) {
-                        sql.autoIncrement();
-                    }
+
+                String cmt = mappingField.getMappingFieldComment();
+                if (StringTools.isNotEmpty(cmt)) {
+                    sql.comment(cmt);
                 }
-                if ((StringTools.isEmpty(columnStructure.getComment()) && StringTools.isNotEmpty(mappingField.getMappingFieldComment()))
-                        || (StringTools.isNotEmpty(columnStructure.getComment())
-                        && !columnStructure.getComment().equals(mappingField.getMappingFieldComment()))) {
-                    // ColumnEditType.COMMENT
-                    if (StringTools.isNotEmpty(mappingField.getMappingFieldComment())) {
-                        sql.comment(mappingField.getMappingFieldComment());
-                    }
+
+                // 需要单独修改
+                if (columnStructure.isAutoIncrement() != mappingField.isMappingAutoIncrement()) {
+                    // ColumnEditType.AUTO_INCREMENT;
+                }
+                // 需要单独修改
+                if (mappingField.isMappingFieldPrimaryKey() != isPk) {
+                    // ColumnEditType.PRIMARY_KEY;
                 }
 
                 this.triggerIncrAndKeys(type, definition.getMappingTable(), definition.getTableStructure(),

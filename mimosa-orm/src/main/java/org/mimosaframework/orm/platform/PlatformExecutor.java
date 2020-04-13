@@ -182,9 +182,11 @@ public class PlatformExecutor {
                 // 需要新建数据库表
 
                 for (MappingTable mappingTable : mappingTables) {
-                    Set<MappingIndex> mappingIndex = mappingTable.getMappingIndexes();
                     compare.tableCreate(mapping, mappingTable);
-                    compare.indexAdd(mapping, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
+                    Set<MappingIndex> mappingIndex = mappingTable.getMappingIndexes();
+                    if (mappingIndex != null && mappingIndex.size() > 0) {
+                        compare.indexAdd(mapping, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
+                    }
                 }
             }
         }

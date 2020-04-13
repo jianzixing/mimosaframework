@@ -14,8 +14,12 @@ public class DataSourceWrapper {
     private MimosaDataSource dataSource;
     private boolean isMaster = true;
     private String slaveName;
-    private boolean isAutoCloseConnection = false;
     private Connection connection;
+
+    /**
+     * 如果为true则不受事务影响使用后即关闭(调用close方法)
+     */
+    private boolean isAutoCloseConnection = false;
 
     public DataSourceWrapper() {
     }

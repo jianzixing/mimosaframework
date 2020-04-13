@@ -3,7 +3,6 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.NamingConvert;
@@ -15,7 +14,6 @@ import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -297,54 +295,6 @@ public class NormalContextContainer implements ContextContainer {
 
     public void setMappingTables(Set<MappingTable> mappingTables) {
         this.mappingTables = mappingTables;
-    }
-
-    /**
-     * 开始合并所有的MappingDatabase
-     * 从Class获得的MappingTable合并到从数据库获得MappingTable中去
-     *
-     * @return
-     * @throws SQLException
-     */
-    public void matchWholeMappingDatabase() throws SQLException {
-        MimosaDataSource mimosaDataSource = this.getDefaultDataSourceWrapper(false).getDataSource();
-        FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(mimosaDataSource);
-        fetchDatabaseMapping.loading();
-
-        MappingDatabase mappingDatabase = fetchDatabaseMapping.getDatabaseMapping();
-        // 加载完所有数据库的信息后，将映射类的MappingTable合并到每一个数据库对应的MappingDatabase中去
-        Set<MappingTable> mappingTables = this.getMappingTables();
-
-        // 开始合并映射类和数据库表信息
-        if (mappingTables != null && mappingDatabase != null) {
-            if (mappingDatabase != null) {
-                Set<MappingTable> tables = mappingDatabase.getDatabaseTables();
-                if (tables != null) {
-                    for (MappingTable mpTable : mappingTables) {
-                        for (MappingTable dbTable : tables) {
-                            if (mpTable.getMappingTableName().equalsIgnoreCase(dbTable.getDatabaseTableName())) {
-                                mpTable.applyFromClassMappingTable(dbTable);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (globalDataSource != null) {
-            Map<MimosaDataSource, MappingDatabase> map = new LinkedHashMap<>();
-            map.put(mimosaDataSource, mappingDatabase);
-            for (MimosaDataSource ds : this.globalDataSource) {
-                if (ds != mimosaDataSource) {
-                    fetchDatabaseMapping = new JDBCFetchDatabaseMapping(mimosaDataSource);
-                    fetchDatabaseMapping.loading();
-
-                    map.put(ds, fetchDatabaseMapping.getDatabaseMapping());
-                }
-            }
-            this.mappingGlobalWrapper.setDataSourceMappingDatabase(map);
-        }
-
     }
 
     @Override

@@ -143,20 +143,12 @@ public class BeanAppContext implements Context {
 
     protected void checkDBMapping() throws ContextException {
         try {
-            MimosaDataSource dataSource = this.contextValues.getDefaultDataSourceWrapper(false).getDataSource();
-            FetchDatabaseMapping fetchDatabaseMapping = new JDBCFetchDatabaseMapping(dataSource);
-            fetchDatabaseMapping.loading();
-
-            MappingDatabase mappingDatabase = fetchDatabaseMapping.getDatabaseMapping();
-            if (mappingDatabase != null) {
-                StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
-                        contextValues.getMappingLevel(),
-                        contextValues.mappingGlobalWrapper,
-                        contextValues.getDefaultDataSourceWrapper(false)
-                );
-                compareMapping.doMapping();
-            }
-            contextValues.matchWholeMappingDatabase();
+            StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
+                    contextValues.getMappingLevel(),
+                    contextValues.mappingGlobalWrapper,
+                    contextValues.getDefaultDataSourceWrapper(false)
+            );
+            compareMapping.doMapping();
         } catch (SQLException e) {
             throw new ContextException(I18n.print("compare_db_error"), e);
         }
