@@ -449,7 +449,7 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public StampAction compile() {
+    public StampAlter compile() {
         if (this.items != null && this.items.size() > 0) {
             this.stampAlter.items = this.items.toArray(new StampAlterItem[]{});
         }

@@ -6,7 +6,7 @@ public interface RedefineInsertBuilder
         extends
         InsertBuilder,
         IntoBuilder,
-        AbsTableBuilder,
+        InsertTableNameBuilder,
         AbsColumnsBuilder,
         ValuesBuilder,
         InsertValuesBuilder {

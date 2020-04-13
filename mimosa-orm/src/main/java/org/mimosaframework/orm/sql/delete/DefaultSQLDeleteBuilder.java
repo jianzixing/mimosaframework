@@ -134,7 +134,7 @@ public class DefaultSQLDeleteBuilder
     }
 
     @Override
-    public StampAction compile() {
+    public StampDelete compile() {
         this.stampDelete.from = stampFrom;
         if (where != null) stampDelete.where = where;
         return this.stampDelete;

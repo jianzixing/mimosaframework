@@ -27,7 +27,7 @@ public class OracleStampInsert extends OracleStampCommonality implements StampCo
         if (values.length > 1) sb.append(" ALL");
         for (Object[] row : values) {
             sb.append(NL_TAB + "INTO");
-            sb.append(" " + this.getTableName(wrapper, insert.table, insert.name));
+            sb.append(" " + this.getTableName(wrapper, insert.tableClass, insert.tableName));
 
             StampColumn[] columns = insert.columns;
             String[] names = null;
@@ -45,8 +45,8 @@ public class OracleStampInsert extends OracleStampCommonality implements StampCo
                 sb.append(")");
                 sb.append(" VALUES ");
             } else {
-                if (insert.table != null) {
-                    MappingTable mappingTable = wrapper.getMappingTable(insert.table);
+                if (insert.tableClass != null) {
+                    MappingTable mappingTable = wrapper.getMappingTable(insert.tableClass);
                     if (mappingTable != null) {
                         Set<MappingField> fields = mappingTable.getMappingFields();
                         names = new String[fields.size()];

@@ -15,24 +15,24 @@ public class NothingCompareMapping implements StartCompareMapping {
     private static final Log logger = LogFactory.getLog(NothingCompareMapping.class);
     protected MappingGlobalWrapper mappingGlobalWrapper;
     protected DataSourceWrapper dataSourceWrapper;
-    protected PlatformExecutor executor = new PlatformExecutor();
+    protected PlatformExecutor executor = null;
 
     protected MappingLevel mappingLevel = MappingLevel.NOTHING;
 
     public NothingCompareMapping(MappingGlobalWrapper mappingGlobalWrapper, DataSourceWrapper dataSourceWrapper) {
         this.mappingGlobalWrapper = mappingGlobalWrapper;
         this.dataSourceWrapper = dataSourceWrapper;
+        this.executor = new PlatformExecutor(mappingGlobalWrapper, dataSourceWrapper);
     }
 
     @Override
     public void doMapping() throws SQLException {
-        this.executor.compareTableStructure(this.mappingGlobalWrapper,
-                this.dataSourceWrapper,
+        this.executor.compareTableStructure(
                 new PlatformCompare() {
                     @Override
-                    public void tableCreate(MappingGlobalWrapper wrapper, MappingTable mappingTable) throws SQLException {
+                    public void tableCreate(MappingTable mappingTable) throws SQLException {
                         if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
-                            executor.createTable(wrapper, dataSourceWrapper, mappingTable);
+                            executor.createTable(mappingTable);
                         }
 
                         if (mappingLevel == MappingLevel.WARN) {
@@ -42,8 +42,7 @@ public class NothingCompareMapping implements StartCompareMapping {
                     }
 
                     @Override
-                    public void fieldUpdate(MappingGlobalWrapper wrapper,
-                                            MappingTable mappingTable,
+                    public void fieldUpdate(MappingTable mappingTable,
                                             TableStructure tableStructure,
                                             Map<MappingField, List<ColumnEditType>> updateFields,
                                             Map<MappingField, TableColumnStructure> columnStructures) throws SQLException {
@@ -53,7 +52,7 @@ public class NothingCompareMapping implements StartCompareMapping {
                                 Map.Entry<MappingField, List<ColumnEditType>> entry = iterator.next();
                                 MappingField mappingField = entry.getKey();
                                 List<ColumnEditType> columnEditTypes = entry.getValue();
-                                executor.modifyField(wrapper, dataSourceWrapper, mappingTable, tableStructure,
+                                executor.modifyField(mappingTable, tableStructure,
                                         mappingField, columnStructures.get(mappingField));
                             }
                         }
@@ -80,13 +79,12 @@ public class NothingCompareMapping implements StartCompareMapping {
                     }
 
                     @Override
-                    public void fieldAdd(MappingGlobalWrapper wrapper,
-                                         MappingTable mappingTable,
+                    public void fieldAdd(MappingTable mappingTable,
                                          TableStructure tableStructure,
                                          List<MappingField> mappingFields) throws SQLException {
                         if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
                             for (MappingField mappingField : mappingFields) {
-                                executor.createField(wrapper, dataSourceWrapper, mappingTable, tableStructure, mappingField);
+                                executor.createField(mappingTable, tableStructure, mappingField);
                             }
                         }
 
@@ -100,13 +98,12 @@ public class NothingCompareMapping implements StartCompareMapping {
                     }
 
                     @Override
-                    public void fieldDel(MappingGlobalWrapper wrapper,
-                                         MappingTable mappingTable,
+                    public void fieldDel(MappingTable mappingTable,
                                          TableStructure tableStructure,
                                          List<TableColumnStructure> mappingFields) throws SQLException {
                         if (mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
                             for (TableColumnStructure columnStructure : mappingFields) {
-                                executor.dropField(wrapper, dataSourceWrapper, mappingTable, tableStructure, columnStructure);
+                                executor.dropField(mappingTable, tableStructure, columnStructure);
                             }
                         }
 
@@ -120,16 +117,15 @@ public class NothingCompareMapping implements StartCompareMapping {
                     }
 
                     @Override
-                    public void indexUpdate(MappingGlobalWrapper wrapper,
-                                            MappingTable mappingTable,
+                    public void indexUpdate(MappingTable mappingTable,
                                             List<MappingIndex> mappingIndexes,
                                             List<String> delIndexNames) throws SQLException {
                         if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
                             for (String indexName : delIndexNames) {
-                                executor.dropIndex(wrapper, dataSourceWrapper, mappingTable, indexName);
+                                executor.dropIndex(mappingTable, indexName);
                             }
                             for (MappingIndex mappingIndex : mappingIndexes) {
-                                executor.createIndex(wrapper, dataSourceWrapper, mappingTable, mappingIndex);
+                                executor.createIndex(mappingTable, mappingIndex);
                             }
                         }
 
@@ -143,12 +139,11 @@ public class NothingCompareMapping implements StartCompareMapping {
                     }
 
                     @Override
-                    public void indexAdd(MappingGlobalWrapper wrapper,
-                                         MappingTable mappingTable,
+                    public void indexAdd(MappingTable mappingTable,
                                          List<MappingIndex> mappingIndexes) throws SQLException {
                         if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
                             for (MappingIndex mappingIndex : mappingIndexes) {
-                                executor.createIndex(wrapper, dataSourceWrapper, mappingTable, mappingIndex);
+                                executor.createIndex(mappingTable, mappingIndex);
                             }
                         }
 

@@ -160,7 +160,7 @@ public class DefaultSQLUpdateBuilder
     }
 
     @Override
-    public StampAction compile() {
+    public StampUpdate compile() {
         if (where != null) stampUpdate.where = where;
         if (items != null && items.size() > 0) stampUpdate.items = items.toArray(new StampUpdateItem[]{});
         return this.stampUpdate;

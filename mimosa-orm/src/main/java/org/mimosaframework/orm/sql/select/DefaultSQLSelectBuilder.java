@@ -523,7 +523,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public StampAction compile() {
+    public StampSelect compile() {
         if (stampSelectFields != null && stampSelectFields.size() > 0) {
             this.stampSelect.columns = stampSelectFields.toArray(new StampSelectField[]{});
         }

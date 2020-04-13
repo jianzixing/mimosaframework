@@ -3,16 +3,15 @@ package org.mimosaframework.orm.platform;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.DefaultDelete;
 import org.mimosaframework.orm.criteria.DefaultQuery;
 import org.mimosaframework.orm.criteria.DefaultUpdate;
-import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
@@ -24,13 +23,20 @@ import java.util.*;
  */
 public class PlatformExecutor {
     private static final Log logger = LogFactory.getLog(PlatformExecutor.class);
+    private DBRunner runner = null;
+    private MappingGlobalWrapper mappingGlobalWrapper;
+    private DataSourceWrapper dswrapper;
 
-    public void compareTableStructure(MappingGlobalWrapper mapping,
-                                      DataSourceWrapper dswrapper,
-                                      PlatformCompare compare) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mapping, dswrapper);
+    public PlatformExecutor(MappingGlobalWrapper mappingGlobalWrapper, DataSourceWrapper dswrapper) {
+        this.mappingGlobalWrapper = mappingGlobalWrapper;
+        this.dswrapper = dswrapper;
+        this.runner = new DefaultDBRunner(dswrapper);
+    }
+
+    public void compareTableStructure(PlatformCompare compare) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
         List<TableStructure> structures = dialect.getTableStructures();
-        List<MappingTable> mappingTables = mapping.getMappingTables();
+        List<MappingTable> mappingTables = mappingGlobalWrapper.getMappingTables();
 
         if (structures != null) {
             List<MappingTable> rmTab = new ArrayList<>();
@@ -96,22 +102,22 @@ public class PlatformExecutor {
                         }
 
                         if (updateFields != null && updateFields.size() > 0) {
-                            compare.fieldUpdate(mapping, currTable, structure, updateFields, updateColumnsStructures);
+                            compare.fieldUpdate(currTable, structure, updateFields, updateColumnsStructures);
                         }
 
                         mappingFields.removeAll(rmCol);
                         columnStructures.removeAll(rmSCol);
                         if (mappingFields.size() > 0) {
                             // 有新添加的字段需要添加
-                            compare.fieldAdd(mapping, currTable, structure, new ArrayList<MappingField>(mappingFields));
+                            compare.fieldAdd(currTable, structure, new ArrayList<MappingField>(mappingFields));
                         }
                         if (columnStructures.size() > 0) {
                             // 有多余的字段需要删除
-                            compare.fieldDel(mapping, currTable, structure, columnStructures);
+                            compare.fieldDel(currTable, structure, columnStructures);
                         }
                     } else {
                         // 数据库的字段没有需要重新添加全部字段
-                        compare.fieldAdd(mapping, currTable, structure, new ArrayList<MappingField>(mappingFields));
+                        compare.fieldAdd(currTable, structure, new ArrayList<MappingField>(mappingFields));
                     }
                 }
 
@@ -154,15 +160,15 @@ public class PlatformExecutor {
                             }
                         }
                         if (updateIndexes != null && updateIndexes.size() > 0) {
-                            compare.indexUpdate(mapping, currTable, updateIndexes, updateIndexNames);
+                            compare.indexUpdate(currTable, updateIndexes, updateIndexNames);
                         }
                         if (newIndexes != null && newIndexes.size() > 0) {
-                            compare.indexAdd(mapping, currTable, newIndexes);
+                            compare.indexAdd(currTable, newIndexes);
                         }
                     }
                 }
 
-                doDialectEnding(mapping, dswrapper, currTable, structure);
+                doDialectEnding(currTable, structure);
             }
             mappingTables.removeAll(rmTab);
             if (mappingTables.size() != 0) {
@@ -170,93 +176,98 @@ public class PlatformExecutor {
                 // 需要新建数据库表
 
                 for (MappingTable mappingTable : mappingTables) {
-                    compare.tableCreate(mapping, mappingTable);
+                    compare.tableCreate(mappingTable);
                     Set<MappingIndex> mappingIndex = mappingTable.getMappingIndexes();
                     if (mappingIndex != null && mappingIndex.size() > 0) {
-                        compare.indexAdd(mapping, mappingTable, new ArrayList<MappingIndex>(mappingIndex));
+                        compare.indexAdd(mappingTable, new ArrayList<MappingIndex>(mappingIndex));
                     }
 
-                    doDialectEnding(mapping, dswrapper, mappingTable, null);
+                    doDialectEnding(mappingTable, null);
                 }
             }
         }
     }
 
-    private PlatformDialect getDialect(MappingGlobalWrapper mappingGlobalWrapper,
-                                       DataSourceWrapper dswrapper) {
+    private PlatformDialect getDialect() {
         PlatformDialect dialect = PlatformFactory.getDialect(dswrapper);
-        dialect.setMappingGlobalWrapper(mappingGlobalWrapper);
+        dialect.setMappingGlobalWrapper(this.mappingGlobalWrapper);
         return dialect;
     }
 
-    public void createTable(MappingGlobalWrapper mappingGlobalWrapper,
-                            DataSourceWrapper dswrapper,
-                            MappingTable mappingTable) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+    public void createTable(MappingTable mappingTable) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
         dialect.define(new DataDefinition(DataDefinitionType.CREATE_TABLE, mappingTable));
     }
 
-    public void dropTable(MappingGlobalWrapper mappingGlobalWrapper,
-                          DataSourceWrapper dswrapper,
-                          TableStructure tableStructure) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+    public void dropTable(TableStructure tableStructure) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
         dialect.define(new DataDefinition(DataDefinitionType.DROP_TABLE, tableStructure));
     }
 
-    public void createField(MappingGlobalWrapper mappingGlobalWrapper,
-                            DataSourceWrapper dswrapper,
-                            MappingTable mappingTable,
+    public void createField(MappingTable mappingTable,
                             TableStructure tableStructure,
                             MappingField mappingField) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        PlatformDialect dialect = this.getDialect();
         dialect.define(new DataDefinition(DataDefinitionType.ADD_COLUMN, mappingTable, tableStructure, mappingField));
     }
 
-    public void modifyField(MappingGlobalWrapper mappingGlobalWrapper,
-                            DataSourceWrapper dswrapper,
-                            MappingTable mappingTable,
+    public void modifyField(MappingTable mappingTable,
                             TableStructure tableStructure,
                             MappingField mappingField,
                             TableColumnStructure columnStructure) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        PlatformDialect dialect = this.getDialect();
         dialect.define(new DataDefinition(DataDefinitionType.MODIFY_COLUMN, tableStructure, mappingTable, mappingField, columnStructure));
     }
 
-    public void dropField(MappingGlobalWrapper mappingGlobalWrapper,
-                          DataSourceWrapper dswrapper,
-                          MappingTable mappingTable,
-                          TableStructure tableStructure,
+    public void dropField(MappingTable mappingTable, TableStructure tableStructure,
                           TableColumnStructure columnStructure) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+        PlatformDialect dialect = this.getDialect();
         dialect.define(new DataDefinition(DataDefinitionType.DROP_COLUMN, mappingTable, tableStructure, columnStructure));
     }
 
-    public void createIndex(MappingGlobalWrapper mappingGlobalWrapper,
-                            DataSourceWrapper dswrapper,
-                            MappingTable mappingTable,
-                            MappingIndex mappingIndex) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+    public void createIndex(MappingTable mappingTable, MappingIndex mappingIndex) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
         dialect.define(new DataDefinition(DataDefinitionType.ADD_INDEX, mappingTable, mappingIndex));
     }
 
-    public void dropIndex(MappingGlobalWrapper mappingGlobalWrapper,
-                          DataSourceWrapper dswrapper,
-                          MappingTable mappingTable,
-                          String indexName) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+    public void dropIndex(MappingTable mappingTable, String indexName) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
         dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexName));
     }
 
-    public void doDialectEnding(MappingGlobalWrapper mappingGlobalWrapper,
-                                DataSourceWrapper dswrapper,
-                                MappingTable mappingTable,
-                                TableStructure structure) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+    public void doDialectEnding(MappingTable mappingTable, TableStructure structure) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
         dialect.ending(mappingTable, structure);
     }
 
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
-        
+        PlatformDialect dialect = this.getDialect();
+        if (objects != null && objects.size() > 0) {
+            if (objects.size() == 1) {
+                ModelObject object = objects.get(0);
+                Set<Object> keys = object.keySet();
+                DefaultSQLInsertBuilder insertBuilder = new DefaultSQLInsertBuilder();
+                insertBuilder.insert().into().table(table.getMappingTableName());
+                String[] columns = new String[keys.size()];
+                int i = 0;
+                for (Object key : keys) {
+                    MappingField mappingField = table.getMappingFieldByJavaName(String.valueOf(key));
+                    columns[i] = mappingField.getMappingColumnName();
+                    i++;
+                }
+                insertBuilder.columns(columns).values();
+                Object[] values = new Object[keys.size()];
+                i = 0;
+                for (Object key : keys) {
+                    values[i] = object.get(key);
+                    i++;
+                }
+                insertBuilder.row(values);
+                dialect.insert(insertBuilder.compile());
+            } else {
+
+            }
+        }
         return null;
     }
 
@@ -269,21 +280,16 @@ public class PlatformExecutor {
         return null;
     }
 
-    public List<ModelObject> select(MappingGlobalWrapper mappingGlobalWrapper,
-                                    DefaultQuery query,
-                                    ModelObjectConvertKey convert) throws SQLException {
+    public List<ModelObject> select(DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
         return null;
     }
 
-    public long count(MappingGlobalWrapper mappingGlobalWrapper,
-                      DefaultQuery query) throws SQLException {
+    public long count(DefaultQuery query) throws SQLException {
         return 0;
     }
 
-    public Object dialect(MappingGlobalWrapper mappingGlobalWrapper,
-                          DataSourceWrapper dswrapper,
-                          StampAction stampAction) throws SQLException {
-        PlatformDialect dialect = this.getDialect(mappingGlobalWrapper, dswrapper);
+    public Object dialect(StampAction stampAction) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
         SQLBuilderCombine combine = null;
         if (stampAction instanceof StampAlter) {
             combine = dialect.alter((StampAlter) stampAction);

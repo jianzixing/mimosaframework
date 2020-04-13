@@ -368,7 +368,7 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public StampAction compile() {
+    public StampCreate compile() {
         if (this.stampCreateColumns != null && this.stampCreateColumns.size() > 0) {
             this.stampCreate.columns = this.stampCreateColumns.toArray(new StampCreateColumn[]{});
         }

@@ -78,7 +78,7 @@ public class DefaultSQLDropBuilder
     }
 
     @Override
-    public StampAction compile() {
+    public StampDrop compile() {
         return this.stampDrop;
     }
 

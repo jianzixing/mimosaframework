@@ -10,31 +10,25 @@ import java.util.List;
 import java.util.Map;
 
 public interface PlatformCompare {
-    void tableCreate(MappingGlobalWrapper wrapper,
-                     MappingTable mappingTable) throws SQLException;
+    void tableCreate(MappingTable mappingTable) throws SQLException;
 
-    void fieldUpdate(MappingGlobalWrapper wrapper,
-                     MappingTable mappingTable,
+    void fieldUpdate(MappingTable mappingTable,
                      TableStructure tableStructure,
                      Map<MappingField, List<ColumnEditType>> updateFields,
                      Map<MappingField, TableColumnStructure> columnStructures) throws SQLException;
 
-    void fieldAdd(MappingGlobalWrapper wrapper,
-                  MappingTable mappingTable,
+    void fieldAdd(MappingTable mappingTable,
                   TableStructure tableStructure,
                   List<MappingField> mappingFields) throws SQLException;
 
-    void fieldDel(MappingGlobalWrapper wrapper,
-                  MappingTable mappingTable,
+    void fieldDel(MappingTable mappingTable,
                   TableStructure tableStructure,
                   List<TableColumnStructure> mappingFields) throws SQLException;
 
-    void indexUpdate(MappingGlobalWrapper wrapper,
-                     MappingTable mappingTable,
+    void indexUpdate(MappingTable mappingTable,
                      List<MappingIndex> mappingIndexes,
                      List<String> delIndexNames) throws SQLException;
 
-    void indexAdd(MappingGlobalWrapper wrapper,
-                  MappingTable mappingTable,
+    void indexAdd(MappingTable mappingTable,
                   List<MappingIndex> mappingIndexes) throws SQLException;
 }

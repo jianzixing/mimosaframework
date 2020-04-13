@@ -40,7 +40,7 @@ public class DefaultSQLInsertBuilder
     @Override
     public DefaultSQLInsertBuilder table(Class table) {
         this.gammars.add("table");
-        stampInsert.table = table;
+        stampInsert.tableClass = table;
         return this;
     }
 
@@ -64,8 +64,15 @@ public class DefaultSQLInsertBuilder
     }
 
     @Override
-    public StampAction compile() {
+    public StampInsert compile() {
         this.stampInsert.values = values.toArray(new Object[][]{});
         return this.stampInsert;
+    }
+
+    @Override
+    public DefaultSQLInsertBuilder table(String name) {
+        this.gammars.add("table");
+        stampInsert.tableName = name;
+        return this;
     }
 }

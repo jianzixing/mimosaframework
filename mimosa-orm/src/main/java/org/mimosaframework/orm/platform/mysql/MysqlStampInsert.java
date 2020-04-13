@@ -20,7 +20,7 @@ public class MysqlStampInsert extends MysqlStampCommonality implements StampComb
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT");
         sb.append(" INTO");
-        sb.append(" " + this.getTableName(wrapper, insert.table, insert.name));
+        sb.append(" " + this.getTableName(wrapper, insert.tableClass, insert.tableName));
 
         StampColumn[] columns = insert.columns;
         String[] names = null;
@@ -38,8 +38,8 @@ public class MysqlStampInsert extends MysqlStampCommonality implements StampComb
             sb.append(")");
             sb.append(" VALUES ");
         } else {
-            if (insert.table != null) {
-                MappingTable mappingTable = wrapper.getMappingTable(insert.table);
+            if (insert.tableClass != null) {
+                MappingTable mappingTable = wrapper.getMappingTable(insert.tableClass);
                 if (mappingTable != null) {
                     Set<MappingField> fields = mappingTable.getMappingFields();
                     names = new String[fields.size()];
