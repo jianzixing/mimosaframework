@@ -326,7 +326,6 @@ public abstract class PlatformDialect {
         int length = mappingField.getMappingFieldLength();
         int scale = mappingField.getMappingFieldDecimalDigits();
         String defVal = mappingField.getMappingFieldDefaultValue();
-        boolean pk = mappingField.isMappingFieldPrimaryKey();
         boolean nullable = mappingField.isMappingFieldNullable();
         boolean autoIncr = mappingField.isMappingAutoIncrement();
         String comment = mappingField.getMappingFieldComment();
@@ -339,11 +338,6 @@ public abstract class PlatformDialect {
             sql.not();
             sql.nullable();
         }
-        if (pk && this.getPrimaryKeyByMappingTable(mappingTable).size() == 1) {
-            sql.primary();
-            sql.key();
-        }
-        if (autoIncr) sql.autoIncrement();
         if (StringTools.isNotEmpty(defVal)) {
             sql.defaultValue(defVal);
         }

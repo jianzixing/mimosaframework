@@ -25,7 +25,8 @@ public class RunCompareTesting {
             // this.test1();
             // this.test2();
             // this.test3();
-            this.test4();
+//             this.test4();
+            this.test5();
         }
     }
 
@@ -201,6 +202,36 @@ public class RunCompareTesting {
         mappingField3.setMappingFieldNullable(false);
         mappingField3.setMappingFieldComment("测试age2备注");
         mappingFields.put("age", mappingField3);
+
+        mappingTable.setMappingFields(mappingFields);
+
+        StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        compareMapping.doMapping();
+    }
+
+    // 测试删除主键字段
+    public void test5() throws SQLException {
+        SpecificMappingTable mappingTable = new SpecificMappingTable();
+        mappingTable.setMappingClass(RunCompareTesting.class);
+        mappingTable.setMappingTableName("t_run_test");
+        mappingTable.setEncoding("utf8");
+        Map<String, MappingField> mappingFields = new LinkedHashMap<>();
+
+        SpecificMappingField mappingField1 = new SpecificMappingField();
+        mappingField1.setMappingColumnName("id");
+        mappingField1.setMappingFieldType(Long.class);
+        // mappingField1.setMappingFieldPrimaryKey(true);
+        // mappingField1.setMappingFieldAutoIncrement(true);
+        mappingField1.setMappingFieldComment("测试id备注");
+        mappingFields.put("id", mappingField1);
+
+        SpecificMappingField mappingField2 = new SpecificMappingField();
+        mappingField2.setMappingColumnName("name");
+        mappingField2.setMappingFieldType(String.class);
+        mappingField2.setMappingFieldNullable(false);
+        mappingField2.setMappingFieldLength(20);
+        mappingField2.setMappingFieldComment("测试name备注");
+        mappingFields.put("name", mappingField2);
 
         mappingTable.setMappingFields(mappingFields);
 

@@ -159,6 +159,7 @@ public class MysqlPlatformDialect extends PlatformDialect {
                     }
 
                     this.runner(sql.compile());
+                    if (columnStructure != null) columnStructure.setState(1);
                 }
 
                 // 需要单独修改
@@ -175,8 +176,12 @@ public class MysqlPlatformDialect extends PlatformDialect {
                         definition.getMappingField(), columnStructure);
             }
             if (type == DataDefinitionType.DROP_COLUMN) {
-                StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), definition.getColumnStructure());
+                TableColumnStructure columnStructure = definition.getColumnStructure();
+                StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), columnStructure);
                 this.runner(stampAlter);
+                if (columnStructure != null) {
+                    columnStructure.setState(2);
+                }
                 this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
                         definition.getMappingField(), definition.getColumnStructure());
             }
@@ -208,16 +213,25 @@ public class MysqlPlatformDialect extends PlatformDialect {
     @Override
     protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
-        String[] fields = new String[pks.size()];
-        for (int i = 0; i < pks.size(); i++) {
-            fields[i] = pks.get(i).getMappingColumnName();
+        String[] fields = null;
+        if (pks != null && pks.size() > 0) {
+            fields = new String[pks.size()];
+            for (int i = 0; i < pks.size(); i++) {
+                fields[i] = pks.get(i).getMappingColumnName();
+            }
         }
-        StampAction stampAction = AlterFactory.origin().alter().table(mappingTable.getMappingTableName())
-                .drop().primary().key().compile();
-        this.runner(stampAction);
-        stampAction = AlterFactory.origin().alter().table(mappingTable.getMappingTableName())
-                .add().primary().key().columns(fields).compile();
-        this.runner(stampAction);
+
+        List<TableConstraintStructure> oldPks = tableStructure.getPrimaryKey();
+        if (oldPks != null && oldPks.size() > 0) {
+            StampAction stampAction = AlterFactory.origin().alter().table(mappingTable.getMappingTableName())
+                    .drop().primary().key().compile();
+            this.runner(stampAction);
+        }
+        if (pks != null && pks.size() > 0) {
+            StampAction stampAction = AlterFactory.origin().alter().table(mappingTable.getMappingTableName())
+                    .add().primary().key().columns(fields).compile();
+            this.runner(stampAction);
+        }
     }
 
     @Override

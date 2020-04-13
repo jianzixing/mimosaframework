@@ -130,7 +130,8 @@ public class TableStructure {
         if (constraintStructures != null) {
             List<TableConstraintStructure> structures = new ArrayList<>();
             for (TableConstraintStructure constraintStructure : constraintStructures) {
-                if ("P".equals(constraintStructure.getType())) {
+                if ("P".equals(constraintStructure.getType())
+                        && !this.isColumnState(constraintStructure.getColumnName(), 2)) {
                     structures.add(constraintStructure);
                 }
             }
@@ -233,5 +234,17 @@ public class TableStructure {
             return columnStructures;
         }
         return null;
+    }
+
+    public boolean isColumnState(String columnName, int state) {
+        if (columnStructures != null) {
+            for (TableColumnStructure columnStructure : this.columnStructures) {
+                if (columnName.equals(columnStructure.getColumnName()) &&
+                        columnStructure.getState() == state) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

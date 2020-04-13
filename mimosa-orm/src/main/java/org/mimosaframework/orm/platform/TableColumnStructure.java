@@ -18,6 +18,15 @@ public class TableColumnStructure {
     private String autoIncrement;
     private String comment;
 
+    /**
+     * 提供字段增删改时使用
+     * 用来标记字段的状态
+     * 0 无状态
+     * 1 修改
+     * 2 删除
+     */
+    private int state = 0;
+
     public String getTableSchema() {
         return tableSchema;
     }
@@ -104,5 +113,13 @@ public class TableColumnStructure {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }
