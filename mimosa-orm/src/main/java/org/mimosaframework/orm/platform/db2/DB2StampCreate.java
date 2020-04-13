@@ -25,7 +25,7 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
             logger.warn("db2 can't create database in current operation");
         }
         if (create.target == KeyTarget.TABLE) {
-            String tableName = this.getTableName(wrapper, create.table, create.name);
+            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName);
             sb.append(" TABLE");
             if (create.checkExist) {
                 this.getDeclares().add("HAS_TABLE NUMERIC");
@@ -53,7 +53,7 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
             sb.append(" INDEX");
             sb.append(" " + RS + create.indexName + RE);
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
 
             int i = 0;
             sb.append(" (");
@@ -76,7 +76,7 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateIndex[] indices = create.indices;
         if (indices != null && indices.length > 0) {
-            String tableName = this.getTableName(wrapper, create.table, create.name);
+            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName);
             int i = 0;
             for (StampCreateIndex index : indices) {
                 if (index.indexType == KeyIndexType.PRIMARY_KEY) {

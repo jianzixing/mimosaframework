@@ -16,8 +16,8 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             if (create.checkExist) {
                 sb.append(" IF NOT EXISTS");
             }
-            if (StringTools.isNotEmpty(create.name)) {
-                sb.append(" " + create.name);
+            if (StringTools.isNotEmpty(create.databaseName)) {
+                sb.append(" " + create.databaseName);
             }
             if (StringTools.isNotEmpty(create.charset)) {
                 sb.append(" " + create.charset);
@@ -31,7 +31,7 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             if (create.checkExist) {
                 sb.append(" IF NOT EXISTS");
             }
-            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
@@ -56,7 +56,7 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             sb.append(" INDEX");
             sb.append(" " + create.indexName);
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
 
             int i = 0;
             sb.append(" (");

@@ -26,11 +26,11 @@ public class SqliteStampDrop extends SqliteStampCommonality implements StampComb
             if (drop.checkExist) {
                 sb.append(" IF EXIST");
             }
-            sb.append(" " + this.getTableName(wrapper, drop.table, drop.name));
+            sb.append(" " + this.getTableName(wrapper, drop.tableClass, drop.tableName));
         }
         if (drop.target == KeyTarget.INDEX) {
             sb.append(" INDEX");
-            sb.append(" " + drop.name);
+            sb.append(" " + drop.indexName);
         }
         return new SQLBuilderCombine(sb.toString(), null);
     }

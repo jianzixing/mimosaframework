@@ -18,18 +18,18 @@ public class OracleStampDrop extends OracleStampCommonality implements StampComb
             if (drop.checkExist) {
                 sb.append(" IF EXIST");
             }
-            sb.append(" " + drop.name);
+            sb.append(" " + drop.databaseName);
         }
         if (drop.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
             if (drop.checkExist) {
                 sb.append(" IF EXIST");
             }
-            sb.append(" " + this.getTableName(wrapper, drop.table, drop.name));
+            sb.append(" " + this.getTableName(wrapper, drop.tableClass, drop.tableName));
         }
         if (drop.target == KeyTarget.INDEX) {
             sb.append(" INDEX");
-            sb.append(" " + RS + drop.name + RE);
+            sb.append(" " + RS + drop.indexName + RE);
         }
         return new SQLBuilderCombine(sb.toString(), null);
     }

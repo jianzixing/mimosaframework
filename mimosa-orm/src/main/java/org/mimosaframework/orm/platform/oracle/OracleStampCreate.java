@@ -25,7 +25,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
         }
         if (create.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
-            String tableName = this.getTableName(wrapper, create.table, create.name);
+            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName);
             if (create.checkExist) {
                 this.getDeclares().add("HAS_TABLE NUMBER");
                 this.getBegins().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO HAS_TABLE FROM USER_TABLES " +
@@ -58,7 +58,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
             }
             sb.append(" " + RS + create.indexName + RE);
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
 
             List<String> fullTextIndexNames = new ArrayList<>();
             int i = 0;
@@ -114,7 +114,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                                         MappingGlobalWrapper wrapper,
                                         StampCreate create) {
         boolean isNeedCheck = false;
-        String tableName = this.getTableName(wrapper, create.table, create.name);
+        String tableName = this.getTableName(wrapper, create.tableClass, create.tableName);
         StringBuilder sb = new StringBuilder();
         StampColumn[] columns = index.columns;
 
@@ -175,7 +175,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                     sb.append(" NOT NULL");
                 }
                 if (column.autoIncrement) {
-                    this.addAutoIncrement(wrapper, create.table, create.name);
+                    this.addAutoIncrement(wrapper, create.tableClass, create.tableName);
                 }
                 if (column.pk) {
                     sb.append(" PRIMARY KEY");

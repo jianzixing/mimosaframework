@@ -24,20 +24,28 @@ public class DefaultSQLDropBuilder
     @Override
     public DefaultSQLDropBuilder name(Serializable value) {
         this.gammars.add("name");
-        this.stampDrop.name = value.toString();
+        if (this.point.equals("database")) {
+            this.stampDrop.databaseName = value.toString();
+        }
+        if (this.point.equals("index")) {
+            this.stampDrop.indexName = value.toString();
+        }
+        if (this.point.equals("table")) {
+            this.stampDrop.tableName = value.toString();
+        }
         return this;
     }
 
     @Override
     public DefaultSQLDropBuilder table(Class table) {
         this.gammars.add("table");
-        this.stampDrop.table = table;
+        this.stampDrop.tableClass = table;
         return this;
     }
 
     @Override
     public DefaultSQLDropBuilder database() {
-        this.gammars.add("database");
+        this.addPoint("database");
         stampDrop.target = KeyTarget.DATABASE;
         return this;
     }
@@ -51,7 +59,7 @@ public class DefaultSQLDropBuilder
 
     @Override
     public DefaultSQLDropBuilder index() {
-        this.gammars.add("index");
+        this.addPoint("index");
         stampDrop.target = KeyTarget.INDEX;
         return this;
     }
@@ -64,7 +72,7 @@ public class DefaultSQLDropBuilder
 
     @Override
     public DefaultSQLDropBuilder table() {
-        this.gammars.add("table");
+        this.addPoint("table");
         stampDrop.target = KeyTarget.TABLE;
         return this;
     }
@@ -77,7 +85,7 @@ public class DefaultSQLDropBuilder
     @Override
     public DefaultSQLDropBuilder table(String name) {
         this.gammars.add("table");
-        this.stampDrop.name = name;
+        this.stampDrop.tableName = name;
         return this;
     }
 }

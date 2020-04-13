@@ -26,11 +26,11 @@ public class DB2StampDrop extends DB2StampCommonality implements StampCombineBui
             if (drop.checkExist) {
                 sb.append(" IF EXIST");
             }
-            sb.append(" " + this.getTableName(wrapper, drop.table, drop.name));
+            sb.append(" " + this.getTableName(wrapper, drop.tableClass, drop.tableName));
         }
         if (drop.target == KeyTarget.INDEX) {
             sb.append(" INDEX");
-            sb.append(" " + RS + drop.name + RE);
+            sb.append(" " + RS + drop.indexName + RE);
         }
         return new SQLBuilderCombine(sb != null ? sb.toString() : null, null);
     }

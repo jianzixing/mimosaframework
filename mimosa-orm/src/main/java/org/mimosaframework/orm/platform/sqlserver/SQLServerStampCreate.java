@@ -21,22 +21,22 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             if (create.checkExist) {
                 sb.append(" IF NOT EXISTS");
             }
-            if (StringTools.isNotEmpty(create.name)) {
-                sb.append(" " + create.name);
+            if (StringTools.isNotEmpty(create.databaseName)) {
+                sb.append(" " + create.databaseName);
             }
             if (StringTools.isNotEmpty(create.charset)) {
                 sb.append(" COLLATE " + create.charset);
             }
         }
         if (create.target == KeyTarget.TABLE) {
-            String tableName = this.getTableName(wrapper, create.table, create.name, false);
+            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName, false);
             sb.append(" TABLE");
             if (create.checkExist) {
                 this.getDeclares().add("@HAS_TABLE INT");
                 this.getBegins().add(new ExecuteImmediate()
                         .setProcedure("SELECT @HAS_TABLE=(SELECT COUNT(1) FROM SYS.TABLES WHERE NAME='" + tableName + "')"));
             }
-            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
@@ -62,7 +62,7 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             sb.append(" INDEX");
             sb.append(" " + create.indexName);
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
 
             int i = 0;
             sb.append(" (");
@@ -130,7 +130,7 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateColumn[] columns = create.columns;
         if (columns != null && columns.length > 0) {
-            String tableName = this.getTableName(wrapper, create.table, create.name, false);
+            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName, false);
             int i = 0;
             for (StampCreateColumn column : columns) {
                 String columnName = this.getColumnName(wrapper, create, column.column, false);

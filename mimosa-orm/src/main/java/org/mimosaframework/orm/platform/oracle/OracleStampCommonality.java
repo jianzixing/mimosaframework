@@ -384,8 +384,8 @@ public abstract class OracleStampCommonality extends PlatformStampCommonality {
             tableStr = ((StampAlter) action).tableName;
         }
         if (action instanceof StampCreate) {
-            table = ((StampCreate) action).table;
-            tableStr = ((StampCreate) action).name;
+            table = ((StampCreate) action).tableClass;
+            tableStr = ((StampCreate) action).tableName;
         }
 
         StringBuilder comment = new StringBuilder();

@@ -24,7 +24,7 @@ public class SqliteStampCreate extends SqliteStampCommonality implements StampCo
             if (create.checkExist) {
                 sb.append(" IF NOT EXISTS");
             }
-            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
@@ -49,7 +49,7 @@ public class SqliteStampCreate extends SqliteStampCommonality implements StampCo
             sb.append(" INDEX");
             sb.append(" " + create.indexName);
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.table, create.name));
+            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
 
             int i = 0;
             sb.append(" (");

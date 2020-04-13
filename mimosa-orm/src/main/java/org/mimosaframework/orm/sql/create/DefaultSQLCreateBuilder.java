@@ -41,8 +41,10 @@ public class DefaultSQLCreateBuilder
         this.gammars.add("name");
         if (this.previous("index") || this.previous("unique")) {
             stampCreate.indexName = value.toString();
+        } else if (this.point.equals("database")) {
+            stampCreate.databaseName = value.toString();
         } else {
-            stampCreate.name = value.toString();
+            stampCreate.tableName = value.toString();
         }
         return this;
     }
@@ -50,7 +52,7 @@ public class DefaultSQLCreateBuilder
     @Override
     public DefaultSQLCreateBuilder name(Class table) {
         this.gammars.add("name");
-        stampCreate.table = table;
+        stampCreate.tableClass = table;
         return this;
     }
 
@@ -92,7 +94,7 @@ public class DefaultSQLCreateBuilder
     @Override
     public DefaultSQLCreateBuilder table(Class table) {
         this.gammars.add("table");
-        stampCreate.table = table;
+        stampCreate.tableClass = table;
         return this;
     }
 
@@ -383,7 +385,7 @@ public class DefaultSQLCreateBuilder
     public DefaultSQLCreateBuilder table(String name) {
         this.gammars.add("table");
         if (this.point.equals("index")) {
-            this.stampCreate.name = name;
+            this.stampCreate.tableName = name;
         }
         return this;
     }
