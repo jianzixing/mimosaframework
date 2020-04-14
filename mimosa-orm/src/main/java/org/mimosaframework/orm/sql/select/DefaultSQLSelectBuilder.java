@@ -1,8 +1,8 @@
 package org.mimosaframework.orm.sql.select;
 
-import org.mimosaframework.orm.sql.CommonOperatorSQLBuilder;
-import org.mimosaframework.orm.sql.FieldItem;
-import org.mimosaframework.orm.sql.FunItem;
+import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.io.Serializable;
@@ -388,14 +388,7 @@ public class DefaultSQLSelectBuilder
 
     @Override
     public DefaultSQLSelectBuilder table(Class table) {
-        this.gammars.add("table");
-        if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
-            this.lastJoin.table = table;
-        } else if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("left")) {
-            this.lastJoin.table = table;
-        } else {
-            this.stampFroms.add(new StampFrom(table));
-        }
+        this.table(table, null);
         return this;
     }
 
@@ -403,11 +396,11 @@ public class DefaultSQLSelectBuilder
     public DefaultSQLSelectBuilder table(Class table, String tableAliasName) {
         this.gammars.add("table");
         if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
-            this.lastJoin.table = table;
-            this.lastJoin.tableAliasName = tableAliasName;
+            this.lastJoin.tableClass = table;
+            if (StringTools.isNotEmpty(tableAliasName)) this.lastJoin.tableAliasName = tableAliasName;
         } else if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("left")) {
-            this.lastJoin.table = table;
-            this.lastJoin.tableAliasName = tableAliasName;
+            this.lastJoin.tableClass = table;
+            if (StringTools.isNotEmpty(tableAliasName)) this.lastJoin.tableAliasName = tableAliasName;
         } else {
             this.stampFroms.add(new StampFrom(table, tableAliasName));
         }
@@ -548,5 +541,51 @@ public class DefaultSQLSelectBuilder
             this.stampSelect.groupBy = this.groupBy.toArray(new StampColumn[]{});
         }
         return this.stampSelect;
+    }
+
+    @Override
+    public DefaultSQLSelectBuilder table(String tableName) {
+        this.table(tableName, null);
+        return this;
+    }
+
+    @Override
+    public DefaultSQLSelectBuilder table(String tableName, String tableAliasName) {
+        this.gammars.add("table");
+        if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
+            this.lastJoin.tableName = tableName;
+            if (StringTools.isNotEmpty(tableAliasName)) this.lastJoin.tableAliasName = tableAliasName;
+        } else if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("left")) {
+            this.lastJoin.tableName = tableName;
+            if (StringTools.isNotEmpty(tableAliasName)) this.lastJoin.tableAliasName = tableAliasName;
+        } else {
+            this.stampFroms.add(new StampFrom(tableName, tableAliasName));
+        }
+        return this;
+    }
+
+    @Override
+    public DefaultSQLSelectBuilder table(UnifyBuilder builder) {
+        this.table(builder, null);
+        return this;
+    }
+
+    @Override
+    public Object table(UnifyBuilder builder, String tableAliasName) {
+        if (builder instanceof SelectBuilder) {
+            this.gammars.add("table");
+            if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
+                this.lastJoin.builder = builder;
+                if (StringTools.isNotEmpty(tableAliasName)) this.lastJoin.tableAliasName = tableAliasName;
+            } else if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("left")) {
+                this.lastJoin.builder = builder;
+                if (StringTools.isNotEmpty(tableAliasName)) this.lastJoin.tableAliasName = tableAliasName;
+            } else {
+                this.stampFroms.add(new StampFrom(builder));
+            }
+        } else {
+            throw new IllegalArgumentException(I18n.print("select_from_select_must"));
+        }
+        return this;
     }
 }

@@ -283,6 +283,8 @@ public class LanguageMessageDefault implements MessagesRegister {
         // PlatformDialect
         words.put("platform_dialect_miss_fields", "表 %s 缺少字段信息");
 
+        // DefaultSQLSelectBuilder
+        words.put("select_from_select_must", "select的from子句必须是select语句");
         messageWords.add(new MessageWords(PROJECT, words));
     }
 

@@ -4,8 +4,8 @@ import org.mimosaframework.orm.sql.*;
 
 public interface SelectJoinsBuilder
         extends
-        LeftJoinBuilder<AbsTableAliasBuilder<OnBuilder<CommonWhereBuilder<SelectJoinWhereNextBuilder>>>>,
-        InnerJoinBuilder<AbsTableAliasBuilder<OnBuilder<CommonWhereBuilder<SelectJoinWhereNextBuilder>>>>,
+        LeftJoinBuilder<SelectTableNameBuilder<OnBuilder<CommonWhereBuilder<SelectJoinWhereNextBuilder>>>>,
+        InnerJoinBuilder<SelectTableNameBuilder<OnBuilder<CommonWhereBuilder<SelectJoinWhereNextBuilder>>>>,
         WhereBuilder<CommonWhereBuilder<SelectWhereNextBuilder>>,
         SelectGHOLBuilder {
 }

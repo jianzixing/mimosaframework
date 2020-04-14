@@ -25,8 +25,8 @@ public class StampSelect implements StampAction {
         }
         if (joins != null) {
             for (StampSelectJoin join : joins) {
-                if (join.table != null) {
-                    items.add(new STItem(join.table, join.tableAliasName));
+                if (join.tableClass != null) {
+                    items.add(new STItem(join.tableClass, join.tableAliasName));
                 }
             }
         }

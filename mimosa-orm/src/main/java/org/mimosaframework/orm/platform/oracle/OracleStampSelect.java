@@ -52,7 +52,7 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
                 if (join.joinType == KeyJoinType.INNER) {
                     sb.append(" INNER JOIN");
                 }
-                sb.append(" " + this.getTableName(wrapper, join.table, join.name));
+                sb.append(" " + this.getTableName(wrapper, join.tableClass, join.tableName));
                 if (StringTools.isNotEmpty(join.tableAliasName)) {
                     sb.append(" " + join.tableAliasName.toUpperCase());
                 }

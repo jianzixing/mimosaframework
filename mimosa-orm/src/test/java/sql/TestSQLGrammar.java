@@ -9,6 +9,8 @@ import org.mimosaframework.orm.sql.insert.InsertFactory;
 import org.mimosaframework.orm.sql.select.SelectFactory;
 import org.mimosaframework.orm.sql.update.UpdateFactory;
 
+import java.io.Serializable;
+
 public class TestSQLGrammar {
     public static void main(String[] args) {
         UnifyBuilder unifyBuilder = null;
@@ -66,6 +68,10 @@ public class TestSQLGrammar {
                 .orderBy().column("").asc()
                 .limit(0, 10);
 
+        unifyBuilder = SelectFactory.select()
+                .distinct("", (Serializable) "")
+                .from()
+                .table(SelectFactory.select().all().from().table(""));
 
         ///
 
