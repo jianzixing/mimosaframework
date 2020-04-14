@@ -15,7 +15,6 @@ import org.mimosaframework.orm.transaction.TransactionPropagationType;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.List;
 
 public class SpringMimosaSessionTemplate implements SessionTemplate {

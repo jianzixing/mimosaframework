@@ -1,6 +1,5 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
 

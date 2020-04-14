@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.platform.mysql;
 
-import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.platform.AbstractDatabasePorter;
+import org.mimosaframework.orm.platform.DifferentColumn;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 public class MysqlDatabasePorter extends AbstractDatabasePorter {

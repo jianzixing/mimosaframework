@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.sql.delete;
 
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.CommonOperatorSQLBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.io.Serializable;
@@ -138,5 +138,15 @@ public class DefaultSQLDeleteBuilder
         this.stampDelete.from = stampFrom;
         if (where != null) stampDelete.where = where;
         return this.stampDelete;
+    }
+
+    @Override
+    public DefaultSQLDeleteBuilder table(String name) {
+        this.gammars.add("table");
+        if (this.point.equals("from")) {
+            this.stampFrom = new StampFrom(name);
+            this.stampFrom.name = name;
+        }
+        return this;
     }
 }

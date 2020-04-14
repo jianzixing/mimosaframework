@@ -1,15 +1,20 @@
 package org.mimosaframework.orm.builder;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.*;
+import org.mimosaframework.orm.AbstractInterceptSession;
+import org.mimosaframework.orm.IDStrategy;
+import org.mimosaframework.orm.MappingLevel;
+import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.auxiliary.FactoryBuilderConfig;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 

@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.scripting;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.ognl.OgnlContext;
 import org.mimosaframework.core.ognl.OgnlException;
 import org.mimosaframework.core.ognl.OgnlRuntime;
 import org.mimosaframework.core.ognl.PropertyAccessor;

@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.sql.delete;
 
-import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.CommonWhereNextBuilder;
 
 public interface DeleteWhereNextBuilder
         extends

@@ -174,12 +174,7 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
                     this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
                     key = leftFun.funName;
                 } else if (leftValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName("Unknown");
-                    placeholder.setValue(leftValue);
-                    placeholders.add(placeholder);
+                    sb.append(leftValue);
                 }
 
                 if (where.not) sb.append(" NOT");
@@ -191,12 +186,7 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
                 } else if (rightFun != null) {
                     this.buildSelectFieldFun(wrapper, stampTables, rightFun, sb);
                 } else if (rightValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName(key);
-                    placeholder.setValue(rightValue);
-                    placeholders.add(placeholder);
+                    this.parseValue(sb, key, rightValue, placeholders);
                 }
             }
             if (whereType == KeyWhereType.KEY_AND) {
@@ -207,12 +197,7 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
                     this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
                     key = leftFun.funName;
                 } else if (leftValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName("Unknown");
-                    placeholder.setValue(leftValue);
-                    placeholders.add(placeholder);
+                    sb.append(leftValue);
                 }
                 if (where.not) sb.append(" NOT");
                 sb.append(" " + where.operator + " ");

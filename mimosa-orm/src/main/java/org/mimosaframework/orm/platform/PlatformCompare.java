@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.orm.mapping.MappingField;
-import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
 

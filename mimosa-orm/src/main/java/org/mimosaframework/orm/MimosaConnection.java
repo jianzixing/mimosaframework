@@ -1,13 +1,13 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.I18n;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class MimosaConnection implements InvocationHandler {
     private DataSource dataSource;

@@ -15,16 +15,11 @@
  */
 package org.mimosaframework.orm.scripting.tags;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.DynamicContext;
 import org.mimosaframework.orm.scripting.SqlNode;
+
+import java.util.*;
 
 public class TrimSqlNode implements SqlNode {
 

@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;

@@ -1,7 +1,6 @@
 package org.mimosaframework.orm;
 
 import org.mimosaframework.core.utils.AssistUtils;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.sql.SQLActionFactory;
 import org.mimosaframework.orm.sql.StructureBuilder;

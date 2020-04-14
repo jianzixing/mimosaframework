@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.strategy;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.Session;

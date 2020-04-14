@@ -5,7 +5,7 @@ import org.mimosaframework.orm.sql.*;
 public interface RedefineDeleteBuilder
         extends
         DeleteBuilder,
-        AbsTableBuilder,
+        DeleteTableNameBuilder,
         FromBuilder,
         WhereBuilder,
         AbsWhereColumnBuilder,

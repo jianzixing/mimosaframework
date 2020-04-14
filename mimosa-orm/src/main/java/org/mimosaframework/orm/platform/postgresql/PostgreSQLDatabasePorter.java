@@ -3,9 +3,9 @@ package org.mimosaframework.orm.platform.postgresql;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.criteria.*;
+import org.mimosaframework.orm.criteria.DefaultQuery;
+import org.mimosaframework.orm.criteria.Limit;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -13,7 +13,9 @@ import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class PostgreSQLDatabasePorter extends AbstractDatabasePorter {
     private static final Log logger = LogFactory.getLog(PostgreSQLDatabasePorter.class);

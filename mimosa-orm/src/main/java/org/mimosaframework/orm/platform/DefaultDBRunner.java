@@ -31,7 +31,7 @@ public class DefaultDBRunner extends DBRunner {
                     logger.debug("do mysql carry handler action " + changerClassify.name());
                 }
                 if (backObjects != null && backObjects.size() > 0) {
-                    return backObjects.get(0);
+                    return backObjects;
                 }
             } else if (changerClassify == TypeForRunner.UPDATE) {
                 if (logger.isDebugEnabled()) {

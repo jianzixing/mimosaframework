@@ -1,9 +1,11 @@
 package org.mimosaframework.orm.spring;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
-import org.mimosaframework.orm.builder.*;
+import org.mimosaframework.orm.builder.AbstractConfigBuilder;
+import org.mimosaframework.orm.builder.ApplicationSetting;
+import org.mimosaframework.orm.builder.BasicSetting;
+import org.mimosaframework.orm.builder.CenterConfigSetting;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.exception.MimosaException;

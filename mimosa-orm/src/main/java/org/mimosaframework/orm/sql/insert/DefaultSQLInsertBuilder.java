@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.sql.insert;
 
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
-import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.sql.stamp.StampColumn;
 import org.mimosaframework.orm.sql.stamp.StampInsert;
 

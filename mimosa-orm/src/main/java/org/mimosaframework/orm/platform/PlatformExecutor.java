@@ -4,16 +4,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.ModelObjectConvertKey;
-import org.mimosaframework.orm.criteria.DefaultDelete;
-import org.mimosaframework.orm.criteria.DefaultQuery;
-import org.mimosaframework.orm.criteria.DefaultUpdate;
+import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.delete.DefaultSQLDeleteBuilder;
 import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.update.DefaultSQLUpdateBuilder;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -281,19 +283,43 @@ public class PlatformExecutor {
                 insertBuilder.row(values);
             }
 
-            dialect.insert(insertBuilder.compile());
-
+            SQLBuilderCombine combine = dialect.insert(insertBuilder.compile());
+            Object object = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+            return (List<Long>) object;
         }
         return null;
     }
 
     public Integer update(MappingTable table, DefaultUpdate update) throws SQLException {
-        return null;
+        PlatformDialect dialect = this.getDialect();
+        Wraps<Filter> wraps = update.getLogicWraps();
+        Map<Object, Object> sets = update.getValues();
+        DefaultSQLUpdateBuilder updateBuilder = new DefaultSQLUpdateBuilder();
+        updateBuilder.update().table(table.getMappingTableName());
+        Iterator<Map.Entry<Object, Object>> iterator = sets.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Object, Object> entry = iterator.next();
+            Object key = entry.getKey();
+            MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
+            if (field != null) {
+                updateBuilder.set(field.getMappingColumnName(), entry.getValue());
+            }
+        }
+
+        this.buildWraps(updateBuilder, table, wraps);
+        SQLBuilderCombine combine = dialect.update(updateBuilder.compile());
+        return (Integer) this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
     }
 
     public Integer delete(MappingTable table, DefaultDelete delete) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
+        Wraps<Filter> wraps = delete.getLogicWraps();
+        DefaultSQLDeleteBuilder deleteBuilder = new DefaultSQLDeleteBuilder();
+        deleteBuilder.delete().from().table(table.getMappingTableName());
 
-        return null;
+        this.buildWraps(deleteBuilder, table, wraps);
+        SQLBuilderCombine combine = dialect.delete(deleteBuilder.compile());
+        return (Integer) this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
     }
 
     public List<ModelObject> select(DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
@@ -302,6 +328,67 @@ public class PlatformExecutor {
 
     public long count(DefaultQuery query) throws SQLException {
         return 0;
+    }
+
+    private void buildWraps(Object builder,
+                            MappingTable table,
+                            Wraps<Filter> wraps) {
+
+        Iterator<WrapsObject<Filter>> wrapsIterator = wraps.iterator();
+        while (wrapsIterator.hasNext()) {
+            WrapsObject<Filter> filter = wrapsIterator.next();
+            DefaultFilter where = (DefaultFilter) filter.getWhere();
+            Wraps link = filter.getLink();
+            CriteriaLogic logic = filter.getLogic();
+
+            if (where != null) {
+                Object key = where.getKey();
+                Object value = where.getValue();
+                Object startValue = where.getStartValue();
+                Object endValue = where.getEndValue();
+                String symbol = where.getSymbol();
+
+                MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
+                String columnName = field.getMappingColumnName();
+
+                // 最好校验每一个参数值
+                if (symbol.equalsIgnoreCase("like")) {
+                    ((AbsColumnBuilder) builder).column(columnName);
+                    ((OperatorBuilder) builder).like();
+                    ((AbsValueBuilder) builder).value(value);
+                } else if (symbol.equalsIgnoreCase("in")) {
+                    ((AbsColumnBuilder) builder).column(columnName);
+                    ((OperatorBuilder) builder).in();
+                    ((AbsValueBuilder) builder).value(value);
+                } else if (symbol.equalsIgnoreCase("notIn")) {
+                    ((AbsColumnBuilder) builder).column(columnName);
+                    ((OperatorBuilder) builder).nin();
+                    ((AbsValueBuilder) builder).value(value);
+                } else if (symbol.equalsIgnoreCase("isNull")) {
+                    ((OperatorFunctionBuilder) builder).isNull(columnName);
+                } else if (symbol.equalsIgnoreCase("notNull")) {
+                    ((OperatorFunctionBuilder) builder).isNotNull(columnName);
+                } else if (symbol.equalsIgnoreCase("between")) {
+                    ((OperatorBuilder) builder).between();
+                    ((BetweenValueBuilder) builder).section((Serializable) startValue, (Serializable) endValue);
+                } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
+                    ((AbsColumnBuilder) builder).column(columnName);
+                    ((OperatorBuilder) builder).eq();
+                    ((AbsValueBuilder) builder).value(value);
+                }
+            } else if (link != null) {
+                this.buildWraps(builder, table, link);
+            }
+
+            if (wrapsIterator.hasNext()) {
+                if (logic.equals(CriteriaLogic.AND)) {
+                    ((AndBuilder) builder).and();
+                }
+                if (logic.equals(CriteriaLogic.OR)) {
+                    ((OrBuilder) builder).or();
+                }
+            }
+        }
     }
 
     public Object dialect(StampAction stampAction) throws SQLException {

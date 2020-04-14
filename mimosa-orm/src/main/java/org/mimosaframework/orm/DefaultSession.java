@@ -3,7 +3,6 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.StrategyException;
 import org.mimosaframework.orm.i18n.I18n;

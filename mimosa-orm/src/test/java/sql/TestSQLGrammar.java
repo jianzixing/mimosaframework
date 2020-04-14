@@ -52,7 +52,8 @@ public class TestSQLGrammar {
                 .inner().join().table(TestSQLGrammar.class).on().column("").eq().value("")
                 .where().column("").eq().value("")
                 .groupBy().column("").column("")
-                .having().count(new FieldItem(1)).eq().value("")
+                .having()
+                .count(new FieldItem(1)).eq().value("")
                 .orderBy()
                 .column("").asc()
                 .column("").desc()
@@ -70,10 +71,21 @@ public class TestSQLGrammar {
 
         unifyBuilder = UpdateFactory.update()
                 .table(TestSQLGrammar.class)
-                .set()
+                .set("", "")
+                .set("", "")
+                .set("", "")
+                .set("", "")
+                .set("", "")
+                .where()
                 .column("").eq().value("")
+                .and()
                 .column("").eq().value("")
-                .where().column("").eq().value("");
+                .and()
+                .column("").between().section("", "")
+                .and()
+                .column("", "").gt().value("")
+                .or()
+                .column("").eq().column("");
 
         ///
 

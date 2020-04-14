@@ -1,8 +1,8 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.platform.TypeForRunner;
 import org.mimosaframework.orm.platform.JDBCTraversing;
+import org.mimosaframework.orm.platform.TypeForRunner;
 import org.mimosaframework.orm.scripting.BoundSql;
 import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;

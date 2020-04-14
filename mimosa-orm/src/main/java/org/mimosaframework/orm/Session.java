@@ -8,7 +8,6 @@ import org.mimosaframework.orm.criteria.Update;
 
 import java.io.Closeable;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.List;
 
 public interface Session extends Closeable {

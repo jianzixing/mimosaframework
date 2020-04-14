@@ -7,10 +7,8 @@ import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.PlatformStampCommonality;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
-import org.mimosaframework.orm.platform.oracle.OracleStampCommonality;
 import org.mimosaframework.orm.sql.stamp.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DB2StampCommonality extends PlatformStampCommonality {
@@ -142,12 +140,7 @@ public abstract class DB2StampCommonality extends PlatformStampCommonality {
                     this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
                     key = leftFun.funName;
                 } else if (leftValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName("Unknown");
-                    placeholder.setValue(leftValue);
-                    placeholders.add(placeholder);
+                    sb.append(leftValue);
                 }
 
                 if (where.not) sb.append(" NOT");
@@ -159,12 +152,7 @@ public abstract class DB2StampCommonality extends PlatformStampCommonality {
                 } else if (rightFun != null) {
                     this.buildSelectFieldFun(wrapper, stampTables, rightFun, sb);
                 } else if (rightValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName(key);
-                    placeholder.setValue(rightValue);
-                    placeholders.add(placeholder);
+                    this.parseValue(sb, key, rightValue, placeholders);
                 }
             }
             if (whereType == KeyWhereType.KEY_AND) {
@@ -175,12 +163,7 @@ public abstract class DB2StampCommonality extends PlatformStampCommonality {
                     this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
                     key = leftFun.funName;
                 } else if (leftValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName("Unknown");
-                    placeholder.setValue(leftValue);
-                    placeholders.add(placeholder);
+                    sb.append(leftValue);
                 }
                 if (where.not) sb.append(" NOT");
                 sb.append(" " + where.operator + " ");

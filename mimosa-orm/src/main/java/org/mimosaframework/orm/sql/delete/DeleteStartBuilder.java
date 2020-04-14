@@ -1,8 +1,10 @@
 package org.mimosaframework.orm.sql.delete;
 
-import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.CommonWhereBuilder;
+import org.mimosaframework.orm.sql.FromBuilder;
+import org.mimosaframework.orm.sql.WhereBuilder;
 
 public interface DeleteStartBuilder
         extends
-        FromBuilder<AbsTableBuilder<WhereBuilder<CommonWhereBuilder<DeleteWhereNextBuilder>>>> {
+        FromBuilder<DeleteTableNameBuilder<WhereBuilder<CommonWhereBuilder<DeleteWhereNextBuilder>>>> {
 }

@@ -21,7 +21,7 @@ public @interface Column {
      * {@link String}
      * {@link Character} or char.class
      * {@link java.sql.Blob}
-     * {@link org.mimosaframework.orm.platform.SupportType}
+     * {@link org.mimosaframework.orm.platform.Support*}
      * {@link Byte} or byte.class
      * {@link Short} or short.class
      * {@link Long} or long.class

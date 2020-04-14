@@ -1,10 +1,7 @@
 package org.mimosaframework.orm.mapping;
 
 import org.mimosaframework.orm.MappingLevel;
-import org.mimosaframework.orm.platform.*;
-
-import java.sql.SQLException;
-import java.util.List;
+import org.mimosaframework.orm.platform.DataSourceWrapper;
 
 public class UpdateCompareMapping extends AddCompareMapping {
 

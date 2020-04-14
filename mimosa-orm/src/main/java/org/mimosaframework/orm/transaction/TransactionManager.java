@@ -2,14 +2,16 @@ package org.mimosaframework.orm.transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
 
 import java.sql.Connection;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TransactionManager implements Transaction {
     private static final Log logger = LogFactory.getLog(TransactionManager.class);

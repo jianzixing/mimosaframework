@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.sql;
 
-public interface OperatorBuilder<T> extends OperatorEqualBuilder<T> {
+public interface OperatorBuilder<T, S> extends OperatorEqualBuilder<T> {
     T in();
 
     T nin();
@@ -17,7 +17,7 @@ public interface OperatorBuilder<T> extends OperatorEqualBuilder<T> {
 
     T lte();
 
-    BetweenValueBuilder<T> notBetween();
+    BetweenValueBuilder<S> notBetween();
 
-    BetweenValueBuilder<T> between();
+    BetweenValueBuilder<S> between();
 }

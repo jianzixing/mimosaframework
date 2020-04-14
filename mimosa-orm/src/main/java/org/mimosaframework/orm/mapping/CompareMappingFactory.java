@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.mapping;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MappingLevel;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.platform.DataSourceWrapper;

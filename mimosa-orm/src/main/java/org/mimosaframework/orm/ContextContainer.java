@@ -8,7 +8,6 @@ import org.mimosaframework.orm.platform.DataSourceWrapper;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.utils.DatabaseTypes;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 

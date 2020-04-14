@@ -4,8 +4,10 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
-import org.mimosaframework.orm.platform.mysql.MysqlStampCommonality;
-import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
+import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
+import org.mimosaframework.orm.sql.stamp.StampDelete;
+import org.mimosaframework.orm.sql.stamp.StampFrom;
 
 import java.util.ArrayList;
 import java.util.List;

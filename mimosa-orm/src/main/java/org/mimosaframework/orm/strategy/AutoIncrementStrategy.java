@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.strategy;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.Session;
 import org.mimosaframework.orm.exception.StrategyException;

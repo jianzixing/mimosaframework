@@ -5,7 +5,10 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.platform.*;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class DB2CarryHandler extends DBRunner {

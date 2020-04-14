@@ -6,7 +6,6 @@ public interface RedefineUpdateBuilder
         extends
         UpdateBuilder,
         AbsTableBuilder,
-        SetBuilder,
         AbsWhereColumnBuilder,
         AbsWhereValueBuilder,
         OperatorBuilder,
@@ -18,5 +17,6 @@ public interface RedefineUpdateBuilder
         SortBuilder,
         AbsValueBuilder,
         UpdateWhichTableBuilder,
-        UpdateSetColumnBuilder {
+        UpdateSetColumnBuilder,
+        LogicBuilder {
 }

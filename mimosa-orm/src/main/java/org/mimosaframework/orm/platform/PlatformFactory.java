@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.platform;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.platform.db2.*;

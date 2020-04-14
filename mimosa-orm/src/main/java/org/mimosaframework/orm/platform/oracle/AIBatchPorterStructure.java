@@ -3,9 +3,9 @@ package org.mimosaframework.orm.platform.oracle;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.platform.BatchPorterStructure;
-import org.mimosaframework.orm.platform.TypeForRunner;
 import org.mimosaframework.orm.platform.SQLBuilder;
 import org.mimosaframework.orm.platform.SelectFieldAliasReference;
+import org.mimosaframework.orm.platform.TypeForRunner;
 
 import java.util.List;
 import java.util.Map;

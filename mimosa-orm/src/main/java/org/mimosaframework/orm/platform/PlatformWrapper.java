@@ -10,7 +10,6 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.sql.stamp.StampAction;
-import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 
 import java.sql.SQLException;
 import java.util.List;

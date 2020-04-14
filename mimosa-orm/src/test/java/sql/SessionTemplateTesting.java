@@ -403,9 +403,8 @@ public class SessionTemplateTesting {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
                 SQLAutonomously.update()
                         .table(TableUser.class)
-                        .set()
-                        .column(TableUser.address).eq().value("b")
-                        .column(TableUser.createdTime).eq().value(new Date())
+                        .set(TableUser.address, "b")
+                        .set(TableUser.createdTime, new Date())
                         .where().column(TableUser.id).eq().value(1)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);

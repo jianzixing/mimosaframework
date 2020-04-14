@@ -6,7 +6,6 @@ import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 import org.mimosaframework.orm.sql.stamp.StampStructure;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class SqliteStampStructure implements StampCombineBuilder {

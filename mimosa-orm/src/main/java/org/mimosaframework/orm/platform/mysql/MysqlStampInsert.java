@@ -5,7 +5,10 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
-import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
+import org.mimosaframework.orm.sql.stamp.StampColumn;
+import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
+import org.mimosaframework.orm.sql.stamp.StampInsert;
 
 import java.util.ArrayList;
 import java.util.Iterator;

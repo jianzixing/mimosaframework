@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.mapping;
 
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.annotation.Column;
@@ -15,6 +14,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 
 public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
@@ -136,6 +136,12 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                 }
                 lastField = newField;
             }
+        }
+
+        List<MappingField> pkfields = mappingTable.getMappingPrimaryKeyFields();
+        if (pkfields == null || pkfields.size() == 0) {
+            throw new IllegalArgumentException(I18n.print("must_have_pk",
+                    mappingTable.getMappingTableName()));
         }
     }
 

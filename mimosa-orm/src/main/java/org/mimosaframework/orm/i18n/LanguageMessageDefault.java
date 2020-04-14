@@ -74,6 +74,7 @@ public class LanguageMessageDefault implements MessagesRegister {
 
         // DefaultDisassembleMappingClass
         words.put("incr_field_one", "表 %s 自增长字段只允许有一个");
+        words.put("must_have_pk", "表 %s 必须设置一个主键");
         words.put("timestamp_one", "时间戳类型列只允许有一个");
         words.put("auto_strategy_pk", "自增策略只能使用在主键列 %s 上");
         words.put("must_set_decimal", "BigDecimal类型必须设置精度值,默认255长度过大");

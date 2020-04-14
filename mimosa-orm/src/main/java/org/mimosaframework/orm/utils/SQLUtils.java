@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.utils;
 
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.orm.i18n.I18n;
 
 import javax.sql.DataSource;

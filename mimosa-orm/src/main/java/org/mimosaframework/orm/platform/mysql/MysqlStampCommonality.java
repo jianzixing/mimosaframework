@@ -119,12 +119,7 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
                     this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
                     key = leftFun.funName;
                 } else if (leftValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName("Unknown");
-                    placeholder.setValue(leftValue);
-                    placeholders.add(placeholder);
+                    sb.append(leftValue);
                 }
 
                 if (where.not) sb.append(" NOT");
@@ -136,12 +131,7 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
                 } else if (rightFun != null) {
                     this.buildSelectFieldFun(wrapper, stampTables, rightFun, sb);
                 } else if (rightValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName(key);
-                    placeholder.setValue(rightValue);
-                    placeholders.add(placeholder);
+                    this.parseValue(sb, key, rightValue, placeholders);
                 }
             }
             if (whereType == KeyWhereType.KEY_AND) {
@@ -152,18 +142,11 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
                     this.buildSelectFieldFun(wrapper, stampTables, leftFun, sb);
                     key = leftFun.funName;
                 } else if (leftValue != null) {
-                    sb.append("?");
-
-                    SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-                    placeholder.setName("Unknown");
-                    placeholder.setValue(leftValue);
-                    placeholders.add(placeholder);
+                    sb.append(leftValue);
                 }
                 if (where.not) sb.append(" NOT");
                 sb.append(" " + where.operator + " ");
-
                 sb.append("?");
-
                 SQLDataPlaceholder placeholder1 = new SQLDataPlaceholder();
                 if (StringTools.isEmpty(key)) {
                     placeholder1.setName("Unknown&Start");
@@ -188,8 +171,27 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
             }
 
             if (whereType == KeyWhereType.FUN) {
-                if (where.not) sb.append("NOT ");
-                this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+                if (where.fun != null
+                        && where.fun.funName.equalsIgnoreCase("ISNULL")
+                        && where.fun.params != null
+                        && where.fun.params.length > 0
+                        && where.fun.params[0] instanceof StampColumn) {
+                    for (Object param : where.fun.params) {
+                        if (param instanceof StampColumn) {
+                            sb.append(this.getColumnName(wrapper, stampTables, ((StampColumn) param)));
+                            break;
+                        }
+                    }
+
+                    if (where.not) {
+                        sb.append(" IS NOT NULL");
+                    } else {
+                        sb.append(" IS NULL");
+                    }
+                } else {
+                    if (where.not) sb.append("NOT ");
+                    this.buildSelectFieldFun(wrapper, stampTables, fun, sb);
+                }
             }
         }
 

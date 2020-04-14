@@ -4,7 +4,6 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.criteria.DefaultFunction;
 import org.mimosaframework.orm.criteria.DefaultQuery;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.sql.SelectBuilder;
 
 import java.sql.SQLException;
 import java.util.List;

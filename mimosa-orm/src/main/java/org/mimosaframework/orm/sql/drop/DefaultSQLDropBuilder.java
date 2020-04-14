@@ -2,7 +2,6 @@ package org.mimosaframework.orm.sql.drop;
 
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
 import org.mimosaframework.orm.sql.stamp.KeyTarget;
-import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.sql.stamp.StampDrop;
 
 import java.io.Serializable;

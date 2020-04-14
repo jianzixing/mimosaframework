@@ -3,6 +3,7 @@ package org.mimosaframework.orm.platform;
 import org.mimosaframework.core.utils.StringTools;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class PlatformStampCommonality {
@@ -101,5 +102,52 @@ public abstract class PlatformStampCommonality {
 
     protected void appendBuilderEnd(StringBuilder nsb) {
         nsb.append(NL + "END;");
+    }
+
+
+    protected void parseValue(StringBuilder sb,
+                              String keyName,
+                              Object value,
+                              List<SQLDataPlaceholder> placeholders) {
+        if (value.getClass().isArray()) {
+            Object[] values = (Object[]) value;
+            sb.append("(");
+            for (int i = 0; i < values.length; i++) {
+                sb.append("?");
+
+                SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
+                placeholder.setName(keyName + "&" + i);
+                placeholder.setValue(values[i]);
+                placeholders.add(placeholder);
+
+                i++;
+                if (i != values.length) sb.append(",");
+            }
+            sb.append(")");
+        } else if (value instanceof Iterable) {
+            Iterable iterable = (Iterable) value;
+            Iterator iteratorValue = iterable.iterator();
+            int i = 0;
+            sb.append("(");
+            while (iteratorValue.hasNext()) {
+                sb.append("?");
+
+                SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
+                placeholder.setName(keyName + "&" + i);
+                placeholder.setValue(iteratorValue.next());
+                placeholders.add(placeholder);
+
+                i++;
+                if (iteratorValue.hasNext()) sb.append(",");
+            }
+            sb.append(")");
+        } else {
+            sb.append("?");
+
+            SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
+            placeholder.setName("Unknown");
+            placeholder.setValue(value);
+            placeholders.add(placeholder);
+        }
     }
 }

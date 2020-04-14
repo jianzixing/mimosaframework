@@ -15,9 +15,9 @@
  */
 package org.mimosaframework.orm.scripting.tags;
 
-import java.util.Map;
-
 import org.mimosaframework.orm.scripting.*;
+
+import java.util.Map;
 
 public class ForEachSqlNode implements SqlNode {
     public static final String ITEM_PREFIX = "__frch_";

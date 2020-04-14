@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.platform.postgresql;
 
-import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;

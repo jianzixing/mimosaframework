@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.sql.update;
 
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.sql.*;
+import org.mimosaframework.orm.sql.CommonOperatorSQLBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.io.Serializable;
@@ -15,7 +15,6 @@ public class DefaultSQLUpdateBuilder
         RedefineUpdateBuilder {
 
     protected StampUpdate stampUpdate = new StampUpdate();
-    protected List<StampFrom> stampFroms = new ArrayList<>();
 
     protected StampWhere where = null;
     protected List<StampOrderBy> orderBys = new ArrayList<>();
@@ -38,11 +37,14 @@ public class DefaultSQLUpdateBuilder
     @Override
     public DefaultSQLUpdateBuilder table(Class table) {
         this.gammars.add("table");
-        if (this.point.equals("update")) {
-            stampUpdate.table = new StampFrom(table);
-        } else {
-            stampFroms.add(new StampFrom(table));
-        }
+        stampUpdate.table = new StampFrom(table);
+        return this;
+    }
+
+    @Override
+    public DefaultSQLUpdateBuilder table(String name) {
+        this.gammars.add("table");
+        stampUpdate.table = new StampFrom(name);
         return this;
     }
 
@@ -93,11 +95,21 @@ public class DefaultSQLUpdateBuilder
                 this.lastWhere = where;
                 if (this.where == null) this.where = where;
             }
-        } else if (this.point.equals("set")) {
-            StampUpdateItem item = new StampUpdateItem();
-            item.column = column;
-            items.add(item);
         }
+    }
+
+    @Override
+    public DefaultSQLUpdateBuilder and() {
+        this.gammars.add("and");
+        this.lastWhere.nextLogic = KeyLogic.AND;
+        return this;
+    }
+
+    @Override
+    public DefaultSQLUpdateBuilder or() {
+        this.gammars.add("or");
+        this.lastWhere.nextLogic = KeyLogic.OR;
+        return this;
     }
 
     @Override
@@ -134,12 +146,6 @@ public class DefaultSQLUpdateBuilder
     }
 
     @Override
-    public DefaultSQLUpdateBuilder set() {
-        this.addPoint("set");
-        return this;
-    }
-
-    @Override
     public DefaultSQLUpdateBuilder asc() {
         this.gammars.add("asc");
         this.lastOrderBy.sortType = KeySortType.ASC;
@@ -164,5 +170,16 @@ public class DefaultSQLUpdateBuilder
         if (where != null) stampUpdate.where = where;
         if (items != null && items.size() > 0) stampUpdate.items = items.toArray(new StampUpdateItem[]{});
         return this.stampUpdate;
+    }
+
+    @Override
+    public DefaultSQLUpdateBuilder set(Serializable field, Object value) {
+        this.addPoint("set");
+        StampColumn column = new StampColumn(field);
+        StampUpdateItem item = new StampUpdateItem();
+        item.column = column;
+        item.value = value;
+        items.add(item);
+        return this;
     }
 }

@@ -4,6 +4,6 @@ public interface CommonWhereBuilder<T extends CommonWhereNextBuilder>
         extends
         AboutChildBuilder,
         WrapperBuilder<T>,
-        OperatorLinkBuilder<CommonWhereCompareBuilder<T>>,
+        OperatorLinkBuilder<CommonWhereCompareBuilder<T>, LogicBuilder<CommonWhereBuilder<T>>>,
         OperatorFunctionBuilder<T> {
 }

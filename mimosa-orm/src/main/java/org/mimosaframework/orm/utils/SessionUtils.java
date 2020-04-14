@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.criteria.DefaultJoin;
 import org.mimosaframework.orm.criteria.DefaultQuery;
 import org.mimosaframework.orm.mapping.MappingField;
