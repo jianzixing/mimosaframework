@@ -12,6 +12,7 @@ import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.delete.DefaultSQLDeleteBuilder;
 import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
+import org.mimosaframework.orm.sql.select.DefaultSQLSelectBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.sql.update.DefaultSQLUpdateBuilder;
 
@@ -306,6 +307,7 @@ public class PlatformExecutor {
             }
         }
 
+        updateBuilder.where();
         this.buildWraps(updateBuilder, table, wraps);
         SQLBuilderCombine combine = dialect.update(updateBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
@@ -317,13 +319,205 @@ public class PlatformExecutor {
         DefaultSQLDeleteBuilder deleteBuilder = new DefaultSQLDeleteBuilder();
         deleteBuilder.delete().from().table(table.getMappingTableName());
 
+        deleteBuilder.where();
         this.buildWraps(deleteBuilder, table, wraps);
         SQLBuilderCombine combine = dialect.delete(deleteBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
     }
 
     public List<ModelObject> select(DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
+        Wraps<Filter> logicWraps = query.getLogicWraps();
+        List<Join> joins = query.getJoins();
+        List<Join> topJoins = query.getTopJoin();
+        List<Order> orders = query.getOrders();
+        Map<Class, List<String>> fields = query.getFields();
+        Map<Class, List<String>> excludes = query.getExcludes();
+
+        Limit limit = query.getLimit();
+        Class<?> tableClass = query.getTableClass();
+        boolean isMaster = query.isMaster();
+        String slaveName = query.getSlaveName();
+
+        Map<Join, String> alias = null;
+        Map<Object, Map<String, String>> fieldAlias = null;
+        int i = 1, j = 1;
+        if (joins != null) {
+            MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
+            Set<MappingField> mappingFields = mappingTable.getMappingFields();
+            if (fieldAlias == null) fieldAlias = new HashMap<>();
+            Map<String, String> fieldAliasMap = new LinkedHashMap<>();
+            for (MappingField field : mappingFields) {
+                fieldAliasMap.put(field.getMappingColumnName(), "F" + j);
+            }
+            fieldAlias.put(query, fieldAliasMap);
+
+            for (Join join : joins) {
+                DefaultJoin defaultJoin = (DefaultJoin) join;
+                Class table = defaultJoin.getTable();
+                mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
+                if (alias == null) alias = new HashMap<>();
+                if (fieldAlias == null) fieldAlias = new HashMap<>();
+                alias.put(join, "T" + i);
+
+                mappingFields = mappingTable.getMappingFields();
+                fieldAliasMap = new LinkedHashMap<>();
+                for (MappingField field : mappingFields) {
+                    fieldAliasMap.put(field.getMappingColumnName(), "F" + j);
+                }
+                fieldAlias.put(join, fieldAliasMap);
+                j++;
+                i++;
+            }
+        }
+
+        DefaultSQLSelectBuilder select = new DefaultSQLSelectBuilder();
+        select.select();
+
+        if (limit != null && joins != null && joins.size() > 0) {
+            select.field("T", new Serializable[]{"*"});
+        } else {
+            this.buildSelectField(select, alias, fieldAlias);
+        }
+        MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
+        select.from().table(mappingTable.getMappingTableName(), "T");
+        this.buildJoinField(select, alias, joins);
+        select.where();
+        this.buildWraps(select, mappingTable, logicWraps);
+
+        this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
+
+        if (limit != null && joins != null && joins.size() > 0) {
+            DefaultSQLSelectBuilder selectWrap = new DefaultSQLSelectBuilder();
+            selectWrap.select();
+            this.buildSelectField(selectWrap, alias, fieldAlias);
+            selectWrap.from().table(select, "T");
+            this.buildJoinField(select, alias, joins);
+            this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
+        }
+
         return null;
+    }
+
+    private void buildSelectField(DefaultSQLSelectBuilder select,
+                                  Map<Join, String> alias,
+                                  Map<Object, Map<String, String>> fieldAlias) {
+        if (fieldAlias != null && fieldAlias.size() > 0) {
+            Iterator<Map.Entry<Object, Map<String, String>>> iterator = fieldAlias.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Object, Map<String, String>> entry = iterator.next();
+                Object key = entry.getKey();
+                String tableAliasName = alias.get(key);
+                Map<String, String> value = entry.getValue();
+                Collection<String> str = value.values();
+                for (String s : str) {
+                    select.field(tableAliasName, new Serializable[]{s});
+                }
+            }
+        }
+    }
+
+    private void buildJoinField(DefaultSQLSelectBuilder select,
+                                Map<Join, String> alias,
+                                List<Join> joins) {
+        if (joins != null && joins.size() > 0) {
+            for (Join j : joins) {
+                DefaultJoin join = (DefaultJoin) j;
+                List<JoinOnFilter> ons = join.getOns();
+                if (ons != null && ons.size() > 0) {
+                    Class<?> table = join.getTable();
+                    Class<?> mainTable = join.getMainTable();
+                    String aliasName = alias.get(j);
+                    MappingTable mainMappingTable = this.mappingGlobalWrapper.getMappingTable(mainTable);
+                    MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
+
+                    if (join.getJoinType() == 0) { // left join
+                        select.left().join();
+                    }
+                    if (join.getJoinType() == 1) { // inner join
+                        select.inner().join();
+                    }
+
+                    select.table(mappingTable.getMappingTableName(), aliasName);
+                    select.on();
+                    Iterator<JoinOnFilter> iterator = ons.iterator();
+                    while (iterator.hasNext()) {
+                        JoinOnFilter filter = iterator.next();
+                        if (filter.isOn()) {
+                            OnField field = filter.getOnField();
+                            MappingField mainMappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(field.getKey()));
+                            MappingField mappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(field.getValue()));
+
+                            String columnName = mainMappingField.getMappingColumnName();
+                            String value = mappingField.getMappingColumnName();
+                            String symbol = field.getSymbol();
+
+                            // 最好校验每一个参数值
+                            if (symbol.equalsIgnoreCase("like")) {
+                                select.column(columnName).like().value(value);
+                            } else if (symbol.equalsIgnoreCase("in")) {
+                                select.column(columnName).in().value(value);
+                            } else if (symbol.equalsIgnoreCase("notIn")) {
+                                select.column(columnName).nin().value(value);
+                            } else if (symbol.equalsIgnoreCase("isNull")) {
+                                select.isNull(columnName);
+                            } else if (symbol.equalsIgnoreCase("notNull")) {
+                                select.isNotNull(columnName);
+                            } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
+                                select.column(columnName).eq().value(value);
+                            }
+                        } else {
+                            DefaultFilter f = (DefaultFilter) filter.getFilter();
+                            MappingField mappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(f.getKey()));
+                            String symbol = f.getSymbol();
+                            String columnName = mappingField.getMappingColumnName();
+                            Object value = f.getValue();
+                            Object startValue = f.getStartValue();
+                            Object endValue = f.getEndValue();
+
+                            // 最好校验每一个参数值
+                            if (symbol.equalsIgnoreCase("like")) {
+                                select.column(columnName).like().value(value);
+                            } else if (symbol.equalsIgnoreCase("in")) {
+                                select.column(columnName).in().value(value);
+                            } else if (symbol.equalsIgnoreCase("notIn")) {
+                                select.column(columnName).nin().value(value);
+                            } else if (symbol.equalsIgnoreCase("isNull")) {
+                                select.isNull(columnName);
+                            } else if (symbol.equalsIgnoreCase("notNull")) {
+                                select.isNotNull(columnName);
+                            } else if (symbol.equalsIgnoreCase("between")) {
+                                select.between().section((Serializable) startValue, (Serializable) endValue);
+                            } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
+                                select.column(columnName).eq().value(value);
+                            }
+                        }
+                        if (iterator.hasNext()) {
+                            select.and();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void buildOrderBy(DefaultSQLSelectBuilder select,
+                              List<Order> orders,
+                              MappingTable mappingTable,
+                              boolean isInnerSelect) {
+        if (orders != null) {
+            for (Order order : orders) {
+                boolean isAsc = order.isAsc();
+                Object field = order.getField();
+                MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field));
+                if (isInnerSelect) {
+                    select.orderBy().column("T", mappingField.getMappingColumnName());
+                } else {
+                    select.orderBy().column(mappingField.getMappingColumnName());
+                }
+                if (isAsc) select.asc();
+                else select.desc();
+            }
+        }
     }
 
     public long count(DefaultQuery query) throws SQLException {

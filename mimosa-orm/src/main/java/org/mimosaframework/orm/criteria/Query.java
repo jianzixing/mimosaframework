@@ -15,8 +15,6 @@ public interface Query<T extends Query> extends Filter<T> {
 
     T order(Object field, boolean isAsc);
 
-    T order(Class tableClass, Object field, boolean isAsc);
-
     T limit(Limit limit);
 
     T limit(long start, long limit);

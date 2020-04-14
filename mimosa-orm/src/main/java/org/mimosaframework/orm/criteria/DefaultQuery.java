@@ -15,8 +15,7 @@ public class DefaultQuery implements LogicQuery {
      * 包含所有的join查询，每个join查询拥有独立的父子结构，
      * 用于查询时数据包装。
      */
-    private List<Join> leftJoin = new LinkedList<Join>();
-    private List<Join> innerJoin = new LinkedList<Join>();
+    private List<Join> joins = new LinkedList<Join>();
     private List<Order> orders = new LinkedList<Order>();
     private Map<Class, List<String>> fields = new HashMap<>();
     private Map<Class, List<String>> excludes = new HashMap<>();
@@ -42,7 +41,7 @@ public class DefaultQuery implements LogicQuery {
     public Query clone() {
         DefaultQuery query = new DefaultQuery(tableClass);
         query.logicWraps = logicWraps;
-        query.leftJoin = leftJoin;
+        query.joins = joins;
         query.orders = orders;
         query.fields = fields;
         query.limit = limit;
@@ -100,15 +99,15 @@ public class DefaultQuery implements LogicQuery {
             throw new IllegalArgumentException(I18n.print("sub_table_diff",
                     dj.getMainTable().getSimpleName(), this.tableClass.getSimpleName()));
         }
-        this.leftJoin.add(join);
+        this.joins.add(join);
 
         this.setLeftChildTop(dj);
         return this;
     }
 
     private void setLeftChildTop(DefaultJoin dj) {
-        if (this.leftJoin != null && !this.leftJoin.contains(dj)) {
-            this.leftJoin.add(dj);
+        if (this.joins != null && !this.joins.contains(dj)) {
+            this.joins.add(dj);
         }
 
         Set<Join> joins = dj.getChildJoin();
@@ -121,7 +120,6 @@ public class DefaultQuery implements LogicQuery {
 
     @Override
     public Query order(Order order) {
-        order.setOrderTableClass(tableClass);
         this.orders.add(order);
         return this;
     }
@@ -142,33 +140,29 @@ public class DefaultQuery implements LogicQuery {
         return logicWraps;
     }
 
-    public List<Join> getLeftJoin() {
-        return leftJoin;
+    public List<Join> getJoins() {
+        return joins;
     }
 
-    public void setLeftJoin(List<Join> leftJoin) {
-        this.leftJoin = leftJoin;
+    public List<Join> getTopJoin() {
+        if (this.joins != null && this.joins.size() > 0) {
+            List<Join> joins = new ArrayList<>();
+            for (Join join : this.joins) {
+                DefaultJoin j = (DefaultJoin) join;
+                if (j.getParentJoin() == null) {
+                    joins.add(j);
+                }
+            }
+        }
+        return null;
     }
 
-    public List<Join> getInnerJoin() {
-        return innerJoin;
-    }
-
-    public void setInnerJoin(List<Join> innerJoin) {
-        this.innerJoin = innerJoin;
+    public void setJoins(List<Join> joins) {
+        this.joins = joins;
     }
 
     public List<Order> getOrders() {
         return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        if (orders != null) {
-            for (Order order : orders) {
-                order.setOrderTableClass(tableClass);
-            }
-        }
-        this.orders = orders;
     }
 
     @Override
@@ -426,13 +420,8 @@ public class DefaultQuery implements LogicQuery {
         return this.order(new Order(isAsc, field));
     }
 
-    @Override
-    public Query order(Class tableClass, Object field, boolean isAsc) {
-        return this.order(new Order(tableClass, field, isAsc));
-    }
-
     public void clearLeftJoin() {
-        leftJoin = new ArrayList<Join>(1);
+        joins = new ArrayList<Join>(1);
     }
 
     public void removeLimit() {
@@ -456,14 +445,6 @@ public class DefaultQuery implements LogicQuery {
     }
 
     public void checkQuery() {
-        this.checkJoinHasOnFilter(leftJoin);
-    }
-
-    public boolean hasInnerJoin() {
-        return !(innerJoin == null || innerJoin.size() == 0);
-    }
-
-    public boolean hasLeftJoin() {
-        return !(leftJoin == null || leftJoin.size() == 0);
+        this.checkJoinHasOnFilter(joins);
     }
 }

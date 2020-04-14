@@ -24,6 +24,11 @@ public class DefaultJoin implements Join {
     private Join parentJoin;
     private Set<Join> childJoin;
 
+    /**
+     * join 类型 0 left join   1 inner join
+     */
+    private int joinType;
+
     public DefaultJoin() {
     }
 
@@ -62,6 +67,14 @@ public class DefaultJoin implements Join {
 
     public void setMainTable(Class<?> mainTable) {
         this.mainTable = mainTable;
+    }
+
+    public int getJoinType() {
+        return joinType;
+    }
+
+    public void setJoinType(int joinType) {
+        this.joinType = joinType;
     }
 
     @Override
