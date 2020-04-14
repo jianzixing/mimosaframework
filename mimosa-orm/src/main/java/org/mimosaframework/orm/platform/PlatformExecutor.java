@@ -9,6 +9,9 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.merge.DefaultModelMerge;
+import org.mimosaframework.orm.merge.MergeTree;
+import org.mimosaframework.orm.merge.ModelMerge;
 import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.delete.DefaultSQLDeleteBuilder;
 import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
@@ -326,6 +329,7 @@ public class PlatformExecutor {
     }
 
     public List<ModelObject> select(DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
         Wraps<Filter> logicWraps = query.getLogicWraps();
         List<Join> joins = query.getJoins();
         List<Join> topJoins = query.getTopJoin();
@@ -339,17 +343,25 @@ public class PlatformExecutor {
         String slaveName = query.getSlaveName();
 
         Map<Join, String> alias = null;
-        Map<Object, Map<String, String>> fieldAlias = null;
+        Map<Object, List<SelectFieldAliasReference>> fieldAlias = null;
         int i = 1, j = 1;
         if (joins != null) {
             MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
             Set<MappingField> mappingFields = mappingTable.getMappingFields();
             if (fieldAlias == null) fieldAlias = new HashMap<>();
-            Map<String, String> fieldAliasMap = new LinkedHashMap<>();
+            List<SelectFieldAliasReference> fieldAliasList = new ArrayList<>();
             for (MappingField field : mappingFields) {
-                fieldAliasMap.put(field.getMappingColumnName(), "F" + j);
+                SelectFieldAliasReference reference = new SelectFieldAliasReference();
+                reference.setFieldName(field.getMappingColumnName());
+                reference.setFieldAliasName("F" + j);
+                reference.setJavaFieldName(field.getMappingFieldName());
+                reference.setTableAliasName("T");
+                reference.setTableClass(tableClass);
+                reference.setMainClass(tableClass);
+                reference.setPrimaryKey(field.isMappingFieldPrimaryKey());
+                fieldAliasList.add(reference);
             }
-            fieldAlias.put(query, fieldAliasMap);
+            fieldAlias.put(query, fieldAliasList);
 
             for (Join join : joins) {
                 DefaultJoin defaultJoin = (DefaultJoin) join;
@@ -357,14 +369,23 @@ public class PlatformExecutor {
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
                 if (alias == null) alias = new HashMap<>();
                 if (fieldAlias == null) fieldAlias = new HashMap<>();
-                alias.put(join, "T" + i);
+                String joinAliasName = "T" + i;
+                alias.put(join, joinAliasName);
 
                 mappingFields = mappingTable.getMappingFields();
-                fieldAliasMap = new LinkedHashMap<>();
+                fieldAliasList = new ArrayList<>();
                 for (MappingField field : mappingFields) {
-                    fieldAliasMap.put(field.getMappingColumnName(), "F" + j);
+                    SelectFieldAliasReference reference = new SelectFieldAliasReference();
+                    reference.setFieldName(field.getMappingColumnName());
+                    reference.setFieldAliasName("F" + j);
+                    reference.setJavaFieldName(field.getMappingFieldName());
+                    reference.setTableAliasName(joinAliasName);
+                    reference.setTableClass(table);
+                    reference.setMainClass(defaultJoin.getMainClass());
+                    reference.setPrimaryKey(field.isMappingFieldPrimaryKey());
+                    fieldAliasList.add(reference);
                 }
-                fieldAlias.put(join, fieldAliasMap);
+                fieldAlias.put(join, fieldAliasList);
                 j++;
                 i++;
             }
@@ -393,24 +414,28 @@ public class PlatformExecutor {
             selectWrap.from().table(select, "T");
             this.buildJoinField(select, alias, joins);
             this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
+
+            select = selectWrap;
         }
 
-        return null;
+        SQLBuilderCombine combine = dialect.select(select.compile());
+        Object result = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+
+        return this.buildMergeObjects(fieldAlias, query, convert, (List<ModelObject>) result);
     }
 
     private void buildSelectField(DefaultSQLSelectBuilder select,
                                   Map<Join, String> alias,
-                                  Map<Object, Map<String, String>> fieldAlias) {
+                                  Map<Object, List<SelectFieldAliasReference>> fieldAlias) {
         if (fieldAlias != null && fieldAlias.size() > 0) {
-            Iterator<Map.Entry<Object, Map<String, String>>> iterator = fieldAlias.entrySet().iterator();
+            Iterator<Map.Entry<Object, List<SelectFieldAliasReference>>> iterator = fieldAlias.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<Object, Map<String, String>> entry = iterator.next();
+                Map.Entry<Object, List<SelectFieldAliasReference>> entry = iterator.next();
                 Object key = entry.getKey();
                 String tableAliasName = alias.get(key);
-                Map<String, String> value = entry.getValue();
-                Collection<String> str = value.values();
-                for (String s : str) {
-                    select.field(tableAliasName, new Serializable[]{s});
+                List<SelectFieldAliasReference> value = entry.getValue();
+                for (SelectFieldAliasReference reference : value) {
+                    select.field(tableAliasName, reference.getFieldName(), new Serializable[]{reference.getFieldAliasName()});
                 }
             }
         }
@@ -518,6 +543,79 @@ public class PlatformExecutor {
                 else select.desc();
             }
         }
+    }
+
+    private List<ModelObject> buildMergeObjects(Map<Object, List<SelectFieldAliasReference>> references,
+                                                DefaultQuery query,
+                                                ModelObjectConvertKey convert,
+                                                List<ModelObject> os) {
+        List<SelectFieldAliasReference> selectFields = null;
+        if (references != null) {
+            selectFields = new ArrayList<>();
+            Iterator<Map.Entry<Object, List<SelectFieldAliasReference>>> iterator = references.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Object, List<SelectFieldAliasReference>> entry = iterator.next();
+                List<SelectFieldAliasReference> ref = entry.getValue();
+                selectFields.addAll(ref);
+            }
+        }
+
+        List<MergeTree> mergeTrees = new ArrayList();
+        MergeTree top = new MergeTree();
+        top.setMainTable(query.getTableClass());
+        top.setSelfTable(query.getTableClass());
+        if (references != null) {
+            List<SelectFieldAliasReference> mainFields = references.get(query);
+            if (mainFields != null) {
+                top.setMapperSelectFields(mainFields);
+            }
+        }
+        mergeTrees.add(top);
+
+        List<Join> joins = query.getJoins();
+
+        if (joins != null) {
+            for (Join join : joins) {
+                MergeTree jm = new MergeTree();
+                jm.setJoin(join);
+                DefaultJoin j = (DefaultJoin) join;
+                if (!j.isMulti()) {
+                    jm.setMulti(false);
+                }
+                Class<?> c1 = j.getMainTable();
+                Class<?> c2 = j.getTable();
+                jm.setExternalConnectionName(j.getAliasName());
+
+                jm.setMainTable(c1);
+                jm.setSelfTable(c2);
+                //  jm.setTableAliasName(j.getTableClassAliasName());
+
+                if (references != null) {
+                    List<SelectFieldAliasReference> fields = references.get(join);
+                    jm.setMapperSelectFields(fields);
+                }
+
+                if (((DefaultJoin) join).getParentJoin() == null) {
+                    top.addChildren(jm);
+                    jm.setParent(top);
+                } else {
+                    for (MergeTree m : mergeTrees) {
+                        if (m.getJoin() == ((DefaultJoin) join).getParentJoin()) {
+                            m.addChildren(jm);
+                            jm.setParent(m);
+                        }
+                    }
+                }
+
+                mergeTrees.add(jm);
+            }
+        }
+
+        ModelMerge modelMerge = new DefaultModelMerge();
+        modelMerge.setMergeTree(top);
+        modelMerge.setMapperSelectFields(selectFields);
+        modelMerge.setMappingNamedConvert(convert);
+        return modelMerge.getMergeAfterObjects(os, query.getTableClass());
     }
 
     public long count(DefaultQuery query) throws SQLException {

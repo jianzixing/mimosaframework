@@ -11,6 +11,9 @@ public class SelectFieldAliasReference {
     private String javaFieldName;
     private boolean isPrimaryKey = false;
 
+    public SelectFieldAliasReference() {
+    }
+
     /**
      * 构造一个select语句的字段结构
      * 构造后{@link #mainClass}和{@link #tableClass}组合得出一个完整的join区分

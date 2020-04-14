@@ -112,7 +112,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
 
     private boolean isNeedSelectPrimaryKey(DefaultQuery query) {
         Limit limit = query.getLimit();
-        if (limit != null && (query.hasInnerJoin() || query.hasLeftJoin())) {
+        if (limit != null && (query.getJoins() != null && query.getJoins().size() > 0)) {
             return true;
         }
         return false;
@@ -135,7 +135,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
                 newQuery.removeLimit();
                 newQuery.clearFilters();
                 // 然后将inner join转换成left join
-                List<Join> innerJoins = query.getInnerJoin();
+                List<Join> innerJoins = query.getJoins();
                 if (innerJoins != null && innerJoins.size() > 0) {
                     for (Join join : innerJoins) {
                         newQuery.subjoin(join);
@@ -255,14 +255,7 @@ public class PlatformWrapperImpl implements PlatformWrapper {
         }
         mergeTrees.add(top);
 
-        List<Join> leftJoin = query.getLeftJoin();
-        List<Join> innerJoin = query.getInnerJoin();
-        int cap = 0;
-        if (leftJoin != null) cap += leftJoin.size();
-        if (innerJoin != null) cap += innerJoin.size();
-        List<Join> joins = new ArrayList<>(cap);
-        if (leftJoin != null) joins.addAll(leftJoin);
-        if (innerJoin != null) joins.addAll(innerJoin);
+        List<Join> joins = query.getJoins();
 
         if (joins != null) {
             for (Join join : joins) {
