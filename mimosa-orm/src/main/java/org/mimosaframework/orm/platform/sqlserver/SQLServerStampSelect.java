@@ -25,6 +25,14 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
 
+        this.buildSelect(wrapper, select, sb, placeholders);
+        return new SQLBuilderCombine(sb.toString(), placeholders);
+    }
+
+    private void buildSelect(MappingGlobalWrapper wrapper,
+                             StampSelect select,
+                             StringBuilder sb,
+                             List<SQLDataPlaceholder> placeholders) {
         if (select.limit != null) {
             sb.append("SELECT * FROM (");
         }
@@ -70,7 +78,7 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
         StampFrom[] froms = select.froms;
         int i = 0;
         for (StampFrom from : froms) {
-            sb.append(this.getTableName(wrapper, from.table, from.name));
+            this.buildFrom(wrapper, sb, select, placeholders, from, null);
             if (StringTools.isNotEmpty(from.aliasName)) {
                 sb.append(" AS " + RS + from.aliasName + RE);
             }
@@ -87,7 +95,7 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
                 if (join.joinType == KeyJoinType.INNER) {
                     sb.append(" INNER JOIN");
                 }
-                sb.append(" " + this.getTableName(wrapper, join.tableClass, join.tableName));
+                this.buildFrom(wrapper, sb, select, placeholders, null, join);
                 if (StringTools.isNotEmpty(join.tableAliasName)) {
                     sb.append(" AS " + RS + join.tableAliasName + RE);
                 }
@@ -129,8 +137,6 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
             long start = select.limit.start, limit = start + select.limit.limit;
             sb.append(") RN_TABLE_ALIAS WHERE RN_TABLE_ALIAS.RN_ALIAS BETWEEN " + start + " AND " + limit);
         }
-
-        return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,
@@ -161,6 +167,32 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
 
             if (StringTools.isNotEmpty(aliasName)) {
                 sb.append(" AS " + RS + aliasName + RE);
+            }
+        }
+    }
+
+    private void buildFrom(MappingGlobalWrapper wrapper,
+                           StringBuilder sb,
+                           StampSelect select,
+                           List<SQLDataPlaceholder> placeholders,
+
+                           StampFrom from,
+                           StampSelectJoin join) {
+        if (from != null) {
+            if (from.builder != null) {
+                sb.append("(");
+                this.buildSelect(wrapper, select, sb, placeholders);
+                sb.append(")");
+            } else {
+                sb.append(this.getTableName(wrapper, from.table, from.name));
+            }
+        } else if (join != null) {
+            if (join.builder != null) {
+                sb.append(" (");
+                this.buildSelect(wrapper, select, sb, placeholders);
+                sb.append(")");
+            } else {
+                sb.append(" " + this.getTableName(wrapper, join.tableClass, join.tableName));
             }
         }
     }

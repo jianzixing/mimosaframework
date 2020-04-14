@@ -16,6 +16,14 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
 
+        this.buildSelect(wrapper, select, sb, placeholders);
+        return new SQLBuilderCombine(sb.toString(), placeholders);
+    }
+
+    private void buildSelect(MappingGlobalWrapper wrapper,
+                             StampSelect select,
+                             StringBuilder sb,
+                             List<SQLDataPlaceholder> placeholders) {
         if (select.limit != null) {
             sb.append("SELECT * FROM (");
             sb.append("SELECT RN_TABLE_ALIAS.*, ROWNUM AS RN_ALIAS FROM (");
@@ -35,7 +43,7 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
         StampFrom[] froms = select.froms;
         int i = 0;
         for (StampFrom from : froms) {
-            sb.append(this.getTableName(wrapper, from.table, from.name));
+            this.buildFrom(wrapper, sb, select, placeholders, from, null);
             if (StringTools.isNotEmpty(from.aliasName)) {
                 sb.append(" " + from.aliasName.toUpperCase());
             }
@@ -52,7 +60,7 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
                 if (join.joinType == KeyJoinType.INNER) {
                     sb.append(" INNER JOIN");
                 }
-                sb.append(" " + this.getTableName(wrapper, join.tableClass, join.tableName));
+                this.buildFrom(wrapper, sb, select, placeholders, null, join);
                 if (StringTools.isNotEmpty(join.tableAliasName)) {
                     sb.append(" " + join.tableAliasName.toUpperCase());
                 }
@@ -106,8 +114,6 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
 
             sb.append(") RN_TABLE_ALIAS WHERE ROWNUM <= " + limit + ") RN_TABLE_ALIAS_2 WHERE RN_TABLE_ALIAS_2.RN_ALIAS >= " + start);
         }
-
-        return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,
@@ -138,6 +144,32 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
 
             if (StringTools.isNotEmpty(aliasName)) {
                 sb.append(" AS " + RS + aliasName + RE);
+            }
+        }
+    }
+
+    private void buildFrom(MappingGlobalWrapper wrapper,
+                           StringBuilder sb,
+                           StampSelect select,
+                           List<SQLDataPlaceholder> placeholders,
+
+                           StampFrom from,
+                           StampSelectJoin join) {
+        if (from != null) {
+            if (from.builder != null) {
+                sb.append("(");
+                this.buildSelect(wrapper, select, sb, placeholders);
+                sb.append(")");
+            } else {
+                sb.append(this.getTableName(wrapper, from.table, from.name));
+            }
+        } else if (join != null) {
+            if (join.builder != null) {
+                sb.append(" (");
+                this.buildSelect(wrapper, select, sb, placeholders);
+                sb.append(")");
+            } else {
+                sb.append(" " + this.getTableName(wrapper, join.tableClass, join.tableName));
             }
         }
     }

@@ -16,6 +16,14 @@ public class MysqlStampSelect extends MysqlStampCommonality implements StampComb
         StringBuilder sb = new StringBuilder();
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
 
+        this.buildSelect(wrapper, select, sb, placeholders);
+        return new SQLBuilderCombine(sb.toString(), placeholders);
+    }
+
+    private void buildSelect(MappingGlobalWrapper wrapper,
+                             StampSelect select,
+                             StringBuilder sb,
+                             List<SQLDataPlaceholder> placeholders) {
         sb.append("SELECT ");
         StampSelectField[] columns = select.columns;
         int m = 0;
@@ -30,7 +38,7 @@ public class MysqlStampSelect extends MysqlStampCommonality implements StampComb
         StampFrom[] froms = select.froms;
         int i = 0;
         for (StampFrom from : froms) {
-            sb.append(this.getTableName(wrapper, from.table, from.name));
+            this.buildFrom(wrapper, sb, select, placeholders, from, null);
             if (StringTools.isNotEmpty(from.aliasName)) {
                 sb.append(" AS " + RS + from.aliasName + RE);
             }
@@ -47,7 +55,7 @@ public class MysqlStampSelect extends MysqlStampCommonality implements StampComb
                 if (join.joinType == KeyJoinType.INNER) {
                     sb.append(" INNER JOIN");
                 }
-                sb.append(" " + this.getTableName(wrapper, join.tableClass, join.tableName));
+                this.buildFrom(wrapper, sb, select, placeholders, null, join);
                 if (StringTools.isNotEmpty(join.tableAliasName)) {
                     sb.append(" AS " + RS + join.tableAliasName + RE);
                 }
@@ -99,8 +107,6 @@ public class MysqlStampSelect extends MysqlStampCommonality implements StampComb
         if (select.limit != null) {
             sb.append(" LIMIT " + select.limit.start + "," + select.limit.limit);
         }
-
-        return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,
@@ -131,6 +137,32 @@ public class MysqlStampSelect extends MysqlStampCommonality implements StampComb
 
             if (StringTools.isNotEmpty(aliasName)) {
                 sb.append(" AS " + RS + aliasName + RE);
+            }
+        }
+    }
+
+    private void buildFrom(MappingGlobalWrapper wrapper,
+                           StringBuilder sb,
+                           StampSelect select,
+                           List<SQLDataPlaceholder> placeholders,
+
+                           StampFrom from,
+                           StampSelectJoin join) {
+        if (from != null) {
+            if (from.builder != null) {
+                sb.append("(");
+                this.buildSelect(wrapper, select, sb, placeholders);
+                sb.append(")");
+            } else {
+                sb.append(this.getTableName(wrapper, from.table, from.name));
+            }
+        } else if (join != null) {
+            if (join.builder != null) {
+                sb.append(" (");
+                this.buildSelect(wrapper, select, sb, placeholders);
+                sb.append(")");
+            } else {
+                sb.append(" " + this.getTableName(wrapper, join.tableClass, join.tableName));
             }
         }
     }
