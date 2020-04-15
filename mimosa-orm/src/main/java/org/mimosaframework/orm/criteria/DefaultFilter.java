@@ -235,7 +235,6 @@ public class DefaultFilter implements Filter {
     @Override
     public Filter isNull(Object key) {
         this.key = key;
-        this.value = value;
         this.symbol = "isNull";
         if (key == null) {
             throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
@@ -246,7 +245,6 @@ public class DefaultFilter implements Filter {
     @Override
     public Filter isNotNull(Object key) {
         this.key = key;
-        this.value = value;
         this.symbol = "notNull";
         if (key == null) {
             throw new IllegalArgumentException(I18n.print("key_not_allow_null"));

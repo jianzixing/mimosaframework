@@ -123,6 +123,12 @@ public class RunBaseSession {
                 .addFunction(BasicFunction.AVG, TableUser.level, "level")
                 .lt(TableUser.id, 1000));
         System.out.println(objects.getObjects());
+
+        objects = template.calculate(Criteria.fun(TableUser.class)
+                .addFunction(BasicFunction.COUNT, TableUser.id, "count")
+                .having(new HavingField(BasicFunction.COUNT).gt(TableUser.level, 2))
+                .lt(TableUser.id, 1000));
+        System.out.println(objects.getObjects());
     }
 
     @Test

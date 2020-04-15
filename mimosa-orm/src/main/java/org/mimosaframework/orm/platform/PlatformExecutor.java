@@ -598,15 +598,12 @@ public class PlatformExecutor {
                 }
                 Object key = filter.getKey();
                 String symbol = filter.getSymbol();
-                Object value = filter.getValue();
-                Object startValue = filter.getStartValue();
-                Object endValue = filter.getEndValue();
 
                 MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(key));
                 String columnName = mappingField.getMappingColumnName();
 
                 if (!symbol.equalsIgnoreCase("isNull")
-                        && symbol.equalsIgnoreCase("isNotNull")) {
+                        && !symbol.equalsIgnoreCase("isNotNull")) {
                     if (function == BasicFunction.AVG) {
                         if (distinct) {
                             select.avg("DISTINCT", columnName);
@@ -644,22 +641,7 @@ public class PlatformExecutor {
                     }
                 }
 
-
-                if (symbol.equalsIgnoreCase("like")) {
-                    select.like().value(value);
-                } else if (symbol.equalsIgnoreCase("in")) {
-                    select.in().value(value);
-                } else if (symbol.equalsIgnoreCase("notIn")) {
-                    select.nin().value(value);
-                } else if (symbol.equalsIgnoreCase("isNull")) {
-                    select.isNull(columnName);
-                } else if (symbol.equalsIgnoreCase("notNull")) {
-                    select.isNotNull(columnName);
-                } else if (symbol.equalsIgnoreCase("between")) {
-                    select.between().section((Serializable) startValue, (Serializable) endValue);
-                } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
-                    select.eq().value(value);
-                }
+                this.setSymbol(select, filter, null, mappingTable, 1);
             }
         }
 
@@ -749,30 +731,7 @@ public class PlatformExecutor {
                             }
                         } else {
                             DefaultFilter f = (DefaultFilter) filter.getFilter();
-                            MappingField mappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(f.getKey()));
-                            String symbol = f.getSymbol();
-                            String columnName = mappingField.getMappingColumnName();
-                            Object value = f.getValue();
-                            Object startValue = f.getStartValue();
-                            Object endValue = f.getEndValue();
-
-                            // 最好校验每一个参数值
-                            if (symbol.equalsIgnoreCase("like")) {
-                                select.column(aliasName, columnName).like().value(value);
-                            } else if (symbol.equalsIgnoreCase("in")) {
-                                select.column(aliasName, columnName).in().value(value);
-                            } else if (symbol.equalsIgnoreCase("notIn")) {
-                                select.column(aliasName, columnName).nin().value(value);
-                            } else if (symbol.equalsIgnoreCase("isNull")) {
-                                select.isNull(aliasName, columnName);
-                            } else if (symbol.equalsIgnoreCase("notNull")) {
-                                select.isNotNull(aliasName, columnName);
-                            } else if (symbol.equalsIgnoreCase("between")) {
-                                select.column(aliasName, columnName)
-                                        .between().section((Serializable) startValue, (Serializable) endValue);
-                            } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
-                                select.column(aliasName, columnName).eq().value(value);
-                            }
+                            this.setSymbol(select, f, aliasName, mainMappingTable, 0);
                         }
                         if (iterator.hasNext()) {
                             select.and();
@@ -876,7 +835,7 @@ public class PlatformExecutor {
         return modelMerge.getMergeAfterObjects(os, query.getTableClass());
     }
 
-    private void buildWraps(Object builder,
+    private void buildWraps(CommonSymbolBuilder builder,
                             MappingTable table,
                             Wraps<Filter> wraps,
                             boolean hasJoins) {
@@ -889,52 +848,7 @@ public class PlatformExecutor {
                 CriteriaLogic logic = filter.getLogic();
 
                 if (where != null) {
-                    Object key = where.getKey();
-                    Object value = where.getValue();
-                    Object startValue = where.getStartValue();
-                    Object endValue = where.getEndValue();
-                    String symbol = where.getSymbol();
-
-                    MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
-                    String columnName = field.getMappingColumnName();
-
-                    // 最好校验每一个参数值
-                    if (symbol.equalsIgnoreCase("like")) {
-                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                        else ((AbsWhereColumnBuilder) builder).column(columnName);
-                        ((OperatorBuilder) builder).like();
-                        ((AbsValueBuilder) builder).value(value);
-                    } else if (symbol.equalsIgnoreCase("in")) {
-                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                        else ((AbsWhereColumnBuilder) builder).column(columnName);
-                        ((OperatorBuilder) builder).in();
-                        ((AbsValueBuilder) builder).value(value);
-                    } else if (symbol.equalsIgnoreCase("notIn")) {
-                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                        else ((AbsWhereColumnBuilder) builder).column(columnName);
-                        ((OperatorBuilder) builder).nin();
-                        ((AbsValueBuilder) builder).value(value);
-                    } else if (symbol.equalsIgnoreCase("isNull")) {
-                        if (hasJoins)
-                            ((OperatorFunctionBuilder) builder).isNull("T", columnName);
-                        else
-                            ((OperatorFunctionBuilder) builder).isNull(columnName);
-                    } else if (symbol.equalsIgnoreCase("notNull")) {
-                        if (hasJoins)
-                            ((OperatorFunctionBuilder) builder).isNotNull("T", columnName);
-                        else
-                            ((OperatorFunctionBuilder) builder).isNotNull(columnName);
-                    } else if (symbol.equalsIgnoreCase("between")) {
-                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                        else ((AbsWhereColumnBuilder) builder).column(columnName);
-                        ((OperatorBuilder) builder).between();
-                        ((BetweenValueBuilder) builder).section((Serializable) startValue, (Serializable) endValue);
-                    } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
-                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                        else ((AbsWhereColumnBuilder) builder).column(columnName);
-                        ((OperatorBuilder) builder).eq();
-                        ((AbsValueBuilder) builder).value(value);
-                    }
+                    this.setSymbol(builder, where, hasJoins ? "T" : null, table, 0);
                 } else if (link != null) {
                     this.buildWraps(builder, table, link, hasJoins);
                 }
@@ -949,6 +863,87 @@ public class PlatformExecutor {
                 }
             }
         }
+    }
+
+    private boolean setSymbol(CommonSymbolBuilder builder,
+                              DefaultFilter filter,
+                              String aliasName,
+                              MappingTable table,
+                              int type) {
+        Object key = filter.getKey();
+        MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
+        String columnName = field.getMappingColumnName();
+
+        Object value = filter.getValue();
+        Object startValue = filter.getStartValue();
+        Object endValue = filter.getEndValue();
+        String symbol = filter.getSymbol();
+
+        if (!symbol.equalsIgnoreCase("isNull")
+                && !symbol.equalsIgnoreCase("notNull")) {
+            if (type != 1) {
+                if (StringTools.isNotEmpty(aliasName)) builder.column(aliasName, columnName);
+                else builder.column(columnName);
+            }
+        }
+
+        if (symbol.equalsIgnoreCase("=")) {
+            builder.eq();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase("in")) {
+            builder.in();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase("notIn")) {
+            builder.in();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase("like")) {
+            builder.like();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase("!=")) {
+            builder.ne();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase(">")) {
+            builder.gt();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase(">=")) {
+            builder.gte();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase("<")) {
+            builder.lt();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase("<=")) {
+            builder.lte();
+            builder.value(value);
+        }
+        if (symbol.equalsIgnoreCase("between")) {
+            builder.between().section((Serializable) startValue, (Serializable) endValue);
+            return false;
+        }
+        if (symbol.equalsIgnoreCase("isNull") && builder != null) {
+            if (StringTools.isNotEmpty(aliasName)) {
+                builder.isNull(aliasName, columnName);
+            } else {
+                builder.isNull(columnName);
+            }
+            return false;
+        }
+        if (symbol.equalsIgnoreCase("notNull") && builder != null) {
+            if (StringTools.isNotEmpty(aliasName)) {
+                builder.isNotNull(aliasName, columnName);
+            } else {
+                builder.isNotNull(columnName);
+            }
+            return false;
+        }
+        return true;
     }
 
     public Object dialect(StampAction stampAction) throws SQLException {

@@ -444,9 +444,9 @@ public class DefaultSession implements Session {
                         if (field.getScale() != 0) {
                             for (ModelObject object : objects) {
                                 try {
-                                    BigDecimal bigDecimal = object.getBigDecimal(String.valueOf(field.getField()));
+                                    BigDecimal bigDecimal = object.getBigDecimal(String.valueOf(field.getAlias()));
                                     bigDecimal.setScale(field.getScale(), BigDecimal.ROUND_HALF_UP);
-                                    object.put(String.valueOf(field.getField()), bigDecimal.doubleValue());
+                                    object.put(String.valueOf(field.getAlias()), bigDecimal.doubleValue());
                                 } catch (Exception e) {
                                     logger.error("calc scale error : " + e.getMessage());
                                 }

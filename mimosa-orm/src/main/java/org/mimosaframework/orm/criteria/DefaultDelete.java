@@ -94,14 +94,14 @@ public class DefaultDelete implements LogicDelete {
 
     @Override
     public LogicDelete nin(Object key, Iterable values) {
-        Filter filter = new DefaultFilter().in(key, values);
+        Filter filter = new DefaultFilter().nin(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
     public LogicDelete nin(Object key, Object... values) {
-        Filter filter = new DefaultFilter().in(key, values);
+        Filter filter = new DefaultFilter().nin(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }

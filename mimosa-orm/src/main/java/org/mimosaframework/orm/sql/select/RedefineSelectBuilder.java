@@ -31,5 +31,7 @@ public interface RedefineSelectBuilder
         OnBuilder,
         AbsTableBuilder,
         AbsTableAliasBuilder,
-        SelectTableNameBuilder {
+        SelectTableNameBuilder,
+
+        CommonSymbolBuilder {
 }

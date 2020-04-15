@@ -16,5 +16,7 @@ public interface RedefineDeleteBuilder
         BetweenValueBuilder,
         LogicBuilder,
         WrapperBuilder,
-        SortBuilder {
+        SortBuilder,
+
+        CommonSymbolBuilder {
 }

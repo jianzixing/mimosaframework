@@ -18,5 +18,7 @@ public interface RedefineUpdateBuilder
         AbsValueBuilder,
         UpdateWhichTableBuilder,
         UpdateSetColumnBuilder,
-        LogicBuilder {
+        LogicBuilder,
+
+        CommonSymbolBuilder {
 }

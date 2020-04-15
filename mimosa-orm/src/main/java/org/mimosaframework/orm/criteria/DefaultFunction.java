@@ -129,6 +129,7 @@ public class DefaultFunction implements LogicFunction {
     @Override
     public LogicFunction having(HavingField field) {
         if (field != null) {
+            if (this.havingFields == null) this.havingFields = new ArrayList<>();
             this.havingFields.add(field);
         }
         return this;
