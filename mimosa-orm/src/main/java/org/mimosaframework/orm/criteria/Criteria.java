@@ -17,11 +17,11 @@ public final class Criteria {
         return new DefaultJoin(c);
     }
 
-    public static final Join leftJoin(Class c) {
+    public static final Join left(Class c) {
         return new DefaultJoin(c, 0);
     }
 
-    public static final Join innerJoin(Class c) {
+    public static final Join inner(Class c) {
         return new DefaultJoin(c, 1);
     }
 

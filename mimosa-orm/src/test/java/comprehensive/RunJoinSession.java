@@ -28,7 +28,15 @@ public class RunJoinSession {
     @Test
     public void testLeftJoin() {
         List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
-                .subjoin(Criteria.leftJoin(TablePay.class).on(TableUser.id, TablePay.userId).single().aliasName("pays"))
+                .subjoin(Criteria.left(TablePay.class).on(TableUser.id, TablePay.userId).single().aliasName("pays"))
+                .limit(0, 20));
+        System.out.println(objects);
+    }
+
+    @Test
+    public void testInnerJoin() {
+        List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
+                .subjoin(Criteria.inner(TablePay.class).on(TableUser.id, TablePay.userId).single().aliasName("pays"))
                 .limit(0, 20));
         System.out.println(objects);
     }
