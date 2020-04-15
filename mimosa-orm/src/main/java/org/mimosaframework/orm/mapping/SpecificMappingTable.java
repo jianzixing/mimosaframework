@@ -82,6 +82,19 @@ public class SpecificMappingTable implements MappingTable {
         return null;
     }
 
+    @Override
+    public MappingField getMappingFieldByColumnName(String str) {
+        if (this.mappingFields != null) {
+            Collection<MappingField> fields = this.mappingFields.values();
+            for (MappingField f : fields) {
+                if (f.getMappingColumnName().equals(str)) {
+                    return f;
+                }
+            }
+        }
+        return null;
+    }
+
     public void setMappingClassName(String mappingClassName) {
         this.mappingClassName = mappingClassName;
     }

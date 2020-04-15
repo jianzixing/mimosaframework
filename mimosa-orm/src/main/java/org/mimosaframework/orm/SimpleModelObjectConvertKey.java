@@ -57,7 +57,7 @@ public class SimpleModelObjectConvertKey implements ModelObjectConvertKey {
             for (Object o : keyset) {
                 String key = null;
                 if (mappingTable != null) {
-                    MappingField mappingField = mappingTable.getMappingFieldByName(String.valueOf(o));
+                    MappingField mappingField = mappingTable.getMappingFieldByColumnName(String.valueOf(o));
                     if (mappingField != null) {
                         key = mappingField.getMappingFieldName();
                     }

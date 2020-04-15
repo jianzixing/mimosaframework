@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface MappingTable {
     Class getMappingClass();
-    
+
     void addMappingField(MappingField field);
 
     Set<MappingField> getMappingFields();
@@ -57,4 +57,6 @@ public interface MappingTable {
     String getSourceMappingTableName();
 
     MappingField getAutoIncrementField();
+
+    MappingField getMappingFieldByColumnName(String str);
 }
