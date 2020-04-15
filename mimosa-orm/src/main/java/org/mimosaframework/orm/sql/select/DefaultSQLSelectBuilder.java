@@ -51,7 +51,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public DefaultSQLSelectBuilder field(Serializable... fields) {
+    public DefaultSQLSelectBuilder fields(Serializable... fields) {
         this.gammars.add("field");
         int i = 0;
         for (Serializable f : fields) {
@@ -68,7 +68,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public DefaultSQLSelectBuilder field(Class table, Serializable... fields) {
+    public DefaultSQLSelectBuilder fields(Class table, Serializable... fields) {
         this.gammars.add("field");
         int i = 0;
         for (Serializable f : fields) {
@@ -85,7 +85,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public DefaultSQLSelectBuilder field(String tableAliasName, Serializable... fields) {
+    public DefaultSQLSelectBuilder fields(String tableAliasName, Serializable... fields) {
         this.gammars.add("field");
         int i = 0;
         for (Serializable f : fields) {

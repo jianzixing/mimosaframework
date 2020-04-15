@@ -402,7 +402,7 @@ public class PlatformExecutor {
         select.select();
 
         if (limit != null && joins != null && joins.size() > 0) {
-            select.field("T", new Serializable[]{"*"});
+            select.fields("T", "*");
         } else {
             this.buildSelectField(select, alias, fieldAlias);
         }
@@ -679,7 +679,7 @@ public class PlatformExecutor {
                 String tableAliasName = alias.get(key);
                 List<SelectFieldAliasReference> value = entry.getValue();
                 for (SelectFieldAliasReference reference : value) {
-                    select.field(tableAliasName, reference.getFieldName(), new Serializable[]{reference.getFieldAliasName()});
+                    select.fields(tableAliasName, reference.getFieldName(), reference.getFieldAliasName());
                 }
             }
         }

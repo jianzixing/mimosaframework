@@ -7,11 +7,11 @@ import java.io.Serializable;
 public interface SelectFieldBuilder<T> extends FieldFunBuilder<T> {
     T all();
 
-    T field(Serializable... fields);
+    T fields(Serializable... fields);
 
-    T field(Class table, Serializable... fields);
+    T fields(Class table, Serializable... fields);
 
-    T field(String tableAliasName, Serializable... fields);
+    T fields(String tableAliasName, Serializable... fields);
 
     T field(Serializable field, String fieldAliasName);
 
