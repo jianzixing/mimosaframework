@@ -17,8 +17,12 @@ public final class Criteria {
         return new DefaultJoin(c);
     }
 
-    public static final Join join(Class main, Class join) {
-        return new DefaultJoin(main, join);
+    public static final Join leftJoin(Class c) {
+        return new DefaultJoin(c, 0);
+    }
+
+    public static final Join innerJoin(Class c) {
+        return new DefaultJoin(c, 1);
     }
 
     public static final Update<LogicUpdate> update(Class c) {

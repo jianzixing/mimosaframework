@@ -41,6 +41,17 @@ public class DefaultJoin implements Join {
         this.mainTable = mainTable;
     }
 
+    public DefaultJoin(Class<?> table, int joinType) {
+        this.table = table;
+        this.joinType = joinType;
+    }
+
+    public DefaultJoin(Class<?> mainTable, Class<?> table, int joinType) {
+        this.table = table;
+        this.mainTable = mainTable;
+        this.joinType = joinType;
+    }
+
     public List<JoinOnFilter> getOns() {
         return ons;
     }
