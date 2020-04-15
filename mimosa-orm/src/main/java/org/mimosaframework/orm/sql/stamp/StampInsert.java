@@ -12,8 +12,9 @@ public class StampInsert implements StampAction {
 
     @Override
     public List<STItem> getTables() {
-        List<STItem> items = new ArrayList<>();
+        List<STItem> items = null;
         if (tableClass != null) {
+            if (items == null) items = new ArrayList<>();
             items.add(new STItem(tableClass));
         }
         return items;

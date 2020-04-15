@@ -15,10 +15,11 @@ public class StampSelect implements StampAction {
 
     @Override
     public List<STItem> getTables() {
-        List<STItem> items = new ArrayList<>();
+        List<STItem> items = null;
         if (froms != null) {
             for (StampFrom from : froms) {
                 if (from.table != null) {
+                    if (items == null) items = new ArrayList<>();
                     items.add(new STItem(from.table, from.aliasName));
                 }
             }
@@ -26,6 +27,7 @@ public class StampSelect implements StampAction {
         if (joins != null) {
             for (StampSelectJoin join : joins) {
                 if (join.tableClass != null) {
+                    if (items == null) items = new ArrayList<>();
                     items.add(new STItem(join.tableClass, join.tableAliasName));
                 }
             }

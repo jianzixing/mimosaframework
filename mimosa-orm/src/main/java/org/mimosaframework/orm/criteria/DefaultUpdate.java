@@ -53,7 +53,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public Update addSelf(Object key) {
+    public LogicUpdate addSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setObject(UpdateSpecialType.ADD_SELF);
         values.put(key, v);
@@ -61,7 +61,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public Update subSelf(Object key) {
+    public LogicUpdate subSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setObject(UpdateSpecialType.SUB_SELF);
         values.put(key, v);
@@ -69,25 +69,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public Update addSelf(Object key, Integer step) {
-        UpdateSetValue v = new UpdateSetValue();
-        v.setObject(UpdateSpecialType.ADD_SELF);
-        v.setStep(step);
-        values.put(key, v);
-        return this;
-    }
-
-    @Override
-    public Update subSelf(Object key, Integer step) {
-        UpdateSetValue v = new UpdateSetValue();
-        v.setObject(UpdateSpecialType.SUB_SELF);
-        v.setStep(step);
-        values.put(key, v);
-        return this;
-    }
-
-    @Override
-    public Update addSelf(Object key, String step) {
+    public LogicUpdate addSelf(Object key, Integer step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setObject(UpdateSpecialType.ADD_SELF);
         v.setStep(step);
@@ -96,7 +78,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public Update subSelf(Object key, String step) {
+    public LogicUpdate subSelf(Object key, Integer step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setObject(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
@@ -105,13 +87,31 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public Update setTableClass(Class c) {
+    public LogicUpdate addSelf(Object key, String step) {
+        UpdateSetValue v = new UpdateSetValue();
+        v.setObject(UpdateSpecialType.ADD_SELF);
+        v.setStep(step);
+        values.put(key, v);
+        return this;
+    }
+
+    @Override
+    public LogicUpdate subSelf(Object key, String step) {
+        UpdateSetValue v = new UpdateSetValue();
+        v.setObject(UpdateSpecialType.SUB_SELF);
+        v.setStep(step);
+        values.put(key, v);
+        return this;
+    }
+
+    @Override
+    public LogicUpdate setTableClass(Class c) {
         this.tableClass = c;
         return this;
     }
 
     @Override
-    public Update linked(WrapsLinked linked) {
+    public LogicUpdate linked(WrapsLinked linked) {
         Wraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
@@ -145,98 +145,98 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public Update eq(Object key, Object value) {
+    public LogicUpdate eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update in(Object key, Iterable values) {
+    public LogicUpdate in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update in(Object key, Object... values) {
+    public LogicUpdate in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update nin(Object key, Iterable values) {
+    public LogicUpdate nin(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update nin(Object key, Object... values) {
+    public LogicUpdate nin(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update like(Object key, Object value) {
+    public LogicUpdate like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update ne(Object key, Object value) {
+    public LogicUpdate ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update gt(Object key, Object value) {
+    public LogicUpdate gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update gte(Object key, Object value) {
+    public LogicUpdate gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update lt(Object key, Object value) {
+    public LogicUpdate lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update lte(Object key, Object value) {
+    public LogicUpdate lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update between(Object key, Object start, Object end) {
+    public LogicUpdate between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update isNull(Object key) {
+    public LogicUpdate isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Update isNotNull(Object key) {
+    public LogicUpdate isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
         this.add(filter, CriteriaLogic.AND);
         return this;

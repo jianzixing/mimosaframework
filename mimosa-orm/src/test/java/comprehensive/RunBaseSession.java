@@ -6,10 +6,7 @@ import org.junit.Test;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.*;
-import org.mimosaframework.orm.criteria.Delete;
-import org.mimosaframework.orm.criteria.Function;
-import org.mimosaframework.orm.criteria.Query;
-import org.mimosaframework.orm.criteria.Update;
+import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.ContextException;
 import tables.TableUser;
 
@@ -37,6 +34,7 @@ public class RunBaseSession {
         user.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
         user.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
         template.save(user);
+        System.out.println(user);
     }
 
     @Test
@@ -45,7 +43,21 @@ public class RunBaseSession {
 
     @Test
     public void update() {
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        user.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        template.save(user);
 
+        int id = user.getIntValue(TableUser.id);
+        ModelObject update = new ModelObject(TableUser.class);
+        update.put(TableUser.id, id);
+        update.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        update.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        template.update(update);
+
+        template.update(Criteria.update(TableUser.class)
+                .set(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30))
+                .eq(TableUser.id, id));
     }
 
 

@@ -33,13 +33,13 @@ public class DefaultDelete implements LogicDelete {
     }
 
     @Override
-    public Delete setTableClass(Class c) {
+    public LogicDelete setTableClass(Class c) {
         this.tableClass = c;
         return this;
     }
 
     @Override
-    public Delete linked(WrapsLinked linked) {
+    public LogicDelete linked(WrapsLinked linked) {
         Wraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
@@ -72,98 +72,98 @@ public class DefaultDelete implements LogicDelete {
     }
 
     @Override
-    public Delete eq(Object key, Object value) {
+    public LogicDelete eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete in(Object key, Iterable values) {
+    public LogicDelete in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete in(Object key, Object... values) {
+    public LogicDelete in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete nin(Object key, Iterable values) {
+    public LogicDelete nin(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete nin(Object key, Object... values) {
+    public LogicDelete nin(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete like(Object key, Object value) {
+    public LogicDelete like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete ne(Object key, Object value) {
+    public LogicDelete ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete gt(Object key, Object value) {
+    public LogicDelete gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete gte(Object key, Object value) {
+    public LogicDelete gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete lt(Object key, Object value) {
+    public LogicDelete lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete lte(Object key, Object value) {
+    public LogicDelete lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete between(Object key, Object start, Object end) {
+    public LogicDelete between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete isNull(Object key) {
+    public LogicDelete isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Delete isNotNull(Object key) {
+    public LogicDelete isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
         this.add(filter, CriteriaLogic.AND);
         return this;

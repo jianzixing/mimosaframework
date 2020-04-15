@@ -11,8 +11,9 @@ public class StampUpdate implements StampAction {
 
     @Override
     public List<STItem> getTables() {
-        List<STItem> items = new ArrayList<>();
-        if (table != null) {
+        List<STItem> items = null;
+        if (table != null && table.table != null) {
+            if (items == null) items = new ArrayList<>();
             items.add(new STItem(table.table, table.aliasName));
         }
         return items;

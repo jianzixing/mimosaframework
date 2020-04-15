@@ -60,7 +60,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query linked(WrapsLinked linked) {
+    public LogicQuery linked(WrapsLinked linked) {
         if (linked != null) {
             if (this.logicWraps == null) {
                 this.logicWraps = new Wraps<>();
@@ -87,7 +87,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query subjoin(Join join) {
+    public LogicQuery subjoin(Join join) {
         DefaultJoin dj = ((DefaultJoin) join);
         if (dj.getMainTable() == null) {
             if (this.tableClass == null) {
@@ -119,19 +119,19 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query order(Order order) {
+    public LogicQuery order(Order order) {
         this.orders.add(order);
         return this;
     }
 
     @Override
-    public Query limit(Limit limit) {
+    public LogicQuery limit(Limit limit) {
         this.limit = limit;
         return this;
     }
 
     @Override
-    public Query setTableClass(Class c) {
+    public LogicQuery setTableClass(Class c) {
         this.tableClass = c;
         return this;
     }
@@ -166,14 +166,14 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query eq(Object key, Object value) {
+    public LogicQuery eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query in(Object key, Iterable values) {
+    public LogicQuery in(Object key, Iterable values) {
         if (values == null) {
             throw new IllegalArgumentException(I18n.print("must_value"));
         }
@@ -183,7 +183,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query in(Object key, Object... values) {
+    public LogicQuery in(Object key, Object... values) {
         if (key == null || values == null || values.length == 0) {
             throw new IllegalArgumentException(I18n.print("in_must_key_value"));
         }
@@ -193,7 +193,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query nin(Object key, Iterable values) {
+    public LogicQuery nin(Object key, Iterable values) {
         if (values == null) {
             throw new IllegalArgumentException(I18n.print("not_in_must_value"));
         }
@@ -203,7 +203,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query nin(Object key, Object... values) {
+    public LogicQuery nin(Object key, Object... values) {
         if (key == null || values == null || values.length == 0) {
             throw new IllegalArgumentException(I18n.print("not_in_must_key_value"));
         }
@@ -213,63 +213,63 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query like(Object key, Object value) {
+    public LogicQuery like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query ne(Object key, Object value) {
+    public LogicQuery ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query gt(Object key, Object value) {
+    public LogicQuery gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query gte(Object key, Object value) {
+    public LogicQuery gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query lt(Object key, Object value) {
+    public LogicQuery lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query lte(Object key, Object value) {
+    public LogicQuery lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query between(Object key, Object start, Object end) {
+    public LogicQuery between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query isNull(Object key) {
+    public LogicQuery isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Query isNotNull(Object key) {
+    public LogicQuery isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
         this.addFilterInLinked(filter, CriteriaLogic.AND);
         return this;
@@ -285,36 +285,36 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query master() {
+    public LogicQuery master() {
         this.isMaster = true;
         return this;
     }
 
     @Override
-    public Query slave() {
+    public LogicQuery slave() {
         this.isMaster = false;
         return this;
     }
 
     @Override
-    public Query slave(String name) {
+    public LogicQuery slave(String name) {
         this.isMaster = false;
         this.slaveName = name;
         return this;
     }
 
     @Override
-    public Query fields(Object... fields) {
+    public LogicQuery fields(Object... fields) {
         return this.fields(Arrays.asList(fields));
     }
 
     @Override
-    public Query fields(Class tableClass, Object... fields) {
+    public LogicQuery fields(Class tableClass, Object... fields) {
         return this.fields(tableClass, Arrays.asList(fields));
     }
 
     @Override
-    public Query fields(List fields) {
+    public LogicQuery fields(List fields) {
         if (tableClass == null) {
             throw new IllegalArgumentException(I18n.print("not_found_table"));
         }
@@ -322,7 +322,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query fields(Class tableClass, List fields) {
+    public LogicQuery fields(Class tableClass, List fields) {
         if (fields != null) {
             List<String> nf = new ArrayList<>();
             for (Object field : fields) {
@@ -336,17 +336,17 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query excludes(Object... fields) {
+    public LogicQuery excludes(Object... fields) {
         return this.excludes(Arrays.asList(fields));
     }
 
     @Override
-    public Query excludes(Class tableClass, Object... fields) {
+    public LogicQuery excludes(Class tableClass, Object... fields) {
         return this.excludes(tableClass, Arrays.asList(fields));
     }
 
     @Override
-    public Query excludes(List fields) {
+    public LogicQuery excludes(List fields) {
         if (tableClass == null) {
             throw new IllegalArgumentException(I18n.print("not_found_table"));
         }
@@ -354,7 +354,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query excludes(Class tableClass, List fields) {
+    public LogicQuery excludes(Class tableClass, List fields) {
         if (fields != null) {
             List<String> nf = new ArrayList<>();
             for (Object field : fields) {
@@ -408,7 +408,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query limit(long start, long count) {
+    public LogicQuery limit(long start, long count) {
         Limit limit = new Limit();
         limit.limit(start, count);
         this.limit(limit);
@@ -416,7 +416,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public Query order(Object field, boolean isAsc) {
+    public LogicQuery order(Object field, boolean isAsc) {
         return this.order(new Order(isAsc, field));
     }
 

@@ -8,7 +8,7 @@ public interface Update<T extends Update> extends Filter<T> {
 
     T linked(WrapsLinked linked);
 
-    T set(Object key, Object value);
+    Update<LogicUpdate> set(Object key, Object value);
 
     T addSelf(Object key);
 

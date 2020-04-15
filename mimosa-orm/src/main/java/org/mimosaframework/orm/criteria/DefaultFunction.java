@@ -23,7 +23,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function addFunction(BasicFunction function, Object field) {
+    public LogicFunction addFunction(BasicFunction function, Object field) {
         if (funs == null) {
             funs = new ArrayList<>();
         }
@@ -32,7 +32,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function addFunction(BasicFunction function, Object field, String alias) {
+    public LogicFunction addFunction(BasicFunction function, Object field, String alias) {
         if (funs == null) {
             funs = new ArrayList<>();
         }
@@ -41,7 +41,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function addFunction(FunctionField function) {
+    public LogicFunction addFunction(FunctionField function) {
         if (funs == null) {
             funs = new ArrayList<>();
         }
@@ -50,19 +50,19 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function master() {
+    public LogicFunction master() {
         isMaster = true;
         return this;
     }
 
     @Override
-    public Function slave() {
+    public LogicFunction slave() {
         isMaster = false;
         return this;
     }
 
     @Override
-    public Function slave(String name) {
+    public LogicFunction slave(String name) {
         isMaster = false;
         slaveName = name;
         return this;
@@ -78,7 +78,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function linked(WrapsLinked linked) {
+    public LogicFunction linked(WrapsLinked linked) {
         Wraps lw = linked.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
@@ -105,7 +105,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function groupBy(Object field) {
+    public LogicFunction groupBy(Object field) {
         if (groupBy == null && field != null) {
             groupBy = new ArrayList();
         }
@@ -116,7 +116,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function orderBy(Object field, boolean isAsc) {
+    public LogicFunction orderBy(Object field, boolean isAsc) {
         if (orderBy == null && field != null) {
             orderBy = new ArrayList();
         }
@@ -127,7 +127,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function having(HavingField field) {
+    public LogicFunction having(HavingField field) {
         if (field != null) {
             this.havingFields.add(field);
         }
@@ -141,98 +141,98 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function eq(Object key, Object value) {
+    public LogicFunction eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function in(Object key, Iterable values) {
+    public LogicFunction in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function in(Object key, Object... values) {
+    public LogicFunction in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function nin(Object key, Iterable values) {
+    public LogicFunction nin(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function nin(Object key, Object... values) {
+    public LogicFunction nin(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function like(Object key, Object value) {
+    public LogicFunction like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function ne(Object key, Object value) {
+    public LogicFunction ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function gt(Object key, Object value) {
+    public LogicFunction gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function gte(Object key, Object value) {
+    public LogicFunction gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function lt(Object key, Object value) {
+    public LogicFunction lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function lte(Object key, Object value) {
+    public LogicFunction lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function between(Object key, Object start, Object end) {
+    public LogicFunction between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function isNull(Object key) {
+    public LogicFunction isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.add(filter, CriteriaLogic.AND);
         return this;
     }
 
     @Override
-    public Function isNotNull(Object key) {
+    public LogicFunction isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
         this.add(filter, CriteriaLogic.AND);
         return this;

@@ -72,11 +72,13 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
 
             if (tables != null) {
                 for (StampAction.STItem stItem : tables) {
-                    MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
-                    if (mappingTable != null) {
-                        MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
-                        if (mappingField != null) {
-                            return RS + mappingField.getMappingColumnName() + RE;
+                    if (stItem != null && stItem.getTable() != null) {
+                        MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
+                        if (mappingTable != null) {
+                            MappingField mappingField = mappingTable.getMappingFieldByName(columnName);
+                            if (mappingField != null) {
+                                return RS + mappingField.getMappingColumnName() + RE;
+                            }
                         }
                     }
                 }
