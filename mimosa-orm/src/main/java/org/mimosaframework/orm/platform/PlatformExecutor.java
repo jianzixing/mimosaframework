@@ -343,8 +343,10 @@ public class PlatformExecutor {
         Wraps<Filter> logicWraps = query.getLogicWraps();
         List<Join> joins = query.getJoins();
         List<Order> orders = query.getOrders();
+
         Map<Class, List<String>> fields = query.getFields();
         Map<Class, List<String>> excludes = query.getExcludes();
+
 
         Limit limit = query.getLimit();
         Class<?> tableClass = query.getTableClass();
@@ -361,7 +363,7 @@ public class PlatformExecutor {
         if (joins != null && joins.size() > 0) {
             hasJoin = true;
             MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
-            Set<MappingField> mappingFields = mappingTable.getMappingFields();
+            Set<MappingField> mappingFields = this.getSelectFields(fields, excludes, mappingTable);
             if (fieldAlias == null) fieldAlias = new HashMap<>();
             List<SelectFieldAliasReference> fieldAliasList = new ArrayList<>();
             for (MappingField field : mappingFields) {
@@ -386,7 +388,7 @@ public class PlatformExecutor {
                 String joinAliasName = "T" + i;
                 alias.put(join, joinAliasName);
 
-                mappingFields = mappingTable.getMappingFields();
+                mappingFields = this.getSelectFields(fields, excludes, mappingTable);
                 fieldAliasList = new ArrayList<>();
                 for (MappingField field : mappingFields) {
                     SelectFieldAliasReference reference = new SelectFieldAliasReference();
@@ -407,6 +409,7 @@ public class PlatformExecutor {
 
         DefaultSQLSelectBuilder select = new DefaultSQLSelectBuilder();
         select.select();
+        MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
 
         if (limit != null && joins != null && joins.size() > 0) {
             select.fields("T", "*");
@@ -414,10 +417,16 @@ public class PlatformExecutor {
             if (hasJoin) {
                 this.buildSelectField(select, alias, fieldAlias);
             } else {
-                select.all();
+                if (fields != null || excludes != null) {
+                    Set<MappingField> mappingFields = this.getSelectFields(fields, excludes, mappingTable);
+                    for (MappingField field : mappingFields) {
+                        select.fields("T", field.getMappingColumnName());
+                    }
+                } else {
+                    select.all();
+                }
             }
         }
-        MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
         select.from().table(mappingTable.getMappingTableName(), "T");
         this.buildJoinQuery(select, alias, joins, false);
         if (logicWraps != null) select.where();
@@ -652,6 +661,27 @@ public class PlatformExecutor {
                 combine.getSql(), combine.getPlaceholders()));
 
         return (List<ModelObject>) result;
+    }
+
+    private Set<MappingField> getSelectFields(Map<Class, List<String>> includes,
+                                              Map<Class, List<String>> excludes,
+                                              MappingTable mappingTable) {
+        Set<MappingField> mappingFields = mappingTable.getMappingFields();
+        Set<MappingField> nset = null;
+        List<String> ild = null;
+        if (includes != null) ild = includes.get(mappingTable.getMappingClass());
+        List<String> eld = null;
+        if (excludes != null) eld = excludes.get(mappingTable.getMappingClass());
+        if (ild != null || eld != null) {
+            for (MappingField field : mappingFields) {
+                if (eld != null && eld.indexOf(field.getMappingFieldName()) >= 0) break;
+                if (ild != null && ild.indexOf(field.getMappingFieldName()) == -1) break;
+                if (nset == null) nset = new LinkedHashSet<>();
+                nset.add(field);
+            }
+        }
+        if (nset == null) return mappingFields;
+        return nset;
     }
 
     private void buildSelectField(DefaultSQLSelectBuilder select,

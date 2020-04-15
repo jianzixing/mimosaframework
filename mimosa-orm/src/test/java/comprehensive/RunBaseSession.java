@@ -97,6 +97,11 @@ public class RunBaseSession {
         List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
                 .limit(0, 10));
         System.out.println(objects);
+
+        objects = template.list(Criteria.query(TableUser.class)
+                .fields(TableUser.id, TableUser.level)
+                .excludes(TableUser.level).limit(0, 10));
+        System.out.println(objects);
     }
 
     @Test

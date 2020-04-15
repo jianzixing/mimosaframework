@@ -351,9 +351,6 @@ public class DefaultSession implements Session {
         wrapper.setMaster(dq.isMaster());
         wrapper.setSlaveName(dq.getSlaveName());
 
-        SessionUtils.processQueryExcludes(this.mappingGlobalWrapper, dq);
-        Map<Object, MappingTable> tables = SessionUtils.getUsedMappingTable(this.mappingGlobalWrapper, dq);
-
         PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         List<ModelObject> objects = null;
         try {
