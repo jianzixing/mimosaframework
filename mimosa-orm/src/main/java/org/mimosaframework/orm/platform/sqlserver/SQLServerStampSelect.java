@@ -181,7 +181,7 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
         if (from != null) {
             if (from.builder != null) {
                 sb.append("(");
-                this.buildSelect(wrapper, select, sb, placeholders);
+                this.buildSelect(wrapper, from.builder, sb, placeholders);
                 sb.append(")");
             } else {
                 sb.append(this.getTableName(wrapper, from.table, from.name));

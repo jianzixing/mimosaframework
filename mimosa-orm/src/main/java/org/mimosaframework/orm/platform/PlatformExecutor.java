@@ -356,12 +356,14 @@ public class PlatformExecutor {
         dswrapper.setMaster(isMaster);
         dswrapper.setSlaveName(slaveName);
 
-        Map<Join, String> alias = null;
+        Map<Object, String> alias = null;
         Map<Object, List<SelectFieldAliasReference>> fieldAlias = null;
         int i = 1, j = 1;
         boolean hasJoin = false;
         if (joins != null && joins.size() > 0) {
             hasJoin = true;
+            if (alias == null) alias = new HashMap<>();
+            alias.put(query, "T");
             MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
             Set<MappingField> mappingFields = this.getSelectFields(fields, excludes, mappingTable);
             if (fieldAlias == null) fieldAlias = new HashMap<>();
@@ -376,6 +378,8 @@ public class PlatformExecutor {
                 reference.setMainClass(tableClass);
                 reference.setPrimaryKey(field.isMappingFieldPrimaryKey());
                 fieldAliasList.add(reference);
+
+                j++;
             }
             fieldAlias.put(query, fieldAliasList);
 
@@ -383,7 +387,6 @@ public class PlatformExecutor {
                 DefaultJoin defaultJoin = (DefaultJoin) join;
                 Class table = defaultJoin.getTable();
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
-                if (alias == null) alias = new HashMap<>();
                 if (fieldAlias == null) fieldAlias = new HashMap<>();
                 String joinAliasName = "T" + i;
                 alias.put(join, joinAliasName);
@@ -400,9 +403,9 @@ public class PlatformExecutor {
                     reference.setMainClass(defaultJoin.getMainClass());
                     reference.setPrimaryKey(field.isMappingFieldPrimaryKey());
                     fieldAliasList.add(reference);
+                    j++;
                 }
                 fieldAlias.put(join, fieldAliasList);
-                j++;
                 i++;
             }
         }
@@ -443,7 +446,7 @@ public class PlatformExecutor {
             selectWrap.select();
             this.buildSelectField(selectWrap, alias, fieldAlias);
             selectWrap.from().table(select, "T");
-            this.buildJoinQuery(select, alias, joins, false);
+            this.buildJoinQuery(selectWrap, alias, joins, false);
             this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
 
             select = selectWrap;
@@ -468,13 +471,14 @@ public class PlatformExecutor {
         dswrapper.setMaster(isMaster);
         dswrapper.setSlaveName(slaveName);
 
-        Map<Join, String> alias = null;
+        Map<Object, String> alias = null;
         int i = 1;
         boolean hasJoins = false;
         if (joins != null && joins.size() > 0) {
             hasJoins = true;
+            if (alias == null) alias = new HashMap<>();
+            alias.put(query, "T");
             for (Join join : joins) {
-                if (alias == null) alias = new HashMap<>();
                 String joinAliasName = "T" + i;
                 alias.put(join, joinAliasName);
                 i++;
@@ -685,7 +689,7 @@ public class PlatformExecutor {
     }
 
     private void buildSelectField(DefaultSQLSelectBuilder select,
-                                  Map<Join, String> alias,
+                                  Map<Object, String> alias,
                                   Map<Object, List<SelectFieldAliasReference>> fieldAlias) {
         if (fieldAlias != null && fieldAlias.size() > 0) {
             Iterator<Map.Entry<Object, List<SelectFieldAliasReference>>> iterator = fieldAlias.entrySet().iterator();
@@ -695,21 +699,21 @@ public class PlatformExecutor {
                 String tableAliasName = alias.get(key);
                 List<SelectFieldAliasReference> value = entry.getValue();
                 for (SelectFieldAliasReference reference : value) {
-                    select.fields(tableAliasName, reference.getFieldName(), reference.getFieldAliasName());
+                    select.field(tableAliasName, reference.getFieldName(), reference.getFieldAliasName());
                 }
             }
         }
     }
 
     private void buildJoinQuery(DefaultSQLSelectBuilder select,
-                                Map<Join, String> alias,
+                                Map<Object, String> alias,
                                 List<Join> joins,
                                 boolean onlyInnerJoin) {
         if (joins != null && joins.size() > 0) {
             for (Join j : joins) {
                 DefaultJoin join = (DefaultJoin) j;
                 List<JoinOnFilter> ons = join.getOns();
-                if (ons != null && ons.size() > 0 && (onlyInnerJoin && join.getJoinType() == 1)) {
+                if (ons != null && ons.size() > 0 && !(onlyInnerJoin && join.getJoinType() == 1)) {
                     Class<?> table = join.getTable();
                     Class<?> mainTable = join.getMainTable();
                     String aliasName = alias.get(j);
@@ -739,7 +743,7 @@ public class PlatformExecutor {
                         if (filter.isOn()) {
                             OnField field = filter.getOnField();
                             MappingField mainMappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(field.getKey()));
-                            MappingField mappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(field.getValue()));
+                            MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field.getValue()));
 
                             String columnName = mainMappingField.getMappingColumnName();
                             String value = mappingField.getMappingColumnName();
@@ -747,17 +751,27 @@ public class PlatformExecutor {
 
                             // 最好校验每一个参数值
                             if (symbol.equalsIgnoreCase("like")) {
-                                select.column(aliasName, columnName).like().column(parentAliasName, value);
+                                select.column(parentAliasName, columnName).like().column(aliasName, value);
                             } else if (symbol.equalsIgnoreCase("in")) {
-                                select.column(aliasName, columnName).in().column(parentAliasName, value);
+                                select.column(parentAliasName, columnName).in().column(aliasName, value);
                             } else if (symbol.equalsIgnoreCase("notIn")) {
-                                select.column(aliasName, columnName).nin().column(parentAliasName, value);
+                                select.column(parentAliasName, columnName).nin().column(aliasName, value);
+                            } else if (symbol.equalsIgnoreCase("=")) {
+                                select.column(parentAliasName, columnName).eq().column(aliasName, value);
+                            } else if (symbol.equalsIgnoreCase("!=")) {
+                                select.column(parentAliasName, columnName).ne().column(aliasName, value);
+                            } else if (symbol.equalsIgnoreCase(">")) {
+                                select.column(parentAliasName, columnName).gt().column(aliasName, value);
+                            } else if (symbol.equalsIgnoreCase(">=")) {
+                                select.column(parentAliasName, columnName).gte().column(aliasName, value);
+                            } else if (symbol.equalsIgnoreCase("<")) {
+                                select.column(parentAliasName, columnName).lt().column(aliasName, value);
+                            } else if (symbol.equalsIgnoreCase("<=")) {
+                                select.column(parentAliasName, columnName).lte().column(aliasName, value);
                             } else if (symbol.equalsIgnoreCase("isNull")) {
-                                select.isNull(aliasName, columnName);
+                                select.isNull(aliasName, value);
                             } else if (symbol.equalsIgnoreCase("notNull")) {
-                                select.isNotNull(aliasName, columnName);
-                            } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
-                                select.column(aliasName, columnName).eq().column(parentAliasName, value);
+                                select.isNotNull(aliasName, value);
                             }
                         } else {
                             DefaultFilter f = (DefaultFilter) filter.getFilter();

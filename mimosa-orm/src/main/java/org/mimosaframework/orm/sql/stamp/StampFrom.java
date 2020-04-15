@@ -1,15 +1,13 @@
 package org.mimosaframework.orm.sql.stamp;
 
-import org.mimosaframework.orm.sql.UnifyBuilder;
-
 public class StampFrom {
     public Class table;
     public String name;
     public String aliasName;
 
-    public UnifyBuilder builder;
+    public StampSelect builder;
 
-    public StampFrom(UnifyBuilder builder) {
+    public StampFrom(StampSelect builder) {
         this.builder = builder;
     }
 

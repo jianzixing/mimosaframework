@@ -89,7 +89,7 @@ public class DefaultJoin implements Join {
     }
 
     @Override
-    public Join childJoin(Join join) {
+    public Join subjoin(Join join) {
         DefaultJoin dj = ((DefaultJoin) join);
         if (dj.getMainTable() == null) {
             if (this.table == null) {
@@ -115,7 +115,7 @@ public class DefaultJoin implements Join {
 
     @Override
     public Join on(Object mainField, Object self) {
-        return this.eq(mainField, self);
+        return this.jeq(mainField, self);
     }
 
     @Override

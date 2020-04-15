@@ -53,4 +53,14 @@ public class DataSourceTableName {
     public void setSlaves(List<String> slaves) {
         this.slaves = slaves;
     }
+
+    @Override
+    public String toString() {
+        return "DataSourceTableName{" +
+                "dataSourceName='" + dataSourceName + '\'' +
+                ", tableName='" + tableName + '\'' +
+                ", hashFieldName='" + hashFieldName + '\'' +
+                ", slaves=" + slaves +
+                '}';
+    }
 }

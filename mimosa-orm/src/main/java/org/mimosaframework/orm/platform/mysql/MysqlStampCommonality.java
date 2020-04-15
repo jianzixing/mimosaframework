@@ -42,8 +42,9 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
             }
 
             List<StampAction.STItem> tables = stampTables.getTables();
-            if (tables != null) {
-                if (StringTools.isNotEmpty(tableAliasName)) {
+
+            if (StringTools.isNotEmpty(tableAliasName)) {
+                if (tables != null) {
                     for (StampAction.STItem stItem : tables) {
                         if (tableAliasName.equals(stItem.getTableAliasName())) {
                             MappingTable mappingTable = wrapper.getMappingTable(stItem.getTable());
@@ -55,6 +56,8 @@ public abstract class MysqlStampCommonality extends PlatformStampCommonality {
                             }
                         }
                     }
+                } else {
+                    return RS + tableAliasName + RE + "." + RS + columnName + RE;
                 }
             }
 

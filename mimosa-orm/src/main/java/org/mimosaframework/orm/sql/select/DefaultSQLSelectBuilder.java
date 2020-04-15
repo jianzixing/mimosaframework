@@ -578,12 +578,20 @@ public class DefaultSQLSelectBuilder
             this.gammars.add("table");
             if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("inner")) {
                 this.lastJoin.builder = builder;
-                if (StringTools.isNotEmpty(tableAliasName)) this.lastJoin.tableAliasName = tableAliasName;
+                if (StringTools.isNotEmpty(tableAliasName)) {
+                    this.lastJoin.tableAliasName = tableAliasName;
+                }
             } else if (this.point.equals("join") && this.gammars.get(this.posPoint - 1).equals("left")) {
                 this.lastJoin.builder = builder;
-                if (StringTools.isNotEmpty(tableAliasName)) this.lastJoin.tableAliasName = tableAliasName;
+                if (StringTools.isNotEmpty(tableAliasName)) {
+                    this.lastJoin.tableAliasName = tableAliasName;
+                }
             } else {
-                this.stampFroms.add(new StampFrom(builder));
+                StampFrom from = new StampFrom((StampSelect) builder.compile());
+                this.stampFroms.add(from);
+                if (StringTools.isNotEmpty(tableAliasName)) {
+                    from.aliasName = tableAliasName;
+                }
             }
         } else {
             throw new IllegalArgumentException(I18n.print("select_from_select_must"));

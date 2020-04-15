@@ -8,10 +8,11 @@ import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.ContextException;
+import tables.TableOrder;
 import tables.TableUser;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 
 public class RunBaseSession {
@@ -120,6 +121,11 @@ public class RunBaseSession {
 
     @Test
     public void getZipperTable() {
+        ZipperTable<ModelObject> zipperTable = template.getZipperTable(TableOrder.class);
+        Iterator iterator = zipperTable.iterator();
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
     }
 
     @Test
@@ -138,10 +144,14 @@ public class RunBaseSession {
 
     @Test
     public void getAutonomously() throws Exception {
+        AutoResult result = template.getAutonomously(SQLAutonomously.select().all().from().table(TableOrder.class).autonomously());
+        System.out.println(result.getObjects());
     }
 
     @Test
     public void getDataSourceNames() {
+        List<DataSourceTableName> tableNames = template.getDataSourceNames(TableUser.class);
+        System.out.println(tableNames);
     }
 
     @Test

@@ -6,7 +6,7 @@ package org.mimosaframework.orm.criteria;
 public interface Join extends Filter<Join> {
     int getJoinType();
 
-    Join childJoin(Join join);
+    Join subjoin(Join join);
 
     Join on(Object mainField, Object self);
 
