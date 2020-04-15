@@ -279,6 +279,7 @@ public class LanguageMessageDefault implements MessagesRegister {
 
         // PlatformExecutor
         words.put("platform_executor_empty_type", "不支持的映射类型 %s");
+        words.put("fun_miss_filter", "函数查询缺少having的条件");
 
         // PlatformDialect
         words.put("platform_dialect_miss_fields", "表 %s 缺少字段信息");

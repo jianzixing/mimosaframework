@@ -11,6 +11,7 @@ public class FunctionField implements Serializable {
     private String alias;
     // 处理精度
     private int scale = 5;
+    private boolean distinct = false;
     private String avgCountName;
 
     public FunctionField(Object field, BasicFunction function) {
@@ -75,5 +76,13 @@ public class FunctionField implements Serializable {
 
     public void setAvgCountName(String avgCountName) {
         this.avgCountName = avgCountName;
+    }
+
+    public boolean isDistinct() {
+        return distinct;
+    }
+
+    public void setDistinct(boolean distinct) {
+        this.distinct = distinct;
     }
 }

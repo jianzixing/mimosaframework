@@ -3,8 +3,11 @@ package org.mimosaframework.orm.platform;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.BasicFunction;
 import org.mimosaframework.orm.ModelObjectConvertKey;
 import org.mimosaframework.orm.criteria.*;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
@@ -488,7 +491,181 @@ public class PlatformExecutor {
     }
 
     public List<ModelObject> function(DefaultFunction f) throws SQLException {
-        return null;
+        PlatformDialect dialect = this.getDialect();
+        List<FunctionField> funs = f.getFuns();
+        Class tableClass = f.getTableClass();
+        Wraps<Filter> logicWraps = f.getLogicWraps();
+        List groups = f.getGroupBy();
+        List<Order> orders = f.getOrderBy();
+        List<HavingField> havingFields = f.getHavingFields();
+
+        boolean isMaster = f.isMaster();
+        String slaveName = f.getSlaveName();
+        dswrapper.setMaster(isMaster);
+        dswrapper.setSlaveName(slaveName);
+
+        MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(tableClass);
+
+        DefaultSQLSelectBuilder select = new DefaultSQLSelectBuilder();
+        select.select();
+        for (FunctionField fun : funs) {
+            Object field = fun.getField();
+            BasicFunction function = fun.getFunction();
+            String alias = fun.getAlias();
+            boolean distinct = fun.isDistinct();
+            // 处理精度
+            int scale = fun.getScale();
+            String avgCountName = fun.getAvgCountName();
+
+            MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field));
+            String columnName = mappingField.getMappingColumnName();
+
+            if (function == BasicFunction.AVG) {
+                if (distinct) {
+                    select.avg("DISTINCT", columnName);
+                } else {
+                    select.avg(columnName);
+                }
+            }
+            if (function == BasicFunction.COUNT) {
+                if (distinct) {
+                    select.count("DISTINCT", columnName);
+                } else {
+                    select.count(columnName);
+                }
+            }
+            if (function == BasicFunction.MAX) {
+                if (distinct) {
+                    select.max("DISTINCT", columnName);
+                } else {
+                    select.max(columnName);
+                }
+            }
+            if (function == BasicFunction.MIN) {
+                if (distinct) {
+                    select.min("DISTINCT", columnName);
+                } else {
+                    select.min(columnName);
+                }
+            }
+            if (function == BasicFunction.SUM) {
+                if (distinct) {
+                    select.sum("DISTINCT", columnName);
+                } else {
+                    select.sum(columnName);
+                }
+            }
+            if (StringTools.isNotEmpty(alias)) {
+                select.as(alias);
+            }
+
+            if (function == BasicFunction.AVG) {
+                if (StringTools.isEmpty(avgCountName)) {
+                    avgCountName = "$avg_count";
+                    fun.setAvgCountName(avgCountName);
+                }
+
+                if (distinct) {
+                    select.count("DISTINCT", columnName).as(avgCountName);
+                } else {
+                    select.count(columnName).as(avgCountName);
+                }
+            }
+        }
+        select.from().table(mappingTable.getMappingTableName());
+
+        this.buildWraps(select, mappingTable, logicWraps, false);
+        if (groups != null && groups.size() > 0) {
+            select.groupBy();
+            for (Object field : groups) {
+                MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field));
+                String columnName = mappingField.getMappingColumnName();
+                select.column(columnName);
+            }
+        }
+
+        if (havingFields != null && havingFields.size() > 0) {
+            select.having();
+            for (HavingField field : havingFields) {
+                BasicFunction function = field.getFunction();
+                boolean distinct = field.isDistinct();
+                DefaultFilter filter = (DefaultFilter) field.getFilter();
+                if (filter == null) {
+                    throw new IllegalArgumentException(I18n.print("fun_miss_filter"));
+                }
+                Object key = filter.getKey();
+                String symbol = filter.getSymbol();
+                Object value = filter.getValue();
+                Object startValue = filter.getStartValue();
+                Object endValue = filter.getEndValue();
+
+                MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(key));
+                String columnName = mappingField.getMappingColumnName();
+
+                if (!symbol.equalsIgnoreCase("isNull")
+                        && symbol.equalsIgnoreCase("isNotNull")) {
+                    if (function == BasicFunction.AVG) {
+                        if (distinct) {
+                            select.avg("DISTINCT", columnName);
+                        } else {
+                            select.avg(columnName);
+                        }
+                    }
+                    if (function == BasicFunction.COUNT) {
+                        if (distinct) {
+                            select.count("DISTINCT", columnName);
+                        } else {
+                            select.count(columnName);
+                        }
+                    }
+                    if (function == BasicFunction.MAX) {
+                        if (distinct) {
+                            select.max("DISTINCT", columnName);
+                        } else {
+                            select.max(columnName);
+                        }
+                    }
+                    if (function == BasicFunction.MIN) {
+                        if (distinct) {
+                            select.min("DISTINCT", columnName);
+                        } else {
+                            select.min(columnName);
+                        }
+                    }
+                    if (function == BasicFunction.SUM) {
+                        if (distinct) {
+                            select.sum("DISTINCT", columnName);
+                        } else {
+                            select.sum(columnName);
+                        }
+                    }
+                }
+
+
+                if (symbol.equalsIgnoreCase("like")) {
+                    select.like().value(value);
+                } else if (symbol.equalsIgnoreCase("in")) {
+                    select.in().value(value);
+                } else if (symbol.equalsIgnoreCase("notIn")) {
+                    select.nin().value(value);
+                } else if (symbol.equalsIgnoreCase("isNull")) {
+                    select.isNull(columnName);
+                } else if (symbol.equalsIgnoreCase("notNull")) {
+                    select.isNotNull(columnName);
+                } else if (symbol.equalsIgnoreCase("between")) {
+                    select.between().section((Serializable) startValue, (Serializable) endValue);
+                } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
+                    select.eq().value(value);
+                }
+            }
+        }
+
+        this.buildOrderBy(select, orders, mappingTable, false);
+
+        SQLBuilderCombine combine = dialect.select(select.compile());
+        Object result = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+
+        return (List<ModelObject>) result;
     }
 
     private void buildSelectField(DefaultSQLSelectBuilder select,

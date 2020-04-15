@@ -21,7 +21,7 @@ public interface Function<T extends Function> extends Filter<T> {
 
     T orderBy(Object field, boolean isAsc);
 
-    T childGroupBy(Object field);
+    T having(HavingField field);
 
     Query covert2query();
 

@@ -7,13 +7,13 @@ import java.util.List;
 
 public class DefaultFunction implements LogicFunction {
     private List<FunctionField> funs = null;
+    private List<HavingField> havingFields = null;
     private Class tableClass;
     private boolean isMaster = true;
     private String slaveName;
     private Wraps<Filter> logicWraps;
     private List groupBy = null;
     private List<Order> orderBy = null;
-    private List childGroupBy = null;
 
     public DefaultFunction() {
     }
@@ -127,12 +127,9 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public Function childGroupBy(Object field) {
-        if (childGroupBy == null && field != null) {
-            childGroupBy = new ArrayList();
-        }
+    public Function having(HavingField field) {
         if (field != null) {
-            childGroupBy.add(field);
+            this.havingFields.add(field);
         }
         return this;
     }
@@ -269,9 +266,6 @@ public class DefaultFunction implements LogicFunction {
         return orderBy;
     }
 
-    public List getChildGroupBy() {
-        return childGroupBy;
-    }
 
     public void setFuns(List<FunctionField> funs) {
         this.funs = funs;
@@ -301,7 +295,11 @@ public class DefaultFunction implements LogicFunction {
         this.orderBy = orderBy;
     }
 
-    public void setChildGroupBy(List childGroupBy) {
-        this.childGroupBy = childGroupBy;
+    public List<HavingField> getHavingFields() {
+        return havingFields;
+    }
+
+    public void setHavingFields(List<HavingField> havingFields) {
+        this.havingFields = havingFields;
     }
 }
