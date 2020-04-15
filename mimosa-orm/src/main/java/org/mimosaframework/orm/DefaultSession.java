@@ -15,6 +15,7 @@ import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
+import org.mimosaframework.orm.utils.AutonomouslyUtils;
 import org.mimosaframework.orm.utils.Clone;
 import org.mimosaframework.orm.utils.SessionUtils;
 import org.mimosaframework.orm.utils.TypeCorrectUtils;
@@ -64,8 +65,6 @@ public class DefaultSession implements Session {
             } catch (StrategyException e) {
                 throw new IllegalArgumentException(I18n.print("id_strategy_error"), e.getCause());
             }
-            // 转换成数据库的字段
-            obj = convert.convert(c, obj);
 
             PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
             // 添加后如果有自增列，则返回如果没有就不返回
@@ -166,7 +165,6 @@ public class DefaultSession implements Session {
 
             // 开始类型矫正
             TypeCorrectUtils.correct(object, mappingTable);
-            object = convert.convert(c, object);
             if (object.size() > 0) {
                 saves.add(object);
             }
@@ -485,30 +483,9 @@ public class DefaultSession implements Session {
     public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
         SQLDefinedLoader definedLoader = this.context.getDefinedLoader();
         if (definedLoader != null) {
-            DynamicSqlSource sqlSource = definedLoader.getDynamicSqlSource(autonomously.getName());
-            if (sqlSource == null) {
-                throw new IllegalArgumentException(I18n.print("not_found_file_sql"));
-            }
-
             PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
-            BoundSql boundSql = sqlSource.getBoundSql(autonomously.getParameter());
-            String action = boundSql.getAction();
-
-            JDBCTraversing structure = null;
-            if (action.equalsIgnoreCase("select")) {
-                structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setTypeForRunner(TypeForRunner.SELECT);
-            } else if (action.equalsIgnoreCase("update")) {
-                structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setTypeForRunner(TypeForRunner.UPDATE);
-            } else if (action.equalsIgnoreCase("delete")) {
-                structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setTypeForRunner(TypeForRunner.DELETE);
-            } else if (action.equalsIgnoreCase("insert")) {
-                structure = new JDBCTraversing(boundSql.getSql(), boundSql.getDataPlaceholders());
-                structure.setTypeForRunner(TypeForRunner.ADD_OBJECT);
-            }
-
+            JDBCTraversing structure = AutonomouslyUtils.parseStructure(definedLoader,
+                    autonomously.getName(), autonomously.getParameter());
             if (structure != null) {
                 Object object = executor.original(structure);
                 // 这里返回的原生的字段，不会逆向转换

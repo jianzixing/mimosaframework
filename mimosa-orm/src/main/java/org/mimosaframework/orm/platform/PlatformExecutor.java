@@ -264,6 +264,10 @@ public class PlatformExecutor {
                 columns = new String[keys.size()];
                 for (Object key : keys) {
                     MappingField mappingField = table.getMappingFieldByJavaName(String.valueOf(key));
+                    if (mappingField == null) {
+                        throw new IllegalArgumentException(I18n
+                                .print("miss_executor_mapping_field", String.valueOf(key)));
+                    }
                     columns[i] = mappingField.getMappingColumnName();
                     i++;
                 }
@@ -291,7 +295,8 @@ public class PlatformExecutor {
             }
 
             SQLBuilderCombine combine = dialect.insert(insertBuilder.compile());
-            Object object = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+            Object object = this.runner.doHandler(new JDBCTraversing(TypeForRunner.INSERT,
+                    combine.getSql(), combine.getPlaceholders()));
             return (List<Long>) object;
         }
         return null;
@@ -316,7 +321,8 @@ public class PlatformExecutor {
         updateBuilder.where();
         this.buildWraps(updateBuilder, table, wraps, false);
         SQLBuilderCombine combine = dialect.update(updateBuilder.compile());
-        return (Integer) this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+        return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.UPDATE,
+                combine.getSql(), combine.getPlaceholders()));
     }
 
     public Integer delete(MappingTable table, DefaultDelete delete) throws SQLException {
@@ -328,7 +334,8 @@ public class PlatformExecutor {
         deleteBuilder.where();
         this.buildWraps(deleteBuilder, table, wraps, false);
         SQLBuilderCombine combine = dialect.delete(deleteBuilder.compile());
-        return (Integer) this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+        return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.DELETE,
+                combine.getSql(), combine.getPlaceholders()));
     }
 
     public List<ModelObject> select(DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
@@ -426,7 +433,8 @@ public class PlatformExecutor {
         }
 
         SQLBuilderCombine combine = dialect.select(select.compile());
-        Object result = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+        Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
+                combine.getSql(), combine.getPlaceholders()));
 
         return this.buildMergeObjects(fieldAlias, query, convert, (List<ModelObject>) result);
     }
@@ -481,7 +489,8 @@ public class PlatformExecutor {
         this.buildWraps(select, mappingTable, logicWraps, hasJoins);
 
         SQLBuilderCombine combine = dialect.select(select.compile());
-        Object result = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+        Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
+                combine.getSql(), combine.getPlaceholders()));
         List<ModelObject> objects = (List<ModelObject>) result;
         if (objects != null && objects.size() > 0) {
             return objects.get(0).getIntValue("count");
@@ -663,7 +672,8 @@ public class PlatformExecutor {
         this.buildOrderBy(select, orders, mappingTable, false);
 
         SQLBuilderCombine combine = dialect.select(select.compile());
-        Object result = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+        Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
+                combine.getSql(), combine.getPlaceholders()));
 
         return (List<ModelObject>) result;
     }
@@ -977,7 +987,7 @@ public class PlatformExecutor {
         return null;
     }
 
-    public Object original(JDBCTraversing traversing) {
-        return null;
+    public Object original(JDBCTraversing traversing) throws SQLException {
+        return this.runner.doHandler(traversing);
     }
 }

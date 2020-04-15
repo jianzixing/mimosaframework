@@ -18,16 +18,6 @@ public class BatchPorterStructure extends JDBCTraversing {
         this.fields = fields;
     }
 
-    public BatchPorterStructure(TypeForRunner changerClassify,
-                                SQLBuilder sqlBuilder,
-                                Map<Object, List<SelectFieldAliasReference>> references,
-                                List<ModelObject> objects,
-                                List<String> fields) {
-        super(changerClassify, sqlBuilder, references);
-        this.objects = objects;
-        this.fields = fields;
-    }
-
     public List<ModelObject> getObjects() {
         return objects;
     }

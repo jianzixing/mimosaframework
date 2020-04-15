@@ -386,7 +386,7 @@ public class SessionTemplateTesting {
     public void testSelect2() throws Exception {
         template.getAutonomously(
                 SQLAutonomously.select()
-                        .field(TableUser.id)
+                        .fields(TableUser.id)
                         .from()
                         .table(TableUser.class)
                         .where()

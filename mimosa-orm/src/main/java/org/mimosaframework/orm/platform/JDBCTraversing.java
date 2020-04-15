@@ -17,16 +17,51 @@ public class JDBCTraversing {
      */
     private List<SQLDataPlaceholder> sqlDataPlaceholders;
 
-    /**
-     * 查询时使用join后会产生各种别名字段
-     */
-    private Map<Object, List<SelectFieldAliasReference>> references;
-
     public JDBCTraversing(String sql) {
+        sql = sql.trim();
         this.sql = sql;
+        this.setTypeFor(sql);
     }
 
     public JDBCTraversing(String sql, List<SQLDataPlaceholder> sqlDataPlaceholders) {
+        sql = sql.trim();
+        this.sql = sql;
+        this.sqlDataPlaceholders = sqlDataPlaceholders;
+        this.setTypeFor(sql);
+    }
+
+    public JDBCTraversing(String sql, List<SQLDataPlaceholder> sqlDataPlaceholders, boolean skipTypFor) {
+        sql = sql.trim();
+        this.sql = sql;
+        this.sqlDataPlaceholders = sqlDataPlaceholders;
+        if (!skipTypFor) this.setTypeFor(sql);
+    }
+
+    private void setTypeFor(String sql) {
+        String[] strings = sql.split("\\s+|\\n");
+        if (strings.length > 0) {
+            if (strings[0].trim().equalsIgnoreCase("alter")) {
+                this.typeForRunner = TypeForRunner.ALTER;
+            } else if (strings[0].trim().equalsIgnoreCase("create")) {
+                this.typeForRunner = TypeForRunner.CREATE;
+            } else if (strings[0].trim().equalsIgnoreCase("delete")) {
+                this.typeForRunner = TypeForRunner.DELETE;
+            } else if (strings[0].trim().equalsIgnoreCase("drop")) {
+                this.typeForRunner = TypeForRunner.DROP;
+            } else if (strings[0].trim().equalsIgnoreCase("insert")) {
+                this.typeForRunner = TypeForRunner.INSERT;
+            } else if (strings[0].trim().equalsIgnoreCase("select")) {
+                this.typeForRunner = TypeForRunner.SELECT;
+            } else if (strings[0].trim().equalsIgnoreCase("update")) {
+                this.typeForRunner = TypeForRunner.UPDATE;
+            } else {
+                this.typeForRunner = TypeForRunner.OTHER;
+            }
+        }
+    }
+
+    public JDBCTraversing(TypeForRunner typeForRunner, String sql, List<SQLDataPlaceholder> sqlDataPlaceholders) {
+        this.typeForRunner = typeForRunner;
         this.sql = sql;
         this.sqlDataPlaceholders = sqlDataPlaceholders;
     }
@@ -34,12 +69,6 @@ public class JDBCTraversing {
     public JDBCTraversing(TypeForRunner typeForRunner, SQLBuilder sqlBuilder) {
         this.typeForRunner = typeForRunner;
         this.sqlBuilder = sqlBuilder;
-    }
-
-    public JDBCTraversing(TypeForRunner typeForRunner, SQLBuilder sqlBuilder, Map<Object, List<SelectFieldAliasReference>> references) {
-        this.typeForRunner = typeForRunner;
-        this.sqlBuilder = sqlBuilder;
-        this.references = references;
     }
 
     public TypeForRunner getTypeForRunner() {
@@ -64,14 +93,6 @@ public class JDBCTraversing {
 
     public void setPrimaryKeyValue(long primaryKeyValue) {
         this.primaryKeyValue = primaryKeyValue;
-    }
-
-    public Map<Object, List<SelectFieldAliasReference>> getReferences() {
-        return references;
-    }
-
-    public void setReferences(Map<Object, List<SelectFieldAliasReference>> references) {
-        this.references = references;
     }
 
     public String getSql() {

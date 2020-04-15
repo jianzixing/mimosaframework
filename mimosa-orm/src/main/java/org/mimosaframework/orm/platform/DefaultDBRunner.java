@@ -17,35 +17,36 @@ public class DefaultDBRunner extends DBRunner {
     public Object doHandler(JDBCTraversing structure) throws SQLException {
         JDBCExecutor dbSession = dswrapper.getDBChanger();
         try {
-            TypeForRunner changerClassify = structure.getTypeForRunner();
-            if (changerClassify == TypeForRunner.CREATE
-                    || changerClassify == TypeForRunner.DROP
-                    || changerClassify == TypeForRunner.ALTER) {
-                dbSession.execute(structure);
+            TypeForRunner typeForRunner = structure.getTypeForRunner();
+            if (typeForRunner == TypeForRunner.CREATE
+                    || typeForRunner == TypeForRunner.DROP
+                    || typeForRunner == TypeForRunner.ALTER
+                    || typeForRunner == TypeForRunner.OTHER) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("do mysql carry handler action " + changerClassify.name());
+                    logger.debug("do mysql carry handler action " + typeForRunner.name());
                 }
-            } else if (changerClassify == TypeForRunner.INSERT) {
+                return dbSession.execute(structure);
+            } else if (typeForRunner == TypeForRunner.INSERT) {
                 List<Long> backObjects = dbSession.insert(structure);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("do mysql carry handler action " + changerClassify.name());
+                    logger.debug("do mysql carry handler action " + typeForRunner.name());
                 }
                 if (backObjects != null && backObjects.size() > 0) {
                     return backObjects;
                 }
-            } else if (changerClassify == TypeForRunner.UPDATE) {
+            } else if (typeForRunner == TypeForRunner.UPDATE) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("do mysql carry handler action " + changerClassify.name());
+                    logger.debug("do mysql carry handler action " + typeForRunner.name());
                 }
                 return dbSession.update(structure);
-            } else if (changerClassify == TypeForRunner.DELETE) {
+            } else if (typeForRunner == TypeForRunner.DELETE) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("do mysql carry handler action " + changerClassify.name());
+                    logger.debug("do mysql carry handler action " + typeForRunner.name());
                 }
                 return dbSession.delete(structure);
-            } else if (changerClassify == TypeForRunner.SELECT) {
+            } else if (typeForRunner == TypeForRunner.SELECT) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("do mysql carry handler action " + changerClassify.name());
+                    logger.debug("do mysql carry handler action " + typeForRunner.name());
                 }
                 return dbSession.select(structure);
             }
