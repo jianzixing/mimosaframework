@@ -63,7 +63,19 @@ public class RunBaseSession {
 
     @Test
     public void delete() {
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        user.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        template.save(user);
 
+        int id = user.getIntValue(TableUser.id);
+        ModelObject update = new ModelObject(TableUser.class);
+        update.put(TableUser.id, id);
+        update.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        update.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        template.delete(update);
+
+        template.delete(Criteria.delete(TableUser.class).eq(TableUser.id, id));
     }
 
     @Test
