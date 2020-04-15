@@ -101,6 +101,9 @@ public class RunBaseSession {
 
     @Test
     public void count() {
+        long count = template.count(Criteria.query(TableUser.class)
+                .limit(0, 10));
+        System.out.println(count);
     }
 
     @Test

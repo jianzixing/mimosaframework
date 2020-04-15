@@ -476,16 +476,15 @@ public class PlatformExecutor {
         select.select();
         MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(tableClass);
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
-        Serializable[] params = new Serializable[pks.size() + 1];
-        params[0] = "distinct";
-        for (int k = 1; k < pks.size(); k++) {
+        Serializable[] params = new Serializable[pks.size()];
+        for (int k = 0; k < pks.size(); k++) {
             if (hasJoins) {
-                params[k] = new FieldItem("T", pks.get(k - 1).getMappingColumnName());
+                params[k] = new FieldItem("T", pks.get(k).getMappingColumnName());
             } else {
-                params[k] = new FieldItem(pks.get(k - 1).getMappingColumnName());
+                params[k] = new FieldItem(pks.get(k).getMappingColumnName());
             }
         }
-        select.count(params);
+        select.count(params).as("count");
 
         if (hasJoins) {
             select.from().table(mappingTable.getMappingTableName(), "T");

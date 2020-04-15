@@ -421,22 +421,24 @@ public class DefaultSQLSelectBuilder
             Object[] newParams = new Object[params.length];
             int i = 0;
             for (Serializable param : params) {
-                if (param instanceof FieldItem) {
-                    StampColumn column = new StampColumn();
-                    column.table = ((FieldItem) param).getTable();
-                    column.column = ((FieldItem) param).getField();
-                    column.tableAliasName = ((FieldItem) param).getTableAliasName();
-                    newParams[i] = column;
-                } else if (param instanceof FunItem) {
-                    newParams[i] = new StampFieldFun(((FunItem) param).getFunName(), ((FunItem) param).getParams());
-                } else if ("distinct".equalsIgnoreCase(param.toString())) {
-                    StampKeyword stampKeyword = new StampKeyword();
-                    stampKeyword.distinct = true;
-                    newParams[i] = stampKeyword;
-                } else if (param instanceof String || param.getClass().isEnum()) {
-                    newParams[i] = new StampColumn(param);
-                } else {
-                    newParams[i] = param;
+                if (param != null) {
+                    if (param instanceof FieldItem) {
+                        StampColumn column = new StampColumn();
+                        column.table = ((FieldItem) param).getTable();
+                        column.column = ((FieldItem) param).getField();
+                        column.tableAliasName = ((FieldItem) param).getTableAliasName();
+                        newParams[i] = column;
+                    } else if (param instanceof FunItem) {
+                        newParams[i] = new StampFieldFun(((FunItem) param).getFunName(), ((FunItem) param).getParams());
+                    } else if ("distinct".equalsIgnoreCase(param.toString())) {
+                        StampKeyword stampKeyword = new StampKeyword();
+                        stampKeyword.distinct = true;
+                        newParams[i] = stampKeyword;
+                    } else if (param instanceof String || param.getClass().isEnum()) {
+                        newParams[i] = new StampColumn(param);
+                    } else {
+                        newParams[i] = param;
+                    }
                 }
                 i++;
             }
