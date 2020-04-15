@@ -212,6 +212,11 @@ public class MysqlPlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public boolean isSupportGeneratedKeys() {
+        return true;
+    }
+
+    @Override
     protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         String[] fields = null;

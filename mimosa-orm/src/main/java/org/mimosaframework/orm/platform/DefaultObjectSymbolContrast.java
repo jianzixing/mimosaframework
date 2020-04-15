@@ -1,4 +1,4 @@
-package org.mimosaframework.orm.platform.postgresql;
+package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.platform.ObjectSymbolContrast;
@@ -16,7 +16,7 @@ import java.util.Date;
  * <p>
  * 如果时间和字符串比较 则先把字符串前面的数字拿下来然后转换成时间类型
  */
-public class PostgreSQLObjectSymbolContrast implements ObjectSymbolContrast {
+public class DefaultObjectSymbolContrast implements ObjectSymbolContrast {
     @Override
     public boolean isTrue(Object first, Object second, String symbol) {
         if (first != null && second != null) {

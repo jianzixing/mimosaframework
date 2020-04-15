@@ -582,4 +582,11 @@ public abstract class PlatformDialect {
      * @throws SQLException
      */
     public abstract void ending(MappingTable mappingTable, TableStructure tableStructure) throws SQLException;
+
+    /**
+     * 数据库驱动是否支持返回添加后的ID
+     *
+     * @return
+     */
+    public abstract boolean isSupportGeneratedKeys();
 }

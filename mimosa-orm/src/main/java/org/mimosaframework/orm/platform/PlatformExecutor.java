@@ -9,9 +9,9 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingIndex;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.merge.DefaultModelMerge;
+import org.mimosaframework.orm.merge.DefaultObjectMerge;
 import org.mimosaframework.orm.merge.MergeTree;
-import org.mimosaframework.orm.merge.ModelMerge;
+import org.mimosaframework.orm.merge.ObjectMerge;
 import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.delete.DefaultSQLDeleteBuilder;
 import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
@@ -311,7 +311,7 @@ public class PlatformExecutor {
         }
 
         updateBuilder.where();
-        this.buildWraps(updateBuilder, table, wraps);
+        this.buildWraps(updateBuilder, table, wraps, false);
         SQLBuilderCombine combine = dialect.update(updateBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
     }
@@ -323,7 +323,7 @@ public class PlatformExecutor {
         deleteBuilder.delete().from().table(table.getMappingTableName());
 
         deleteBuilder.where();
-        this.buildWraps(deleteBuilder, table, wraps);
+        this.buildWraps(deleteBuilder, table, wraps, false);
         SQLBuilderCombine combine = dialect.delete(deleteBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
     }
@@ -332,7 +332,6 @@ public class PlatformExecutor {
         PlatformDialect dialect = this.getDialect();
         Wraps<Filter> logicWraps = query.getLogicWraps();
         List<Join> joins = query.getJoins();
-        List<Join> topJoins = query.getTopJoin();
         List<Order> orders = query.getOrders();
         Map<Class, List<String>> fields = query.getFields();
         Map<Class, List<String>> excludes = query.getExcludes();
@@ -342,10 +341,15 @@ public class PlatformExecutor {
         boolean isMaster = query.isMaster();
         String slaveName = query.getSlaveName();
 
+        dswrapper.setMaster(isMaster);
+        dswrapper.setSlaveName(slaveName);
+
         Map<Join, String> alias = null;
         Map<Object, List<SelectFieldAliasReference>> fieldAlias = null;
         int i = 1, j = 1;
-        if (joins != null) {
+        boolean hasJoin = false;
+        if (joins != null && joins.size() > 0) {
+            hasJoin = true;
             MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
             Set<MappingField> mappingFields = mappingTable.getMappingFields();
             if (fieldAlias == null) fieldAlias = new HashMap<>();
@@ -401,9 +405,9 @@ public class PlatformExecutor {
         }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
         select.from().table(mappingTable.getMappingTableName(), "T");
-        this.buildJoinField(select, alias, joins);
+        this.buildJoinQuery(select, alias, joins, false);
         select.where();
-        this.buildWraps(select, mappingTable, logicWraps);
+        this.buildWraps(select, mappingTable, logicWraps, hasJoin);
 
         this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
 
@@ -412,7 +416,7 @@ public class PlatformExecutor {
             selectWrap.select();
             this.buildSelectField(selectWrap, alias, fieldAlias);
             selectWrap.from().table(select, "T");
-            this.buildJoinField(select, alias, joins);
+            this.buildJoinQuery(select, alias, joins, false);
             this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
 
             select = selectWrap;
@@ -422,6 +426,69 @@ public class PlatformExecutor {
         Object result = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
 
         return this.buildMergeObjects(fieldAlias, query, convert, (List<ModelObject>) result);
+    }
+
+    public long count(DefaultQuery query) throws SQLException {
+        PlatformDialect dialect = this.getDialect();
+        Wraps<Filter> logicWraps = query.getLogicWraps();
+        List<Join> joins = query.getJoins();
+
+        Class<?> tableClass = query.getTableClass();
+        boolean isMaster = query.isMaster();
+        String slaveName = query.getSlaveName();
+
+        dswrapper.setMaster(isMaster);
+        dswrapper.setSlaveName(slaveName);
+
+        Map<Join, String> alias = null;
+        int i = 1;
+        boolean hasJoins = false;
+        if (joins != null && joins.size() > 0) {
+            hasJoins = true;
+            for (Join join : joins) {
+                if (alias == null) alias = new HashMap<>();
+                String joinAliasName = "T" + i;
+                alias.put(join, joinAliasName);
+                i++;
+            }
+        }
+
+        DefaultSQLSelectBuilder select = new DefaultSQLSelectBuilder();
+        select.select();
+        MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(tableClass);
+        List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
+        Serializable[] params = new Serializable[pks.size() + 1];
+        params[0] = "distinct";
+        for (int k = 1; k < pks.size(); k++) {
+            if (hasJoins) {
+                params[k] = new FieldItem("T", pks.get(k - 1).getMappingColumnName());
+            } else {
+                params[k] = new FieldItem(pks.get(k - 1).getMappingColumnName());
+            }
+        }
+        select.count(params);
+
+        if (hasJoins) {
+            select.from().table(mappingTable.getMappingTableName(), "T");
+        } else {
+            select.from().table(mappingTable.getMappingTableName());
+        }
+        this.buildJoinQuery(select, alias, joins, true);
+        select.where();
+        this.buildWraps(select, mappingTable, logicWraps, hasJoins);
+
+        SQLBuilderCombine combine = dialect.select(select.compile());
+        Object result = this.runner.doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+        List<ModelObject> objects = (List<ModelObject>) result;
+        if (objects != null && objects.size() > 0) {
+            return objects.get(0).getIntValue("count");
+        } else {
+            return 0;
+        }
+    }
+
+    public List<ModelObject> function(DefaultFunction f) throws SQLException {
+        return null;
     }
 
     private void buildSelectField(DefaultSQLSelectBuilder select,
@@ -441,17 +508,26 @@ public class PlatformExecutor {
         }
     }
 
-    private void buildJoinField(DefaultSQLSelectBuilder select,
+    private void buildJoinQuery(DefaultSQLSelectBuilder select,
                                 Map<Join, String> alias,
-                                List<Join> joins) {
+                                List<Join> joins,
+                                boolean onlyInnerJoin) {
         if (joins != null && joins.size() > 0) {
             for (Join j : joins) {
                 DefaultJoin join = (DefaultJoin) j;
                 List<JoinOnFilter> ons = join.getOns();
-                if (ons != null && ons.size() > 0) {
+                if (ons != null && ons.size() > 0 && (onlyInnerJoin && join.getJoinType() == 1)) {
                     Class<?> table = join.getTable();
                     Class<?> mainTable = join.getMainTable();
                     String aliasName = alias.get(j);
+                    Join parent = join.getParentJoin();
+                    String parentAliasName = null;
+                    if (parent != null) {
+                        parentAliasName = alias.get(parent);
+                    } else {
+                        parentAliasName = "T";
+                    }
+
                     MappingTable mainMappingTable = this.mappingGlobalWrapper.getMappingTable(mainTable);
                     MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
 
@@ -478,17 +554,17 @@ public class PlatformExecutor {
 
                             // 最好校验每一个参数值
                             if (symbol.equalsIgnoreCase("like")) {
-                                select.column(columnName).like().value(value);
+                                select.column(aliasName, columnName).like().column(parentAliasName, value);
                             } else if (symbol.equalsIgnoreCase("in")) {
-                                select.column(columnName).in().value(value);
+                                select.column(aliasName, columnName).in().column(parentAliasName, value);
                             } else if (symbol.equalsIgnoreCase("notIn")) {
-                                select.column(columnName).nin().value(value);
+                                select.column(aliasName, columnName).nin().column(parentAliasName, value);
                             } else if (symbol.equalsIgnoreCase("isNull")) {
-                                select.isNull(columnName);
+                                select.isNull(aliasName, columnName);
                             } else if (symbol.equalsIgnoreCase("notNull")) {
-                                select.isNotNull(columnName);
+                                select.isNotNull(aliasName, columnName);
                             } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
-                                select.column(columnName).eq().value(value);
+                                select.column(aliasName, columnName).eq().column(parentAliasName, value);
                             }
                         } else {
                             DefaultFilter f = (DefaultFilter) filter.getFilter();
@@ -501,19 +577,20 @@ public class PlatformExecutor {
 
                             // 最好校验每一个参数值
                             if (symbol.equalsIgnoreCase("like")) {
-                                select.column(columnName).like().value(value);
+                                select.column(aliasName, columnName).like().value(value);
                             } else if (symbol.equalsIgnoreCase("in")) {
-                                select.column(columnName).in().value(value);
+                                select.column(aliasName, columnName).in().value(value);
                             } else if (symbol.equalsIgnoreCase("notIn")) {
-                                select.column(columnName).nin().value(value);
+                                select.column(aliasName, columnName).nin().value(value);
                             } else if (symbol.equalsIgnoreCase("isNull")) {
-                                select.isNull(columnName);
+                                select.isNull(aliasName, columnName);
                             } else if (symbol.equalsIgnoreCase("notNull")) {
-                                select.isNotNull(columnName);
+                                select.isNotNull(aliasName, columnName);
                             } else if (symbol.equalsIgnoreCase("between")) {
-                                select.between().section((Serializable) startValue, (Serializable) endValue);
+                                select.column(aliasName, columnName)
+                                        .between().section((Serializable) startValue, (Serializable) endValue);
                             } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
-                                select.column(columnName).eq().value(value);
+                                select.column(aliasName, columnName).eq().value(value);
                             }
                         }
                         if (iterator.hasNext()) {
@@ -611,20 +688,17 @@ public class PlatformExecutor {
             }
         }
 
-        ModelMerge modelMerge = new DefaultModelMerge();
+        ObjectMerge modelMerge = new DefaultObjectMerge();
         modelMerge.setMergeTree(top);
         modelMerge.setMapperSelectFields(selectFields);
         modelMerge.setMappingNamedConvert(convert);
         return modelMerge.getMergeAfterObjects(os, query.getTableClass());
     }
 
-    public long count(DefaultQuery query) throws SQLException {
-        return 0;
-    }
-
     private void buildWraps(Object builder,
                             MappingTable table,
-                            Wraps<Filter> wraps) {
+                            Wraps<Filter> wraps,
+                            boolean hasJoins) {
 
         Iterator<WrapsObject<Filter>> wrapsIterator = wraps.iterator();
         while (wrapsIterator.hasNext()) {
@@ -645,31 +719,43 @@ public class PlatformExecutor {
 
                 // 最好校验每一个参数值
                 if (symbol.equalsIgnoreCase("like")) {
-                    ((AbsColumnBuilder) builder).column(columnName);
+                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                    else ((AbsWhereColumnBuilder) builder).column(columnName);
                     ((OperatorBuilder) builder).like();
                     ((AbsValueBuilder) builder).value(value);
                 } else if (symbol.equalsIgnoreCase("in")) {
-                    ((AbsColumnBuilder) builder).column(columnName);
+                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                    else ((AbsWhereColumnBuilder) builder).column(columnName);
                     ((OperatorBuilder) builder).in();
                     ((AbsValueBuilder) builder).value(value);
                 } else if (symbol.equalsIgnoreCase("notIn")) {
-                    ((AbsColumnBuilder) builder).column(columnName);
+                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                    else ((AbsWhereColumnBuilder) builder).column(columnName);
                     ((OperatorBuilder) builder).nin();
                     ((AbsValueBuilder) builder).value(value);
                 } else if (symbol.equalsIgnoreCase("isNull")) {
-                    ((OperatorFunctionBuilder) builder).isNull(columnName);
+                    if (hasJoins)
+                        ((OperatorFunctionBuilder) builder).isNull("T", columnName);
+                    else
+                        ((OperatorFunctionBuilder) builder).isNull(columnName);
                 } else if (symbol.equalsIgnoreCase("notNull")) {
-                    ((OperatorFunctionBuilder) builder).isNotNull(columnName);
+                    if (hasJoins)
+                        ((OperatorFunctionBuilder) builder).isNotNull("T", columnName);
+                    else
+                        ((OperatorFunctionBuilder) builder).isNotNull(columnName);
                 } else if (symbol.equalsIgnoreCase("between")) {
+                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                    else ((AbsWhereColumnBuilder) builder).column(columnName);
                     ((OperatorBuilder) builder).between();
                     ((BetweenValueBuilder) builder).section((Serializable) startValue, (Serializable) endValue);
                 } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
-                    ((AbsColumnBuilder) builder).column(columnName);
+                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                    else ((AbsWhereColumnBuilder) builder).column(columnName);
                     ((OperatorBuilder) builder).eq();
                     ((AbsValueBuilder) builder).value(value);
                 }
             } else if (link != null) {
-                this.buildWraps(builder, table, link);
+                this.buildWraps(builder, table, link, hasJoins);
             }
 
             if (wrapsIterator.hasNext()) {
@@ -714,5 +800,7 @@ public class PlatformExecutor {
         return null;
     }
 
-
+    public Object original(JDBCTraversing traversing) {
+        return null;
+    }
 }

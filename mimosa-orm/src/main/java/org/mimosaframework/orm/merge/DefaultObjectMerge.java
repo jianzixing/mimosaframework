@@ -8,7 +8,7 @@ import org.mimosaframework.orm.platform.SelectFieldAliasReference;
 import java.util.*;
 
 /**
- * 实现接口{@link ModelMerge}使得在查询后对象得以整合
+ * 实现接口{@link ObjectMerge}使得在查询后对象得以整合
  * 整合方式是通过查询条件{@link Query}得到的树形查询条件结构的出来的
  * 整合过程：
  * 1.数据库查询得到的只是表格类型的数据，每一行数据都包含N个对象，所以先分解出每一行的所有对象集
@@ -23,7 +23,7 @@ import java.util.*;
  *
  * @author yangankang
  */
-public class DefaultModelMerge implements ModelMerge {
+public class DefaultObjectMerge implements ObjectMerge {
 
     /**
      * 描述一次查询时的查询结构(树形结构)
@@ -150,6 +150,12 @@ public class DefaultModelMerge implements ModelMerge {
 
     /**
      * 把一个包含父子关系的结果集进行去重合并
+     * 将数据库中一一对应的数据进行关系合并
+     * 比如
+     *
+     * A,B
+     * A,C --> A(B,C,D)
+     * A,D
      *
      * @param objects 包含父子关系的行结果集
      * @return 包含父子关系的树形结果集

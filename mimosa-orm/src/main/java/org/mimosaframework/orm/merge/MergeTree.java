@@ -12,7 +12,7 @@ import java.util.List;
  * 类似B+树结构
  *
  * @author yangankang
- * @see ModelMerge
+ * @see ObjectMerge
  */
 public class MergeTree {
 

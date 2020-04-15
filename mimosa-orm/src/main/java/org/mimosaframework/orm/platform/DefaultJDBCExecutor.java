@@ -217,9 +217,9 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
             statement = replacePlaceholder(connection, structure, true);
             statement.executeUpdate();
 
-            DatabaseSpeciality speciality = PlatformFactory.getLocalSpeciality(actionDataSourceWrapper.getDataSource());
+            PlatformDialect dialect = PlatformFactory.getDialect(actionDataSourceWrapper);
 
-            if (speciality.isSupportGeneratedKeys()) {
+            if (dialect.isSupportGeneratedKeys()) {
                 ResultSet rs = statement.getGeneratedKeys();
                 List<Long> ids = new ArrayList<Long>();
                 while (rs.next()) {

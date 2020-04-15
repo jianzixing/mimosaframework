@@ -67,11 +67,12 @@ public class DefaultSession implements Session {
             // 转换成数据库的字段
             obj = convert.convert(c, obj);
 
-            PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
+            PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
             // 添加后如果有自增列，则返回如果没有就不返回
             Long id = null;
             try {
-                id = platformWrapper.insert(mappingTable, obj);
+                List<Long> ids = executor.inserts(mappingTable, Arrays.asList(new ModelObject[]{obj}));
+                if (ids != null && ids.size() > 0) id = ids.get(0);
             } catch (SQLException e) {
                 throw new IllegalStateException(I18n.print("add_data_error"), e);
             }
@@ -171,11 +172,11 @@ public class DefaultSession implements Session {
             }
         }
 
-        PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
+        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         // 添加后如果有自增列，则返回如果没有就不返回
         List<Long> ids = null;
         try {
-            ids = platformWrapper.inserts(mappingTable, saves);
+            ids = executor.inserts(mappingTable, saves);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("batch_save_data_error"), e);
         }
@@ -209,11 +210,10 @@ public class DefaultSession implements Session {
 
         // 开始类型矫正
         TypeCorrectUtils.correct(obj, mappingTable);
-
-        obj = convert.convert(c, obj);
-        PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
+        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         try {
-            platformWrapper.update(mappingTable, obj);
+            Update update = SessionUtils.buildUpdateByModel(mappingTable, obj);
+            executor.update(mappingTable, (DefaultUpdate) update);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("update_fail"), e);
         }
@@ -236,10 +236,10 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
-        PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
+        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         int count = 0;
         try {
-            count = platformWrapper.update(mappingTable, u);
+            count = executor.update(mappingTable, u);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("update_fail"), e);
         }
@@ -258,11 +258,10 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException(I18n.print("delete_id"));
         }
 
-        PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
-        obj = convert.convert(c, obj);
-
+        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         try {
-            platformWrapper.delete(mappingTable, obj);
+            Delete delete = SessionUtils.buildDeleteByModel(mappingTable, obj);
+            executor.delete(mappingTable, (DefaultDelete) delete);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("delete_fail"), e);
         }
@@ -286,9 +285,9 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
-        PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
+        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         try {
-            return platformWrapper.delete(mappingTable, d);
+            return executor.delete(mappingTable, d);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("delete_fail"), e);
         }
@@ -355,10 +354,10 @@ public class DefaultSession implements Session {
         SessionUtils.processQueryExcludes(this.mappingGlobalWrapper, dq);
         Map<Object, MappingTable> tables = SessionUtils.getUsedMappingTable(this.mappingGlobalWrapper, dq);
 
-        PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
+        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         List<ModelObject> objects = null;
         try {
-            objects = platformWrapper.select(tables, dq, convert);
+            objects = executor.select(dq, convert);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("get_data_fail"), e);
         }
@@ -373,11 +372,10 @@ public class DefaultSession implements Session {
         wrapper.setMaster(dq.isMaster());
         wrapper.setSlaveName(dq.getSlaveName());
 
-        Map<Object, MappingTable> tables = SessionUtils.getUsedMappingTable(this.mappingGlobalWrapper, dq);
-        PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
+        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         long count = 0;
         try {
-            count = platformWrapper.count(tables, dq);
+            count = executor.count(dq);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("get_data_count_fail"), e);
         }
@@ -436,9 +434,9 @@ public class DefaultSession implements Session {
         }
         wrapper.setMaster(f.isMaster());
         wrapper.setSlaveName(f.getSlaveName());
-        PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
+        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         try {
-            List<ModelObject> objects = platformWrapper.select(mappingTable, f);
+            List<ModelObject> objects = executor.function(f);
             if (objects != null) {
                 return new AutoResult(this.convert, objects);
             }
@@ -469,18 +467,14 @@ public class DefaultSession implements Session {
         if (StringTools.isNotEmpty(sql) || builder != null) {
             wrapper.setMaster(isMaster);
             wrapper.setSlaveName(slaveName);
-            PlatformWrapper platformWrapper = PlatformFactory.getPlatformWrapper(wrapper);
-            List<ModelObject> objects = null;
+            PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
             if (builder != null) {
-                Object r = platformWrapper.execute(this.mappingGlobalWrapper, builder.compile());
+                Object r = executor.dialect(builder.compile());
                 return new AutoResult(r);
             } else {
-                objects = platformWrapper.select(sql);
-            }
-
-            if (objects != null) {
-                Map<String, List<ModelObject>> result = new LinkedHashMap<>(1);
-                result.put(MimosaDataSource.DEFAULT_DS_NAME, objects);
+                Object object = executor.original(new JDBCTraversing(sql));
+                Map<String, Object> result = new LinkedHashMap<>(1);
+                result.put(MimosaDataSource.DEFAULT_DS_NAME, object);
                 return new AutoResult(convert, result);
             }
         }
@@ -495,7 +489,8 @@ public class DefaultSession implements Session {
             if (sqlSource == null) {
                 throw new IllegalArgumentException(I18n.print("not_found_file_sql"));
             }
-            DBRunner carryHandler = PlatformFactory.getCarryHandler(wrapper);
+
+            PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
             BoundSql boundSql = sqlSource.getBoundSql(autonomously.getParameter());
             String action = boundSql.getAction();
 
@@ -515,7 +510,7 @@ public class DefaultSession implements Session {
             }
 
             if (structure != null) {
-                Object object = carryHandler.doHandler(structure);
+                Object object = executor.original(structure);
                 // 这里返回的原生的字段，不会逆向转换
                 return new AutoResult(convert, object);
             } else {

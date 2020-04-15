@@ -1,8 +1,7 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.criteria.DefaultJoin;
-import org.mimosaframework.orm.criteria.DefaultQuery;
+import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -106,30 +105,17 @@ public final class SessionUtils {
                                                                 DefaultQuery query,
                                                                 Map<Object, String> aliasNames) {
         Class c = query.getTableClass();
-        List innerJoins = query.getInnerJoin();
-        List leftJoins = query.getLeftJoin();
+        List joins = query.getJoins();
 
-        int totalAliasTables = 0;
-        if (innerJoins != null) totalAliasTables += innerJoins.size();
-        if (leftJoins != null) totalAliasTables += leftJoins.size();
+        int totalAliasTables = joins.size();
 
         MappingTable table = mappingGlobalWrapper.getMappingTable(c);
 
         if (table != null) {
             Map<Object, MappingTable> tables = new LinkedHashMap<>(totalAliasTables + 1);
             tables.put(query, table);
-            if (innerJoins != null) {
-                for (Object join : innerJoins) {
-                    DefaultJoin j = (DefaultJoin) join;
-                    MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
-
-                    if (joinTable != null) {
-                        tables.put(join, joinTable);
-                    } else {
-                        throw new IllegalArgumentException("没有找到和" + j.getTable().getSimpleName() + "对应的数据库映射表");
-                    }
-                }
-                for (Object join : leftJoins) {
+            if (joins != null) {
+                for (Object join : joins) {
                     DefaultJoin j = (DefaultJoin) join;
                     MappingTable joinTable = mappingGlobalWrapper.getMappingTable(j.getTable());
 
@@ -187,5 +173,42 @@ public final class SessionUtils {
         }
 
         return false;
+    }
+
+    public static Update buildUpdateByModel(MappingTable mappingTable, ModelObject object) {
+        Class c = mappingTable.getMappingClass();
+        List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
+        Update update = Criteria.update(c);
+        Iterator<Map.Entry<Object, Object>> iterator = object.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Object, Object> entry = iterator.next();
+            Object key = entry.getKey();
+
+            boolean isPk = false;
+            for (MappingField field : pks) {
+                if (field.getMappingFieldName().equals(key)) {
+                    isPk = true;
+                    update.eq(key, entry.getValue());
+                    break;
+                }
+            }
+            if (!isPk) {
+                MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(key));
+                if (mappingField != null) {
+                    update.set(key, entry.getValue());
+                }
+            }
+        }
+        return update;
+    }
+
+    public static Delete buildDeleteByModel(MappingTable mappingTable, ModelObject object) {
+        List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
+        Class c = mappingTable.getMappingClass();
+        Delete delete = Criteria.delete(c);
+        for (MappingField field : pks) {
+            delete.eq(field.getMappingFieldName(), object.get(field.getMappingFieldName()));
+        }
+        return delete;
     }
 }

@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author yangankang
  */
-public interface ModelMerge {
+public interface ObjectMerge {
 
     /**
      * 通过数据库查询后的结果获得一个整合后的结果
