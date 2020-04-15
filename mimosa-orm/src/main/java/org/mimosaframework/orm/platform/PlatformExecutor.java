@@ -574,19 +574,6 @@ public class PlatformExecutor {
             if (StringTools.isNotEmpty(alias)) {
                 select.as(alias);
             }
-
-            if (function == BasicFunction.AVG) {
-                if (StringTools.isEmpty(avgCountName)) {
-                    avgCountName = "$avg_count";
-                    fun.setAvgCountName(avgCountName);
-                }
-
-                if (distinct) {
-                    select.count("DISTINCT", columnName).as(avgCountName);
-                } else {
-                    select.count(columnName).as(avgCountName);
-                }
-            }
         }
         select.from().table(mappingTable.getMappingTableName());
         if (logicWraps != null) select.where();

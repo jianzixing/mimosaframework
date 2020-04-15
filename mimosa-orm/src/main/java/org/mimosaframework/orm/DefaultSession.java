@@ -1,5 +1,7 @@
 package org.mimosaframework.orm;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.core.utils.StringTools;
@@ -10,8 +12,6 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.scripting.BoundSql;
-import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
@@ -23,10 +23,12 @@ import org.mimosaframework.orm.utils.TypeCorrectUtils;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 
 public class DefaultSession implements Session {
+    private static final Log logger = LogFactory.getLog(DefaultSession.class);
     private UpdateSkipReset updateSkipReset = new UpdateSkiptResetEmpty();
     private ContextContainer context;
     private DataSourceWrapper wrapper;
@@ -436,6 +438,22 @@ public class DefaultSession implements Session {
         try {
             List<ModelObject> objects = executor.function(f);
             if (objects != null) {
+                List<FunctionField> funs = f.getFuns();
+                if (funs != null) {
+                    for (FunctionField field : funs) {
+                        if (field.getScale() != 0) {
+                            for (ModelObject object : objects) {
+                                try {
+                                    BigDecimal bigDecimal = object.getBigDecimal(String.valueOf(field.getField()));
+                                    bigDecimal.setScale(field.getScale(), BigDecimal.ROUND_HALF_UP);
+                                    object.put(String.valueOf(field.getField()), bigDecimal.doubleValue());
+                                } catch (Exception e) {
+                                    logger.error("calc scale error : " + e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
                 return new AutoResult(this.convert, objects);
             }
             return null;

@@ -108,6 +108,9 @@ public class RunBaseSession {
 
     @Test
     public void paging() {
+        Paging paging = template.paging(Criteria.query(TableUser.class)
+                .limit(0, 10));
+        System.out.println(paging);
     }
 
     @Test
@@ -116,6 +119,10 @@ public class RunBaseSession {
 
     @Test
     public void calculate() {
+        AutoResult objects = template.calculate(Criteria.fun(TableUser.class)
+                .addFunction(BasicFunction.AVG, TableUser.level, "level")
+                .lt(TableUser.id, 1000));
+        System.out.println(objects.getObjects());
     }
 
     @Test

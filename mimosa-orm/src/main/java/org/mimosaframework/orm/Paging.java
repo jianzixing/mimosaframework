@@ -48,4 +48,12 @@ public class Paging<T> {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        ModelObject object = new ModelObject();
+        object.put("count", count);
+        object.put("objects", objects);
+        return object.toJSONString();
+    }
 }

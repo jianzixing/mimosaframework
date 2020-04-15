@@ -145,7 +145,7 @@ public abstract class PlatformStampCommonality {
             sb.append("?");
 
             SQLDataPlaceholder placeholder = new SQLDataPlaceholder();
-            placeholder.setName("Unknown");
+            placeholder.setName(keyName);
             placeholder.setValue(value);
             placeholders.add(placeholder);
         }
