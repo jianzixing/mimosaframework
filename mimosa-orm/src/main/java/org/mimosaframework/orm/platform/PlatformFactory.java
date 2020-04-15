@@ -91,7 +91,7 @@ public class PlatformFactory {
             return dialect;
         }
         if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseTypes.DB2)) {
-            PlatformDialect dialect = null;
+            PlatformDialect dialect = new DB2PlatformDialect();
             dialect.setDataSourceWrapper(dataSourceWrapper);
             return dialect;
         }

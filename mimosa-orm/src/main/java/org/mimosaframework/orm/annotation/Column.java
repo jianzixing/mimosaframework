@@ -47,7 +47,7 @@ public @interface Column {
      *
      * @return
      */
-    int decimalDigits() default 0;
+    int scale() default 0;
 
     boolean nullable() default true;
 

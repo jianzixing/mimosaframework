@@ -2,13 +2,13 @@ package tables;
 
 import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.annotation.Table;
-import org.mimosaframework.orm.platform.SupportMediumText;
-import org.mimosaframework.orm.platform.SupportText;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -16,34 +16,44 @@ import java.util.Date;
 public enum TableJavaTypes {
     @Column(pk = true, strategy = AutoIncrementStrategy.class)
     id,
+    @Column(type = int.class)
+    ints,
+    @Column(type = String.class)
+    varchar,
+    @Column(type = char.class)
+    chars,
+    @Column(type = byte.class)
+    tinyint,
+    @Column(type = short.class)
+    smallint,
+    @Column(type = long.class)
+    bigint,
+    @Column(type = float.class)
+    floats,
+    @Column(type = double.class)
+    doubles,
+    @Column(type = BigDecimal.class, scale = 2)
+    decimal,
+    @Column(type = boolean.class)
+    booleans,
+    @Column(type = java.sql.Date.class)
+    date,
+    @Column(type = Time.class)
+    time,
+    @Column(type = Date.class)
+    datetime,
+    @Column(type = Timestamp.class)
+    timestamp,
+    @Column(type = SupportBlob.class)
+    blob,
+    @Column(type = SupportMediumBlob.class)
+    mediumblob,
+    @Column(type = SupportLongBlob.class)
+    longblob,
     @Column(type = SupportText.class)
     text,
     @Column(type = SupportMediumText.class)
-    mediumText,
-    @Column(type = double.class)
-    doubleType,
-    @Column(type = BigDecimal.class, length = 20)
-    decimal,
-    @Column(type = String.class)
-    stringType,
-    @Column(type = char.class)
-    charType,
-    @Column(type = Date.class)
-    date,
-    @Column(type = Blob.class)
-    blob,
-    @Column(type = Clob.class)
-    clob,
-    @Column(type = short.class)
-    shortType,
-    @Column(type = byte.class)
-    byteType,
-    @Column(type = long.class)
-    longType,
-    @Column(type = float.class)
-    floatType,
-    @Column(type = boolean.class)
-    booleanType,
-    @Column(type = Timestamp.class)
-    timestamp
+    mediumtext,
+    @Column(type = SupportLongText.class)
+    longtext
 }

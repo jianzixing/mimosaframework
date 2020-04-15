@@ -17,7 +17,7 @@ public enum TablePay {
     orderId,
     @Column(type = short.class, defaultValue = "100")
     status,
-    @Column(type = BigDecimal.class, length = 16, decimalDigits = 2)
+    @Column(type = BigDecimal.class, length = 16, scale = 2)
     payMoney,
     @Column(type = Date.class)
     createdTime,

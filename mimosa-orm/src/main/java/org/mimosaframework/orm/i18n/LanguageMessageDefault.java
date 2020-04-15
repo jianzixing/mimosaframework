@@ -78,6 +78,9 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("timestamp_one", "时间戳类型列只允许有一个");
         words.put("auto_strategy_pk", "自增策略只能使用在主键列 %s 上");
         words.put("must_set_decimal", "BigDecimal类型必须设置精度值,默认255长度过大");
+        words.put("miss_table_index_name", "表 %s 的索引必须添加一个索引名称");
+        words.put("miss_table_index_column", "表 %s 的索引使用不存在的字段 %s");
+        words.put("miss_table_index_columns", "表 %s 的索引缺少要索引的字段");
 
         // WarnCompareMapping
         words.put("defect_class", "对比数据库发现缺失映射表 %s 映射类 %s");

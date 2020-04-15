@@ -20,18 +20,26 @@ public class RunCompareTesting {
     @Test
     public void runAll() throws ContextException, SQLException {
         DataSource[] dataSources = new DataSource[]{
+                this.getDB2DataSource(),
                 this.getMysqlDataSource()
         };
 
-        for (DataSource dataSource : dataSources) {
-            mimosaDataSource = new MimosaDataSource(dataSource, "mater");
-            // this.test1();
-            // this.test2();
-            // this.test3();
-            // this.test4();
-            this.test5();
-//            this.test6();
-        }
+        mimosaDataSource = new MimosaDataSource(dataSources[0], "mater");
+        this.test1();
+        // this.test2();
+        // this.test3();
+        // this.test4();
+        // this.test5();
+        // this.test6();
+    }
+
+    private DataSource getDB2DataSource() {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setDriverClassName("com.ibm.db2.jcc.DB2Driver");
+        dataSource.setUrl("jdbc:db2://127.0.0.1:50000/database");
+        dataSource.setUsername("db2inst1");
+        dataSource.setPassword("12345");
+        return dataSource;
     }
 
     private DataSource getMysqlDataSource() {

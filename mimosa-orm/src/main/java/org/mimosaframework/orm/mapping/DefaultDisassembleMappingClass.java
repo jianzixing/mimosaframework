@@ -4,6 +4,8 @@ package org.mimosaframework.orm.mapping;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.annotation.Column;
+import org.mimosaframework.orm.annotation.Index;
+import org.mimosaframework.orm.annotation.IndexItem;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.convert.ConvertType;
 import org.mimosaframework.orm.convert.NamingConvert;
@@ -14,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -29,28 +32,33 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
     @Override
     public MappingTable getMappingTable() {
         Annotation annotation = mappingClass.getAnnotation(Table.class);
+        Annotation indexAnn = mappingClass.getAnnotation(Index.class);
         Table table = null;
+        Index index = null;
         if (annotation != null) table = (Table) annotation;
+        if (indexAnn != null) index = (Index) indexAnn;
         if (table != null) {
-            MappingTable mappingTable = new SpecificMappingTable();
+            SpecificMappingTable mappingTable = new SpecificMappingTable();
 
             String tableName = table.value();
             if (tableName.equals("") && convert != null) {
                 tableName = convert.convert(mappingClass.getSimpleName(), ConvertType.TABLE_NAME);
             }
 
-            ((SpecificMappingTable) mappingTable).setMappingClass(mappingClass);
-            ((SpecificMappingTable) mappingTable).setMappingClassName(mappingClass.getSimpleName());
-            ((SpecificMappingTable) mappingTable).setMappingTableName(tableName);
+            mappingTable.setMappingClass(mappingClass);
+            mappingTable.setMappingClassName(mappingClass.getSimpleName());
+            mappingTable.setMappingTableName(tableName);
             if (StringTools.isNumber(table.engineName())) {
-                ((SpecificMappingTable) mappingTable).setEngineName(table.engineName());
+                mappingTable.setEngineName(table.engineName());
             }
             if (StringTools.isNumber(table.charset())) {
-                ((SpecificMappingTable) mappingTable).setEncoding(table.charset());
+                mappingTable.setEncoding(table.charset());
             }
 
 
             this.disassembleFields(mappingTable);
+            this.disassembleIndexes(mappingTable, index);
+
             Set<MappingField> mappingFields = mappingTable.getMappingFields();
 
             if (mappingFields != null) {
@@ -71,7 +79,38 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         return null;
     }
 
-    private void disassembleFields(MappingTable mappingTable) {
+    private void disassembleIndexes(SpecificMappingTable mappingTable, Index index) {
+        IndexItem[] indexItems = index.value();
+        if (indexItems != null && indexItems.length > 0) {
+            for (IndexItem item : indexItems) {
+                String indexName = item.indexName();
+                String[] columns = item.columns();
+                boolean unique = item.unique();
+                if (StringTools.isEmpty(indexName)) {
+                    throw new IllegalArgumentException(I18n.print("miss_table_index_name",
+                            mappingTable.getMappingClassName()));
+                }
+                if (columns == null) {
+                    throw new IllegalArgumentException(I18n.print("miss_table_index_columns",
+                            mappingTable.getMappingClassName()));
+                }
+                List<MappingField> fields = new ArrayList<>();
+                for (String columnName : columns) {
+                    MappingField mappingField = mappingTable.getMappingFieldByJavaName(columnName);
+                    if (mappingField == null) {
+                        throw new IllegalArgumentException(I18n.print("miss_table_index_column",
+                                mappingTable.getMappingClassName(), columnName));
+                    }
+                    fields.add(mappingField);
+                }
+                MappingIndex mappingIndex = new SpecificMappingIndex(indexName,
+                        fields, unique ? IndexType.U : IndexType.D);
+                mappingTable.addMappingIndex(mappingIndex);
+            }
+        }
+    }
+
+    private void disassembleFields(SpecificMappingTable mappingTable) {
         String fieldName = null;
         Column column = null;
         Object fieldObject = null;
@@ -145,34 +184,34 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         }
     }
 
-    private MappingField disassembleFieldItem(MappingTable mappingTable,
+    private MappingField disassembleFieldItem(SpecificMappingTable mappingTable,
                                               String fieldName,
                                               Column column,
                                               Object fieldObject) {
-        MappingField mappingField = new SpecificMappingField(mappingTable);
-        ((SpecificMappingField) mappingField).setMappingField(fieldObject);
-        ((SpecificMappingField) mappingField).setMappingFieldAnnotation(column);
-        ((SpecificMappingField) mappingField).setMappingFieldName(fieldName);
+        SpecificMappingField mappingField = new SpecificMappingField(mappingTable);
+        mappingField.setMappingField(fieldObject);
+        mappingField.setMappingFieldAnnotation(column);
+        mappingField.setMappingFieldName(fieldName);
         String columnName = column.name();
         if (StringTools.isEmpty(columnName) && convert != null) {
             columnName = convert.convert(fieldName, ConvertType.FIELD_NAME);
         }
-        ((SpecificMappingField) mappingField).setMappingColumnName(columnName);
-        ((SpecificMappingField) mappingField).setMappingFieldType(column.type());
-        ((SpecificMappingField) mappingField).setMappingFieldLength(column.length());
-        ((SpecificMappingField) mappingField).setMappingFieldDecimalDigits(column.decimalDigits());
-        ((SpecificMappingField) mappingField).setMappingFieldNullable(column.nullable());
-        ((SpecificMappingField) mappingField).setMappingFieldPrimaryKey(column.pk());
-        ((SpecificMappingField) mappingField).setMappingFieldIndex(column.index());
-        ((SpecificMappingField) mappingField).setMappingFieldUnique(column.unique());
+        mappingField.setMappingColumnName(columnName);
+        mappingField.setMappingFieldType(column.type());
+        mappingField.setMappingFieldLength(column.length());
+        mappingField.setMappingFieldDecimalDigits(column.scale());
+        mappingField.setMappingFieldNullable(column.nullable());
+        mappingField.setMappingFieldPrimaryKey(column.pk());
+        mappingField.setMappingFieldIndex(column.index());
+        mappingField.setMappingFieldUnique(column.unique());
         if (StringTools.isNotEmpty(column.comment()))
-            ((SpecificMappingField) mappingField).setMappingFieldComment(column.comment());
-        ((SpecificMappingField) mappingField).setMappingFieldTimeForUpdate(column.timeForUpdate());
+            mappingField.setMappingFieldComment(column.comment());
+        mappingField.setMappingFieldTimeForUpdate(column.timeForUpdate());
         if (StringTools.isNotEmpty(column.defaultValue()))
-            ((SpecificMappingField) mappingField).setMappingFieldDefaultValue(column.defaultValue());
+            mappingField.setMappingFieldDefaultValue(column.defaultValue());
 
         if (column.strategy().equals(AutoIncrementStrategy.class)) {
-            ((SpecificMappingField) mappingField).setMappingFieldAutoIncrement(true);
+            mappingField.setMappingFieldAutoIncrement(true);
         }
         mappingTable.addMappingField(mappingField);
 

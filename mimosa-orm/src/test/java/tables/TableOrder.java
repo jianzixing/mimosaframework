@@ -15,7 +15,7 @@ public enum TableOrder {
     productId,
     @Column(type = long.class)
     userId,
-    @Column(type = BigDecimal.class, length = 32, decimalDigits = 2)
+    @Column(type = BigDecimal.class, length = 32, scale = 2)
     orderMoney,
     @Column(length = 200)
     address,

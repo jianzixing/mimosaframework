@@ -40,6 +40,13 @@ public class SpecificMappingTable implements MappingTable {
         this.mappingFields.put(field.getMappingFieldName(), field);
     }
 
+    public void addMappingIndex(MappingIndex mappingIndex) {
+        if (this.mappingIndexes == null) {
+            this.mappingIndexes = new LinkedHashSet<>();
+        }
+        this.mappingIndexes.add(mappingIndex);
+    }
+
     @Override
     public Set<MappingField> getMappingFields() {
         if (this.mappingFields != null) {

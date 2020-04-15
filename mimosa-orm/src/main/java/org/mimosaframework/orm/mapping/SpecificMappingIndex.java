@@ -3,41 +3,28 @@ package org.mimosaframework.orm.mapping;
 import java.util.List;
 
 public class SpecificMappingIndex implements MappingIndex {
-    private SpecificMappingTable mappingTable;
+    private String indexName;
+    private List<MappingField> fields;
+    private IndexType indexType;
 
-    /**
-     * 数据库中的索引名称
-     */
-    private String databaseIndexName;
-
-    public SpecificMappingTable getMappingTable() {
-        return mappingTable;
-    }
-
-    public void setMappingTable(SpecificMappingTable mappingTable) {
-        this.mappingTable = mappingTable;
-    }
-
-    public String getDatabaseIndexName() {
-        return databaseIndexName;
-    }
-
-    public void setDatabaseIndexName(String databaseIndexName) {
-        this.databaseIndexName = databaseIndexName;
+    public SpecificMappingIndex(String indexName, List<MappingField> fields, IndexType indexType) {
+        this.indexName = indexName;
+        this.fields = fields;
+        this.indexType = indexType;
     }
 
     @Override
     public String getIndexName() {
-        return null;
+        return this.indexName;
     }
 
     @Override
     public List<MappingField> getIndexColumns() {
-        return null;
+        return this.fields;
     }
 
     @Override
     public IndexType getIndexType() {
-        return null;
+        return this.indexType;
     }
 }

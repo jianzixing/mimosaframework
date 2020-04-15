@@ -19,7 +19,7 @@ public enum TableProduct {
     id,
     @Column(length = 200)
     name,
-    @Column(type = BigDecimal.class, length = 16, decimalDigits = 2, defaultValue = "0.01")
+    @Column(type = BigDecimal.class, length = 16, scale = 2, defaultValue = "0.01")
     price,
     @Column(type = int.class, defaultValue = "1")
     amount,

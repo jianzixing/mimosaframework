@@ -6,8 +6,6 @@ import java.util.Set;
 public interface MappingTable {
     Class getMappingClass();
 
-    void addMappingField(MappingField field);
-
     Set<MappingField> getMappingFields();
 
     Set<MappingIndex> getMappingIndexes();
