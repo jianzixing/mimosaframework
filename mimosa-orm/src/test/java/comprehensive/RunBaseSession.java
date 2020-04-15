@@ -80,11 +80,23 @@ public class RunBaseSession {
 
     @Test
     public void get() {
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        user.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        template.save(user);
 
+        int id = user.getIntValue(TableUser.id);
+        user = template.get(Criteria.query(TableUser.class).eq(TableUser.id, id));
+        System.out.println(user);
+        user = template.get(TableUser.class, id);
+        System.out.println(user);
     }
 
     @Test
     public void list() {
+        List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
+                .limit(0, 10));
+        System.out.println(objects);
     }
 
     @Test

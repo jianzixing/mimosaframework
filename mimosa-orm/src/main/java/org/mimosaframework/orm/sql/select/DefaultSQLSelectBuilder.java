@@ -294,7 +294,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public DefaultSQLSelectBuilder limit(int pos, int len) {
+    public DefaultSQLSelectBuilder limit(long pos, long len) {
         this.addPoint("limit");
         this.stampSelect.limit = new StampLimit(pos, len);
         return this;

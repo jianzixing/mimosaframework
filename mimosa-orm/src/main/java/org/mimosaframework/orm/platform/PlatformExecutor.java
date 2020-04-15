@@ -318,7 +318,7 @@ public class PlatformExecutor {
             }
         }
 
-        updateBuilder.where();
+        if (wraps != null) updateBuilder.where();
         this.buildWraps(updateBuilder, table, wraps, false);
         SQLBuilderCombine combine = dialect.update(updateBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.UPDATE,
@@ -331,7 +331,7 @@ public class PlatformExecutor {
         DefaultSQLDeleteBuilder deleteBuilder = new DefaultSQLDeleteBuilder();
         deleteBuilder.delete().from().table(table.getMappingTableName());
 
-        deleteBuilder.where();
+        if (wraps != null) deleteBuilder.where();
         this.buildWraps(deleteBuilder, table, wraps, false);
         SQLBuilderCombine combine = dialect.delete(deleteBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.DELETE,
@@ -411,15 +411,23 @@ public class PlatformExecutor {
         if (limit != null && joins != null && joins.size() > 0) {
             select.fields("T", "*");
         } else {
-            this.buildSelectField(select, alias, fieldAlias);
+            if (hasJoin) {
+                this.buildSelectField(select, alias, fieldAlias);
+            } else {
+                select.all();
+            }
         }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
         select.from().table(mappingTable.getMappingTableName(), "T");
         this.buildJoinQuery(select, alias, joins, false);
-        select.where();
+        if (logicWraps != null) select.where();
         this.buildWraps(select, mappingTable, logicWraps, hasJoin);
 
         this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
+
+        if (limit != null) {
+            select.limit(limit.getStart(), limit.getLimit());
+        }
 
         if (limit != null && joins != null && joins.size() > 0) {
             DefaultSQLSelectBuilder selectWrap = new DefaultSQLSelectBuilder();
@@ -485,7 +493,7 @@ public class PlatformExecutor {
             select.from().table(mappingTable.getMappingTableName());
         }
         this.buildJoinQuery(select, alias, joins, true);
-        select.where();
+        if (logicWraps != null) select.where();
         this.buildWraps(select, mappingTable, logicWraps, hasJoins);
 
         SQLBuilderCombine combine = dialect.select(select.compile());
@@ -582,7 +590,7 @@ public class PlatformExecutor {
             }
         }
         select.from().table(mappingTable.getMappingTableName());
-
+        if (logicWraps != null) select.where();
         this.buildWraps(select, mappingTable, logicWraps, false);
         if (groups != null && groups.size() > 0) {
             select.groupBy();
@@ -886,71 +894,72 @@ public class PlatformExecutor {
                             MappingTable table,
                             Wraps<Filter> wraps,
                             boolean hasJoins) {
+        if (wraps != null) {
+            Iterator<WrapsObject<Filter>> wrapsIterator = wraps.iterator();
+            while (wrapsIterator.hasNext()) {
+                WrapsObject<Filter> filter = wrapsIterator.next();
+                DefaultFilter where = (DefaultFilter) filter.getWhere();
+                Wraps link = filter.getLink();
+                CriteriaLogic logic = filter.getLogic();
 
-        Iterator<WrapsObject<Filter>> wrapsIterator = wraps.iterator();
-        while (wrapsIterator.hasNext()) {
-            WrapsObject<Filter> filter = wrapsIterator.next();
-            DefaultFilter where = (DefaultFilter) filter.getWhere();
-            Wraps link = filter.getLink();
-            CriteriaLogic logic = filter.getLogic();
+                if (where != null) {
+                    Object key = where.getKey();
+                    Object value = where.getValue();
+                    Object startValue = where.getStartValue();
+                    Object endValue = where.getEndValue();
+                    String symbol = where.getSymbol();
 
-            if (where != null) {
-                Object key = where.getKey();
-                Object value = where.getValue();
-                Object startValue = where.getStartValue();
-                Object endValue = where.getEndValue();
-                String symbol = where.getSymbol();
+                    MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
+                    String columnName = field.getMappingColumnName();
 
-                MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
-                String columnName = field.getMappingColumnName();
-
-                // 最好校验每一个参数值
-                if (symbol.equalsIgnoreCase("like")) {
-                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                    else ((AbsWhereColumnBuilder) builder).column(columnName);
-                    ((OperatorBuilder) builder).like();
-                    ((AbsValueBuilder) builder).value(value);
-                } else if (symbol.equalsIgnoreCase("in")) {
-                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                    else ((AbsWhereColumnBuilder) builder).column(columnName);
-                    ((OperatorBuilder) builder).in();
-                    ((AbsValueBuilder) builder).value(value);
-                } else if (symbol.equalsIgnoreCase("notIn")) {
-                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                    else ((AbsWhereColumnBuilder) builder).column(columnName);
-                    ((OperatorBuilder) builder).nin();
-                    ((AbsValueBuilder) builder).value(value);
-                } else if (symbol.equalsIgnoreCase("isNull")) {
-                    if (hasJoins)
-                        ((OperatorFunctionBuilder) builder).isNull("T", columnName);
-                    else
-                        ((OperatorFunctionBuilder) builder).isNull(columnName);
-                } else if (symbol.equalsIgnoreCase("notNull")) {
-                    if (hasJoins)
-                        ((OperatorFunctionBuilder) builder).isNotNull("T", columnName);
-                    else
-                        ((OperatorFunctionBuilder) builder).isNotNull(columnName);
-                } else if (symbol.equalsIgnoreCase("between")) {
-                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                    else ((AbsWhereColumnBuilder) builder).column(columnName);
-                    ((OperatorBuilder) builder).between();
-                    ((BetweenValueBuilder) builder).section((Serializable) startValue, (Serializable) endValue);
-                } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
-                    if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
-                    else ((AbsWhereColumnBuilder) builder).column(columnName);
-                    ((OperatorBuilder) builder).eq();
-                    ((AbsValueBuilder) builder).value(value);
+                    // 最好校验每一个参数值
+                    if (symbol.equalsIgnoreCase("like")) {
+                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                        else ((AbsWhereColumnBuilder) builder).column(columnName);
+                        ((OperatorBuilder) builder).like();
+                        ((AbsValueBuilder) builder).value(value);
+                    } else if (symbol.equalsIgnoreCase("in")) {
+                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                        else ((AbsWhereColumnBuilder) builder).column(columnName);
+                        ((OperatorBuilder) builder).in();
+                        ((AbsValueBuilder) builder).value(value);
+                    } else if (symbol.equalsIgnoreCase("notIn")) {
+                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                        else ((AbsWhereColumnBuilder) builder).column(columnName);
+                        ((OperatorBuilder) builder).nin();
+                        ((AbsValueBuilder) builder).value(value);
+                    } else if (symbol.equalsIgnoreCase("isNull")) {
+                        if (hasJoins)
+                            ((OperatorFunctionBuilder) builder).isNull("T", columnName);
+                        else
+                            ((OperatorFunctionBuilder) builder).isNull(columnName);
+                    } else if (symbol.equalsIgnoreCase("notNull")) {
+                        if (hasJoins)
+                            ((OperatorFunctionBuilder) builder).isNotNull("T", columnName);
+                        else
+                            ((OperatorFunctionBuilder) builder).isNotNull(columnName);
+                    } else if (symbol.equalsIgnoreCase("between")) {
+                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                        else ((AbsWhereColumnBuilder) builder).column(columnName);
+                        ((OperatorBuilder) builder).between();
+                        ((BetweenValueBuilder) builder).section((Serializable) startValue, (Serializable) endValue);
+                    } else { // A='B' 或者 A!='B' 或者 A>2 A>=2 或者 A<2 A<=2
+                        if (hasJoins) ((AbsWhereColumnBuilder) builder).column("T", columnName);
+                        else ((AbsWhereColumnBuilder) builder).column(columnName);
+                        ((OperatorBuilder) builder).eq();
+                        ((AbsValueBuilder) builder).value(value);
+                    }
+                } else if (link != null) {
+                    this.buildWraps(builder, table, link, hasJoins);
                 }
-            } else if (link != null) {
-                this.buildWraps(builder, table, link, hasJoins);
-            }
 
-            if (wrapsIterator.hasNext()) {
-                if (logic.equals(CriteriaLogic.AND)) {
-                    ((AndBuilder) builder).and();
-                }
-                if (logic.equals(CriteriaLogic.OR)) {
-                    ((OrBuilder) builder).or();
+                if (wrapsIterator.hasNext()) {
+                    if (logic.equals(CriteriaLogic.AND)) {
+                        ((AndBuilder) builder).and();
+                    }
+                    if (logic.equals(CriteriaLogic.OR)) {
+                        ((OrBuilder) builder).or();
+                    }
                 }
             }
         }

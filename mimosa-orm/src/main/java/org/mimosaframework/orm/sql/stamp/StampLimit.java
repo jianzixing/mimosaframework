@@ -1,10 +1,10 @@
 package org.mimosaframework.orm.sql.stamp;
 
 public class StampLimit {
-    public int start;
-    public int limit;
+    public long start;
+    public long limit;
 
-    public StampLimit(int start, int limit) {
+    public StampLimit(long start, long limit) {
         this.start = start;
         this.limit = limit;
     }
