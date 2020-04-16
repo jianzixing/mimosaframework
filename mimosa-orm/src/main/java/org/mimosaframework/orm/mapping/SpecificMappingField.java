@@ -178,6 +178,7 @@ public class SpecificMappingField implements MappingField {
     }
 
     public boolean isMappingFieldNullable() {
+        if (this.mappingFieldAutoIncrement) return false;
         return mappingFieldNullable;
     }
 

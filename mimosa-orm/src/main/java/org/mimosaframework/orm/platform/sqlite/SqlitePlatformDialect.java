@@ -46,16 +46,6 @@ public class SqlitePlatformDialect extends PlatformDialect {
     }
 
     @Override
-    public void define(DataDefinition definition) throws SQLException {
-
-    }
-
-    @Override
-    public void ending(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
-
-    }
-
-    @Override
     public boolean isSupportGeneratedKeys() {
         return false;
     }

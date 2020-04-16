@@ -13,6 +13,10 @@ public class I18n {
         }
     }
 
+    static {
+        register();
+    }
+
     public static String print(String key, String... params) {
         return Messages.get(I18n.PROJECT, key, params);
     }

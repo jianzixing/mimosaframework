@@ -30,132 +30,155 @@ public class NothingCompareMapping implements StartCompareMapping {
         this.executor.compareTableStructure(
                 new PlatformCompare() {
                     @Override
-                    public void tableCreate(MappingTable mappingTable) throws SQLException {
-                        if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
-                            executor.createTable(mappingTable);
-                        }
+                    public void checking(CompareUpdateTableMate tableMate) throws SQLException {
+                        boolean isRebuildTable = false;
+                        // create table
+                        if (tableMate.getCreateTable() != null) {
+                            MappingTable mappingTable = tableMate.getCreateTable();
+                            if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE) {
+                                DialectNextStep step = executor.createTable(mappingTable);
+                                if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                            }
 
-                        if (mappingLevel == MappingLevel.WARN) {
-                            logger.warn(I18n.print("compare_mapping_warn_create_table",
-                                    mappingTable.getMappingTableName()));
-                        }
-                    }
-
-                    @Override
-                    public void fieldUpdate(MappingTable mappingTable,
-                                            TableStructure tableStructure,
-                                            Map<MappingField, List<ColumnEditType>> updateFields,
-                                            Map<MappingField, TableColumnStructure> columnStructures) throws SQLException {
-                        if (mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
-                            Iterator<Map.Entry<MappingField, List<ColumnEditType>>> iterator = updateFields.entrySet().iterator();
-                            while (iterator.hasNext()) {
-                                Map.Entry<MappingField, List<ColumnEditType>> entry = iterator.next();
-                                MappingField mappingField = entry.getKey();
-                                List<ColumnEditType> columnEditTypes = entry.getValue();
-                                executor.modifyField(mappingTable, tableStructure,
-                                        mappingField, columnStructures.get(mappingField));
+                            if (mappingLevel == MappingLevel.WARN) {
+                                logger.warn(I18n.print("compare_mapping_warn_create_table",
+                                        mappingTable.getMappingTableName()));
                             }
                         }
 
-                        if (mappingLevel == MappingLevel.WARN) {
-                            Iterator<Map.Entry<MappingField, List<ColumnEditType>>> iterator = updateFields.entrySet().iterator();
-                            while (iterator.hasNext()) {
-                                Map.Entry<MappingField, List<ColumnEditType>> entry = iterator.next();
-                                MappingField mappingField = entry.getKey();
-                                List<ColumnEditType> columnEditTypes = entry.getValue();
-                                StringBuilder sb = new StringBuilder();
-                                Iterator<ColumnEditType> typeIterator = columnEditTypes.iterator();
-                                while (typeIterator.hasNext()) {
-                                    sb.append(typeIterator.next() + "");
-                                    if (typeIterator.hasNext()) sb.append(" ");
+
+                        // update fields
+                        if (tableMate.getUpdateFields() != null && tableMate.getUpdateFields().size() > 0) {
+                            MappingTable mappingTable = tableMate.getMappingTable();
+                            TableStructure tableStructure = tableMate.getStructure();
+                            Map<MappingField, CompareUpdateMate> updateFields = tableMate.getUpdateFields();
+                            if (mappingLevel == MappingLevel.UPDATE) {
+                                Iterator<Map.Entry<MappingField, CompareUpdateMate>> iterator = updateFields.entrySet().iterator();
+                                while (iterator.hasNext()) {
+                                    Map.Entry<MappingField, CompareUpdateMate> entry = iterator.next();
+                                    MappingField mappingField = entry.getKey();
+                                    CompareUpdateMate compareUpdateMate = entry.getValue();
+
+                                    DialectNextStep step = executor.modifyField(mappingTable, tableStructure,
+                                            mappingField, compareUpdateMate.getStructure());
+                                    if (step == DialectNextStep.REBUILD) isRebuildTable = true;
                                 }
-                                logger.warn(I18n.print("compare_mapping_warn_field_update",
-                                        mappingTable.getMappingTableName(),
-                                        mappingField.getMappingColumnName(),
-                                        sb.toString()
-                                ));
                             }
+
+                            if (mappingLevel == MappingLevel.WARN) {
+                                Iterator<Map.Entry<MappingField, CompareUpdateMate>> iterator = updateFields.entrySet().iterator();
+                                while (iterator.hasNext()) {
+                                    Map.Entry<MappingField, CompareUpdateMate> entry = iterator.next();
+                                    MappingField mappingField = entry.getKey();
+                                    CompareUpdateMate compareUpdateMate = entry.getValue();
+                                    StringBuilder sb = new StringBuilder();
+                                    Iterator<ColumnEditType> typeIterator = compareUpdateMate.getEditTypes().iterator();
+                                    while (typeIterator.hasNext()) {
+                                        sb.append(typeIterator.next() + "");
+                                        if (typeIterator.hasNext()) sb.append(" ");
+                                    }
+                                    logger.warn(I18n.print("compare_mapping_warn_field_update",
+                                            mappingTable.getMappingTableName(),
+                                            mappingField.getMappingColumnName(),
+                                            sb.toString()
+                                    ));
+                                }
+                            }
+                        }
+
+
+                        // create field
+                        if (tableMate.getCreateFields() != null && tableMate.getCreateFields().size() > 0) {
+                            MappingTable mappingTable = tableMate.getMappingTable();
+                            TableStructure tableStructure = tableMate.getStructure();
+
+                            List<MappingField> createFields = tableMate.getCreateFields();
+                            if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE) {
+                                for (MappingField mappingField : createFields) {
+                                    DialectNextStep step = executor.createField(mappingTable, tableStructure, mappingField);
+                                    if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                                }
+                            }
+
+                            if (mappingLevel == MappingLevel.WARN) {
+                                for (MappingField mappingField : createFields) {
+                                    logger.warn(I18n.print("compare_mapping_warn_field_add",
+                                            mappingTable.getMappingTableName(),
+                                            mappingField.getMappingColumnName()));
+                                }
+                            }
+                        }
+
+
+                        // del fields
+                        if (tableMate.getDelColumns() != null && tableMate.getDelColumns().size() > 0) {
+                            List<TableColumnStructure> delColumns = tableMate.getDelColumns();
+                            MappingTable mappingTable = tableMate.getMappingTable();
+                            TableStructure tableStructure = tableMate.getStructure();
+                            for (TableColumnStructure columnStructure : delColumns) {
+                                DialectNextStep step = executor.dropField(mappingTable, tableStructure, columnStructure);
+                                if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                            }
+
+                            if (mappingLevel == MappingLevel.WARN) {
+                                for (TableColumnStructure columnStructure : delColumns) {
+                                    logger.warn(I18n.print("compare_mapping_warn_field_del",
+                                            mappingTable.getMappingTableName(),
+                                            columnStructure.getColumnName()));
+                                }
+                            }
+                        }
+
+
+                        // update index
+                        if (tableMate.getUpdateIndexes() != null && tableMate.getUpdateIndexes().size() > 0) {
+                            List<MappingIndex> indices = tableMate.getUpdateIndexes();
+                            MappingTable mappingTable = tableMate.getMappingTable();
+                            if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE) {
+                                for (MappingIndex index : indices) {
+                                    DialectNextStep step = executor.dropIndex(mappingTable, index.getIndexName());
+                                    if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                                }
+                                for (MappingIndex mappingIndex : indices) {
+                                    DialectNextStep step = executor.createIndex(mappingTable, mappingIndex);
+                                    if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                                }
+                            }
+
+                            if (mappingLevel == MappingLevel.WARN) {
+                                for (MappingIndex mappingIndex : indices) {
+                                    logger.warn(I18n.print("compare_mapping_warn_index_update",
+                                            mappingTable.getMappingTableName(),
+                                            mappingIndex.getIndexName()));
+                                }
+                            }
+
+                        }
+
+                        // create index
+                        if (tableMate.getNewIndexes() != null && tableMate.getNewIndexes().size() > 0) {
+                            List<MappingIndex> newIndexes = tableMate.getNewIndexes();
+                            MappingTable mappingTable = tableMate.getMappingTable();
+                            if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE) {
+                                for (MappingIndex mappingIndex : newIndexes) {
+                                    DialectNextStep step = executor.createIndex(mappingTable, mappingIndex);
+                                    if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                                }
+                            }
+
+                            if (mappingLevel == MappingLevel.WARN) {
+                                for (MappingIndex mappingIndex : newIndexes) {
+                                    logger.warn(I18n.print("compare_mapping_warn_index_add",
+                                            mappingTable.getMappingTableName(),
+                                            mappingIndex.getIndexName()));
+                                }
+                            }
+                        }
+
+                        if (isRebuildTable && mappingLevel == MappingLevel.UPDATE) {
+                            executor.doDialectRebuild(tableMate.getMappingTable(), tableMate.getStructure());
                         }
                     }
-
-                    @Override
-                    public void fieldAdd(MappingTable mappingTable,
-                                         TableStructure tableStructure,
-                                         List<MappingField> mappingFields) throws SQLException {
-                        if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
-                            for (MappingField mappingField : mappingFields) {
-                                executor.createField(mappingTable, tableStructure, mappingField);
-                            }
-                        }
-
-                        if (mappingLevel == MappingLevel.WARN) {
-                            for (MappingField mappingField : mappingFields) {
-                                logger.warn(I18n.print("compare_mapping_warn_field_add",
-                                        mappingTable.getMappingTableName(),
-                                        mappingField.getMappingColumnName()));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void fieldDel(MappingTable mappingTable,
-                                         TableStructure tableStructure,
-                                         List<TableColumnStructure> mappingFields) throws SQLException {
-                        if (mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
-                            for (TableColumnStructure columnStructure : mappingFields) {
-                                executor.dropField(mappingTable, tableStructure, columnStructure);
-                            }
-                        }
-
-                        if (mappingLevel == MappingLevel.WARN) {
-                            for (TableColumnStructure columnStructure : mappingFields) {
-                                logger.warn(I18n.print("compare_mapping_warn_field_del",
-                                        mappingTable.getMappingTableName(),
-                                        columnStructure.getColumnName()));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void indexUpdate(MappingTable mappingTable,
-                                            List<MappingIndex> mappingIndexes,
-                                            List<String> delIndexNames) throws SQLException {
-                        if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
-                            for (String indexName : delIndexNames) {
-                                executor.dropIndex(mappingTable, indexName);
-                            }
-                            for (MappingIndex mappingIndex : mappingIndexes) {
-                                executor.createIndex(mappingTable, mappingIndex);
-                            }
-                        }
-
-                        if (mappingLevel == MappingLevel.WARN) {
-                            for (MappingIndex mappingIndex : mappingIndexes) {
-                                logger.warn(I18n.print("compare_mapping_warn_index_update",
-                                        mappingTable.getMappingTableName(),
-                                        mappingIndex.getIndexName()));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void indexAdd(MappingTable mappingTable,
-                                         List<MappingIndex> mappingIndexes) throws SQLException {
-                        if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE || mappingLevel == MappingLevel.DROP) {
-                            for (MappingIndex mappingIndex : mappingIndexes) {
-                                executor.createIndex(mappingTable, mappingIndex);
-                            }
-                        }
-
-                        if (mappingLevel == MappingLevel.WARN) {
-                            for (MappingIndex mappingIndex : mappingIndexes) {
-                                logger.warn(I18n.print("compare_mapping_warn_index_add",
-                                        mappingTable.getMappingTableName(),
-                                        mappingIndex.getIndexName()));
-                            }
-                        }
-                    }
-                }
-        );
+                });
     }
 }

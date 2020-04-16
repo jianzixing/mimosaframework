@@ -128,7 +128,12 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.newName);
+                sb.setLength(0);
+                sb.append("RENAME TABLE");
+                sb.append(" " + tableName + " TO");
+                if (StringTools.isNotEmpty(item.newName)) {
+                    sb.append(" " + item.newName.toUpperCase());
+                }
             }
         }
 
@@ -218,7 +223,6 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
             String columnName = this.getColumnName(wrapper, alter, type == 2 ? column.oldColumn : column.column);
             actionSql.append(" ALTER COLUMN");
             actionSql.append(" " + columnName);
-            actionSql.append(" SET");
         }
         if (type == 1) {
             String columnName = this.getColumnName(wrapper, alter, column.column);
@@ -232,6 +236,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" TABLE");
                 sb.append(" " + tableName);
                 sb.append(actionSql);
+                sb.append(" SET");
             }
             if (type == 1) {
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
@@ -250,12 +255,28 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" TABLE");
                 sb.append(" " + tableName);
                 sb.append(actionSql);
+                sb.append(" SET");
             }
             sb.append(" NOT NULL");
             if (type == 3 || type == 2) {
                 this.getBuilders().add(new ExecuteImmediate(sb));
             }
+        } else {
+            StringBuilder sb = fromSb;
+            if (type == 3 || type == 2) {
+                sb = new StringBuilder();
+                sb.append("ALTER");
+                sb.append(" TABLE");
+                sb.append(" " + tableName);
+                sb.append(actionSql);
+                sb.append(" DROP NOT");
+            }
+            sb.append(" NULL");
+            if (type == 3 || type == 2) {
+                this.getBuilders().add(new ExecuteImmediate(sb));
+            }
         }
+
         if (column.autoIncrement) {
             StringBuilder sb = fromSb;
             if (type == 3 || type == 2) {
@@ -267,6 +288,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" TABLE");
                 sb.append(" " + tableName);
                 sb.append(actionSql);
+                sb.append(" SET");
             }
             sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
             if (type == 3 || type == 2) {
@@ -282,6 +304,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" TABLE");
                 sb.append(" " + tableName);
                 sb.append(actionSql);
+                sb.append(" SET");
             }
             sb.append(" PRIMARY KEY");
             if (type == 3 || type == 2) {
@@ -297,8 +320,13 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" TABLE");
                 sb.append(" " + tableName);
                 sb.append(actionSql);
+                sb.append(" SET");
             }
-            sb.append(" DEFAULT ''" + column.defaultValue + "''");
+            if (column.defaultValue == null) {
+                sb.append(" DEFAULT");
+            } else {
+                sb.append(" DEFAULT ''" + column.defaultValue + "''");
+            }
             if (type == 3 || type == 2) {
                 this.getBuilders().add(new ExecuteImmediate(sb));
             }

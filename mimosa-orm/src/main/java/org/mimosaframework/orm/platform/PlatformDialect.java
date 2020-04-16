@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.platform;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
@@ -13,6 +15,8 @@ import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
 import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
 import org.mimosaframework.orm.sql.drop.DefaultSQLDropBuilder;
+import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
+import org.mimosaframework.orm.sql.select.DefaultSQLSelectBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.utils.LOBLoader;
 
@@ -22,6 +26,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public abstract class PlatformDialect {
+    private static final Log logger = LogFactory.getLog(PlatformDialect.class);
     private Map<KeyColumnType, ColumnType> columnTypes = new HashMap<>();
     private DBRunner runner = null;
     protected DataSourceWrapper dataSourceWrapper;
@@ -248,11 +253,17 @@ public abstract class PlatformDialect {
     }
 
     protected StampCreate commonCreateTable(MappingTable mappingTable) {
-        Class table = mappingTable.getMappingClass();
+        return this.commonCreateTable(mappingTable, null, false);
+    }
+
+    protected StampCreate commonCreateTable(MappingTable mappingTable,
+                                            String tableName,
+                                            boolean isSkipAuto) {
+        if (StringTools.isEmpty(tableName)) tableName = mappingTable.getMappingTableName();
         Set<MappingField> mappingFields = mappingTable.getMappingFields();
         if (mappingFields != null && mappingFields.size() > 0) {
             DefaultSQLCreateBuilder sql = new DefaultSQLCreateBuilder();
-            sql.create().table().ifNotExist().name(table);
+            sql.create().table().ifNotExist().name(tableName);
             for (MappingField mappingField : mappingFields) {
                 String field = mappingField.getMappingColumnName();
                 Class type = mappingField.getMappingFieldType();
@@ -272,7 +283,7 @@ public abstract class PlatformDialect {
                     sql.nullable();
                 }
                 if (isPk) sql.primary().key();
-                if (autoIncr) sql.autoIncrement();
+                if (autoIncr && !isSkipAuto) sql.autoIncrement();
                 if (StringTools.isNotEmpty(defVal)) {
                     sql.defaultValue(defVal);
                 }
@@ -348,7 +359,7 @@ public abstract class PlatformDialect {
 
     protected StampDrop commonDropTable(TableStructure structure) {
         DefaultSQLDropBuilder sql = new DefaultSQLDropBuilder();
-        return (StampDrop) sql.drop().table().table(structure.getTableName()).compile();
+        return sql.drop().table().table(structure.getTableName()).compile();
     }
 
     protected StampAlter commonAddColumn(MappingTable mappingTable, MappingField mappingField) {
@@ -381,12 +392,12 @@ public abstract class PlatformDialect {
             }
         }
 
-        return (StampAlter) sql.compile();
+        return sql.compile();
     }
 
     protected StampAlter commonDropColumn(MappingTable mappingTable, TableColumnStructure structure) {
         DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
-        return (StampAlter) sql.alter().table(mappingTable.getMappingTableName())
+        return sql.alter().table(mappingTable.getMappingTableName())
                 .drop().column(structure.getColumnName()).compile();
     }
 
@@ -401,7 +412,7 @@ public abstract class PlatformDialect {
             i++;
         }
         DefaultSQLCreateBuilder sqlCreateBuilder = new DefaultSQLCreateBuilder();
-        StampCreate sql = (StampCreate) sqlCreateBuilder.create()
+        StampCreate sql = sqlCreateBuilder.create()
                 .index().name(indexName).on().table(tableName).columns(columns).compile();
         return sql;
     }
@@ -409,47 +420,7 @@ public abstract class PlatformDialect {
     protected StampDrop commonDropIndex(MappingTable mappingTable, String indexName) {
         String tableName = mappingTable.getMappingTableName();
         DefaultSQLDropBuilder sql = new DefaultSQLDropBuilder();
-        return (StampDrop) sql.drop().index().name(indexName).on().table(tableName).compile();
-    }
-
-    /**
-     * 检查表自增列和主键
-     *
-     * @param mappingTable
-     * @param tableStructure
-     */
-    protected void triggerIncrAndKeys(MappingTable mappingTable,
-                                      TableStructure tableStructure) throws SQLException {
-
-        boolean isTriggerKeys = this.triggerIncr(mappingTable, tableStructure);
-        if (isTriggerKeys) {
-            this.triggerKeys(mappingTable, tableStructure);
-        }
-    }
-
-    protected boolean triggerIncr(MappingTable mappingTable,
-                                  TableStructure tableStructure) throws SQLException {
-
-        if (mappingTable != null && tableStructure != null) {
-            boolean isSameIncr = this.isSameAutoIncrement(mappingTable, tableStructure);
-            if (!isSameIncr) {
-                // 重新修改自增列
-                return this.rebuildAutoIncrement(mappingTable, tableStructure);
-            }
-        }
-        return true;
-    }
-
-    protected void triggerKeys(MappingTable mappingTable,
-                               TableStructure tableStructure) throws SQLException {
-
-        if (mappingTable != null && tableStructure != null) {
-            boolean isSamePK = this.isSamePrimaryKey(mappingTable, tableStructure);
-            if (!isSamePK) {
-                // 重新修改主键
-                this.rebuildPrimaryKey(mappingTable, tableStructure);
-            }
-        }
+        return sql.drop().index().name(indexName).on().table(tableName).compile();
     }
 
     /**
@@ -504,27 +475,6 @@ public abstract class PlatformDialect {
     }
 
     /**
-     * 修改删除表字段时可能需要重新创建主键
-     *
-     * @param mappingTable
-     * @param tableStructure
-     */
-    protected void rebuildPrimaryKey(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
-
-    }
-
-    /**
-     * 修改删除表字段时可能需要重新创建自增列
-     *
-     * @param mappingTable
-     * @param tableStructure
-     * @return 返回false则不再验证主键(不再调用triggerKeys方法)
-     */
-    protected boolean rebuildAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
-        return true;
-    }
-
-    /**
      * 修改删除表字段时可能需要重新创建单列索引
      *
      * @param mappingTable
@@ -558,11 +508,11 @@ public abstract class PlatformDialect {
             if (columnType.getCompareType() == ColumnCompareType.JAVA
                     && (columnStructure.getLength() != currField.getMappingFieldLength()
                     || columnStructure.getScale() != currField.getMappingFieldDecimalDigits())) {
-                columnEditTypes.add(ColumnEditType.TYPE);
+                columnEditTypes.add(ColumnEditType.TYPE_LENGTH);
             }
             if (columnType.getCompareType() == ColumnCompareType.SELF
                     && (columnStructure.getLength() != columnType.getLength())) {
-                columnEditTypes.add(ColumnEditType.TYPE);
+                columnEditTypes.add(ColumnEditType.TYPE_LENGTH);
             }
         } else {
             columnEditTypes.add(ColumnEditType.TYPE);
@@ -571,7 +521,7 @@ public abstract class PlatformDialect {
         boolean isPk = structure.isPrimaryKeyColumn(columnStructure.getColumnName());
         if (keyColumnType != KeyColumnType.TIMESTAMP) {
             boolean nullable = columnStructure.isNullable();
-            if (!isPk && nullable != currField.isMappingFieldNullable()) {
+            if (nullable != currField.isMappingFieldNullable()) {
                 columnEditTypes.add(ColumnEditType.ISNULL);
             }
 
@@ -632,14 +582,140 @@ public abstract class PlatformDialect {
      * @param definition
      * @throws SQLException
      */
-    public abstract void define(DataDefinition definition) throws SQLException;
+    public DialectNextStep define(DataDefinition definition) throws SQLException {
+        if (definition != null) {
+            DataDefinitionType type = definition.getType();
+            if (type == DataDefinitionType.CREATE_TABLE) {
+                MappingTable mappingTable = definition.getMappingTable();
+                StampCreate stampCreate = this.commonCreateTable(mappingTable);
+                if (StringTools.isNotEmpty(mappingTable.getEngineName())) {
+                    stampCreate.extra = "ENGINE=InnoDB";
+                }
+                this.runner(stampCreate);
+                Set<MappingField> mappingFields = mappingTable.getMappingFields();
+                for (MappingField mappingField : mappingFields) {
+                    if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
+                        this.triggerIndex(definition.getMappingTable(),
+                                null, mappingField, null);
+                    }
+                }
+            }
+            if (type == DataDefinitionType.DROP_TABLE) {
+                TableStructure tableStructure = definition.getTableStructure();
+                StampDrop stampDrop = this.commonDropTable(tableStructure);
+                this.runner(stampDrop);
+            }
+            if (type == DataDefinitionType.ADD_COLUMN) {
+                TableStructure structure = definition.getTableStructure();
+                List<TableConstraintStructure> pks = structure.getPrimaryKey();
+                List<TableColumnStructure> autos = structure.getAutoIncrement();
+                MappingField mappingField = definition.getMappingField();
+                if ((pks != null && pks.size() > 0 && mappingField.isMappingFieldPrimaryKey())
+                        || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
+                    return DialectNextStep.REBUILD;
+                } else {
+                    StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), mappingField);
+                    this.runner(stampAlter);
+
+                    this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
+                            definition.getMappingField(), null);
+                }
+            }
+            if (type == DataDefinitionType.MODIFY_COLUMN) {
+                DialectNextStep step = this.defineModifyField(definition);
+                return step;
+            }
+            if (type == DataDefinitionType.DROP_COLUMN) {
+                TableColumnStructure columnStructure = definition.getColumnStructure();
+                StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), columnStructure);
+                this.runner(stampAlter);
+                if (columnStructure != null) {
+                    columnStructure.setState(2);
+                }
+                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
+                        definition.getMappingField(), definition.getColumnStructure());
+            }
+            if (type == DataDefinitionType.ADD_INDEX) {
+                StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
+                this.runner(sql);
+            }
+            if (type == DataDefinitionType.MODIFY_INDEX) {
+                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
+                this.runner(stampDrop);
+                StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
+                this.runner(sql);
+            }
+            if (type == DataDefinitionType.DROP_INDEX) {
+                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
+                this.runner(stampDrop);
+            }
+        }
+
+        return DialectNextStep.NONE;
+    }
+
+    protected DialectNextStep defineModifyField(DataDefinition definition) throws SQLException {
+        return DialectNextStep.REBUILD;
+    }
 
     /**
-     * 处理需要后处理的属性，比如表的主键或自增列
+     * 是否需要重建表,如果define方法返回要求重建表
+     * 则根据配置的需要是否调用并重建表
      *
      * @throws SQLException
      */
-    public abstract void ending(MappingTable mappingTable, TableStructure tableStructure) throws SQLException;
+    public void rebuildTable(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
+        if (mappingTable != null && tableStructure != null) {
+            String tableName = mappingTable.getMappingTableName() + "_ctmp";
+            this.rebuildStartTable(mappingTable, tableName);
+            DefaultSQLInsertBuilder insertBuilder = new DefaultSQLInsertBuilder();
+            insertBuilder.insert().into().table(tableName);
+
+            Set<MappingField> fields = mappingTable.getMappingFields();
+            List<TableColumnStructure> columns = tableStructure.getColumnStructures();
+
+            List<String> cols = new ArrayList<>();
+            for (MappingField field : fields) {
+                for (TableColumnStructure c : columns) {
+                    if (field.getMappingColumnName().equals(c.getColumnName())) {
+                        cols.add(field.getMappingColumnName());
+                    }
+                }
+            }
+            insertBuilder.columns(cols.toArray(new String[]{}));
+            DefaultSQLSelectBuilder selectBuilder = new DefaultSQLSelectBuilder();
+            selectBuilder.select().fields(cols.toArray(new String[]{})).from().table(mappingTable.getMappingTableName());
+            insertBuilder.select(selectBuilder);
+            try {
+                this.runner(insertBuilder.compile());
+            } catch (Exception e) {
+                logger.error(I18n.print("copy_table_data_error",
+                        mappingTable.getMappingTableName(),
+                        e.getMessage()));
+            }
+
+            DefaultSQLDropBuilder dropBuilder = new DefaultSQLDropBuilder();
+            dropBuilder.drop().table().name(mappingTable.getMappingTableName());
+            this.runner(dropBuilder.compile());
+
+            DefaultSQLAlterBuilder renameBuilder = new DefaultSQLAlterBuilder();
+            renameBuilder.alter().table(tableName).rename().name(mappingTable.getMappingTableName());
+            this.runner(renameBuilder.compile());
+
+            this.rebuildEndTable(mappingTable, tableStructure);
+        }
+    }
+
+    protected void rebuildStartTable(MappingTable mappingTable, String tableName) throws SQLException {
+        if (mappingTable != null) {
+            StampCreate create = this.commonCreateTable(mappingTable, tableName, false);
+            this.runner(create);
+        }
+    }
+
+    protected void rebuildEndTable(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
+
+    }
 
     /**
      * 数据库驱动是否支持返回添加后的ID

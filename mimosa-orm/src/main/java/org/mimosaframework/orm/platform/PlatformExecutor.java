@@ -63,13 +63,17 @@ public class PlatformExecutor {
                     }
                 }
 
+                Map<MappingField, CompareUpdateMate> updateFields = new LinkedHashMap();
+                List<MappingField> createFields = new ArrayList<>();
+                List<TableColumnStructure> delColumns = new ArrayList<>();
+                List<MappingIndex> updateIndexes = new ArrayList<>();
+                List<MappingIndex> newIndexes = new ArrayList<>();
+
                 if (currTable != null) {
                     List<MappingField> rmCol = new ArrayList<>();
                     List<TableColumnStructure> rmSCol = new ArrayList<>();
                     Set<MappingField> mappingFields = currTable.getMappingFields();
                     if (columnStructures != null && columnStructures.size() > 0) {
-                        Map<MappingField, List<ColumnEditType>> updateFields = new LinkedHashMap();
-                        Map<MappingField, TableColumnStructure> updateColumnsStructures = new LinkedHashMap();
                         for (TableColumnStructure columnStructure : columnStructures) {
                             if (mappingFields != null) {
                                 MappingField currField = null;
@@ -90,52 +94,31 @@ public class PlatformExecutor {
                                     );
 
                                     if (columnEditTypes.size() > 0) {
-                                        // 需要修改字段
-                                        if (currField.isMappingAutoIncrement() == false && columnStructure.isAutoIncrement()) {
-                                            // 如果是从自增列变为非自增列，则需要先处理为非自增列，所有修改一下顺序
-                                            Map<MappingField, List<ColumnEditType>> updateFieldsCopy = new LinkedHashMap<>();
-                                            Map<MappingField, TableColumnStructure> updateColumnsStructuresCopy = new LinkedHashMap<>();
-                                            updateFieldsCopy.put(currField, columnEditTypes);
-                                            updateColumnsStructuresCopy.put(currField, columnStructure);
-                                            updateFieldsCopy.putAll(updateFields);
-                                            updateColumnsStructuresCopy.putAll(updateColumnsStructures);
-                                            updateFields = updateFieldsCopy;
-                                            updateColumnsStructures = updateColumnsStructuresCopy;
-                                        } else {
-                                            updateFields.put(currField, columnEditTypes);
-                                            updateColumnsStructures.put(currField, columnStructure);
-                                        }
+                                        updateFields.put(currField, new CompareUpdateMate(columnEditTypes, columnStructure));
                                     }
                                 }
                             }
-                        }
-
-                        if (updateFields != null && updateFields.size() > 0) {
-                            compare.fieldUpdate(currTable, structure, updateFields, updateColumnsStructures);
                         }
 
                         mappingFields.removeAll(rmCol);
                         columnStructures.removeAll(rmSCol);
                         if (mappingFields.size() > 0) {
                             // 有新添加的字段需要添加
-                            compare.fieldAdd(currTable, structure, new ArrayList<MappingField>(mappingFields));
+                            createFields.addAll(mappingFields);
                         }
                         if (columnStructures.size() > 0) {
                             // 有多余的字段需要删除
-                            compare.fieldDel(currTable, structure, columnStructures);
+                            delColumns.addAll(columnStructures);
                         }
                     } else {
                         // 数据库的字段没有需要重新添加全部字段
-                        compare.fieldAdd(currTable, structure, new ArrayList<MappingField>(mappingFields));
+                        createFields.addAll(mappingFields);
                     }
                 }
 
                 if (currTable != null) {
                     Set<MappingIndex> mappingIndexes = currTable.getMappingIndexes();
                     if (mappingIndexes != null) {
-                        List<MappingIndex> newIndexes = new ArrayList<>();
-                        List<MappingIndex> updateIndexes = new ArrayList<>();
-                        List<String> updateIndexNames = new ArrayList<>();
                         for (MappingIndex index : mappingIndexes) {
                             String mappingIndexName = index.getIndexName();
                             List<TableIndexStructure> indexStructures = structure.getIndexStructures(mappingIndexName);
@@ -145,7 +128,6 @@ public class PlatformExecutor {
                                 if (!indexStructures.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
                                     // 索引类型不一致需要重建索引
                                     updateIndexes.add(index);
-                                    updateIndexNames.add(mappingIndexName);
                                 } else {
                                     List<MappingField> rmIdxCol = new ArrayList<>();
                                     for (TableIndexStructure indexStructure : indexStructures) {
@@ -160,7 +142,6 @@ public class PlatformExecutor {
                                     if (indexMappingFields.size() != 0) {
                                         // 需要重建索引
                                         updateIndexes.add(index);
-                                        updateIndexNames.add(mappingIndexName);
                                     }
                                 }
                             } else {
@@ -168,16 +149,39 @@ public class PlatformExecutor {
                                 newIndexes.add(index);
                             }
                         }
-                        if (updateIndexes != null && updateIndexes.size() > 0) {
-                            compare.indexUpdate(currTable, updateIndexes, updateIndexNames);
-                        }
-                        if (newIndexes != null && newIndexes.size() > 0) {
-                            compare.indexAdd(currTable, newIndexes);
-                        }
                     }
                 }
 
-                doDialectEnding(currTable, structure);
+
+                boolean update = false;
+                CompareUpdateTableMate tableMate = new CompareUpdateTableMate();
+                if (updateFields != null && updateFields.size() > 0) {
+                    tableMate.setUpdateFields(updateFields);
+                    update = true;
+                }
+                if (createFields != null && createFields.size() > 0) {
+                    tableMate.setCreateFields(createFields);
+                    update = true;
+                }
+                if (delColumns != null && delColumns.size() > 0) {
+                    tableMate.setDelColumns(delColumns);
+                    update = true;
+                }
+                if (updateIndexes != null && updateIndexes.size() > 0) {
+                    tableMate.setUpdateIndexes(updateIndexes);
+                    update = true;
+                }
+
+                if (newIndexes != null && newIndexes.size() > 0) {
+                    tableMate.setNewIndexes(newIndexes);
+                    update = true;
+                }
+
+                if (update && currTable != null && structure != null) {
+                    tableMate.setMappingTable(currTable);
+                    tableMate.setStructure(structure);
+                    compare.checking(tableMate);
+                }
             }
             mappingTables.removeAll(rmTab);
             if (mappingTables.size() != 0) {
@@ -185,13 +189,14 @@ public class PlatformExecutor {
                 // 需要新建数据库表
 
                 for (MappingTable mappingTable : mappingTables) {
-                    compare.tableCreate(mappingTable);
                     Set<MappingIndex> mappingIndex = mappingTable.getMappingIndexes();
+                    CompareUpdateTableMate tableMate = new CompareUpdateTableMate();
                     if (mappingIndex != null && mappingIndex.size() > 0) {
-                        compare.indexAdd(mappingTable, new ArrayList<MappingIndex>(mappingIndex));
+                        tableMate.setNewIndexes(new ArrayList(mappingIndex));
                     }
-
-                    doDialectEnding(mappingTable, null);
+                    tableMate.setCreateTable(mappingTable);
+                    tableMate.setMappingTable(mappingTable);
+                    compare.checking(tableMate);
                 }
             }
         }
@@ -203,50 +208,50 @@ public class PlatformExecutor {
         return dialect;
     }
 
-    public void createTable(MappingTable mappingTable) throws SQLException {
+    public DialectNextStep createTable(MappingTable mappingTable) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.define(new DataDefinition(DataDefinitionType.CREATE_TABLE, mappingTable));
+        return dialect.define(new DataDefinition(DataDefinitionType.CREATE_TABLE, mappingTable));
     }
 
-    public void dropTable(TableStructure tableStructure) throws SQLException {
+    public DialectNextStep dropTable(TableStructure tableStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.define(new DataDefinition(DataDefinitionType.DROP_TABLE, tableStructure));
+        return dialect.define(new DataDefinition(DataDefinitionType.DROP_TABLE, tableStructure));
     }
 
-    public void createField(MappingTable mappingTable,
-                            TableStructure tableStructure,
-                            MappingField mappingField) throws SQLException {
+    public DialectNextStep createField(MappingTable mappingTable,
+                                       TableStructure tableStructure,
+                                       MappingField mappingField) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.define(new DataDefinition(DataDefinitionType.ADD_COLUMN, mappingTable, tableStructure, mappingField));
+        return dialect.define(new DataDefinition(DataDefinitionType.ADD_COLUMN, mappingTable, tableStructure, mappingField));
     }
 
-    public void modifyField(MappingTable mappingTable,
-                            TableStructure tableStructure,
-                            MappingField mappingField,
-                            TableColumnStructure columnStructure) throws SQLException {
+    public DialectNextStep modifyField(MappingTable mappingTable,
+                                       TableStructure tableStructure,
+                                       MappingField mappingField,
+                                       TableColumnStructure columnStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.define(new DataDefinition(DataDefinitionType.MODIFY_COLUMN, tableStructure, mappingTable, mappingField, columnStructure));
+        return dialect.define(new DataDefinition(DataDefinitionType.MODIFY_COLUMN, tableStructure, mappingTable, mappingField, columnStructure));
     }
 
-    public void dropField(MappingTable mappingTable, TableStructure tableStructure,
-                          TableColumnStructure columnStructure) throws SQLException {
+    public DialectNextStep dropField(MappingTable mappingTable, TableStructure tableStructure,
+                                     TableColumnStructure columnStructure) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.define(new DataDefinition(DataDefinitionType.DROP_COLUMN, mappingTable, tableStructure, columnStructure));
+        return dialect.define(new DataDefinition(DataDefinitionType.DROP_COLUMN, mappingTable, tableStructure, columnStructure));
     }
 
-    public void createIndex(MappingTable mappingTable, MappingIndex mappingIndex) throws SQLException {
+    public DialectNextStep createIndex(MappingTable mappingTable, MappingIndex mappingIndex) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.define(new DataDefinition(DataDefinitionType.ADD_INDEX, mappingTable, mappingIndex));
+        return dialect.define(new DataDefinition(DataDefinitionType.ADD_INDEX, mappingTable, mappingIndex));
     }
 
-    public void dropIndex(MappingTable mappingTable, String indexName) throws SQLException {
+    public DialectNextStep dropIndex(MappingTable mappingTable, String indexName) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexName));
+        return dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexName));
     }
 
-    public void doDialectEnding(MappingTable mappingTable, TableStructure structure) throws SQLException {
+    public void doDialectRebuild(MappingTable mappingTable, TableStructure structure) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.ending(mappingTable, structure);
+        dialect.rebuildTable(mappingTable, structure);
     }
 
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {

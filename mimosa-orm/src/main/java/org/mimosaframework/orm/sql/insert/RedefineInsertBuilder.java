@@ -12,5 +12,6 @@ public interface RedefineInsertBuilder
         InsertTableNameBuilder,
         AbsColumnsBuilder,
         ValuesBuilder,
-        InsertValuesBuilder {
+        InsertValuesBuilder,
+        InsertSelectBuilder {
 }

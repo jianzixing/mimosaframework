@@ -1,8 +1,10 @@
 package org.mimosaframework.orm.sql.insert;
 
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
+import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.sql.stamp.StampColumn;
 import org.mimosaframework.orm.sql.stamp.StampInsert;
+import org.mimosaframework.orm.sql.stamp.StampSelect;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -72,6 +74,13 @@ public class DefaultSQLInsertBuilder
     public DefaultSQLInsertBuilder table(String name) {
         this.gammars.add("table");
         stampInsert.tableName = name;
+        return this;
+    }
+
+    @Override
+    public DefaultSQLInsertBuilder select(UnifyBuilder builder) {
+        this.gammars.add("select");
+        stampInsert.select = (StampSelect) builder.compile();
         return this;
     }
 }

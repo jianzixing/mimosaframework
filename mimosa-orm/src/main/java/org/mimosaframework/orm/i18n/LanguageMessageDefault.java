@@ -290,6 +290,10 @@ public class LanguageMessageDefault implements MessagesRegister {
 
         // DefaultSQLSelectBuilder
         words.put("select_from_select_must", "select的from子句必须是select语句");
+
+        // PlatformDialect
+        words.put("copy_table_data_error", "重建表(%s)数据无法使用被清除,错误描述 %s");
+
         messageWords.add(new MessageWords(PROJECT, words));
     }
 

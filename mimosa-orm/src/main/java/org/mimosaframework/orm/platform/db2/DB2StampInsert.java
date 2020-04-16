@@ -39,7 +39,10 @@ public class DB2StampInsert extends DB2StampCommonality implements StampCombineB
                 if (i != columns.length) sb.append(",");
             }
             sb.append(")");
-            sb.append(" VALUES ");
+
+            if (insert.values != null && insert.values.length > 0) {
+                sb.append(" VALUES ");
+            }
         } else {
             if (insert.tableClass != null) {
                 MappingTable mappingTable = wrapper.getMappingTable(insert.tableClass);
@@ -57,25 +60,33 @@ public class DB2StampInsert extends DB2StampCommonality implements StampCombineB
             }
         }
 
-
-        Object[][] values = insert.values;
-        int j = 0;
-        for (Object[] row : values) {
-            int k = 0;
-            sb.append("(");
-            for (Object v : row) {
-                String name = null;
-                if (names.length > k) name = names[k];
-                else name = "value&" + k;
-                sb.append("?");
-                placeholders.add(new SQLDataPlaceholder(name, v));
-                k++;
-                if (k != row.length) sb.append(",");
+        if (insert.select != null) {
+            sb.append(" ");
+            SQLBuilderCombine combine = new DB2StampSelect().getSqlBuilder(wrapper, insert.select);
+            sb.append(combine.getSql());
+            if (combine.getPlaceholders() != null) {
+                placeholders.addAll(combine.getPlaceholders());
             }
-            sb.append(")");
+        } else {
+            Object[][] values = insert.values;
+            int j = 0;
+            for (Object[] row : values) {
+                int k = 0;
+                sb.append("(");
+                for (Object v : row) {
+                    String name = null;
+                    if (names.length > k) name = names[k];
+                    else name = "value&" + k;
+                    sb.append("?");
+                    placeholders.add(new SQLDataPlaceholder(name, v));
+                    k++;
+                    if (k != row.length) sb.append(",");
+                }
+                sb.append(")");
 
-            j++;
-            if (j != values.length) sb.append(",");
+                j++;
+                if (j != values.length) sb.append(",");
+            }
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

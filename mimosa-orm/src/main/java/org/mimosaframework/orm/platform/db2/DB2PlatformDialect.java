@@ -1,18 +1,12 @@
 package org.mimosaframework.orm.platform.db2;
 
-import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.mapping.MappingField;
-import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
 
 public class DB2PlatformDialect extends PlatformDialect {
 
@@ -110,122 +104,7 @@ public class DB2PlatformDialect extends PlatformDialect {
     }
 
     @Override
-    public void define(DataDefinition definition) throws SQLException {
-        if (definition != null) {
-            DataDefinitionType type = definition.getType();
-            if (type == DataDefinitionType.CREATE_TABLE) {
-                MappingTable mappingTable = definition.getMappingTable();
-                StampCreate stampCreate = this.commonCreateTable(mappingTable);
-                this.runner(stampCreate);
-
-                Set<MappingField> mappingFields = mappingTable.getMappingFields();
-                for (MappingField mappingField : mappingFields) {
-                    if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
-                        this.triggerIndex(definition.getMappingTable(),
-                                null, mappingField, null);
-                    }
-                }
-            }
-            if (type == DataDefinitionType.DROP_TABLE) {
-                TableStructure tableStructure = definition.getTableStructure();
-                StampDrop stampDrop = this.commonDropTable(tableStructure);
-                this.runner(stampDrop);
-            }
-            if (type == DataDefinitionType.ADD_COLUMN) {
-                StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), definition.getMappingField());
-                this.runner(stampAlter);
-
-                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
-                        definition.getMappingField(), null);
-            }
-            if (type == DataDefinitionType.MODIFY_COLUMN) {
-                TableStructure tableStructure = definition.getTableStructure();
-                MappingTable mappingTable = definition.getMappingTable();
-                MappingField mappingField = definition.getMappingField();
-                TableColumnStructure columnStructure = definition.getColumnStructure();
-                ColumnType columnType = this.getColumnType(JavaType2ColumnType
-                        .getColumnTypeByJava(mappingField.getMappingFieldType()));
-
-                String tableName = mappingTable.getMappingTableName();
-                String columnName = mappingField.getMappingColumnName();
-
-                List<ColumnEditType> columnEditTypes = this.compareColumnChange(tableStructure, mappingField, columnStructure);
-                if (columnEditTypes != null && columnEditTypes.size() > 0) {
-                    DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
-                    sql.alter().table(tableName).modify().column(columnName);
-                    boolean needRun = false;
-                    if (columnEditTypes.indexOf(ColumnEditType.TYPE) >= 0
-                            || columnEditTypes.indexOf(ColumnEditType.ISNULL) >= 0) {
-                        // ColumnEditType.TYPE;
-                        this.setSQLType(sql, mappingField.getMappingFieldType(),
-                                mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
-
-                        if (!mappingField.isMappingFieldNullable()) {
-                            sql.not();
-                            sql.nullable();
-                        }
-                        needRun = true;
-                    }
-
-                    if (columnEditTypes.indexOf(ColumnEditType.DEF_VALUE) >= 0) {
-                        // ColumnEditType.DEF_VALUE;
-                        String def = mappingField.getMappingFieldDefaultValue();
-                        if (StringTools.isNotEmpty(def)) {
-                            sql.defaultValue(def);
-                            needRun = true;
-                        }
-                    }
-                    if (columnEditTypes.indexOf(ColumnEditType.COMMENT) >= 0) {
-                        String cmt = mappingField.getMappingFieldComment();
-                        if (StringTools.isNotEmpty(cmt)) {
-                            sql.comment(cmt);
-                            needRun = true;
-                        }
-                    }
-                    if (needRun) {
-                        this.runner(sql.compile());
-                    }
-
-                    if (columnStructure != null) columnStructure.setState(1);
-                }
-
-                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
-                        definition.getMappingField(), columnStructure);
-            }
-            if (type == DataDefinitionType.DROP_COLUMN) {
-                TableColumnStructure columnStructure = definition.getColumnStructure();
-                StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), columnStructure);
-                this.runner(stampAlter);
-                if (columnStructure != null) {
-                    columnStructure.setState(2);
-                }
-                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
-                        definition.getMappingField(), definition.getColumnStructure());
-            }
-            if (type == DataDefinitionType.ADD_INDEX) {
-                StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
-                this.runner(sql);
-            }
-            if (type == DataDefinitionType.MODIFY_INDEX) {
-                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
-                this.runner(stampDrop);
-                StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
-                this.runner(sql);
-            }
-            if (type == DataDefinitionType.DROP_INDEX) {
-                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
-                this.runner(stampDrop);
-            }
-        }
-    }
-
-    @Override
-    public void ending(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
-
-    }
-
-    @Override
     public boolean isSupportGeneratedKeys() {
-        return false;
+        return true;
     }
 }

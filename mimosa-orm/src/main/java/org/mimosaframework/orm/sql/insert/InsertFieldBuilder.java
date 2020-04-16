@@ -5,5 +5,5 @@ import org.mimosaframework.orm.sql.ValuesBuilder;
 
 public interface InsertFieldBuilder<T>
         extends
-        AbsColumnsBuilder<ValuesBuilder<T>> {
+        AbsColumnsBuilder<InsertSelectBuilder<T>> {
 }

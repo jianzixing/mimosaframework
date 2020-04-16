@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.sql.alter;
 
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
-import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.io.Serializable;
@@ -37,6 +36,10 @@ public class DefaultSQLAlterBuilder
             item.indexName = value.toString();
         } else if (this.previous("database")) {
             this.stampAlter.databaseName = value.toString();
+        } else if (this.point.equals("rename") && this.getPointNext(1).equals("name")) {
+            StampAlterItem item = this.getLastItem();
+            item.renameType = KeyAlterRenameType.TABLE;
+            item.newName = "" + value;
         }
         return this;
     }

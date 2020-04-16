@@ -9,6 +9,7 @@ public class StampInsert implements StampAction {
 
     public StampColumn[] columns;
     public Object[][] values;
+    public StampSelect select;
 
     @Override
     public List<STItem> getTables() {

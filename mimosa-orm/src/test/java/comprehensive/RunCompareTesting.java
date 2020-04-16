@@ -17,8 +17,8 @@ public class RunCompareTesting {
         mimosaDataSource = new MimosaDataSource(RunDataSourceBuilder.currDataSource(), "mater");
 //        this.test1();
 //        this.test2();
-        this.test3();
-//         this.test4();
+//        this.test3();
+        this.test4();
 //         this.test5();
 //         this.test6();
     }
