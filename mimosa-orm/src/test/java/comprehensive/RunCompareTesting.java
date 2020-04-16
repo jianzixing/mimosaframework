@@ -1,16 +1,11 @@
 package comprehensive;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import org.junit.Test;
 import org.mimosaframework.orm.*;
-import org.mimosaframework.orm.annotation.Table;
-import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.DataSourceWrapper;
 
-import javax.management.Query;
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -19,36 +14,13 @@ public class RunCompareTesting {
 
     @Test
     public void runAll() throws ContextException, SQLException {
-        DataSource[] dataSources = new DataSource[]{
-                this.getDB2DataSource(),
-                this.getMysqlDataSource()
-        };
-
-        mimosaDataSource = new MimosaDataSource(dataSources[0], "mater");
+        mimosaDataSource = new MimosaDataSource(RunDataSourceBuilder.currDataSource(), "mater");
         this.test1();
         // this.test2();
         // this.test3();
         // this.test4();
         // this.test5();
         // this.test6();
-    }
-
-    private DataSource getDB2DataSource() {
-        DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setDriverClassName("com.ibm.db2.jcc.DB2Driver");
-        dataSource.setUrl("jdbc:db2://127.0.0.1:50000/database");
-        dataSource.setUsername("db2inst1");
-        dataSource.setPassword("12345");
-        return dataSource;
-    }
-
-    private DataSource getMysqlDataSource() {
-        DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/mimosa?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&nullNamePatternMatchesAll=true");
-        dataSource.setUsername("root");
-        dataSource.setPassword("12345");
-        return dataSource;
     }
 
     public StartCompareMapping getMapping(MappingLevel level, MappingTable mappingTable) {

@@ -6,7 +6,7 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.DataSourceWrapper;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
-import org.mimosaframework.orm.utils.DatabaseTypes;
+import org.mimosaframework.orm.utils.DatabaseType;
 
 import java.util.List;
 import java.util.Set;
@@ -48,7 +48,7 @@ public interface ContextContainer {
 
     boolean isShowSQL();
 
-    DatabaseTypes getDatabaseType();
+    DatabaseType getDatabaseType();
 
     void clearMimosaDataSources();
 

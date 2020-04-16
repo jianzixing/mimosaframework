@@ -8,6 +8,7 @@ import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.utils.DatabaseType;
 import tables.TableOrder;
 import tables.TableUser;
 
@@ -21,11 +22,7 @@ public class RunBaseSession {
     @Before
     public void init() throws ContextException {
         if (template == null) {
-            String config = "/template-mimosa.xml";
-            XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream(config));
-            SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
-            template = new MimosaSessionTemplate();
-            ((MimosaSessionTemplate) template).setSessionFactory(sessionFactory);
+            template = RunDataSourceBuilder.currTemplate();
         }
     }
 

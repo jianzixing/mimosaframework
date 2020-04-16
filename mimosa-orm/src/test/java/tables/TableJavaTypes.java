@@ -17,11 +17,11 @@ public enum TableJavaTypes {
     @Column(pk = true, strategy = AutoIncrementStrategy.class)
     id,
     @Column(type = int.class)
-    ints,
+    intType,
     @Column(type = String.class)
     varchar,
     @Column(type = char.class)
-    chars,
+    charType,
     @Column(type = byte.class)
     tinyint,
     @Column(type = short.class)
@@ -29,13 +29,13 @@ public enum TableJavaTypes {
     @Column(type = long.class)
     bigint,
     @Column(type = float.class)
-    floats,
+    floatType,
     @Column(type = double.class)
-    doubles,
+    doubleType,
     @Column(type = BigDecimal.class, scale = 2)
     decimal,
     @Column(type = boolean.class)
-    booleans,
+    booleanType,
     @Column(type = java.sql.Date.class)
     date,
     @Column(type = Time.class)

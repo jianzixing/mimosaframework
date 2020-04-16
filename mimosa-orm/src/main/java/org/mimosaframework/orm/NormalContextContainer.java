@@ -14,7 +14,7 @@ import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.DataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
-import org.mimosaframework.orm.utils.DatabaseTypes;
+import org.mimosaframework.orm.utils.DatabaseType;
 
 import java.io.IOException;
 import java.util.*;
@@ -301,7 +301,7 @@ public class NormalContextContainer implements ContextContainer {
     }
 
     @Override
-    public DatabaseTypes getDatabaseType() {
+    public DatabaseType getDatabaseType() {
         MimosaDataSource mimosaDataSource = this.getAnyDataSource();
         if (mimosaDataSource != null) {
             return mimosaDataSource.getDatabaseTypeEnum();

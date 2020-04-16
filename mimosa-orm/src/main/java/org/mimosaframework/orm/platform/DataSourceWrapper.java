@@ -4,7 +4,7 @@ import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionManager;
-import org.mimosaframework.orm.utils.DatabaseTypes;
+import org.mimosaframework.orm.utils.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -68,7 +68,7 @@ public class DataSourceWrapper {
         return new DefaultJDBCExecutor(this);
     }
 
-    public DatabaseTypes getDatabaseTypeEnum() {
+    public DatabaseType getDatabaseTypeEnum() {
         return this.dataSource.getDatabaseTypeEnum();
     }
 
