@@ -8,6 +8,9 @@ import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DB2StampCreate extends DB2StampCommonality implements StampCombineBuilder {
     private static final Log logger = LogFactory.getLog(DB2StampCreate.class);
 
@@ -137,40 +140,42 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateColumn[] columns = create.columns;
         if (columns != null && columns.length > 0) {
-            int i = 0;
+            int i = 0, pkc = 0;
             for (StampCreateColumn column : columns) {
-                sb.append(this.getColumnName(wrapper, create, column.column));
+                if (column.pk == KeyConfirm.YES) {
+                    pkc++;
+                }
+            }
+            List<StampColumn> primaryKeyIndex = null;
+            if (pkc > 1) primaryKeyIndex = new ArrayList<>();
+            for (StampCreateColumn column : columns) {
+                String columnName = this.getColumnName(wrapper, create, column.column);
+                sb.append(columnName);
 
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
 
-                if (!column.nullable) {
+                if (column.nullable == KeyConfirm.NO) {
                     sb.append(" NOT NULL");
                 }
-                if (column.autoIncrement) {
+                if (column.autoIncrement == KeyConfirm.YES) {
                     sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
                 }
-                if (column.pk) {
-                    sb.append(" PRIMARY KEY");
+                if (column.pk == KeyConfirm.YES) {
+                    if (pkc > 1) {
+                        primaryKeyIndex.add(column.column);
+                    } else {
+                        sb.append(" PRIMARY KEY");
+                    }
                 }
-                if (column.unique) {
+                if (column.unique == KeyConfirm.YES) {
                     sb.append(" UNIQUE");
                 }
-                if (column.key) {
-                    StampCreateIndex[] indices = create.indices;
-                    int len = 0;
-                    if (indices != null) len = indices.length;
-                    StampCreateIndex[] newIndex = new StampCreateIndex[len + 1];
-                    for (int ii = 0; ii < len + 1; ii++) {
-                        if (ii < len) {
-                            newIndex[ii] = indices[ii];
-                        } else {
-                            newIndex[ii] = new StampCreateIndex();
-                            newIndex[ii].indexType = KeyIndexType.INDEX;
-                            newIndex[ii].name = column.column.column.toString();
-                            newIndex[ii].columns = new StampColumn[]{column.column};
-                        }
-                    }
-                    create.indices = newIndex;
+                if (column.key == KeyConfirm.YES) {
+                    StampCreateIndex idx = new StampCreateIndex();
+                    idx.indexType = KeyIndexType.INDEX;
+                    idx.name = column.column.column.toString();
+                    idx.columns = new StampColumn[]{column.column};
+                    this.addCreateIndex(create, idx);
                 }
                 if (StringTools.isNotEmpty(column.defaultValue)) {
                     sb.append(" DEFAULT \"" + column.defaultValue + "\"");
@@ -181,6 +186,13 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
 
                 i++;
                 if (i != columns.length) sb.append(",");
+            }
+
+            if (pkc > 1) {
+                StampCreateIndex pkIdx = new StampCreateIndex();
+                pkIdx.indexType = KeyIndexType.PRIMARY_KEY;
+                pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
+                this.addCreateIndex(create, pkIdx);
             }
         }
     }

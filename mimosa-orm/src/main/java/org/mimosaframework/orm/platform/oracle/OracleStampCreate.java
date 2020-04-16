@@ -171,19 +171,19 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
 
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
 
-                if (!column.nullable) {
+                if (column.nullable == KeyConfirm.NO) {
                     sb.append(" NOT NULL");
                 }
-                if (column.autoIncrement) {
+                if (column.autoIncrement == KeyConfirm.YES) {
                     this.addAutoIncrement(wrapper, create.tableClass, create.tableName);
                 }
-                if (column.pk) {
+                if (column.pk == KeyConfirm.YES) {
                     sb.append(" PRIMARY KEY");
                 }
-                if (column.unique) {
+                if (column.unique == KeyConfirm.YES) {
                     sb.append(" UNIQUE");
                 }
-                if (column.key) {
+                if (column.key == KeyConfirm.YES) {
                     StampCreateIndex[] indices = create.indices;
                     int len = 0;
                     if (indices != null) len = indices.length;

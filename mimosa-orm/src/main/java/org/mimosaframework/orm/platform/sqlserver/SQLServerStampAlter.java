@@ -207,17 +207,17 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         if (column.columnType != null) {
             sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
         }
-        if (!column.nullable) {
+        if (column.nullable == KeyConfirm.NO) {
             sb.append(" NOT NULL");
         }
-        if (column.autoIncrement) {
+        if (column.autoIncrement == KeyConfirm.YES) {
             if (type == 1) {
                 sb.append(" IDENTITY(1,1)");
             } else {
                 logger.warn("sqlserver can't reset autoincrement column");
             }
         }
-        if (column.pk) {
+        if (column.pk == KeyConfirm.YES) {
             sb.append(" PRIMARY KEY");
         }
         if (StringTools.isNotEmpty(column.defaultValue)) {

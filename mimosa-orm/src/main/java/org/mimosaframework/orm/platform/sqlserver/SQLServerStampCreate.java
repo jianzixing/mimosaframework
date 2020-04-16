@@ -138,22 +138,22 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
 
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
 
-                if (!column.nullable) {
+                if (column.nullable == KeyConfirm.NO) {
                     sb.append(" NOT NULL");
                 }
-                if (column.autoIncrement) {
+                if (column.autoIncrement == KeyConfirm.YES) {
                     sb.append(" IDENTITY(1,1)");
                 }
-                if (column.pk) {
+                if (column.pk == KeyConfirm.YES) {
                     sb.append(" PRIMARY KEY");
                 }
-                if (column.unique) {
+                if (column.unique == KeyConfirm.YES) {
                     this.getBuilders().add(new ExecuteImmediate()
                             .setProcedure((create.target == KeyTarget.TABLE && create.checkExist ? "IF (@HAS_TABLE = 0) " : "")
                                     + "CREATE UNIQUE INDEX " + columnName + " ON "
                                     + tableName + "(" + columnName + ")"));
                 }
-                if (column.key) {
+                if (column.key == KeyConfirm.YES) {
                     this.getBuilders().add(new ExecuteImmediate()
                             .setProcedure((create.target == KeyTarget.TABLE && create.checkExist ? "IF (@HAS_TABLE = 0) " : "")
                                     + "CREATE INDEX " + columnName + " ON "

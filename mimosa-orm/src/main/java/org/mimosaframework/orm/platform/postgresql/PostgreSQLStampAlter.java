@@ -197,11 +197,11 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             if (type == 3 || type == 2) {
                 sb.append(" TYPE");
             }
-            if (!column.autoIncrement) {
+            if (column.autoIncrement == KeyConfirm.NO) {
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
             }
         }
-        if (column.autoIncrement) {
+        if (column.autoIncrement == KeyConfirm.YES) {
             if (type == 3) {
                 String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
                 String outColumnName = this.getColumnName(wrapper, alter, column.column, false);
@@ -237,10 +237,10 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                 }
             }
         }
-        if (!column.nullable) {
+        if (column.nullable == KeyConfirm.NO) {
             sb.append(" NOT NULL");
         }
-        if (column.pk) {
+        if (column.pk == KeyConfirm.YES) {
             sb.append(" PRIMARY KEY");
         }
         if (StringTools.isNotEmpty(column.defaultValue)) {

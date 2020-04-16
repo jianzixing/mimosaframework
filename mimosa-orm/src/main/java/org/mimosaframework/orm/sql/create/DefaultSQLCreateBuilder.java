@@ -116,7 +116,7 @@ public class DefaultSQLCreateBuilder
         if (this.point.equals("table")) {
             this.gammars.add("unique");
             StampCreateColumn column = this.getLastColumn();
-            column.unique = true;
+            column.unique = KeyConfirm.YES;
         } else {
             this.addPoint("unique");
             stampCreate.indexType = KeyIndexType.UNIQUE;
@@ -149,7 +149,7 @@ public class DefaultSQLCreateBuilder
     public DefaultSQLCreateBuilder autoIncrement() {
         this.gammars.add("autoIncrement");
         StampCreateColumn column = this.getLastColumn();
-        column.autoIncrement = true;
+        column.autoIncrement = KeyConfirm.YES;
         return this;
     }
 
@@ -174,9 +174,9 @@ public class DefaultSQLCreateBuilder
         this.gammars.add("key");
         StampCreateColumn column = this.getLastColumn();
         if (this.previous("primary")) {
-            column.pk = true;
+            column.pk = KeyConfirm.YES;
         } else {
-            column.key = true;
+            column.key = KeyConfirm.YES;
         }
         return this;
     }
@@ -192,7 +192,7 @@ public class DefaultSQLCreateBuilder
         this.gammars.add("nullable");
         if (this.previous("not")) {
             StampCreateColumn column = this.getLastColumn();
-            column.nullable = false;
+            column.nullable = KeyConfirm.NO;
         }
         return this;
     }

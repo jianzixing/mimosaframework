@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.sql.stamp.KeyColumnType;
+import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -176,5 +176,20 @@ public abstract class PlatformStampCommonality {
             return ct.getTypeName() + "(" + ct.getLength() + ")";
         }
         return null;
+    }
+
+    protected void addCreateIndex(StampCreate create, StampCreateIndex index) {
+        StampCreateIndex[] indices = create.indices;
+        int len = 0;
+        if (indices != null) len = indices.length;
+        StampCreateIndex[] newIndex = new StampCreateIndex[len + 1];
+        for (int ii = 0; ii < len + 1; ii++) {
+            if (ii < len) {
+                newIndex[ii] = indices[ii];
+            } else {
+                newIndex[ii] = index;
+            }
+        }
+        create.indices = newIndex;
     }
 }

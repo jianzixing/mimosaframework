@@ -1,12 +1,16 @@
 package org.mimosaframework.orm.platform.db2;
 
+import org.mimosaframework.orm.mapping.MappingField;
+import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Set;
 
 public class DB2PlatformDialect extends PlatformDialect {
 
@@ -101,6 +105,25 @@ public class DB2PlatformDialect extends PlatformDialect {
         StampCombineBuilder builder = new DB2StampUpdate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
+    }
+
+    protected void rebuildStartTable(MappingTable mappingTable, String tableName) throws SQLException {
+        if (mappingTable != null) {
+            StampCreate create = this.commonCreateTable(mappingTable, tableName, true);
+            this.runner(create);
+        }
+    }
+
+    protected void rebuildEndTable(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
+        Set<MappingField> mappingFields = mappingTable.getMappingFields();
+        for (MappingField mappingField : mappingFields) {
+            if (mappingField.isMappingAutoIncrement()) {
+                DefaultSQLAlterBuilder alterBuilder = new DefaultSQLAlterBuilder();
+                alterBuilder.alter().table(mappingTable.getMappingTableName())
+                        .modify().column(mappingField.getMappingColumnName())
+                        .autoIncrement();
+            }
+        }
     }
 
     @Override

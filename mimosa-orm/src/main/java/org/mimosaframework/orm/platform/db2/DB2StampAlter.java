@@ -59,7 +59,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
                 sb.append(" " + tableName);
                 sb.append(" ADD COLUMN");
-                this.buildAlterColumn(sb, wrapper, alter, item, 1);
+                this.buildAddAlterColumn(sb, wrapper, alter, item);
             }
             if (item.struct == KeyAlterStruct.INDEX) {
                 this.buildAlterIndex(sb, wrapper, alter, item);
@@ -67,11 +67,12 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
         }
 
         if (item.action == KeyAction.CHANGE) {
+            sb.setLength(0);
             String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
             String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn);
             String newColumnName = this.getColumnName(wrapper, alter, item.column);
 
-            this.buildAlterColumn(null, wrapper, alter, item, 2);
+            this.buildAlterColumn(wrapper, alter, item, 2);
             if (!oldColumnName.equalsIgnoreCase(newColumnName)) {
                 this.getBuilders().add(new ExecuteImmediate("ALTER TABLE " + tableName + " " +
                         "RENAME COLUMN " + oldColumnName + " TO " + newColumnName));
@@ -81,8 +82,9 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
         }
 
         if (item.action == KeyAction.MODIFY) {
+            sb.setLength(0);
             String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-            this.buildAlterColumn(null, wrapper, alter, item, 3);
+            this.buildAlterColumn(wrapper, alter, item, 3);
             this.getBuilders().add(new ExecuteImmediate().setProcedure
                     ("call sysproc.admin_cmd ('reorg table db2inst1." + tableName + "')"));
         }
@@ -213,131 +215,140 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
         }
     }
 
-    private void buildAlterColumn(StringBuilder fromSb,
-                                  MappingGlobalWrapper wrapper,
+    private void buildAddAlterColumn(StringBuilder sb,
+                                     MappingGlobalWrapper wrapper,
+                                     StampAlter alter,
+                                     StampAlterItem column) {
+        String columnName = this.getColumnName(wrapper, alter, column.column);
+        sb.append(" " + columnName);
+
+        if (column.columnType != null) {
+            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+        }
+        if (column.nullable == KeyConfirm.NO) {
+            sb.append(" NOT NULL");
+        } else if (column.nullable == KeyConfirm.YES) {
+            sb.append(" NULL");
+        }
+
+        if (column.autoIncrement == KeyConfirm.YES) {
+            sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
+        }
+        if (column.pk == KeyConfirm.YES) {
+            sb.append(" PRIMARY KEY");
+        }
+
+        if (column.defaultValue == null) {
+            sb.append(" DEFAULT");
+        } else {
+            sb.append(" DEFAULT ''" + column.defaultValue + "''");
+        }
+        if (StringTools.isNotEmpty(column.comment)) {
+            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
+        }
+        if (column.after != null) {
+            logger.warn("db2 can't set column order");
+        }
+        if (column.before != null) {
+            logger.warn("db2 can't set column order");
+        }
+    }
+
+    private void buildAlterColumn(MappingGlobalWrapper wrapper,
                                   StampAlter alter,
                                   StampAlterItem column, int type) {
         StringBuilder actionSql = new StringBuilder();
         String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-        if (type == 3 || type == 2) {
-            String columnName = this.getColumnName(wrapper, alter, type == 2 ? column.oldColumn : column.column);
-            actionSql.append(" ALTER COLUMN");
-            actionSql.append(" " + columnName);
-        }
-        if (type == 1) {
-            String columnName = this.getColumnName(wrapper, alter, column.column);
-            fromSb.append(" " + columnName);
-        }
+
+        String columnName = this.getColumnName(wrapper, alter, type == 2 ? column.oldColumn : column.column);
+        actionSql.append(" ALTER COLUMN");
+        actionSql.append(" " + columnName);
+
         if (column.columnType != null) {
-            StringBuilder sb = fromSb;
-            if (type == 3 || type == 2) {
-                sb = new StringBuilder();
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(actionSql);
-                sb.append(" SET");
-            }
-            if (type == 1) {
-                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
-            } else {
-                sb.append(" DATA TYPE " + this.getColumnType(column.columnType, column.len, column.scale));
-            }
-            if (type == 3 || type == 2) {
-                this.getBuilders().add(new ExecuteImmediate(sb));
-            }
+            StringBuilder sb = new StringBuilder();
+            sb.append("ALTER");
+            sb.append(" TABLE");
+            sb.append(" " + tableName);
+            sb.append(actionSql);
+            sb.append(" SET");
+
+            sb.append(" DATA TYPE " + this.getColumnType(column.columnType, column.len, column.scale));
+            this.getBuilders().add(new ExecuteImmediate(sb));
         }
-        if (!column.nullable) {
-            StringBuilder sb = fromSb;
-            if (type == 3 || type == 2) {
-                sb = new StringBuilder();
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(actionSql);
-                sb.append(" SET");
-            }
+        if (column.nullable == KeyConfirm.NO) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("ALTER");
+            sb.append(" TABLE");
+            sb.append(" " + tableName);
+            sb.append(actionSql);
+            sb.append(" SET");
             sb.append(" NOT NULL");
-            if (type == 3 || type == 2) {
-                this.getBuilders().add(new ExecuteImmediate(sb));
-            }
-        } else {
-            StringBuilder sb = fromSb;
-            if (type == 3 || type == 2) {
-                sb = new StringBuilder();
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(actionSql);
-                sb.append(" DROP NOT");
-            }
+            this.getBuilders().add(new ExecuteImmediate(sb));
+        } else if (column.nullable == KeyConfirm.YES) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("ALTER");
+            sb.append(" TABLE");
+            sb.append(" " + tableName);
+            sb.append(actionSql);
+            sb.append(" DROP NOT");
             sb.append(" NULL");
-            if (type == 3 || type == 2) {
-                this.getBuilders().add(new ExecuteImmediate(sb));
-            }
+            this.getBuilders().add(new ExecuteImmediate(sb));
         }
 
-        if (column.autoIncrement) {
-            StringBuilder sb = fromSb;
-            if (type == 3 || type == 2) {
-                sb = new StringBuilder();
-                this.getDeclares().add("IS_AUTO NUMERIC");
-                this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO IS_AUTO " +
-                        "FROM SYSIBM.SYSCOLUMNS WHERE TBNAME='" + tableName + "' AND IDENTITY='Y'"));
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(actionSql);
-                sb.append(" SET");
-            }
+        if (column.autoIncrement == KeyConfirm.YES) {
+            StringBuilder sb = new StringBuilder();
+            this.getDeclares().add("IS_AUTO NUMERIC");
+            this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO IS_AUTO " +
+                    "FROM SYSIBM.SYSCOLUMNS WHERE TBNAME='" + tableName + "' AND IDENTITY='Y'"));
+            sb.append("ALTER");
+            sb.append(" TABLE");
+            sb.append(" " + tableName);
+            sb.append(actionSql);
+            sb.append(" SET");
             sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
-            if (type == 3 || type == 2) {
-                this.getBuilders().add(new ExecuteImmediate("IF IS_AUTO=0 THEN",
-                        sb.toString(), "END IF"));
-            }
+            this.getBuilders().add(new ExecuteImmediate("IF IS_AUTO=0 THEN",
+                    sb.toString(), "END IF"));
+        } else if (column.autoIncrement == KeyConfirm.NO) {
+            //
         }
-        if (column.pk) {
-            StringBuilder sb = fromSb;
-            if (type == 3 || type == 2) {
-                sb = new StringBuilder();
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(actionSql);
-                sb.append(" SET");
-            }
+
+        if (column.pk == KeyConfirm.YES) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("ALTER");
+            sb.append(" TABLE");
+            sb.append(" " + tableName);
+            sb.append(actionSql);
+            sb.append(" SET");
             sb.append(" PRIMARY KEY");
-            if (type == 3 || type == 2) {
-                this.getBuilders().add(new ExecuteImmediate(sb));
-            }
+            this.getBuilders().add(new ExecuteImmediate(sb));
+        } else if (column.pk == KeyConfirm.NO) {
+            //
         }
 
         if (StringTools.isNotEmpty(column.defaultValue)) {
-            StringBuilder sb = fromSb;
-            if (type == 3 || type == 2) {
-                sb = new StringBuilder();
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(actionSql);
-                sb.append(" SET");
-            }
-            if (column.defaultValue == null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("ALTER");
+            sb.append(" TABLE");
+            sb.append(" " + tableName);
+            sb.append(actionSql);
+            sb.append(" SET");
+            if (column.defaultValue.equals("*****")) {
                 sb.append(" DEFAULT");
             } else {
                 sb.append(" DEFAULT ''" + column.defaultValue + "''");
             }
-            if (type == 3 || type == 2) {
-                this.getBuilders().add(new ExecuteImmediate(sb));
-            }
+
+            this.getBuilders().add(new ExecuteImmediate(sb));
         }
-        if (StringTools.isNotEmpty(column.comment)) {
+
+        if (column.comment != null) {
             if (type == 2) {
                 this.addCommentSQL(wrapper, alter, column.oldColumn, column.comment, 1);
             } else {
                 this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
             }
         }
+
         if (column.after != null) {
             logger.warn("db2 can't set column order");
         }

@@ -131,7 +131,7 @@ public class DefaultSQLAlterBuilder
             this.items.add(item);
         } else {
             StampAlterItem item = this.getLastItem();
-            item.autoIncrement = true;
+            item.autoIncrement = KeyConfirm.YES;
         }
         return this;
     }
@@ -360,7 +360,7 @@ public class DefaultSQLAlterBuilder
         if (this.previous("primary")) {
             StampAlterItem item = this.getLastItem();
             if (this.getPointNext(1).equals("column")) {
-                item.pk = true;
+                item.pk = KeyConfirm.YES;
             } else if (this.point.equals("add")
                     && !this.getPointNext(1).equals("column")) {
                 item.struct = KeyAlterStruct.INDEX;
@@ -371,7 +371,7 @@ public class DefaultSQLAlterBuilder
             }
         } else {
             StampAlterItem item = this.getLastItem();
-            item.key = true;
+            item.key = KeyConfirm.YES;
         }
         return this;
     }
@@ -471,7 +471,7 @@ public class DefaultSQLAlterBuilder
         this.gammars.add("nullable");
         if (this.previous("not")) {
             StampAlterItem item = this.getLastItem();
-            item.nullable = false;
+            item.nullable = KeyConfirm.NO;
         }
         return this;
     }
