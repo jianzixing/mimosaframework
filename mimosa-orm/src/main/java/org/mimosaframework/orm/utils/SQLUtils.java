@@ -169,14 +169,16 @@ public class SQLUtils {
             if (rs.wasNull()) {
                 fieldValue.put(fieldName, null);
             } else {
-                fieldValue.put(fieldName, s);
+                LOBLoader.Loader loader = LOBLoader.currentLoader();
+                if (loader != null) loader.lob(fieldValue, fieldName, s);
             }
         } else if (fieldClassName.equals("java.sql.Blob")) {
             java.sql.Blob s = rs.getBlob(fieldName);
             if (rs.wasNull()) {
                 fieldValue.put(fieldName, null);
             } else {
-                fieldValue.put(fieldName, s);
+                LOBLoader.Loader loader = LOBLoader.currentLoader();
+                if (loader != null) loader.lob(fieldValue, fieldName, s);
             }
         } else {// 对于其它任何未知类型的处理
             Object s = rs.getObject(fieldName);

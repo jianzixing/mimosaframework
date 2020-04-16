@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.platform;
 
+import java.sql.Clob;
+import java.sql.SQLException;
+
 public class TableColumnStructure {
     private String tableSchema;
     private String tableName;

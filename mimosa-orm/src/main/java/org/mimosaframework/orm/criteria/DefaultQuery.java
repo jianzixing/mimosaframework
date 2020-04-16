@@ -25,6 +25,11 @@ public class DefaultQuery implements LogicQuery {
     private boolean isMaster = true;
     private String slaveName;
 
+    /**
+     * 查询数据方式
+     */
+    private QueryType type;
+
     public DefaultQuery(Class<?> tableClass) {
         this.tableClass = tableClass;
     }
@@ -405,6 +410,14 @@ public class DefaultQuery implements LogicQuery {
 
     public void setSlaveName(String slaveName) {
         this.slaveName = slaveName;
+    }
+
+    public QueryType getType() {
+        return type;
+    }
+
+    public void setType(QueryType type) {
+        this.type = type;
     }
 
     @Override

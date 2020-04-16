@@ -12,6 +12,22 @@ public class JavaType2ColumnType {
         return getColumnTypeByJava(c, null, 0, 0);
     }
 
+    public static boolean isNumber(KeyColumnType type, KeyColumnType... ext) {
+        if (type == KeyColumnType.INT) return true;
+        if (type == KeyColumnType.TINYINT) return true;
+        if (type == KeyColumnType.SMALLINT) return true;
+        if (type == KeyColumnType.BIGINT) return true;
+        if (type == KeyColumnType.FLOAT) return true;
+        if (type == KeyColumnType.DOUBLE) return true;
+        if (type == KeyColumnType.DECIMAL) return true;
+        if (ext != null) {
+            for (KeyColumnType i : ext) {
+                if (i == type) return true;
+            }
+        }
+        return false;
+    }
+
     public static KeyColumnType getColumnTypeByJava(Class c,
                                                     ColumnTypeBuilder builder,
                                                     int length,

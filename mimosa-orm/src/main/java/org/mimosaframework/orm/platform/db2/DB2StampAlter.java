@@ -38,14 +38,15 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                     this.buildAlterItem(wrapper, sb, alter, item);
                 }
             }
-            // if (StringTools.isNotEmpty(alter.charset)) {
-            //     sb.append(" CHARSET " + alter.charset);
-            // }
-            // if (StringTools.isNotEmpty(alter.collate)) {
-            //     sb.append(" COLLATE " + alter.collate);
-            // }
+            if (StringTools.isNotEmpty(alter.charset)) {
+                logger.warn("db2 can't reset table charset");
+            }
         }
-        return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+        String sql = sb.toString();
+        if (StringTools.isNotEmpty(sql) && this.multiExecuteImmediate()) {
+            sql = sql.replaceAll("'", "''");
+        }
+        return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sql)), null);
     }
 
     private void buildAlterItem(MappingGlobalWrapper wrapper,
@@ -297,7 +298,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" " + tableName);
                 sb.append(actionSql);
             }
-            sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+            sb.append(" DEFAULT ''" + column.defaultValue + "''");
             if (type == 3 || type == 2) {
                 this.getBuilders().add(new ExecuteImmediate(sb));
             }

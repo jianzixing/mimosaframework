@@ -14,15 +14,17 @@ import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
 import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
 import org.mimosaframework.orm.sql.drop.DefaultSQLDropBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.utils.LOBLoader;
 
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
 public abstract class PlatformDialect {
     private Map<KeyColumnType, ColumnType> columnTypes = new HashMap<>();
-    private DataSourceWrapper dataSourceWrapper;
     private DBRunner runner = null;
+    protected DataSourceWrapper dataSourceWrapper;
     protected MappingGlobalWrapper mappingGlobalWrapper;
 
     protected void registerColumnType(KeyColumnType type, String typeName) {
@@ -85,7 +87,21 @@ public abstract class PlatformDialect {
             if (tableStructures != null && tableStructures.size() > 0) {
                 StampAction column = structureBuilder.column(schema, tables).compile();
                 List<TableColumnStructure> columnStructures = new ArrayList<>();
+                LOBLoader.register(new LOBLoader.Loader() {
+                    @Override
+                    public void lob(Map map, String columnName, Object lob) {
+                        if (lob instanceof Clob) {
+                            try {
+                                map.put(columnName, ((Clob) lob).getSubString(1, (int) ((Clob) lob).length()));
+                            } catch (SQLException e) {
+                                map.put(columnName, "$'clob_get_error'");
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
                 Object resultColumn = this.runner(column);
+                LOBLoader.close();
                 if (resultColumn instanceof List) {
                     List<ModelObject> listColumn = (List<ModelObject>) resultColumn;
                     for (ModelObject o : listColumn) {
@@ -204,7 +220,7 @@ public abstract class PlatformDialect {
      *
      * @return
      */
-    public String getCatalogAndSchema() throws SQLException {
+    protected String getCatalogAndSchema() throws SQLException {
         Connection connection = null;
         try {
             connection = dataSourceWrapper.getConnection();
@@ -561,10 +577,22 @@ public abstract class PlatformDialect {
 
             String defA = currField.getMappingFieldDefaultValue();
             String defB = columnStructure.getDefaultValue();
-            if (!(StringTools.isEmpty(defA) && StringTools.isEmpty(defB))
-                    && !(StringTools.isEmpty(defA) && "0".equals(defB))) {  // int bigint 等 数据库默认值总是0
-                if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
-                    columnEditTypes.add(ColumnEditType.DEF_VALUE);
+            // 如果返回当前字符串则表示获取默认值出错了
+            // 获取默认值出错后不再对比
+            if (defB == null || !defB.equals("$'clob_get_error'")) {
+                if (!(StringTools.isEmpty(defA) && StringTools.isEmpty(defB))
+                        && !(StringTools.isEmpty(defA) && "0".equals(defB))) {  // int bigint 等 数据库默认值总是0
+                    if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
+                        boolean last = false;
+                        // 由于某些数据库(eg:db2)的default值区分数据类型所以会加入字符串包装，这里判断一下
+                        if (defB != null && defB.startsWith("'") && defB.endsWith("'")) {
+                            defB = defB.substring(1, defB.length() - 1);
+                            if (defB.equals(defA)) {
+                                last = true;
+                            }
+                        }
+                        if (!last) columnEditTypes.add(ColumnEditType.DEF_VALUE);
+                    }
                 }
             }
         }

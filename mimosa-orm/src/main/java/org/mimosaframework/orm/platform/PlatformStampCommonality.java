@@ -17,6 +17,13 @@ public abstract class PlatformStampCommonality {
     protected List<ExecuteImmediate> begins = null;
     protected boolean declareInBegin = false;
 
+    protected boolean multiExecuteImmediate() {
+        if ((begins != null && begins.size() > 0) || (builders != null && builders.size() > 0)) {
+            return true;
+        }
+        return false;
+    }
+
     protected List<ExecuteImmediate> getBuilders() {
         if (builders == null) builders = new ArrayList<>();
         return builders;

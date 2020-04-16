@@ -7,22 +7,26 @@ import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 
 public class DB2PlatformDialect extends PlatformDialect {
 
     public DB2PlatformDialect() {
         registerColumnType(KeyColumnType.INT, "INT");
-        registerColumnType(KeyColumnType.VARCHAR, "VARCHAR");
-        registerColumnType(KeyColumnType.CHAR, "CHAR");
-        registerColumnType(KeyColumnType.TINYINT, "TINYINT");
+        registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.CHAR, "CHAR", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.TINYINT, "SMALLINT");
         registerColumnType(KeyColumnType.SMALLINT, "SMALLINT");
         registerColumnType(KeyColumnType.BIGINT, "BIGINT");
-        registerColumnType(KeyColumnType.FLOAT, "FLOAT");
+        registerColumnType(KeyColumnType.FLOAT, "REAL");
         registerColumnType(KeyColumnType.DOUBLE, "DOUBLE");
-        registerColumnType(KeyColumnType.DECIMAL, "DECIMAL");
-        registerColumnType(KeyColumnType.BOOLEAN, "BOOLEAN");
+        registerColumnType(KeyColumnType.DECIMAL, "DECIMAL", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.BOOLEAN, "CHAR", 1, ColumnCompareType.SELF);
         registerColumnType(KeyColumnType.DATE, "DATE");
         registerColumnType(KeyColumnType.TIME, "TIME");
         registerColumnType(KeyColumnType.DATETIME, "DATETIME");
@@ -36,6 +40,25 @@ public class DB2PlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.LONGTEXT, "LONGTEXT");
     }
 
+    protected String getCatalogAndSchema() throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSourceWrapper.getConnection();
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet resultSet = metaData.getSchemas();
+            String schema = null;
+            while (resultSet.next()) {
+                // 取排名第一个的SCHEMA
+                // 如果无效使用这个 select current schema from sysibm.sysdummy1
+                schema = resultSet.getString("TABLE_SCHEM");
+                break;
+            }
+            resultSet.close();
+            return schema;
+        } finally {
+            dataSourceWrapper.close();
+        }
+    }
 
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
@@ -125,8 +148,46 @@ public class DB2PlatformDialect extends PlatformDialect {
 
                 String tableName = mappingTable.getMappingTableName();
                 String columnName = mappingField.getMappingColumnName();
-                DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
 
+                List<ColumnEditType> columnEditTypes = this.compareColumnChange(tableStructure, mappingField, columnStructure);
+                if (columnEditTypes != null && columnEditTypes.size() > 0) {
+                    DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
+                    sql.alter().table(tableName).modify().column(columnName);
+                    boolean needRun = false;
+                    if (columnEditTypes.indexOf(ColumnEditType.TYPE) >= 0
+                            || columnEditTypes.indexOf(ColumnEditType.ISNULL) >= 0) {
+                        // ColumnEditType.TYPE;
+                        this.setSQLType(sql, mappingField.getMappingFieldType(),
+                                mappingField.getMappingFieldLength(), mappingField.getMappingFieldDecimalDigits());
+
+                        if (!mappingField.isMappingFieldNullable()) {
+                            sql.not();
+                            sql.nullable();
+                        }
+                        needRun = true;
+                    }
+
+                    if (columnEditTypes.indexOf(ColumnEditType.DEF_VALUE) >= 0) {
+                        // ColumnEditType.DEF_VALUE;
+                        String def = mappingField.getMappingFieldDefaultValue();
+                        if (StringTools.isNotEmpty(def)) {
+                            sql.defaultValue(def);
+                            needRun = true;
+                        }
+                    }
+                    if (columnEditTypes.indexOf(ColumnEditType.COMMENT) >= 0) {
+                        String cmt = mappingField.getMappingFieldComment();
+                        if (StringTools.isNotEmpty(cmt)) {
+                            sql.comment(cmt);
+                            needRun = true;
+                        }
+                    }
+                    if (needRun) {
+                        this.runner(sql.compile());
+                    }
+
+                    if (columnStructure != null) columnStructure.setState(1);
+                }
 
                 this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
                         definition.getMappingField(), columnStructure);
