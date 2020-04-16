@@ -25,7 +25,7 @@ public class MysqlPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.FLOAT, "FLOAT");
         registerColumnType(KeyColumnType.DOUBLE, "DOUBLE");
         registerColumnType(KeyColumnType.DECIMAL, "DECIMAL", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.BOOLEAN, "BOOLEAN");
+        registerColumnType(KeyColumnType.BOOLEAN, "TINYINT");
         registerColumnType(KeyColumnType.DATE, "DATE");
         registerColumnType(KeyColumnType.TIME, "TIME");
         registerColumnType(KeyColumnType.DATETIME, "DATETIME");

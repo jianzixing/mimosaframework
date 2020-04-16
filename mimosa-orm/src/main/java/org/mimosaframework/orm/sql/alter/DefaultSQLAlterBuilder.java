@@ -280,7 +280,7 @@ public class DefaultSQLAlterBuilder
     public DefaultSQLAlterBuilder booleanType() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();
-        item.columnType = KeyColumnType.DOUBLE;
+        item.columnType = KeyColumnType.BOOLEAN;
         return this;
     }
 

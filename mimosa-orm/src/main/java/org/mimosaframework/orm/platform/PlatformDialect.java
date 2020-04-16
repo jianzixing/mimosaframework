@@ -533,7 +533,8 @@ public abstract class PlatformDialect {
                                                     MappingField currField,
                                                     TableColumnStructure columnStructure) {
         List<ColumnEditType> columnEditTypes = new ArrayList<>();
-        ColumnType columnType = this.getColumnType(JavaType2ColumnType.getColumnTypeByJava(currField.getMappingFieldType()));
+        KeyColumnType keyColumnType = JavaType2ColumnType.getColumnTypeByJava(currField.getMappingFieldType());
+        ColumnType columnType = this.getColumnType(keyColumnType);
         if (columnType == null) {
             throw new IllegalArgumentException(I18n.print("platform_executor_empty_type", currField.getMappingFieldType().getSimpleName()));
         }
@@ -551,18 +552,20 @@ public abstract class PlatformDialect {
             columnEditTypes.add(ColumnEditType.TYPE);
         }
 
-        boolean nullable = columnStructure.isNullable();
         boolean isPk = structure.isPrimaryKeyColumn(columnStructure.getColumnName());
-        if (!isPk && nullable != currField.isMappingFieldNullable()) {
-            columnEditTypes.add(ColumnEditType.ISNULL);
-        }
+        if (keyColumnType != KeyColumnType.TIMESTAMP) {
+            boolean nullable = columnStructure.isNullable();
+            if (!isPk && nullable != currField.isMappingFieldNullable()) {
+                columnEditTypes.add(ColumnEditType.ISNULL);
+            }
 
-        String defA = currField.getMappingFieldDefaultValue();
-        String defB = columnStructure.getDefaultValue();
-        if (!(StringTools.isEmpty(defA) && StringTools.isEmpty(defB))
-                && !(StringTools.isEmpty(defA) && "0".equals(defB))) {  // int bigint 等 数据库默认值总是0
-            if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
-                columnEditTypes.add(ColumnEditType.DEF_VALUE);
+            String defA = currField.getMappingFieldDefaultValue();
+            String defB = columnStructure.getDefaultValue();
+            if (!(StringTools.isEmpty(defA) && StringTools.isEmpty(defB))
+                    && !(StringTools.isEmpty(defA) && "0".equals(defB))) {  // int bigint 等 数据库默认值总是0
+                if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
+                    columnEditTypes.add(ColumnEditType.DEF_VALUE);
+                }
             }
         }
 

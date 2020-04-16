@@ -150,6 +150,9 @@ public class SpecificMappingField implements MappingField {
                 || this.mappingFieldType.equals(Character.class)
                 || this.mappingFieldType.equals(char.class))) {
             return 255;
+        } else if ((this.mappingFieldLength == 0 || this.mappingFieldLength == 255)
+                && this.mappingFieldType.equals(BigDecimal.class)) {
+            return 32;
         }
         return mappingFieldLength;
     }
