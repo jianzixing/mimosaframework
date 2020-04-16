@@ -80,32 +80,34 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
     }
 
     private void disassembleIndexes(SpecificMappingTable mappingTable, Index index) {
-        IndexItem[] indexItems = index.value();
-        if (indexItems != null && indexItems.length > 0) {
-            for (IndexItem item : indexItems) {
-                String indexName = item.indexName();
-                String[] columns = item.columns();
-                boolean unique = item.unique();
-                if (StringTools.isEmpty(indexName)) {
-                    throw new IllegalArgumentException(I18n.print("miss_table_index_name",
-                            mappingTable.getMappingClassName()));
-                }
-                if (columns == null) {
-                    throw new IllegalArgumentException(I18n.print("miss_table_index_columns",
-                            mappingTable.getMappingClassName()));
-                }
-                List<MappingField> fields = new ArrayList<>();
-                for (String columnName : columns) {
-                    MappingField mappingField = mappingTable.getMappingFieldByJavaName(columnName);
-                    if (mappingField == null) {
-                        throw new IllegalArgumentException(I18n.print("miss_table_index_column",
-                                mappingTable.getMappingClassName(), columnName));
+        if (mappingTable != null && index != null) {
+            IndexItem[] indexItems = index.value();
+            if (indexItems != null && indexItems.length > 0) {
+                for (IndexItem item : indexItems) {
+                    String indexName = item.indexName();
+                    String[] columns = item.columns();
+                    boolean unique = item.unique();
+                    if (StringTools.isEmpty(indexName)) {
+                        throw new IllegalArgumentException(I18n.print("miss_table_index_name",
+                                mappingTable.getMappingClassName()));
                     }
-                    fields.add(mappingField);
+                    if (columns == null) {
+                        throw new IllegalArgumentException(I18n.print("miss_table_index_columns",
+                                mappingTable.getMappingClassName()));
+                    }
+                    List<MappingField> fields = new ArrayList<>();
+                    for (String columnName : columns) {
+                        MappingField mappingField = mappingTable.getMappingFieldByJavaName(columnName);
+                        if (mappingField == null) {
+                            throw new IllegalArgumentException(I18n.print("miss_table_index_column",
+                                    mappingTable.getMappingClassName(), columnName));
+                        }
+                        fields.add(mappingField);
+                    }
+                    MappingIndex mappingIndex = new SpecificMappingIndex(indexName,
+                            fields, unique ? IndexType.U : IndexType.D);
+                    mappingTable.addMappingIndex(mappingIndex);
                 }
-                MappingIndex mappingIndex = new SpecificMappingIndex(indexName,
-                        fields, unique ? IndexType.U : IndexType.D);
-                mappingTable.addMappingIndex(mappingIndex);
             }
         }
     }
@@ -196,25 +198,31 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         if (StringTools.isEmpty(columnName) && convert != null) {
             columnName = convert.convert(fieldName, ConvertType.FIELD_NAME);
         }
+
         mappingField.setMappingColumnName(columnName);
-        mappingField.setMappingFieldType(column.type());
+        if (column.pk() && column.strategy() == AutoIncrementStrategy.class) {
+            mappingField.setMappingFieldType(long.class);
+        } else {
+            mappingField.setMappingFieldType(column.type());
+        }
         mappingField.setMappingFieldLength(column.length());
         mappingField.setMappingFieldDecimalDigits(column.scale());
         mappingField.setMappingFieldNullable(column.nullable());
         mappingField.setMappingFieldPrimaryKey(column.pk());
         mappingField.setMappingFieldIndex(column.index());
         mappingField.setMappingFieldUnique(column.unique());
-        if (StringTools.isNotEmpty(column.comment()))
+        if (StringTools.isNotEmpty(column.comment())) {
             mappingField.setMappingFieldComment(column.comment());
+        }
         mappingField.setMappingFieldTimeForUpdate(column.timeForUpdate());
-        if (StringTools.isNotEmpty(column.defaultValue()))
+        if (StringTools.isNotEmpty(column.defaultValue())) {
             mappingField.setMappingFieldDefaultValue(column.defaultValue());
+        }
 
         if (column.strategy().equals(AutoIncrementStrategy.class)) {
             mappingField.setMappingFieldAutoIncrement(true);
         }
         mappingTable.addMappingField(mappingField);
-
         if (mappingField.getMappingFieldType().equals(BigDecimal.class)
                 && mappingField.getMappingFieldLength() == 255) {
             throw new IllegalArgumentException(I18n.print("must_set_decimal"));

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mimosa name="mimosa_test" description="测试用的配置">
     <convert name="H2U"/>
-    <mapping scan="tables"/>
+    <mapping scan="tables" level="UPDATE"/>
     <format showSql="true"/>
     <datasource wrapper="default"/>
 

@@ -3,6 +3,7 @@ package org.mimosaframework.orm.platform.mysql;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.platform.PlatformDialect;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 

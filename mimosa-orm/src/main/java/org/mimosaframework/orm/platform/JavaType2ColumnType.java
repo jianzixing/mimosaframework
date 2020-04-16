@@ -33,11 +33,11 @@ public class JavaType2ColumnType {
             return KeyColumnType.BLOB;
         }
         if (c.equals(SupportMediumBlob.class)) {
-            if (builder != null) builder.blob();
+            if (builder != null) builder.mediumBlob();
             return KeyColumnType.MEDIUMBLOB;
         }
         if (c.equals(SupportLongBlob.class)) {
-            if (builder != null) builder.blob();
+            if (builder != null) builder.longBlob();
             return KeyColumnType.LONGBLOB;
         }
         if (c.equals(Clob.class) || c.equals(SupportText.class)) {
@@ -45,11 +45,11 @@ public class JavaType2ColumnType {
             return KeyColumnType.TEXT;
         }
         if (c.equals(SupportMediumText.class)) {
-            if (builder != null) builder.text();
+            if (builder != null) builder.mediumText();
             return KeyColumnType.MEDIUMTEXT;
         }
         if (c.equals(SupportLongText.class)) {
-            if (builder != null) builder.text();
+            if (builder != null) builder.longText();
             return KeyColumnType.LONGTEXT;
         }
         if (c.equals(Byte.class) || c.equals(byte.class)) {

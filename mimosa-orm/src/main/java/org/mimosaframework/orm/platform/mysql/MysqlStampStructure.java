@@ -40,7 +40,7 @@ public class MysqlStampStructure implements StampCombineBuilder {
                             "TABLE_NAME AS TABNAME," +
                             "COLUMN_NAME AS COLNAME," +
                             "DATA_TYPE AS TYPENAME," +
-                            "CHARACTER_MAXIMUM_LENGTH AS LENGTH," +
+                            "(CASE WHEN NUMERIC_PRECISION IS NOT NULL THEN NUMERIC_PRECISION ELSE CHARACTER_MAXIMUM_LENGTH END) AS LENGTH," +
                             "NUMERIC_SCALE AS SCALE," +
                             "COLUMN_DEFAULT AS `DEFAULT`," +
                             "(CASE WHEN IS_NULLABLE = 'NO' THEN 'N' ELSE 'Y' END) AS IS_NULLABLE," +

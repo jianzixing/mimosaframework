@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.sql.alter;
 
 import org.mimosaframework.orm.sql.AbstractSQLBuilder;
+import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.io.Serializable;
@@ -485,6 +486,14 @@ public class DefaultSQLAlterBuilder
         this.addPoint("table");
         this.stampAlter.target = KeyTarget.TABLE;
         this.stampAlter.tableName = name;
+        return this;
+    }
+
+    public DefaultSQLAlterBuilder timeForUpdate() {
+        StampAlterItem item = this.getLastItem();
+        if (item != null) {
+            item.timeForUpdate = true;
+        }
         return this;
     }
 }

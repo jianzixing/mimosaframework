@@ -5,6 +5,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.ExecuteImmediate;
+import org.mimosaframework.orm.platform.PlatformDialect;
 import org.mimosaframework.orm.platform.PlatformStampCommonality;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
 import org.mimosaframework.orm.sql.stamp.*;
@@ -16,6 +17,12 @@ import java.util.Map;
 public abstract class OracleStampCommonality extends PlatformStampCommonality {
     protected static final String RS = "\"";
     protected static final String RE = "\"";
+    protected static OraclePlatformDialect dialect = new OraclePlatformDialect();
+
+    @Override
+    protected PlatformDialect getDialect() {
+        return dialect;
+    }
 
     protected String getTableName(MappingGlobalWrapper wrapper,
                                   Class table,
@@ -298,64 +305,7 @@ public abstract class OracleStampCommonality extends PlatformStampCommonality {
      * INTEGER 整数类型 小的整数
      * FLOAT 浮点数类型 NUMBER(38)，双精度
      * REAL 实数类型 NUMBER(63)，精度更高
-     *
-     * @param columnType
-     * @param len
-     * @param scale
-     * @return
      */
-    protected String getColumnType(KeyColumnType columnType, int len, int scale) {
-        if (columnType == KeyColumnType.INT) {
-            return "INT";
-        }
-        if (columnType == KeyColumnType.VARCHAR) {
-            return "VARCHAR2(" + len + ")";
-        }
-        if (columnType == KeyColumnType.CHAR) {
-            return "CHAR(" + len + ")";
-        }
-        if (columnType == KeyColumnType.BLOB) {
-            return "BLOB";
-        }
-        if (columnType == KeyColumnType.TEXT) {
-            return "TEXT";
-        }
-        if (columnType == KeyColumnType.TINYINT) {
-            return "TINYINT";
-        }
-        if (columnType == KeyColumnType.SMALLINT) {
-            return "SMALLINT";
-        }
-        if (columnType == KeyColumnType.BIGINT) {
-            return "BIGINT";
-        }
-        if (columnType == KeyColumnType.FLOAT) {
-            return "FLOAT";
-        }
-        if (columnType == KeyColumnType.DOUBLE) {
-            return "DOUBLE";
-        }
-        if (columnType == KeyColumnType.DECIMAL) {
-            return "DECIMAL(" + len + "," + scale + ")";
-        }
-        if (columnType == KeyColumnType.BOOLEAN) {
-            return "BOOLEAN";
-        }
-        if (columnType == KeyColumnType.DATE) {
-            return "DATE";
-        }
-        if (columnType == KeyColumnType.TIME) {
-            return "TIME";
-        }
-        if (columnType == KeyColumnType.DATETIME) {
-            return "DATE";
-        }
-        if (columnType == KeyColumnType.TIMESTAMP) {
-            return "TIMESTAMP";
-        }
-        return null;
-    }
-
 
     protected void addCommentSQL(MappingGlobalWrapper wrapper,
                                  StampAction action,

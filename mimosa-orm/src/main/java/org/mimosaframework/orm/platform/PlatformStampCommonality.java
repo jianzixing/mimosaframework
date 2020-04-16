@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.sql.stamp.KeyColumnType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -149,5 +150,24 @@ public abstract class PlatformStampCommonality {
             placeholder.setValue(value);
             placeholders.add(placeholder);
         }
+    }
+
+    protected PlatformDialect getDialect() {
+        return null;
+    }
+
+    protected String getColumnType(KeyColumnType columnType, int len, int scale) {
+        ColumnType ct = this.getDialect().getColumnType(columnType);
+        if (ct.getCompareType() == ColumnCompareType.NONE) {
+            return ct.getTypeName();
+        } else if (ct.getCompareType() == ColumnCompareType.JAVA) {
+            if (columnType == KeyColumnType.DECIMAL) {
+                return ct.getTypeName() + "(" + len + "," + scale + ")";
+            }
+            return ct.getTypeName() + "(" + len + ")";
+        } else if (ct.getCompareType() == ColumnCompareType.SELF) {
+            return ct.getTypeName() + "(" + ct.getLength() + ")";
+        }
+        return null;
     }
 }

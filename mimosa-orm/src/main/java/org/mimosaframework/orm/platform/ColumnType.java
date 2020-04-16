@@ -8,11 +8,29 @@ public class ColumnType {
     private int length;
     private int scale;
 
+    private ColumnCompareType compareType;
+
     public ColumnType(KeyColumnType type, String typeName, int length, int scale) {
         this.type = type;
         this.typeName = typeName;
         this.length = length;
         this.scale = scale;
+    }
+
+    public ColumnType(KeyColumnType type, String typeName, int length, int scale, ColumnCompareType compareType) {
+        this.type = type;
+        this.typeName = typeName;
+        this.length = length;
+        this.scale = scale;
+        this.compareType = compareType;
+    }
+
+    public ColumnCompareType getCompareType() {
+        return compareType;
+    }
+
+    public void setCompareType(ColumnCompareType compareType) {
+        this.compareType = compareType;
     }
 
     public KeyColumnType getType() {

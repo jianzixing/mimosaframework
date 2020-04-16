@@ -8,7 +8,12 @@ import org.mimosaframework.orm.utils.DatabaseType;
 import javax.sql.DataSource;
 
 public class RunDataSourceBuilder {
-    private static final DatabaseType type = DatabaseType.DB2;
+    //    private static final DatabaseType type = DatabaseType.DB2;
+    private static final DatabaseType type = DatabaseType.MYSQL;
+//    private static final DatabaseType type = DatabaseType.ORACLE;
+//    private static final DatabaseType type = DatabaseType.SQLITE;
+//    private static final DatabaseType type = DatabaseType.SQL_SERVER;
+//    private static final DatabaseType type = DatabaseType.POSTGRESQL;
 
     public static SessionTemplate currTemplate() throws ContextException {
         return getTemplate(type);

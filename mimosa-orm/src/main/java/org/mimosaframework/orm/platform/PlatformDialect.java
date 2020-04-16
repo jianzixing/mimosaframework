@@ -26,15 +26,29 @@ public abstract class PlatformDialect {
     protected MappingGlobalWrapper mappingGlobalWrapper;
 
     protected void registerColumnType(KeyColumnType type, String typeName) {
-        this.columnTypes.put(type, new ColumnType(type, typeName, -1, -1));
+        this.columnTypes.put(type, new ColumnType(type, typeName,
+                -1, -1, ColumnCompareType.NONE));
     }
 
     protected void registerColumnType(KeyColumnType type, String typeName, int length) {
-        this.columnTypes.put(type, new ColumnType(type, typeName, length, -1));
+        this.columnTypes.put(type, new ColumnType(type, typeName,
+                length, -1, ColumnCompareType.JAVA));
     }
 
     protected void registerColumnType(KeyColumnType type, String typeName, int length, int scale) {
-        this.columnTypes.put(type, new ColumnType(type, typeName, length, scale));
+        this.columnTypes.put(type, new ColumnType(type, typeName,
+                length, scale, ColumnCompareType.JAVA));
+    }
+
+    protected void registerColumnType(KeyColumnType type, String typeName, ColumnCompareType columnCompareType) {
+        this.columnTypes.put(type, new ColumnType(type, typeName,
+                -1, -1, columnCompareType));
+    }
+
+    protected void registerColumnType(KeyColumnType type, String typeName,
+                                      int length, ColumnCompareType columnCompareType) {
+        this.columnTypes.put(type, new ColumnType(type, typeName,
+                length, -1, columnCompareType));
     }
 
     public void setDataSourceWrapper(DataSourceWrapper dswrapper) {
@@ -330,20 +344,25 @@ public abstract class PlatformDialect {
         boolean nullable = mappingField.isMappingFieldNullable();
         boolean autoIncr = mappingField.isMappingAutoIncrement();
         String comment = mappingField.getMappingFieldComment();
+        boolean isTimeForUpdate = mappingField.isMappingFieldTimeForUpdate();
 
         DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
         sql.alter().table(mappingTable.getMappingClass()).add().column(field);
 
-        this.setSQLType(sql, type, length, scale);
-        if (!nullable) {
-            sql.not();
-            sql.nullable();
-        }
-        if (StringTools.isNotEmpty(defVal)) {
-            sql.defaultValue(defVal);
-        }
-        if (StringTools.isNotEmpty(comment)) {
-            sql.comment(comment);
+        if (isTimeForUpdate) {
+            sql.timeForUpdate();
+        } else {
+            this.setSQLType(sql, type, length, scale);
+            if (!nullable) {
+                sql.not();
+                sql.nullable();
+            }
+            if (StringTools.isNotEmpty(defVal)) {
+                sql.defaultValue(defVal);
+            }
+            if (StringTools.isNotEmpty(comment)) {
+                sql.comment(comment);
+            }
         }
 
         return (StampAlter) sql.compile();
@@ -518,9 +537,17 @@ public abstract class PlatformDialect {
         if (columnType == null) {
             throw new IllegalArgumentException(I18n.print("platform_executor_empty_type", currField.getMappingFieldType().getSimpleName()));
         }
-        if (!columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName())
-                || columnStructure.getLength() != currField.getMappingFieldLength()
-                || columnStructure.getScale() != currField.getMappingFieldDecimalDigits()) {
+        if (columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName())) {
+            if (columnType.getCompareType() == ColumnCompareType.JAVA
+                    && (columnStructure.getLength() != currField.getMappingFieldLength()
+                    || columnStructure.getScale() != currField.getMappingFieldDecimalDigits())) {
+                columnEditTypes.add(ColumnEditType.TYPE);
+            }
+            if (columnType.getCompareType() == ColumnCompareType.SELF
+                    && (columnStructure.getLength() != columnType.getLength())) {
+                columnEditTypes.add(ColumnEditType.TYPE);
+            }
+        } else {
             columnEditTypes.add(ColumnEditType.TYPE);
         }
 

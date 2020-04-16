@@ -17,14 +17,14 @@ import java.util.Set;
 public class MysqlPlatformDialect extends PlatformDialect {
     public MysqlPlatformDialect() {
         registerColumnType(KeyColumnType.INT, "INT");
-        registerColumnType(KeyColumnType.VARCHAR, "VARCHAR");
-        registerColumnType(KeyColumnType.CHAR, "CHAR");
+        registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.CHAR, "CHAR", ColumnCompareType.JAVA);
         registerColumnType(KeyColumnType.TINYINT, "TINYINT");
         registerColumnType(KeyColumnType.SMALLINT, "SMALLINT");
         registerColumnType(KeyColumnType.BIGINT, "BIGINT");
         registerColumnType(KeyColumnType.FLOAT, "FLOAT");
         registerColumnType(KeyColumnType.DOUBLE, "DOUBLE");
-        registerColumnType(KeyColumnType.DECIMAL, "DECIMAL");
+        registerColumnType(KeyColumnType.DECIMAL, "DECIMAL", ColumnCompareType.JAVA);
         registerColumnType(KeyColumnType.BOOLEAN, "BOOLEAN");
         registerColumnType(KeyColumnType.DATE, "DATE");
         registerColumnType(KeyColumnType.TIME, "TIME");
@@ -124,6 +124,7 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 MappingTable mappingTable = definition.getMappingTable();
                 MappingField mappingField = definition.getMappingField();
                 TableColumnStructure columnStructure = definition.getColumnStructure();
+
                 ColumnType columnType = this.getColumnType(JavaType2ColumnType
                         .getColumnTypeByJava(mappingField.getMappingFieldType()));
 

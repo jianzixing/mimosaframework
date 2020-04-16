@@ -4,6 +4,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.platform.PlatformDialect;
 import org.mimosaframework.orm.platform.PlatformStampCommonality;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
 import org.mimosaframework.orm.sql.stamp.*;
@@ -13,6 +14,12 @@ import java.util.List;
 public abstract class SqliteStampCommonality extends PlatformStampCommonality {
     protected static final String RS = "\"";
     protected static final String RE = "\"";
+    protected static SqlitePlatformDialect dialect = new SqlitePlatformDialect();
+
+    @Override
+    protected PlatformDialect getDialect() {
+        return dialect;
+    }
 
     protected String getTableName(MappingGlobalWrapper wrapper,
                                   Class table,
@@ -237,57 +244,5 @@ public abstract class SqliteStampCommonality extends PlatformStampCommonality {
             }
             sb.append(")");
         }
-    }
-
-    protected String getColumnType(KeyColumnType columnType, int len, int scale) {
-        if (columnType == KeyColumnType.INT) {
-            return "INT";
-        }
-        if (columnType == KeyColumnType.VARCHAR) {
-            return "VARCHAR(" + len + ")";
-        }
-        if (columnType == KeyColumnType.CHAR) {
-            return "CHAR(" + len + ")";
-        }
-        if (columnType == KeyColumnType.BLOB) {
-            return "BLOB";
-        }
-        if (columnType == KeyColumnType.TEXT) {
-            return "TEXT";
-        }
-        if (columnType == KeyColumnType.TINYINT) {
-            return "TINYINT";
-        }
-        if (columnType == KeyColumnType.SMALLINT) {
-            return "SMALLINT";
-        }
-        if (columnType == KeyColumnType.BIGINT) {
-            return "BIGINT";
-        }
-        if (columnType == KeyColumnType.FLOAT) {
-            return "FLOAT";
-        }
-        if (columnType == KeyColumnType.DOUBLE) {
-            return "DOUBLE";
-        }
-        if (columnType == KeyColumnType.DECIMAL) {
-            return "DECIMAL(" + len + "," + scale + ")";
-        }
-        if (columnType == KeyColumnType.BOOLEAN) {
-            return "BOOLEAN";
-        }
-        if (columnType == KeyColumnType.DATE) {
-            return "DATE";
-        }
-        if (columnType == KeyColumnType.TIME) {
-            return "TIME";
-        }
-        if (columnType == KeyColumnType.DATETIME) {
-            return "DATETIME";
-        }
-        if (columnType == KeyColumnType.TIMESTAMP) {
-            return "TIMESTAMP";
-        }
-        return null;
     }
 }
