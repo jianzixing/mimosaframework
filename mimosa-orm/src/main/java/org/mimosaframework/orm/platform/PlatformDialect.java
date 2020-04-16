@@ -312,51 +312,6 @@ public abstract class PlatformDialect {
         JavaType2ColumnType.getColumnTypeByJava(type, typeBuilder, length, scale);
     }
 
-    protected List<MappingField> getPrimaryKeyByMappingTable(MappingTable mappingTable) {
-        return mappingTable.getMappingPrimaryKeyFields();
-    }
-
-    protected boolean isSamePrimaryKey(MappingTable mappingTable, TableStructure structure) {
-        List<MappingField> mappingFields = this.getPrimaryKeyByMappingTable(mappingTable);
-        List<TableConstraintStructure> constraintStructures = structure.getPrimaryKey();
-        if (mappingFields.size() == constraintStructures.size()) {
-            for (MappingField mappingField : mappingFields) {
-                boolean is = false;
-                for (TableConstraintStructure cs : constraintStructures) {
-                    if (mappingField.getMappingColumnName().equalsIgnoreCase(cs.getColumnName())) {
-                        is = true;
-                        break;
-                    }
-                }
-                if (!is) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    protected boolean isSameAutoIncrement(MappingTable mappingTable, TableStructure tableStructure) {
-        MappingField mappingField = mappingTable.getAutoIncrementField();
-        List<TableColumnStructure> columnStructures = tableStructure.getAutoIncrement();
-        if (mappingField == null && columnStructures == null) {
-            return true;
-        }
-        if (columnStructures != null && columnStructures.size() > 0) {
-            if (mappingField == null) return false;
-            for (TableColumnStructure columnStructure : columnStructures) {
-                if (mappingField.isMappingAutoIncrement()
-                        && columnStructure.isAutoIncrement()
-                        && mappingField.getMappingColumnName().equalsIgnoreCase(columnStructure.getColumnName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     protected StampDrop commonDropTable(TableStructure structure) {
         DefaultSQLDropBuilder sql = new DefaultSQLDropBuilder();
         return sql.drop().table().table(structure.getTableName()).compile();

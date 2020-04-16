@@ -122,6 +122,7 @@ public class DB2PlatformDialect extends PlatformDialect {
                 alterBuilder.alter().table(mappingTable.getMappingTableName())
                         .modify().column(mappingField.getMappingColumnName())
                         .autoIncrement();
+                this.runner(alterBuilder.compile());
             }
         }
     }

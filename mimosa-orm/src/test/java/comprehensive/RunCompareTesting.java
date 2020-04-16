@@ -254,7 +254,6 @@ public class RunCompareTesting {
         mappingField3.setMappingFieldType(byte.class);
         mappingField3.setMappingFieldLength(30);
         mappingField3.setMappingFieldPrimaryKey(true);
-        mappingField3.setMappingFieldAutoIncrement(true);
         mappingField3.setMappingFieldNullable(false);
         mappingField3.setMappingFieldIndex(true);
         mappingField3.setMappingFieldComment("测试age2备注");
