@@ -123,7 +123,8 @@ public class OraclePlatformDialect extends PlatformDialect {
                 String def = mappingField.getMappingFieldDefaultValue();
                 boolean nullable = mappingField.isMappingFieldNullable();
 
-                if (nullable && StringTools.isEmpty(def)) {
+                boolean setDefault = false;
+                if (!nullable && StringTools.isEmpty(def)) {
                     KeyColumnType type = JavaType2ColumnType.getColumnTypeByJava(mappingField.getMappingFieldType());
                     if (JavaType2ColumnType.isNumber(type) || JavaType2ColumnType.isBoolean(type))
                         ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("0");
@@ -132,19 +133,21 @@ public class OraclePlatformDialect extends PlatformDialect {
                                 .setMappingFieldDefaultValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                     else
                         ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("");
+
+                    setDefault = true;
                 }
 
                 try {
                     StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), mappingField);
                     this.runner(stampAlter);
 
-                    if (nullable && StringTools.isEmpty(def)) {
+                    if (setDefault) {
                         DefaultSQLAlterBuilder alterBuilder = new DefaultSQLAlterBuilder();
                         alterBuilder.alter().table(tableName).modify().column(columnName).defaultValue("*****");
                         this.runner(alterBuilder.compile());
                     }
                 } finally {
-                    if (nullable && StringTools.isEmpty(def)) {
+                    if (setDefault) {
                         ((SpecificMappingField) mappingField).setMappingFieldDefaultValue(null);
                     }
                 }

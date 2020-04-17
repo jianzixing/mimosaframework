@@ -122,7 +122,7 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
                         if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
                         primaryKeyIndex.add(column.column);
                     }
-                    if (StringTools.isNotEmpty(column.defaultValue)) {
+                    if (column.defaultValue != null) {
                         sb.append(" DEFAULT \"" + column.defaultValue + "\"");
                     }
                 }

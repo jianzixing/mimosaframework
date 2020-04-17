@@ -330,7 +330,7 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
             //
         }
 
-        if (StringTools.isNotEmpty(column.defaultValue)) {
+        if (column.defaultValue != null) {
             StringBuilder sb = new StringBuilder();
             sb.append("ALTER");
             sb.append(" TABLE");

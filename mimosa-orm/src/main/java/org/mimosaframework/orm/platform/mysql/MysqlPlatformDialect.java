@@ -151,6 +151,8 @@ public class MysqlPlatformDialect extends PlatformDialect {
     @Override
     protected void defineCreateTableExtra(StampCreate create, MappingTable mappingTable) {
         if (StringTools.isNotEmpty(mappingTable.getEngineName())) {
+            create.extra = "ENGINE=" + mappingTable.getEngineName();
+        } else {
             create.extra = "ENGINE=InnoDB";
         }
     }

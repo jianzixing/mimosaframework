@@ -219,22 +219,23 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (column.columnType != null) {
             sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
         }
-        if (column.nullable == KeyConfirm.NO) {
-            sb.append(" NOT NULL");
-        }
         if (column.autoIncrement == KeyConfirm.YES) {
             this.addAutoIncrement(wrapper, alter.tableClass, alter.tableName);
         }
         if (column.pk == KeyConfirm.YES) {
             sb.append(" PRIMARY KEY");
         }
-        if (StringTools.isNotEmpty(column.defaultValue)) {
+        if (column.defaultValue != null) {
             if (column.defaultValue.equals("*****")) {
                 sb.append(" DEFAULT NULL");
             } else {
                 sb.append(" DEFAULT '" + column.defaultValue + "'");
             }
         }
+        if (column.nullable == KeyConfirm.NO) {
+            sb.append(" NOT NULL");
+        }
+
         if (StringTools.isNotEmpty(column.comment)) {
             this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
         }

@@ -243,7 +243,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         if (column.pk == KeyConfirm.YES) {
             sb.append(" PRIMARY KEY");
         }
-        if (StringTools.isNotEmpty(column.defaultValue)) {
+        if (column.defaultValue != null) {
             sb.append(" DEFAULT \"" + column.defaultValue + "\"");
         }
         if (StringTools.isNotEmpty(column.comment)) {

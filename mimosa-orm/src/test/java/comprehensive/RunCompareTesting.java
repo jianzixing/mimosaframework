@@ -20,7 +20,8 @@ public class RunCompareTesting {
 //        this.test3();
 //        this.test4();
 //        this.test5();
-        this.test6();
+//        this.test7();
+        this.test8();
     }
 
     public StartCompareMapping getMapping(MappingLevel level, MappingTable mappingTable) {
@@ -271,7 +272,39 @@ public class RunCompareTesting {
     // 测试删除A时移除删除索引B的数据
     // PlatformExecutor的212行
     public void test7() throws SQLException {
+        StartCompareMapping compareMapping = null;
+        SpecificMappingTable mappingTable = null;
 
+        mappingTable = new SpecificMappingTable();
+        mappingTable.setMappingClass(RunCompareTesting.class);
+        mappingTable.setMappingTableName("t_run_test");
+        mappingTable.setEncoding("utf8");
+        Map<String, MappingField> mappingFields = new LinkedHashMap<>();
+
+        SpecificMappingField mappingField1 = new SpecificMappingField();
+        mappingField1.setMappingColumnName("id");
+        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldPrimaryKey(false);
+        mappingField1.setMappingFieldComment("测试id备注");
+        mappingFields.put("id", mappingField1);
+
+        SpecificMappingField mappingField2 = new SpecificMappingField();
+        mappingField2.setMappingColumnName("name");
+        mappingField2.setMappingFieldType(String.class);
+        mappingField2.setMappingFieldNullable(false);
+        mappingField1.setMappingFieldPrimaryKey(true);
+        mappingField2.setMappingFieldLength(20);
+        mappingField2.setMappingFieldComment("测试name备注");
+        mappingFields.put("name", mappingField2);
+        mappingTable.setMappingFields(mappingFields);
+
+        compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        compareMapping.doMapping();
+
+        mappingField1.setMappingFieldPrimaryKey(true);
+        mappingFields.remove("name");
+        compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        compareMapping.doMapping();
     }
 
     // 定向测试
@@ -279,6 +312,39 @@ public class RunCompareTesting {
     // mysql自动填充默认值,其他数据库需要手动添加
     // OraclePlatformDialect的127行
     public void test8() throws SQLException {
+        SpecificMappingTable mappingTable = new SpecificMappingTable();
+        mappingTable.setMappingClass(RunCompareTesting.class);
+        mappingTable.setMappingTableName("t_run_test");
+        mappingTable.setEncoding("utf8");
+        Map<String, MappingField> mappingFields = new LinkedHashMap<>();
+
+        SpecificMappingField mappingField1 = new SpecificMappingField();
+        mappingField1.setMappingColumnName("id");
+        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldPrimaryKey(true);
+        mappingField1.setMappingFieldAutoIncrement(true);
+        mappingField1.setMappingFieldComment("测试id备注");
+        mappingFields.put("id", mappingField1);
+
+        mappingTable.setMappingFields(mappingFields);
+
+        StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        compareMapping.doMapping();
+
+        SpecificMappingField mappingField2 = new SpecificMappingField();
+        mappingField2.setMappingColumnName("name");
+        mappingField2.setMappingFieldType(String.class);
+        mappingField2.setMappingFieldNullable(false);
+        mappingField2.setMappingFieldLength(20);
+        mappingField2.setMappingFieldComment("测试name备注");
+        mappingFields.put("name", mappingField2);
+        compareMapping.doMapping();
+    }
+
+    // 定向测试
+    // 如果复合主键删除其中一个主键后
+    // 理论上需要重建表
+    public void test9() throws SQLException {
 
     }
 }

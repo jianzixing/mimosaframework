@@ -134,7 +134,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                     if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
                     primaryKeyIndex.add(column.column);
                 }
-                if (StringTools.isNotEmpty(column.defaultValue)) {
+                if (column.defaultValue != null) {
                     sb.append(" DEFAULT '" + column.defaultValue + "'");
                 }
                 if (column.nullable == KeyConfirm.NO) {

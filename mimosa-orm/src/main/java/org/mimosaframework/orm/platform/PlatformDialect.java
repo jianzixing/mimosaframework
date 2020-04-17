@@ -345,7 +345,7 @@ public abstract class PlatformDialect {
                 sql.not();
                 sql.nullable();
             }
-            if (StringTools.isNotEmpty(defVal)) {
+            if (defVal != null) {
                 sql.defaultValue(defVal);
             }
             if (StringTools.isNotEmpty(comment)) {
@@ -629,7 +629,18 @@ public abstract class PlatformDialect {
     }
 
     protected DialectNextStep defineDropColumn(DataDefinition definition) throws SQLException {
+        TableStructure tableStructure = definition.getTableStructure();
+        List<TableConstraintStructure> constraintStructures = tableStructure.getPrimaryKey();
+
         TableColumnStructure columnStructure = definition.getColumnStructure();
+        if (constraintStructures != null && constraintStructures.size() > 0) {
+            // 如果删除的列是主键,且当前主键是多列主键,则需要重建表
+            for (TableConstraintStructure structure : constraintStructures) {
+                if (structure.getColumnName().equals(columnStructure.getColumnName())) {
+                    return DialectNextStep.REBUILD;
+                }
+            }
+        }
         StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), columnStructure);
         this.runner(stampAlter);
         if (columnStructure != null) {
