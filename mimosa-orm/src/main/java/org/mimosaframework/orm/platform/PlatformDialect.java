@@ -459,6 +459,8 @@ public abstract class PlatformDialect {
         if (columnType == null) {
             throw new IllegalArgumentException(I18n.print("platform_executor_empty_type", currField.getMappingFieldType().getSimpleName()));
         }
+
+        if (currField.isMappingFieldTimeForUpdate()) return columnEditTypes;
         if (columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName())) {
             if (columnType.getCompareType() == ColumnCompareType.JAVA
                     && (columnStructure.getLength() != currField.getMappingFieldLength()
@@ -496,7 +498,9 @@ public abstract class PlatformDialect {
                                 last = true;
                             }
                         }
-                        if (!last) columnEditTypes.add(ColumnEditType.DEF_VALUE);
+                        if (!last) {
+                            columnEditTypes.add(ColumnEditType.DEF_VALUE);
+                        }
                     }
                 }
             }
@@ -543,9 +547,7 @@ public abstract class PlatformDialect {
             if (type == DataDefinitionType.CREATE_TABLE) {
                 MappingTable mappingTable = definition.getMappingTable();
                 StampCreate stampCreate = this.commonCreateTable(mappingTable);
-                if (StringTools.isNotEmpty(mappingTable.getEngineName())) {
-                    stampCreate.extra = "ENGINE=InnoDB";
-                }
+                this.defineCreateTableExtra(stampCreate, mappingTable);
                 this.runner(stampCreate);
                 Set<MappingField> mappingFields = mappingTable.getMappingFields();
                 for (MappingField mappingField : mappingFields) {
@@ -607,6 +609,10 @@ public abstract class PlatformDialect {
         }
 
         return DialectNextStep.NONE;
+    }
+
+    protected void defineCreateTableExtra(StampCreate create, MappingTable mappingTable) {
+
     }
 
     protected DialectNextStep defineModifyField(DataDefinition definition) throws SQLException {

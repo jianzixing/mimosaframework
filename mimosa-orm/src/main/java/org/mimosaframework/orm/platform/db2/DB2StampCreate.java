@@ -3,6 +3,7 @@ package org.mimosaframework.orm.platform.db2;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
@@ -68,11 +69,16 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
             sb.append(")");
         }
 
+        String createSql = sb.toString();
+        if (StringTools.isNotEmpty(createSql) && this.multiExecuteImmediate()) {
+            createSql = createSql.replaceAll("'", "''");
+        }
+
         if (create.target == KeyTarget.TABLE && create.checkExist) {
             return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate
-                    ("IF HAS_TABLE = 0 THEN", sb.toString(), "END IF")), null);
+                    ("IF HAS_TABLE = 0 THEN", createSql, "END IF")), null);
         } else {
-            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(createSql)), null);
         }
     }
 
@@ -151,35 +157,42 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
             for (StampCreateColumn column : columns) {
                 String columnName = this.getColumnName(wrapper, create, column.column);
                 sb.append(columnName);
-
-                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
-
-                if (column.nullable == KeyConfirm.NO) {
-                    sb.append(" NOT NULL");
-                }
-                if (column.autoIncrement == KeyConfirm.YES) {
-                    sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
-                }
-                if (column.pk == KeyConfirm.YES) {
-                    if (pkc > 1) {
-                        primaryKeyIndex.add(column.column);
-                    } else {
-                        sb.append(" PRIMARY KEY");
+                if (column.timeForUpdate) {
+                    sb.append(" " + this.getColumnType(KeyColumnType.TIMESTAMP, column.len, column.scale));
+                    sb.append(" NOT NULL DEFAULT CURRENT_TIMESTAMP");
+                } else {
+                    sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                    if (column.columnType == KeyColumnType.DECIMAL && column.len > 31) {
+                        throw new IllegalArgumentException(I18n.print("decimal_len_to_max", "31", columnName));
+                    }
+                    if (column.nullable == KeyConfirm.NO) {
+                        sb.append(" NOT NULL");
+                    }
+                    if (column.autoIncrement == KeyConfirm.YES) {
+                        sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
+                    }
+                    if (column.pk == KeyConfirm.YES) {
+                        if (pkc > 1) {
+                            primaryKeyIndex.add(column.column);
+                        } else {
+                            sb.append(" PRIMARY KEY");
+                        }
+                    }
+                    if (column.unique == KeyConfirm.YES) {
+                        sb.append(" UNIQUE");
+                    }
+                    if (column.key == KeyConfirm.YES) {
+                        StampCreateIndex idx = new StampCreateIndex();
+                        idx.indexType = KeyIndexType.INDEX;
+                        idx.name = column.column.column.toString();
+                        idx.columns = new StampColumn[]{column.column};
+                        this.addCreateIndex(create, idx);
+                    }
+                    if (StringTools.isNotEmpty(column.defaultValue)) {
+                        sb.append(" DEFAULT '" + column.defaultValue + "'");
                     }
                 }
-                if (column.unique == KeyConfirm.YES) {
-                    sb.append(" UNIQUE");
-                }
-                if (column.key == KeyConfirm.YES) {
-                    StampCreateIndex idx = new StampCreateIndex();
-                    idx.indexType = KeyIndexType.INDEX;
-                    idx.name = column.column.column.toString();
-                    idx.columns = new StampColumn[]{column.column};
-                    this.addCreateIndex(create, idx);
-                }
-                if (StringTools.isNotEmpty(column.defaultValue)) {
-                    sb.append(" DEFAULT \"" + column.defaultValue + "\"");
-                }
+
                 if (StringTools.isNotEmpty(column.comment)) {
                     this.addCommentSQL(wrapper, create, column.column, column.comment, 1);
                 }

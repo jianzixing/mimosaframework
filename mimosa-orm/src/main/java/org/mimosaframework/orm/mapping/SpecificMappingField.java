@@ -36,7 +36,7 @@ public class SpecificMappingField implements MappingField {
 
     /**
      * 从映射类中读取的精度
-     * 数据库中 decimal(32,2) 精度2就是这个值
+     * 数据库中 decimal(30,2) 精度2就是这个值
      */
     private int mappingFieldDecimalDigits;
 
@@ -152,14 +152,14 @@ public class SpecificMappingField implements MappingField {
             return 255;
         } else if ((this.mappingFieldLength == 0 || this.mappingFieldLength == 255)
                 && this.mappingFieldType.equals(BigDecimal.class)) {
-            return 32;
+            return 30;
         }
         return mappingFieldLength;
     }
 
     public void setMappingFieldLength(int mappingFieldLength) {
         if (mappingFieldLength == 255 && this.mappingFieldType.equals(BigDecimal.class)) {
-            this.mappingFieldLength = 32;
+            this.mappingFieldLength = 30;
         } else if (this.mappingFieldType.equals(String.class)
                 || this.mappingFieldType.equals(Character.class)
                 || this.mappingFieldType.equals(char.class)) {
@@ -178,7 +178,9 @@ public class SpecificMappingField implements MappingField {
     }
 
     public boolean isMappingFieldNullable() {
-        if (this.mappingFieldAutoIncrement) return false;
+        if (this.mappingFieldAutoIncrement || this.mappingFieldPrimaryKey) {
+            return false;
+        }
         return mappingFieldNullable;
     }
 

@@ -15,27 +15,27 @@ import java.util.Set;
 public class DB2PlatformDialect extends PlatformDialect {
 
     public DB2PlatformDialect() {
-        registerColumnType(KeyColumnType.INT, "INT");
+        registerColumnType(KeyColumnType.INT, "INTEGER");
         registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.CHAR, "CHAR", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.CHAR, "CHARACTER", ColumnCompareType.JAVA);
         registerColumnType(KeyColumnType.TINYINT, "SMALLINT");
         registerColumnType(KeyColumnType.SMALLINT, "SMALLINT");
         registerColumnType(KeyColumnType.BIGINT, "BIGINT");
         registerColumnType(KeyColumnType.FLOAT, "REAL");
         registerColumnType(KeyColumnType.DOUBLE, "DOUBLE");
         registerColumnType(KeyColumnType.DECIMAL, "DECIMAL", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.BOOLEAN, "CHAR", 1, ColumnCompareType.SELF);
+        registerColumnType(KeyColumnType.BOOLEAN, "CHARACTER", 1, ColumnCompareType.SELF);
         registerColumnType(KeyColumnType.DATE, "DATE");
         registerColumnType(KeyColumnType.TIME, "TIME");
-        registerColumnType(KeyColumnType.DATETIME, "DATETIME");
+        registerColumnType(KeyColumnType.DATETIME, "TIMESTAMP");
         registerColumnType(KeyColumnType.TIMESTAMP, "TIMESTAMP");
 
         registerColumnType(KeyColumnType.BLOB, "BLOB");
-        registerColumnType(KeyColumnType.MEDIUMBLOB, "MEDIUMBLOB");
-        registerColumnType(KeyColumnType.LONGBLOB, "LONGBLOB");
-        registerColumnType(KeyColumnType.TEXT, "TEXT");
-        registerColumnType(KeyColumnType.MEDIUMTEXT, "MEDIUMTEXT");
-        registerColumnType(KeyColumnType.LONGTEXT, "LONGTEXT");
+        registerColumnType(KeyColumnType.MEDIUMBLOB, "BLOB");
+        registerColumnType(KeyColumnType.LONGBLOB, "BLOB");
+        registerColumnType(KeyColumnType.TEXT, "CLOB");
+        registerColumnType(KeyColumnType.MEDIUMTEXT, "CLOB");
+        registerColumnType(KeyColumnType.LONGTEXT, "CLOB");
     }
 
     protected String getCatalogAndSchema() throws SQLException {

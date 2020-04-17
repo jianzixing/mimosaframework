@@ -1,7 +1,8 @@
 package org.mimosaframework.orm.platform;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.mimosaframework.orm.mapping.MappingField;
+
+import java.util.*;
 
 public class TableStructure {
     private String tableSchema;
@@ -246,5 +247,48 @@ public class TableStructure {
             }
         }
         return false;
+    }
+
+    public Map<String, Set<TableIndexStructure>> getMapIndex() {
+        Map<String, Set<TableIndexStructure>> structures = null;
+        if (indexStructures != null) {
+            for (TableIndexStructure indexStructure : indexStructures) {
+                if (structures == null) structures = new HashMap<>();
+                Set<TableIndexStructure> list = structures.get(indexStructure.getIndexName());
+                if (list == null) list = new LinkedHashSet<>();
+                list.add(indexStructure);
+                structures.put(indexStructure.getIndexName(), list);
+            }
+        }
+        return structures;
+    }
+
+    public List<TableIndexStructure> getIndexStructures(List<MappingField> indexColumns) {
+        Map<String, Set<TableIndexStructure>> map = this.getMapIndex();
+        Iterator<Map.Entry<String, Set<TableIndexStructure>>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Set<TableIndexStructure>> entry = iterator.next();
+            Set<TableIndexStructure> structures = entry.getValue();
+            if (structures != null && structures.size() > 0 && structures.size() == indexColumns.size()) {
+                boolean eq = true;
+                for (TableIndexStructure s : structures) {
+                    boolean in = false;
+                    for (MappingField field : indexColumns) {
+                        if (s.getColumnName().equals(field.getMappingColumnName())) {
+                            in = true;
+                            break;
+                        }
+                    }
+                    if (!in) {
+                        eq = false;
+                        break;
+                    }
+                }
+                if (eq) {
+                    return new ArrayList<>(structures);
+                }
+            }
+        }
+        return null;
     }
 }

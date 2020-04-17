@@ -219,38 +219,43 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                                      MappingGlobalWrapper wrapper,
                                      StampAlter alter,
                                      StampAlterItem column) {
-        String columnName = this.getColumnName(wrapper, alter, column.column);
-        sb.append(" " + columnName);
-
-        if (column.columnType != null) {
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
-        }
-        if (column.nullable == KeyConfirm.NO) {
-            sb.append(" NOT NULL");
-        } else if (column.nullable == KeyConfirm.YES) {
-            sb.append(" NULL");
-        }
-
-        if (column.autoIncrement == KeyConfirm.YES) {
-            sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
-        }
-        if (column.pk == KeyConfirm.YES) {
-            sb.append(" PRIMARY KEY");
-        }
-
-        if (column.defaultValue == null) {
-            sb.append(" DEFAULT");
+        if (column.timeForUpdate) {
+            sb.append(" " + this.getColumnType(KeyColumnType.TIMESTAMP, column.len, column.scale));
+            sb.append(" NOT NULL DEFAULT CURRENT_TIMESTAMP");
         } else {
-            sb.append(" DEFAULT ''" + column.defaultValue + "''");
-        }
-        if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
-        }
-        if (column.after != null) {
-            logger.warn("db2 can't set column order");
-        }
-        if (column.before != null) {
-            logger.warn("db2 can't set column order");
+            String columnName = this.getColumnName(wrapper, alter, column.column);
+            sb.append(" " + columnName);
+
+            if (column.columnType != null) {
+                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            }
+            if (column.nullable == KeyConfirm.NO) {
+                sb.append(" NOT NULL");
+            } else if (column.nullable == KeyConfirm.YES) {
+                sb.append(" NULL");
+            }
+
+            if (column.autoIncrement == KeyConfirm.YES) {
+                sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
+            }
+            if (column.pk == KeyConfirm.YES) {
+                sb.append(" PRIMARY KEY");
+            }
+
+            if (column.defaultValue == null) {
+                sb.append(" DEFAULT");
+            } else {
+                sb.append(" DEFAULT ''" + column.defaultValue + "''");
+            }
+            if (StringTools.isNotEmpty(column.comment)) {
+                this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
+            }
+            if (column.after != null) {
+                logger.warn("db2 can't set column order");
+            }
+            if (column.before != null) {
+                logger.warn("db2 can't set column order");
+            }
         }
     }
 

@@ -145,8 +145,17 @@ public class PlatformExecutor {
                                     }
                                 }
                             } else {
-                                // 需要新建索引
-                                newIndexes.add(index);
+                                List<TableIndexStructure> indexStructuresByColumns = structure.getIndexStructures(index.getIndexColumns());
+                                if (indexStructuresByColumns != null && indexStructuresByColumns.size() > 0) {
+                                    if (!indexStructuresByColumns.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
+                                        // 已经有一个相同类型的所有存在，不再做任何操作
+                                    } else {
+                                        // 已经有一个相同类型的所有存在，不再做任何操作
+                                    }
+                                } else {
+                                    // 需要新建索引
+                                    newIndexes.add(index);
+                                }
                             }
                         }
                     }

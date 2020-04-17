@@ -75,6 +75,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         // DefaultDisassembleMappingClass
         words.put("incr_field_one", "表 %s 自增长字段只允许有一个");
         words.put("must_have_pk", "表 %s 必须设置一个主键");
+        words.put("just_max_one_tfu", "只允许有一个自动更新时间类型(timeForUpdate)");
         words.put("timestamp_one", "时间戳类型列只允许有一个");
         words.put("auto_strategy_pk", "自增策略只能使用在主键列 %s 上");
         words.put("must_set_decimal", "BigDecimal类型必须设置精度值,默认255长度过大");
@@ -89,31 +90,9 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("update_field", "对比数据库发现字段 %s 已经被修改");
         words.put("update_field_table", "对比数据库发现缺失字段 %s 已经被修改," + "在表 %s 中");
 
-        // DB2DatabasePorter
-        words.put("not_fount_field", "没有找到字段 %s 映射字段");
-
-        // DB2DifferentColumn
-        words.put("not_support_type", "不支持的数据类型 %s");
-        words.put("db2_max_decimal_len", "DB2的Decimal类型整数位最大只支持31位");
-
         // OracleCarryHandler
         words.put("oracle_auto_incr_empty", "获取Oracle自增序列值为空");
         words.put("type_not_batch", "传入执行类型不是批量执行");
-
-        // OracleDatabasePorter
-        words.put("reset_incr_field", "由于插入数据时带有主键信息，所以开始重置数据库自增初始值");
-        words.put("reset_incr_field_error", "保存数据时由于包含主键值需要重置主键自增序列时出错");
-
-        // AbstractDatabasePorter
-        words.put("lack_mapping_table", "添加表字段必须有表MappingTable信息");
-        words.put("not_found_field", "没有找到字段 %s 映射字段");
-        words.put("empty_data", "添加数据库的表或者数据是空的");
-        words.put("not_found_table_field", "没有在表 %s 中找到字段 %s");
-        words.put("order_not_in_table", "排序字段 %s 不在当前表中");
-        words.put("not_field_name", "在表 %s 中,没有找到字段 %s");
-        words.put("not_support_select_type", "不支持的查询字段 %s");
-        words.put("empty_trans_froms", "必须设置要查询的表");
-        words.put("empty_trans_froms_fields", "查询表的字段不能为空,SELECT必须设置查询字段,查询所有字段请用FieldSelectType.FULL");
 
         // PlatformFactory
         words.put("not_support_platform", "不支持的数据库平台");
@@ -293,6 +272,9 @@ public class LanguageMessageDefault implements MessagesRegister {
 
         // PlatformDialect
         words.put("copy_table_data_error", "重建表(%s)数据无法使用被清除,错误描述 %s");
+
+        // PlatformDialect
+        words.put("decimal_len_to_max", "当前数据库decimal类型最大支持%s位长度(字段%s)");
 
         messageWords.add(new MessageWords(PROJECT, words));
     }

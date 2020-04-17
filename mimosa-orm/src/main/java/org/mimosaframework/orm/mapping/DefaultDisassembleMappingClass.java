@@ -120,6 +120,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         Class<? extends IDStrategy> strategy = null;
         Class<Timestamp> timestamp = null;
 
+        int countTimeForUpdate = 0;
+
         if (mappingClass.isEnum()) {
             for (Object o : mappingClass.getEnumConstants()) {
                 fieldName = ((Enum) o).name();
@@ -149,6 +151,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                     }
                 }
 
+                if (column.timeForUpdate()) countTimeForUpdate++;
+
 
                 fieldObject = o;
                 MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject);
@@ -176,12 +180,19 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                     newField.setPrevious(lastField);
                 }
                 lastField = newField;
+
+                if (column.timeForUpdate()) countTimeForUpdate++;
             }
         }
 
         List<MappingField> pkfields = mappingTable.getMappingPrimaryKeyFields();
         if (pkfields == null || pkfields.size() == 0) {
             throw new IllegalArgumentException(I18n.print("must_have_pk",
+                    mappingTable.getMappingTableName()));
+        }
+
+        if (countTimeForUpdate > 1) {
+            throw new IllegalArgumentException(I18n.print("just_max_one_tfu",
                     mappingTable.getMappingTableName()));
         }
     }

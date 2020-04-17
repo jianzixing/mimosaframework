@@ -12,7 +12,7 @@ import java.util.Date;
 @Table
 @Index({
         @IndexItem(indexName = "g1", columns = {"name", "price"}),
-        @IndexItem(indexName = "g2", columns = {"name", "price"})
+        @IndexItem(indexName = "g2", unique = true, columns = {"name", "price"})
 })
 public enum TableProduct {
     @Column(pk = true, type = long.class, strategy = AutoIncrementStrategy.class)
