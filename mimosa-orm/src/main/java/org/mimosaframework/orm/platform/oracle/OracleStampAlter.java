@@ -229,7 +229,11 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" PRIMARY KEY");
         }
         if (StringTools.isNotEmpty(column.defaultValue)) {
-            sb.append(" DEFAULT '" + column.defaultValue + "'");
+            if (column.defaultValue.equals("*****")) {
+                sb.append(" DEFAULT NULL");
+            } else {
+                sb.append(" DEFAULT '" + column.defaultValue + "'");
+            }
         }
         if (StringTools.isNotEmpty(column.comment)) {
             this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);

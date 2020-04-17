@@ -28,6 +28,19 @@ public class JavaType2ColumnType {
         return false;
     }
 
+    public static boolean isTime(KeyColumnType type) {
+        if (type == KeyColumnType.DATE) return true;
+        if (type == KeyColumnType.TIME) return true;
+        if (type == KeyColumnType.DATETIME) return true;
+        if (type == KeyColumnType.TIMESTAMP) return true;
+        return false;
+    }
+
+    public static boolean isBoolean(KeyColumnType type) {
+        if (type == KeyColumnType.BOOLEAN) return true;
+        return false;
+    }
+
     public static KeyColumnType getColumnTypeByJava(Class c,
                                                     ColumnTypeBuilder builder,
                                                     int length,

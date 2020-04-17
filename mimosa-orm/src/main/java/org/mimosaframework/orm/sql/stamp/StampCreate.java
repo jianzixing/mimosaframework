@@ -13,7 +13,7 @@ public class StampCreate implements StampAction {
     public String databaseName;
 
     public StampCreateColumn[] columns;
-    public StampCreateIndex[] indices;
+    public StampCreatePrimaryKey primaryKey;
 
     public String charset;
     public String collate;

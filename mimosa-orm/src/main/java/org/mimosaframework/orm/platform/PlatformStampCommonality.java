@@ -177,19 +177,4 @@ public abstract class PlatformStampCommonality {
         }
         return null;
     }
-
-    protected void addCreateIndex(StampCreate create, StampCreateIndex index) {
-        StampCreateIndex[] indices = create.indices;
-        int len = 0;
-        if (indices != null) len = indices.length;
-        StampCreateIndex[] newIndex = new StampCreateIndex[len + 1];
-        for (int ii = 0; ii < len + 1; ii++) {
-            if (ii < len) {
-                newIndex[ii] = indices[ii];
-            } else {
-                newIndex[ii] = index;
-            }
-        }
-        create.indices = newIndex;
-    }
 }

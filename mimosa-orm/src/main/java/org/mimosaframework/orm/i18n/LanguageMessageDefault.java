@@ -269,6 +269,8 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("copy_table_data_error", "重建表(%s)数据无法使用被清除,错误描述 %s");
         words.put("decimal_len_to_max", "当前数据库decimal类型最大支持%s位长度(字段%s)");
         words.put("dialect_reset_table_error", "重建表(%s)结构出错,错误描述 %s");
+        words.put("dialect_add_column_error", "表(%s)增加字段(%s)时出现错误," +
+                "MappingLevel为UPDATE时将重建表,否则请手动增加表字段");
 
         // DefaultSQLSelectBuilder
         words.put("select_from_select_must", "select的from子句必须是select语句");

@@ -74,7 +74,7 @@ public class PlatformExecutor {
                 List<TableColumnStructure> delColumns = new ArrayList<>();
                 List<MappingIndex> updateIndexes = new ArrayList<>();
                 List<MappingIndex> newIndexes = new ArrayList<>();
-                List<String> dropIndexes = new ArrayList<>();
+                List<Map.Entry<String, List<TableIndexStructure>>> dropIndexes = new ArrayList<>();
 
                 if (currTable != null) {
                     List<MappingField> rmCol = new ArrayList<>();
@@ -187,7 +187,7 @@ public class PlatformExecutor {
                             Map.Entry<String, List<TableIndexStructure>> entry = iterator.next();
                             List<TableIndexStructure> values = entry.getValue();
                             if (values != null && values.size() > 0 && !values.get(0).getType().equalsIgnoreCase("P")) {
-                                dropIndexes.add(entry.getKey());
+                                dropIndexes.add(entry);
                             }
                         }
                     }
@@ -206,6 +206,30 @@ public class PlatformExecutor {
                 }
                 if (delColumns != null && delColumns.size() > 0) {
                     tableMate.setDelColumns(delColumns);
+                    // 如果字段删除了那么对应的索引也被删除
+                    // 所以去除已经被删除的字段索引
+                    // 如果不删除已经删除的字段的索引，删除索引时会报不存在索引
+                    if (dropIndexes != null && dropIndexes.size() > 0) {
+                        List<Map.Entry<String, List<TableIndexStructure>>> rms = null;
+                        for (Map.Entry<String, List<TableIndexStructure>> entry : dropIndexes) {
+                            List<TableIndexStructure> iss = entry.getValue();
+                            if (iss != null) {
+                                for (TableIndexStructure is : iss) {
+                                    for (TableColumnStructure delC : delColumns) {
+                                        if (is.getColumnName().equals(delC.getColumnName())) {
+                                            if (rms == null) rms = new ArrayList<>();
+                                            rms.add(entry);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (rms != null) {
+                            dropIndexes.removeAll(rms);
+                        }
+                    }
                     update = true;
                 }
                 if (updateIndexes != null && updateIndexes.size() > 0) {
@@ -219,7 +243,11 @@ public class PlatformExecutor {
                 }
 
                 if (dropIndexes != null && dropIndexes.size() > 0) {
-                    tableMate.setDropIndexes(dropIndexes);
+                    List<String> deli = new ArrayList<>();
+                    for (Map.Entry<String, List<TableIndexStructure>> entry : dropIndexes) {
+                        deli.add(entry.getKey());
+                    }
+                    tableMate.setDropIndexes(deli);
                     update = true;
                 }
 

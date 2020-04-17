@@ -35,9 +35,13 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
+            StampCreatePrimaryKey primaryKey = create.primaryKey;
+            if (primaryKey != null) {
+                sb.append(",");
+            }
+            this.buildTableIndex(wrapper, sb, create);
             sb.append(")");
 
-            this.buildTableIndex(wrapper, sb, create);
 
             if (StringTools.isNotEmpty(create.comment)) {
                 this.addCommentSQL(wrapper, create, create, create.comment, 2);
@@ -88,88 +92,35 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
     }
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
-        StampCreateIndex[] indices = create.indices;
-        if (indices != null && indices.length > 0) {
-            int i = 0;
-            boolean isNeedDeclare = false;
-            for (StampCreateIndex index : indices) {
-                if (index.indexType == KeyIndexType.PRIMARY_KEY) {
-                    sb.append("PRIMARY KEY");
-                    if (this.setTableIndexColumn(index, 1, wrapper, create)) isNeedDeclare = true;
-                }
-                if (index.indexType == KeyIndexType.INDEX) {
-                    if (this.setTableIndexColumn(index, 2, wrapper, create)) isNeedDeclare = true;
-                }
-                if (index.indexType == KeyIndexType.UNIQUE) {
-                    sb.append("UNIQUE");
-                    if (this.setTableIndexColumn(index, 4, wrapper, create)) isNeedDeclare = true;
-                }
-                i++;
-                if (i != indices.length) sb.append(",");
-            }
-
-            if (isNeedDeclare) {
-                this.getDeclares().add("HAS_INDEX NUMBER");
-            }
-        }
+        StampCreatePrimaryKey primaryKey = create.primaryKey;
+        sb.append("PRIMARY KEY");
+        this.setTableIndexColumn(primaryKey, sb, wrapper, create);
     }
 
-    private boolean setTableIndexColumn(StampCreateIndex index,
-                                        int type,
-                                        MappingGlobalWrapper wrapper,
-                                        StampCreate create) {
-        boolean isNeedCheck = false;
-        String tableName = this.getTableName(wrapper, create.tableClass, create.tableName);
-        StringBuilder sb = new StringBuilder();
+    private void setTableIndexColumn(StampCreatePrimaryKey index,
+                                     StringBuilder sb,
+                                     MappingGlobalWrapper wrapper,
+                                     StampCreate create) {
+        sb.append("(");
         StampColumn[] columns = index.columns;
-
-        StringBuilder queryNames = new StringBuilder();
-        StringBuilder queryNames2 = new StringBuilder();
         int j = 0;
         for (StampColumn column : columns) {
             // 创建表所以不需要别名
             column.table = null;
             column.tableAliasName = null;
-            queryNames.append(this.getColumnName(wrapper, create, column));
-            queryNames2.append("'" + this.getColumnName(wrapper, create, column, false) + "'");
+            sb.append(this.getColumnName(wrapper, create, column));
             j++;
-            if (j != columns.length) {
-                queryNames.append(",");
-                queryNames2.append(",");
-            }
+            if (j != columns.length) sb.append(",");
         }
-        sb.append("CREATE");
-        if (type == 2) {
-            sb.append(" INDEX");
-        }
-        if (StringTools.isNotEmpty(index.name)) {
-            sb.append(" " + index.name + " ");
-            this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO HAS_INDEX FROM " +
-                    "USER_INDEXES T1,USER_IND_COLUMNS T2 " +
-                    "WHERE T1.TABLE_NAME='" + tableName + "' " +
-                    "AND T1.INDEX_NAME='" + index.name + "' " +
-                    "AND T1.TABLE_NAME = T2.TABLE_NAME " +
-                    "AND T1.INDEX_NAME = T2.INDEX_NAME " +
-                    "AND T2.COLUMN_NAME in (" + queryNames2 + ")"));
-            isNeedCheck = true;
-        } else {
-            sb.append(" ");
-        }
-
-        sb.append("ON ");
-        sb.append(tableName + " ");
-        sb.append("(");
-        sb.append(queryNames);
         sb.append(")");
-
-        this.getBuilders().add(new ExecuteImmediate("IF HAS_INDEX = " + columns.length + " THEN", sb.toString(), "END IF"));
-        return isNeedCheck;
     }
 
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateColumn[] columns = create.columns;
         if (columns != null && columns.length > 0) {
             int i = 0;
+
+            List<StampColumn> primaryKeyIndex = null;
             for (StampCreateColumn column : columns) {
                 String columnName = this.getColumnName(wrapper, create, column.column);
                 sb.append(columnName);
@@ -180,33 +131,14 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                     this.addAutoIncrement(wrapper, create.tableClass, create.tableName);
                 }
                 if (column.pk == KeyConfirm.YES) {
-                    sb.append(" PRIMARY KEY");
+                    if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
+                    primaryKeyIndex.add(column.column);
                 }
                 if (StringTools.isNotEmpty(column.defaultValue)) {
                     sb.append(" DEFAULT '" + column.defaultValue + "'");
                 }
                 if (column.nullable == KeyConfirm.NO) {
                     sb.append(" NOT NULL");
-                }
-                if (column.unique == KeyConfirm.YES) {
-                    sb.append(" UNIQUE");
-                }
-                if (column.key == KeyConfirm.YES) {
-                    StampCreateIndex[] indices = create.indices;
-                    int len = 0;
-                    if (indices != null) len = indices.length;
-                    StampCreateIndex[] newIndex = new StampCreateIndex[len + 1];
-                    for (int ii = 0; ii < len + 1; ii++) {
-                        if (ii < len) {
-                            newIndex[ii] = indices[ii];
-                        } else {
-                            newIndex[ii] = new StampCreateIndex();
-                            newIndex[ii].indexType = KeyIndexType.INDEX;
-                            newIndex[ii].name = column.column.column.toString();
-                            newIndex[ii].columns = new StampColumn[]{column.column};
-                        }
-                    }
-                    create.indices = newIndex;
                 }
 
                 if (StringTools.isNotEmpty(column.comment)) {
@@ -216,6 +148,10 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                 i++;
                 if (i != columns.length) sb.append(",");
             }
+
+            StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
+            pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
+            create.primaryKey = pkIdx;
         }
     }
 }

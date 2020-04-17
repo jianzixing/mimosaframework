@@ -369,9 +369,6 @@ public class DefaultSQLAlterBuilder
             if (this.point.equals("drop")) {
                 item.dropType = KeyAlterDropType.PRIMARY_KEY;
             }
-        } else {
-            StampAlterItem item = this.getLastItem();
-            item.key = KeyConfirm.YES;
         }
         return this;
     }

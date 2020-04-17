@@ -13,7 +13,6 @@ public interface RedefineCreateBuilder
         TableBuilder,
         AbsColumnBuilder,
         AbsExtraBuilder,
-        UniqueBuilder,
         IndexBuilder,
         OnBuilder,
         AbsTableBuilder,

@@ -40,6 +40,10 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
+            StampCreatePrimaryKey primaryKey = create.primaryKey;
+            if (primaryKey != null) {
+                sb.append(",");
+            }
             this.buildTableIndex(wrapper, sb, create);
             sb.append(")");
 
@@ -83,49 +87,12 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
     }
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
-        StampCreateIndex[] indices = create.indices;
-        if (indices != null && indices.length > 0) {
-            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName);
-            int i = 0;
-            for (StampCreateIndex index : indices) {
-                if (index.indexType == KeyIndexType.PRIMARY_KEY) {
-                    sb.append(",");
-                    sb.append("PRIMARY KEY");
-                    if (StringTools.isNotEmpty(index.name)) {
-                        sb.append(" " + index.name);
-                    }
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
-                if (index.indexType == KeyIndexType.INDEX) {
-                    StringBuilder buildIndex = new StringBuilder();
-                    buildIndex.append("CREATE INDEX");
-                    if (StringTools.isNotEmpty(index.name)) {
-                        buildIndex.append(" " + index.name);
-                    }
-                    buildIndex.append(" ON ");
-                    buildIndex.append(tableName);
-                    this.setTableIndexColumn(index, buildIndex, wrapper, create);
-                    this.getBuilders().add(new ExecuteImmediate(buildIndex));
-                }
-                if (index.indexType == KeyIndexType.UNIQUE) {
-                    StringBuilder buildIndex = new StringBuilder();
-                    buildIndex.append("CREATE INDEX ");
-                    buildIndex.append("UNIQUE");
-                    if (StringTools.isNotEmpty(index.name)) {
-                        buildIndex.append(" " + index.name);
-                    }
-                    buildIndex.append(" ON ");
-                    buildIndex.append(tableName);
-                    this.setTableIndexColumn(index, buildIndex, wrapper, create);
-                    this.getBuilders().add(new ExecuteImmediate(buildIndex));
-                }
-                i++;
-                if (i != indices.length) sb.append(",");
-            }
-        }
+        StampCreatePrimaryKey index = create.primaryKey;
+        sb.append("PRIMARY KEY");
+        this.setTableIndexColumn(index, sb, wrapper, create);
     }
 
-    private void setTableIndexColumn(StampCreateIndex index,
+    private void setTableIndexColumn(StampCreatePrimaryKey index,
                                      StringBuilder sb,
                                      MappingGlobalWrapper wrapper,
                                      StampCreate create) {
@@ -146,14 +113,9 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateColumn[] columns = create.columns;
         if (columns != null && columns.length > 0) {
-            int i = 0, pkc = 0;
-            for (StampCreateColumn column : columns) {
-                if (column.pk == KeyConfirm.YES) {
-                    pkc++;
-                }
-            }
+            int i = 0;
+
             List<StampColumn> primaryKeyIndex = null;
-            if (pkc > 1) primaryKeyIndex = new ArrayList<>();
             for (StampCreateColumn column : columns) {
                 String columnName = this.getColumnName(wrapper, create, column.column);
                 sb.append(columnName);
@@ -172,21 +134,8 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
                         sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1,INCREMENT BY 1)");
                     }
                     if (column.pk == KeyConfirm.YES) {
-                        if (pkc > 1) {
-                            primaryKeyIndex.add(column.column);
-                        } else {
-                            sb.append(" PRIMARY KEY");
-                        }
-                    }
-                    if (column.unique == KeyConfirm.YES) {
-                        sb.append(" UNIQUE");
-                    }
-                    if (column.key == KeyConfirm.YES) {
-                        StampCreateIndex idx = new StampCreateIndex();
-                        idx.indexType = KeyIndexType.INDEX;
-                        idx.name = column.column.column.toString();
-                        idx.columns = new StampColumn[]{column.column};
-                        this.addCreateIndex(create, idx);
+                        if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
+                        primaryKeyIndex.add(column.column);
                     }
                     if (StringTools.isNotEmpty(column.defaultValue)) {
                         sb.append(" DEFAULT '" + column.defaultValue + "'");
@@ -201,12 +150,9 @@ public class DB2StampCreate extends DB2StampCommonality implements StampCombineB
                 if (i != columns.length) sb.append(",");
             }
 
-            if (pkc > 1) {
-                StampCreateIndex pkIdx = new StampCreateIndex();
-                pkIdx.indexType = KeyIndexType.PRIMARY_KEY;
-                pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
-                this.addCreateIndex(create, pkIdx);
-            }
+            StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
+            pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
+            create.primaryKey = pkIdx;
         }
     }
 }

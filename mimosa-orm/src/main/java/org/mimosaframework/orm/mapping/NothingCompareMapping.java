@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class NothingCompareMapping implements StartCompareMapping {
     private static final Log logger = LogFactory.getLog(NothingCompareMapping.class);
@@ -48,7 +49,7 @@ public class NothingCompareMapping implements StartCompareMapping {
 
 
                         // update fields
-                        if (tableMate.getUpdateFields() != null && tableMate.getUpdateFields().size() > 0) {
+                        if (!isRebuildTable && tableMate.getUpdateFields() != null && tableMate.getUpdateFields().size() > 0) {
                             MappingTable mappingTable = tableMate.getMappingTable();
                             TableStructure tableStructure = tableMate.getStructure();
                             Map<MappingField, CompareUpdateMate> updateFields = tableMate.getUpdateFields();
@@ -88,7 +89,7 @@ public class NothingCompareMapping implements StartCompareMapping {
 
 
                         // create field
-                        if (tableMate.getCreateFields() != null && tableMate.getCreateFields().size() > 0) {
+                        if (!isRebuildTable && tableMate.getCreateFields() != null && tableMate.getCreateFields().size() > 0) {
                             MappingTable mappingTable = tableMate.getMappingTable();
                             TableStructure tableStructure = tableMate.getStructure();
 
@@ -109,9 +110,8 @@ public class NothingCompareMapping implements StartCompareMapping {
                             }
                         }
 
-
                         // del fields
-                        if (tableMate.getDelColumns() != null && tableMate.getDelColumns().size() > 0) {
+                        if (!isRebuildTable && tableMate.getDelColumns() != null && tableMate.getDelColumns().size() > 0) {
                             List<TableColumnStructure> delColumns = tableMate.getDelColumns();
                             MappingTable mappingTable = tableMate.getMappingTable();
                             if (mappingLevel == MappingLevel.UPDATE) {
@@ -131,9 +131,8 @@ public class NothingCompareMapping implements StartCompareMapping {
                             }
                         }
 
-
                         // update index
-                        if (tableMate.getUpdateIndexes() != null && tableMate.getUpdateIndexes().size() > 0) {
+                        if (!isRebuildTable && tableMate.getUpdateIndexes() != null && tableMate.getUpdateIndexes().size() > 0) {
                             List<MappingIndex> indices = tableMate.getUpdateIndexes();
                             MappingTable mappingTable = tableMate.getMappingTable();
                             if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE) {
@@ -157,7 +156,7 @@ public class NothingCompareMapping implements StartCompareMapping {
                         }
 
                         // create index
-                        if (tableMate.getNewIndexes() != null && tableMate.getNewIndexes().size() > 0) {
+                        if (!isRebuildTable && tableMate.getNewIndexes() != null && tableMate.getNewIndexes().size() > 0) {
                             List<MappingIndex> newIndexes = tableMate.getNewIndexes();
                             MappingTable mappingTable = tableMate.getMappingTable();
                             if (mappingLevel == MappingLevel.CREATE || mappingLevel == MappingLevel.UPDATE) {
@@ -177,7 +176,7 @@ public class NothingCompareMapping implements StartCompareMapping {
                         }
 
                         // drop index
-                        if (tableMate.getDropIndexes() != null && tableMate.getDropIndexes().size() > 0) {
+                        if (!isRebuildTable && tableMate.getDropIndexes() != null && tableMate.getDropIndexes().size() > 0) {
                             List<String> dropIndexes = tableMate.getDropIndexes();
                             MappingTable mappingTable = tableMate.getMappingTable();
                             if (mappingLevel == MappingLevel.UPDATE) {
@@ -197,7 +196,14 @@ public class NothingCompareMapping implements StartCompareMapping {
                         }
 
                         if (isRebuildTable && mappingLevel == MappingLevel.UPDATE) {
-                            executor.doDialectRebuild(tableMate.getMappingTable(), tableMate.getStructure());
+                            MappingTable mappingTable = tableMate.getMappingTable();
+                            executor.doDialectRebuild(mappingTable, tableMate.getStructure());
+                            Set<MappingIndex> mappingIndices = mappingTable.getMappingIndexes();
+                            if (mappingIndices != null) {
+                                for (MappingIndex mappingIndex : mappingIndices) {
+                                    executor.createIndex(mappingTable, mappingIndex);
+                                }
+                            }
                         }
                     }
                 });

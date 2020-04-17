@@ -552,66 +552,28 @@ public abstract class PlatformDialect {
         if (definition != null) {
             DataDefinitionType type = definition.getType();
             if (type == DataDefinitionType.CREATE_TABLE) {
-                MappingTable mappingTable = definition.getMappingTable();
-                StampCreate stampCreate = this.commonCreateTable(mappingTable);
-                this.defineCreateTableExtra(stampCreate, mappingTable);
-                this.runner(stampCreate);
-                Set<MappingField> mappingFields = mappingTable.getMappingFields();
-                for (MappingField mappingField : mappingFields) {
-                    if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
-                        this.triggerIndex(definition.getMappingTable(),
-                                null, mappingField, null);
-                    }
-                }
+                return this.defineCreateTable(definition);
             }
             if (type == DataDefinitionType.DROP_TABLE) {
-                TableStructure tableStructure = definition.getTableStructure();
-                StampDrop stampDrop = this.commonDropTable(tableStructure);
-                this.runner(stampDrop);
+                return this.defineDropTable(definition);
             }
             if (type == DataDefinitionType.ADD_COLUMN) {
-                TableStructure structure = definition.getTableStructure();
-                List<TableConstraintStructure> pks = structure.getPrimaryKey();
-                List<TableColumnStructure> autos = structure.getAutoIncrement();
-                MappingField mappingField = definition.getMappingField();
-                if ((pks != null && pks.size() > 0 && mappingField.isMappingFieldPrimaryKey())
-                        || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
-                    return DialectNextStep.REBUILD;
-                } else {
-                    StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), mappingField);
-                    this.runner(stampAlter);
-
-                    this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
-                            definition.getMappingField(), null);
-                }
+                return this.defineAddColumn(definition);
             }
             if (type == DataDefinitionType.MODIFY_COLUMN) {
-                DialectNextStep step = this.defineModifyField(definition);
-                return step;
+                return this.defineModifyColumn(definition);
             }
             if (type == DataDefinitionType.DROP_COLUMN) {
-                TableColumnStructure columnStructure = definition.getColumnStructure();
-                StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), columnStructure);
-                this.runner(stampAlter);
-                if (columnStructure != null) {
-                    columnStructure.setState(2);
-                }
-                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
-                        definition.getMappingField(), definition.getColumnStructure());
+                return this.defineDropColumn(definition);
             }
             if (type == DataDefinitionType.ADD_INDEX) {
-                StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
-                this.runner(sql);
+                return this.defineAddIndex(definition);
             }
             if (type == DataDefinitionType.MODIFY_INDEX) {
-                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
-                this.runner(stampDrop);
-                StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
-                this.runner(sql);
+                return this.defineModifyIndex(definition);
             }
             if (type == DataDefinitionType.DROP_INDEX) {
-                StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
-                this.runner(stampDrop);
+                return this.defineDropIndex(definition);
             }
         }
 
@@ -622,8 +584,81 @@ public abstract class PlatformDialect {
 
     }
 
-    protected DialectNextStep defineModifyField(DataDefinition definition) throws SQLException {
+    protected DialectNextStep defineCreateTable(DataDefinition definition) throws SQLException {
+        MappingTable mappingTable = definition.getMappingTable();
+        StampCreate stampCreate = this.commonCreateTable(mappingTable);
+        this.defineCreateTableExtra(stampCreate, mappingTable);
+        this.runner(stampCreate);
+        Set<MappingField> mappingFields = mappingTable.getMappingFields();
+        for (MappingField mappingField : mappingFields) {
+            if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
+                this.triggerIndex(definition.getMappingTable(),
+                        null, mappingField, null);
+            }
+        }
+        return DialectNextStep.NONE;
+    }
+
+    protected DialectNextStep defineDropTable(DataDefinition definition) throws SQLException {
+        TableStructure tableStructure = definition.getTableStructure();
+        StampDrop stampDrop = this.commonDropTable(tableStructure);
+        this.runner(stampDrop);
+        return DialectNextStep.NONE;
+    }
+
+    protected DialectNextStep defineAddColumn(DataDefinition definition) throws SQLException {
+        TableStructure structure = definition.getTableStructure();
+        List<TableConstraintStructure> pks = structure.getPrimaryKey();
+        List<TableColumnStructure> autos = structure.getAutoIncrement();
+        MappingField mappingField = definition.getMappingField();
+        if ((pks != null && pks.size() > 0 && mappingField.isMappingFieldPrimaryKey())
+                || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
+            return DialectNextStep.REBUILD;
+        } else {
+            StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), mappingField);
+            this.runner(stampAlter);
+
+            this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
+                    definition.getMappingField(), null);
+        }
+        return DialectNextStep.NONE;
+    }
+
+    protected DialectNextStep defineModifyColumn(DataDefinition definition) throws SQLException {
         return DialectNextStep.REBUILD;
+    }
+
+    protected DialectNextStep defineDropColumn(DataDefinition definition) throws SQLException {
+        TableColumnStructure columnStructure = definition.getColumnStructure();
+        StampAlter stampAlter = this.commonDropColumn(definition.getMappingTable(), columnStructure);
+        this.runner(stampAlter);
+        if (columnStructure != null) {
+            columnStructure.setState(2);
+        }
+        this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
+                definition.getMappingField(), definition.getColumnStructure());
+
+        return DialectNextStep.NONE;
+    }
+
+    protected DialectNextStep defineAddIndex(DataDefinition definition) throws SQLException {
+        StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
+        this.runner(sql);
+        return DialectNextStep.NONE;
+    }
+
+    protected DialectNextStep defineModifyIndex(DataDefinition definition) throws SQLException {
+        StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
+        this.runner(stampDrop);
+        StampCreate sql = this.commonAddIndex(definition.getMappingTable(), definition.getMappingIndex());
+        this.runner(sql);
+        return DialectNextStep.NONE;
+    }
+
+    protected DialectNextStep defineDropIndex(DataDefinition definition) throws SQLException {
+        StampDrop stampDrop = this.commonDropIndex(definition.getMappingTable(), definition.getIndexName());
+        this.runner(stampDrop);
+        return DialectNextStep.NONE;
     }
 
     /**
@@ -680,6 +715,14 @@ public abstract class PlatformDialect {
                         e.getMessage()), e);
             }
             this.rebuildEndTable(mappingTable, tableStructure);
+
+            Set<MappingField> mappingFields = mappingTable.getMappingFields();
+            for (MappingField mappingField : mappingFields) {
+                if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
+                    this.triggerIndex(mappingTable,
+                            null, mappingField, null);
+                }
+            }
         }
     }
 

@@ -8,9 +8,7 @@ public class StampTableColumn {
     public KeyConfirm nullable;
     public String defaultValue;
     public KeyConfirm autoIncrement;
-    public KeyConfirm unique;
     public KeyConfirm pk;
-    public KeyConfirm key;
     public String comment;
 
     public boolean timeForUpdate = false;

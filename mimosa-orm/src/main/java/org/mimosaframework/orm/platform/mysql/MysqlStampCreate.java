@@ -5,6 +5,9 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MysqlStampCreate extends MysqlStampCommonality implements StampCombineBuilder {
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
@@ -35,8 +38,8 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
-            StampCreateIndex[] indices = create.indices;
-            if (indices != null && indices.length > 0) {
+            StampCreatePrimaryKey primaryKey = create.primaryKey;
+            if (primaryKey != null) {
                 sb.append(",");
             }
             this.buildTableIndex(wrapper, sb, create);
@@ -71,36 +74,15 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
     }
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
-        StampCreateIndex[] indices = create.indices;
-        if (indices != null && indices.length > 0) {
-            int i = 0;
-            for (StampCreateIndex index : indices) {
-                if (index.indexType == KeyIndexType.PRIMARY_KEY) {
-                    sb.append("PRIMARY KEY");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
-                if (index.indexType == KeyIndexType.INDEX) {
-                    sb.append("INDEX");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
-                if (index.indexType == KeyIndexType.UNIQUE) {
-                    sb.append("UNIQUE");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
-                i++;
-                if (i != indices.length) sb.append(",");
-            }
-        }
+        StampCreatePrimaryKey index = create.primaryKey;
+        sb.append("PRIMARY KEY");
+        this.setTableIndexColumn(index, sb, wrapper, create);
     }
 
-    private void setTableIndexColumn(StampCreateIndex index,
+    private void setTableIndexColumn(StampCreatePrimaryKey index,
                                      StringBuilder sb,
                                      MappingGlobalWrapper wrapper,
                                      StampCreate create) {
-        if (StringTools.isNotEmpty(index.name)) {
-            sb.append(" " + index.name);
-        }
-
         sb.append("(");
         StampColumn[] columns = index.columns;
         int j = 0;
@@ -119,6 +101,8 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
         StampCreateColumn[] columns = create.columns;
         if (columns != null && columns.length > 0) {
             int i = 0;
+
+            List<StampColumn> primaryKeyIndex = null;
             for (StampCreateColumn column : columns) {
                 sb.append(this.getColumnName(wrapper, create, column.column));
 
@@ -135,13 +119,8 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
                         sb.append(" AUTO_INCREMENT");
                     }
                     if (column.pk == KeyConfirm.YES) {
-                        sb.append(" PRIMARY KEY");
-                    }
-                    if (column.unique == KeyConfirm.YES) {
-                        sb.append(" UNIQUE");
-                    }
-                    if (column.key == KeyConfirm.YES) {
-                        sb.append(" KEY");
+                        if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
+                        primaryKeyIndex.add(column.column);
                     }
                     if (StringTools.isNotEmpty(column.defaultValue)) {
                         sb.append(" DEFAULT \"" + column.defaultValue + "\"");
@@ -154,6 +133,10 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
                 i++;
                 if (i != columns.length) sb.append(",");
             }
+
+            StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
+            pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
+            create.primaryKey = pkIdx;
         }
     }
 }

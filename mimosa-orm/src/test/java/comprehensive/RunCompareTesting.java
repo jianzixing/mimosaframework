@@ -17,10 +17,10 @@ public class RunCompareTesting {
         mimosaDataSource = new MimosaDataSource(RunDataSourceBuilder.currDataSource(), "mater");
 //        this.test1();
 //        this.test2();
-        this.test3();
+//        this.test3();
 //        this.test4();
 //        this.test5();
-//        this.test6();
+        this.test6();
     }
 
     public StartCompareMapping getMapping(MappingLevel level, MappingTable mappingTable) {
@@ -264,5 +264,21 @@ public class RunCompareTesting {
 
         StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
         compareMapping.doMapping();
+    }
+
+    // 定向测试
+    // 字段A拥有索引B，如果删除字段A则索引B删除报错
+    // 测试删除A时移除删除索引B的数据
+    // PlatformExecutor的212行
+    public void test7() throws SQLException {
+
+    }
+
+    // 定向测试
+    // 测试增加 NOT NULL 字段,且表中已经存在数据时是否能成功
+    // mysql自动填充默认值,其他数据库需要手动添加
+    // OraclePlatformDialect的127行
+    public void test8() throws SQLException {
+
     }
 }

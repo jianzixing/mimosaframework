@@ -112,19 +112,6 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public DefaultSQLCreateBuilder unique() {
-        if (this.point.equals("table")) {
-            this.gammars.add("unique");
-            StampCreateColumn column = this.getLastColumn();
-            column.unique = KeyConfirm.YES;
-        } else {
-            this.addPoint("unique");
-            stampCreate.indexType = KeyIndexType.UNIQUE;
-        }
-        return this;
-    }
-
-    @Override
     public DefaultSQLCreateBuilder columns(Serializable... columns) {
         this.gammars.add("columns");
         StampColumn[] stampColumns = new StampColumn[columns.length];
@@ -175,8 +162,6 @@ public class DefaultSQLCreateBuilder
         StampCreateColumn column = this.getLastColumn();
         if (this.previous("primary")) {
             column.pk = KeyConfirm.YES;
-        } else {
-            column.key = KeyConfirm.YES;
         }
         return this;
     }

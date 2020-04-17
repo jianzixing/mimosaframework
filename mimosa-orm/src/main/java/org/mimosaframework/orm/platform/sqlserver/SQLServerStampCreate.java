@@ -8,6 +8,9 @@ import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SQLServerStampCreate extends SQLServerStampCommonality implements StampCombineBuilder {
     private static final Log logger = LogFactory.getLog(SQLServerStampCreate.class);
 
@@ -40,8 +43,8 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
-            StampCreateIndex[] indices = create.indices;
-            if (indices != null && indices.length > 0) {
+            StampCreatePrimaryKey primaryKey = create.primaryKey;
+            if (primaryKey != null) {
                 sb.append(",");
             }
             this.buildTableIndex(wrapper, sb, create);
@@ -83,36 +86,15 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
     }
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
-        StampCreateIndex[] indices = create.indices;
-        if (indices != null && indices.length > 0) {
-            int i = 0;
-            for (StampCreateIndex index : indices) {
-                if (index.indexType == KeyIndexType.PRIMARY_KEY) {
-                    sb.append("PRIMARY KEY");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
-                if (index.indexType == KeyIndexType.INDEX) {
-                    sb.append("INDEX");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
-                if (index.indexType == KeyIndexType.UNIQUE) {
-                    sb.append("UNIQUE");
-                    this.setTableIndexColumn(index, sb, wrapper, create);
-                }
-                i++;
-                if (i != indices.length) sb.append(",");
-            }
-        }
+        StampCreatePrimaryKey index = create.primaryKey;
+        sb.append("PRIMARY KEY");
+        this.setTableIndexColumn(index, sb, wrapper, create);
     }
 
-    private void setTableIndexColumn(StampCreateIndex index,
+    private void setTableIndexColumn(StampCreatePrimaryKey index,
                                      StringBuilder sb,
                                      MappingGlobalWrapper wrapper,
                                      StampCreate create) {
-        if (StringTools.isNotEmpty(index.name)) {
-            sb.append(" " + index.name);
-        }
-
         sb.append("(");
         StampColumn[] columns = index.columns;
         int j = 0;
@@ -132,6 +114,8 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
         if (columns != null && columns.length > 0) {
             String tableName = this.getTableName(wrapper, create.tableClass, create.tableName, false);
             int i = 0;
+
+            List<StampColumn> primaryKeyIndex = null;
             for (StampCreateColumn column : columns) {
                 String columnName = this.getColumnName(wrapper, create, column.column, false);
                 sb.append(this.getColumnName(wrapper, create, column.column));
@@ -145,19 +129,8 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
                     sb.append(" IDENTITY(1,1)");
                 }
                 if (column.pk == KeyConfirm.YES) {
-                    sb.append(" PRIMARY KEY");
-                }
-                if (column.unique == KeyConfirm.YES) {
-                    this.getBuilders().add(new ExecuteImmediate()
-                            .setProcedure((create.target == KeyTarget.TABLE && create.checkExist ? "IF (@HAS_TABLE = 0) " : "")
-                                    + "CREATE UNIQUE INDEX " + columnName + " ON "
-                                    + tableName + "(" + columnName + ")"));
-                }
-                if (column.key == KeyConfirm.YES) {
-                    this.getBuilders().add(new ExecuteImmediate()
-                            .setProcedure((create.target == KeyTarget.TABLE && create.checkExist ? "IF (@HAS_TABLE = 0) " : "")
-                                    + "CREATE INDEX " + columnName + " ON "
-                                    + tableName + "(" + columnName + ")"));
+                    if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
+                    primaryKeyIndex.add(column.column);
                 }
                 if (StringTools.isNotEmpty(column.defaultValue)) {
                     sb.append(" DEFAULT \"" + column.defaultValue + "\"");
@@ -170,6 +143,10 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
                 i++;
                 if (i != columns.length) sb.append(",");
             }
+
+            StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
+            pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
+            create.primaryKey = pkIdx;
         }
     }
 }
