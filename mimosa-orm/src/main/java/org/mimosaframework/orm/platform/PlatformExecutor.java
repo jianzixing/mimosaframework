@@ -44,8 +44,14 @@ public class PlatformExecutor {
 
     public void compareTableStructure(PlatformCompare compare) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        List<TableStructure> structures = dialect.getTableStructures();
+        List<String> existTableNames = new ArrayList<>();
         List<MappingTable> mappingTables = mappingGlobalWrapper.getMappingTables();
+        if (mappingTables != null && mappingTables.size() > 0) {
+            for (MappingTable mappingTable : mappingTables) {
+                existTableNames.add(mappingTable.getMappingTableName());
+            }
+        }
+        List<TableStructure> structures = dialect.getTableStructures(existTableNames);
 
         if (structures != null) {
             List<MappingTable> rmTab = new ArrayList<>();
@@ -167,7 +173,7 @@ public class PlatformExecutor {
                     if (fromIndexStructure != null && fromIndexStructure.size() > 0) {
                         Set<MappingField> mappingFields = currTable.getMappingFields();
                         for (MappingField mappingField : mappingFields) {
-                            if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
+                            if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex() || mappingField.isMappingFieldPrimaryKey()) {
                                 Map.Entry<String, List<TableIndexStructure>> hasIndex = structure
                                         .getIndexStructures(fromIndexStructure, Arrays.asList(new MappingField[]{mappingField}));
                                 if (hasIndex != null && hasIndex.getValue() != null && hasIndex.getValue().size() == 1) {

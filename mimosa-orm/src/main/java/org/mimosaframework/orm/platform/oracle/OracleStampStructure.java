@@ -36,7 +36,7 @@ public class OracleStampStructure implements StampCombineBuilder {
                             "T1.TABLE_NAME AS TABNAME," +
                             "T1.COLUMN_NAME AS COLNAME," +
                             "T1.DATA_TYPE AS TYPENAME," +
-                            "T1.DATA_LENGTH AS LENGTH," +
+                            "(CASE WHEN T1.DATA_PRECISION>0 THEN T1.DATA_PRECISION ELSE T1.DATA_LENGTH END) AS LENGTH," +
                             "T1.DATA_SCALE AS SCALE," +
                             "T1.DATA_DEFAULT AS \"DEFAULT\"," +
                             "T1.NULLABLE AS IS_NULLABLE," +

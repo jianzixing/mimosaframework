@@ -22,73 +22,76 @@ public class OracleStampInsert extends OracleStampCommonality implements StampCo
         StampInsert insert = (StampInsert) action;
         List<SQLDataPlaceholder> placeholders = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
-        sb.append(NL + "BEGIN");
-        sb.append(" " + NL_TAB + "INSERT");
         Object[][] values = insert.values;
-        if (values.length > 1) sb.append(" ALL");
-        for (Object[] row : values) {
-            sb.append(NL_TAB + "INTO");
-            sb.append(" " + this.getTableName(wrapper, insert.tableClass, insert.tableName));
+        if (values != null && values.length > 1) {
+            sb.append(NL + "BEGIN");
+        }
+        sb.append(" " + NL_TAB + "INSERT");
+        if (values != null && values.length > 1) sb.append(" ALL");
+        sb.append(" INTO");
 
-            StampColumn[] columns = insert.columns;
-            String[] names = null;
-            if (columns != null && columns.length > 0) {
-                names = new String[columns.length];
-                sb.append("(");
-                int i = 0;
-                for (StampColumn column : columns) {
-                    String name = this.getColumnName(wrapper, insert, column);
-                    sb.append(name);
-                    names[i] = name;
-                    i++;
-                    if (i != columns.length) sb.append(",");
-                }
-                sb.append(")");
+        sb.append(" " + this.getTableName(wrapper, insert.tableClass, insert.tableName));
 
-                if (insert.values != null && insert.values.length > 0) {
-                    sb.append(" VALUES ");
-                }
-            } else {
-                if (insert.tableClass != null) {
-                    MappingTable mappingTable = wrapper.getMappingTable(insert.tableClass);
-                    if (mappingTable != null) {
-                        Set<MappingField> fields = mappingTable.getMappingFields();
-                        names = new String[fields.size()];
-                        Iterator<MappingField> iterator = fields.iterator();
-                        int c = 0;
-                        while (iterator.hasNext()) {
-                            MappingField field = iterator.next();
-                            names[c] = field.getMappingFieldName();
-                            c++;
-                        }
+        StampColumn[] columns = insert.columns;
+        String[] names = null;
+        if (columns != null && columns.length > 0) {
+            names = new String[columns.length];
+            sb.append("(");
+            int i = 0;
+            for (StampColumn column : columns) {
+                String name = this.getColumnName(wrapper, insert, column);
+                sb.append(name);
+                names[i] = name;
+                i++;
+                if (i != columns.length) sb.append(",");
+            }
+            sb.append(")");
+
+            if (insert.values != null && insert.values.length > 0) {
+                sb.append(" VALUES ");
+            }
+        } else {
+            if (insert.tableClass != null) {
+                MappingTable mappingTable = wrapper.getMappingTable(insert.tableClass);
+                if (mappingTable != null) {
+                    Set<MappingField> fields = mappingTable.getMappingFields();
+                    names = new String[fields.size()];
+                    Iterator<MappingField> iterator = fields.iterator();
+                    int c = 0;
+                    while (iterator.hasNext()) {
+                        MappingField field = iterator.next();
+                        names[c] = field.getMappingFieldName();
+                        c++;
                     }
                 }
             }
+        }
 
-            if (insert.select != null) {
-                sb.append(" ");
-                SQLBuilderCombine combine = new DB2StampSelect().getSqlBuilder(wrapper, insert.select);
-                sb.append(combine.getSql());
-                if (combine.getPlaceholders() != null) {
-                    placeholders.addAll(combine.getPlaceholders());
-                }
-            } else {
-                int k = 0;
-                sb.append("(");
-                for (Object v : row) {
-                    String name = null;
-                    if (names.length > k) name = names[k];
-                    else name = "value&" + k;
-                    sb.append("?");
-                    placeholders.add(new SQLDataPlaceholder(name, v));
-                    k++;
-                    if (k != row.length) sb.append(",");
-                }
-                sb.append(")");
+        for (Object[] row : values) {
+            int k = 0;
+            sb.append("(");
+            for (Object v : row) {
+                String name = null;
+                if (names.length > k) name = names[k];
+                else name = "value&" + k;
+                sb.append("?");
+                placeholders.add(new SQLDataPlaceholder(name, v));
+                k++;
+                if (k != row.length) sb.append(",");
+            }
+            sb.append(")");
+        }
+
+        if (insert.select != null) {
+            sb.append(" ");
+            SQLBuilderCombine combine = new DB2StampSelect().getSqlBuilder(wrapper, insert.select);
+            sb.append(combine.getSql());
+            if (combine.getPlaceholders() != null) {
+                placeholders.addAll(combine.getPlaceholders());
             }
         }
 
-        if (values.length > 1) {
+        if (values != null && values.length > 1) {
             sb.append(" " + NL_TAB + "SELECT 1 FROM DUAL;");
             sb.append(NL + "END;");
         }

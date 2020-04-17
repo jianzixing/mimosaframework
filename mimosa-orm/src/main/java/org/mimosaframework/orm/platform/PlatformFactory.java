@@ -76,17 +76,17 @@ public class PlatformFactory {
             return dialect;
         }
         if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.ORACLE)) {
-            PlatformDialect dialect = null;
+            PlatformDialect dialect = new OraclePlatformDialect();
             dialect.setDataSourceWrapper(dataSourceWrapper);
             return dialect;
         }
         if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.SQL_SERVER)) {
-            PlatformDialect dialect = null;
+            PlatformDialect dialect = new SQLServerPlatformDialect();
             dialect.setDataSourceWrapper(dataSourceWrapper);
             return dialect;
         }
         if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.POSTGRESQL)) {
-            PlatformDialect dialect = null;
+            PlatformDialect dialect = new PostgreSQLPlatformDialect();
             dialect.setDataSourceWrapper(dataSourceWrapper);
             return dialect;
         }
@@ -96,7 +96,7 @@ public class PlatformFactory {
             return dialect;
         }
         if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.SQLITE)) {
-            PlatformDialect dialect = null;
+            PlatformDialect dialect = new SqlitePlatformDialect();
             dialect.setDataSourceWrapper(dataSourceWrapper);
             return dialect;
         }

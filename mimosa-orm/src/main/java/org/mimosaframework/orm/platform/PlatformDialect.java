@@ -67,7 +67,7 @@ public abstract class PlatformDialect {
         this.mappingGlobalWrapper = mappingGlobalWrapper;
     }
 
-    public List<TableStructure> getTableStructures() throws SQLException {
+    public List<TableStructure> getTableStructures(List<String> classTableNames) throws SQLException {
         StructureBuilder structureBuilder = new StructureBuilder();
         String schema = this.getCatalogAndSchema();
         StampAction table = structureBuilder.table(schema).compile();
@@ -77,16 +77,22 @@ public abstract class PlatformDialect {
             List<String> tables = new ArrayList<>();
             List<ModelObject> list = (List<ModelObject>) result;
             for (ModelObject o : list) {
-                TableStructure tableStructure = new TableStructure();
-                tableStructure.setTableSchema(o.getString("TABSCHEMA"));
-                tableStructure.setTableName(o.getString("TABNAME"));
-                tableStructure.setType(o.getString("TYPE"));
-                tableStructure.setCount(o.getLongValue("COUNT"));
-                tableStructure.setLastUsed(o.get("LASTUSED"));
-                tableStructure.setComment(o.getString("COMMENT"));
-                tableStructure.setCreateTime(o.get("CREATE_TIME"));
-                tableStructures.add(tableStructure);
-                tables.add(tableStructure.getTableName());
+                String tableName = o.getString("TABNAME");
+                for (String ctn : classTableNames) {
+                    if (ctn.equalsIgnoreCase(tableName)) {
+                        TableStructure tableStructure = new TableStructure();
+                        tableStructure.setTableSchema(o.getString("TABSCHEMA"));
+                        tableStructure.setTableName(o.getString("TABNAME"));
+                        tableStructure.setType(o.getString("TYPE"));
+                        tableStructure.setCount(o.getLongValue("COUNT"));
+                        tableStructure.setLastUsed(o.get("LASTUSED"));
+                        tableStructure.setComment(o.getString("COMMENT"));
+                        tableStructure.setCreateTime(o.get("CREATE_TIME"));
+                        tableStructures.add(tableStructure);
+                        tables.add(tableStructure.getTableName());
+                        break;
+                    }
+                }
             }
 
             if (tableStructures != null && tableStructures.size() > 0) {
@@ -492,6 +498,7 @@ public abstract class PlatformDialect {
                     if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
                         boolean last = false;
                         // 由于某些数据库(eg:db2)的default值区分数据类型所以会加入字符串包装，这里判断一下
+                        if (defB != null) defB = defB.trim();
                         if (defB != null && defB.startsWith("'") && defB.endsWith("'")) {
                             defB = defB.substring(1, defB.length() - 1);
                             if (defB.equals(defA)) {
@@ -655,14 +662,23 @@ public abstract class PlatformDialect {
                         e.getMessage()));
             }
 
-            DefaultSQLDropBuilder dropBuilder = new DefaultSQLDropBuilder();
-            dropBuilder.drop().table().name(mappingTable.getMappingTableName());
-            this.runner(dropBuilder.compile());
+            try {
+                DefaultSQLDropBuilder dropBuilder = new DefaultSQLDropBuilder();
+                dropBuilder.drop().table().name(mappingTable.getMappingTableName());
+                this.runner(dropBuilder.compile());
 
-            DefaultSQLAlterBuilder renameBuilder = new DefaultSQLAlterBuilder();
-            renameBuilder.alter().table(tableName).rename().name(mappingTable.getMappingTableName());
-            this.runner(renameBuilder.compile());
+                DefaultSQLAlterBuilder renameBuilder = new DefaultSQLAlterBuilder();
+                renameBuilder.alter().table(tableName).rename().name(mappingTable.getMappingTableName());
+                this.runner(renameBuilder.compile());
+            } catch (Exception e) {
+                DefaultSQLDropBuilder dropBuilder = new DefaultSQLDropBuilder();
+                dropBuilder.drop().table().name(tableName);
+                this.runner(dropBuilder.compile());
 
+                throw new IllegalArgumentException(I18n.print("dialect_reset_table_error",
+                        mappingTable.getMappingTableName(),
+                        e.getMessage()), e);
+            }
             this.rebuildEndTable(mappingTable, tableStructure);
         }
     }

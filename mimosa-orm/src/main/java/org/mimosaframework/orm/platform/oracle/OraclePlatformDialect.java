@@ -9,30 +9,31 @@ import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class OraclePlatformDialect extends PlatformDialect {
     public OraclePlatformDialect() {
-        registerColumnType(KeyColumnType.INT, "INT");
-        registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.INT, "NUMBER", 10, ColumnCompareType.SELF);
+        registerColumnType(KeyColumnType.VARCHAR, "VARCHAR2", ColumnCompareType.JAVA);
         registerColumnType(KeyColumnType.CHAR, "CHAR", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.TINYINT, "TINYINT");
-        registerColumnType(KeyColumnType.SMALLINT, "SMALLINT");
-        registerColumnType(KeyColumnType.BIGINT, "BIGINT");
+        registerColumnType(KeyColumnType.TINYINT, "NUMBER", 3, ColumnCompareType.SELF);
+        registerColumnType(KeyColumnType.SMALLINT, "NUMBER", 5, ColumnCompareType.SELF);
+        registerColumnType(KeyColumnType.BIGINT, "NUMBER", 19, ColumnCompareType.SELF);
         registerColumnType(KeyColumnType.FLOAT, "FLOAT");
-        registerColumnType(KeyColumnType.DOUBLE, "DOUBLE");
+        registerColumnType(KeyColumnType.DOUBLE, "FLOAT", 24, ColumnCompareType.SELF);
         registerColumnType(KeyColumnType.DECIMAL, "DECIMAL", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.BOOLEAN, "TINYINT");
+        registerColumnType(KeyColumnType.BOOLEAN, "NUMBER", 1, ColumnCompareType.SELF);
         registerColumnType(KeyColumnType.DATE, "DATE");
-        registerColumnType(KeyColumnType.TIME, "TIME");
-        registerColumnType(KeyColumnType.DATETIME, "DATETIME");
-        registerColumnType(KeyColumnType.TIMESTAMP, "TIMESTAMP");
+        registerColumnType(KeyColumnType.TIME, "DATE");
+        registerColumnType(KeyColumnType.DATETIME, "DATE");
+        registerColumnType(KeyColumnType.TIMESTAMP, "DATE");
 
         registerColumnType(KeyColumnType.BLOB, "BLOB");
-        registerColumnType(KeyColumnType.MEDIUMBLOB, "MEDIUMBLOB");
-        registerColumnType(KeyColumnType.LONGBLOB, "LONGBLOB");
-        registerColumnType(KeyColumnType.TEXT, "TEXT");
-        registerColumnType(KeyColumnType.MEDIUMTEXT, "MEDIUMTEXT");
-        registerColumnType(KeyColumnType.LONGTEXT, "LONGTEXT");
+        registerColumnType(KeyColumnType.MEDIUMBLOB, "BLOB");
+        registerColumnType(KeyColumnType.LONGBLOB, "BLOB");
+        registerColumnType(KeyColumnType.TEXT, "CLOB");
+        registerColumnType(KeyColumnType.MEDIUMTEXT, "CLOB");
+        registerColumnType(KeyColumnType.LONGTEXT, "CLOB");
     }
 
     @Override
@@ -82,6 +83,17 @@ public class OraclePlatformDialect extends PlatformDialect {
         StampCombineBuilder builder = new MysqlStampUpdate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
+    }
+
+    @Override
+    protected DialectNextStep defineModifyField(DataDefinition definition) throws SQLException {
+        List<ColumnEditType> types = this.compareColumnChange(definition.getTableStructure(),
+                definition.getMappingField(), definition.getColumnStructure());
+        if (types.size() == 1 && types.get(0).equals(ColumnEditType.AUTO_INCREMENT)) {
+            // oracle 没有自增列相关，所以不用修改字段且无需重建
+            return DialectNextStep.NONE;
+        }
+        return super.defineModifyField(definition);
     }
 
     @Override

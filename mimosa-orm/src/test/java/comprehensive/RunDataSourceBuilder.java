@@ -8,9 +8,9 @@ import org.mimosaframework.orm.utils.DatabaseType;
 import javax.sql.DataSource;
 
 public class RunDataSourceBuilder {
-    private static final DatabaseType type = DatabaseType.DB2;
+    //    private static final DatabaseType type = DatabaseType.DB2;
 //    private static final DatabaseType type = DatabaseType.MYSQL;
-//    private static final DatabaseType type = DatabaseType.ORACLE;
+    private static final DatabaseType type = DatabaseType.ORACLE;
 //    private static final DatabaseType type = DatabaseType.SQLITE;
 //    private static final DatabaseType type = DatabaseType.SQL_SERVER;
 //    private static final DatabaseType type = DatabaseType.POSTGRESQL;
@@ -47,7 +47,7 @@ public class RunDataSourceBuilder {
             return getDB2DataSource();
         }
         if (type == DatabaseType.ORACLE) {
-
+            return getOracleDataSource();
         }
         if (type == DatabaseType.SQL_SERVER) {
 
@@ -76,6 +76,15 @@ public class RunDataSourceBuilder {
         dataSource.setUrl("jdbc:mysql://localhost:3306/mimosa?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&nullNamePatternMatchesAll=true");
         dataSource.setUsername("root");
         dataSource.setPassword("12345");
+        return dataSource;
+    }
+
+    public static DataSource getOracleDataSource() {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setDriverClassName("oracle.jdbc.OracleDriver");
+        dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:XE");
+        dataSource.setUsername("system");
+        dataSource.setPassword("oracle");
         return dataSource;
     }
 }

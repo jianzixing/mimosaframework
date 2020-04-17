@@ -266,15 +266,12 @@ public class LanguageMessageDefault implements MessagesRegister {
 
         // PlatformDialect
         words.put("platform_dialect_miss_fields", "表 %s 缺少字段信息");
+        words.put("copy_table_data_error", "重建表(%s)数据无法使用被清除,错误描述 %s");
+        words.put("decimal_len_to_max", "当前数据库decimal类型最大支持%s位长度(字段%s)");
+        words.put("dialect_reset_table_error", "重建表(%s)结构出错,错误描述 %s");
 
         // DefaultSQLSelectBuilder
         words.put("select_from_select_must", "select的from子句必须是select语句");
-
-        // PlatformDialect
-        words.put("copy_table_data_error", "重建表(%s)数据无法使用被清除,错误描述 %s");
-
-        // PlatformDialect
-        words.put("decimal_len_to_max", "当前数据库decimal类型最大支持%s位长度(字段%s)");
 
         messageWords.add(new MessageWords(PROJECT, words));
     }

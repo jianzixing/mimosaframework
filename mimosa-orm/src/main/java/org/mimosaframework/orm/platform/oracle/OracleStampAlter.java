@@ -52,6 +52,13 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (totalAction <= 1 && noNeedSource) sb = null;
+        if (sb != null) {
+            String sql = sb.toString();
+            if (StringTools.isNotEmpty(sql) && this.multiExecuteImmediate()) {
+                sql = sql.replaceAll("'", "''");
+            }
+            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sql)), null);
+        }
         return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
     }
 
@@ -125,7 +132,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.newName);
+                sb.append(" TO " + item.newName);
             }
         }
 
@@ -222,7 +229,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" PRIMARY KEY");
         }
         if (StringTools.isNotEmpty(column.defaultValue)) {
-            sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+            sb.append(" DEFAULT '" + column.defaultValue + "'");
         }
         if (StringTools.isNotEmpty(column.comment)) {
             this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);

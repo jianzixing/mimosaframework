@@ -74,11 +74,16 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
             sb.append(")");
         }
 
+        String createSql = sb.toString();
+        if (StringTools.isNotEmpty(createSql) && this.multiExecuteImmediate()) {
+            createSql = createSql.replaceAll("'", "''");
+        }
+
         if (create.target == KeyTarget.TABLE && create.checkExist) {
             return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate("IF HAS_TABLE = 0 THEN",
-                    sb != null ? sb.toString() : "", "END IF")), null);
+                    sb != null ? createSql : "", "END IF")), null);
         } else {
-            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(createSql)), null);
         }
     }
 
@@ -171,14 +176,17 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
 
                 sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
 
-                if (column.nullable == KeyConfirm.NO) {
-                    sb.append(" NOT NULL");
-                }
                 if (column.autoIncrement == KeyConfirm.YES) {
                     this.addAutoIncrement(wrapper, create.tableClass, create.tableName);
                 }
                 if (column.pk == KeyConfirm.YES) {
                     sb.append(" PRIMARY KEY");
+                }
+                if (StringTools.isNotEmpty(column.defaultValue)) {
+                    sb.append(" DEFAULT '" + column.defaultValue + "'");
+                }
+                if (column.nullable == KeyConfirm.NO) {
+                    sb.append(" NOT NULL");
                 }
                 if (column.unique == KeyConfirm.YES) {
                     sb.append(" UNIQUE");
@@ -200,9 +208,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                     }
                     create.indices = newIndex;
                 }
-                if (StringTools.isNotEmpty(column.defaultValue)) {
-                    sb.append(" DEFAULT \"" + column.defaultValue + "\"");
-                }
+
                 if (StringTools.isNotEmpty(column.comment)) {
                     this.addCommentSQL(wrapper, create, column.column, column.comment, 1);
                 }
