@@ -249,14 +249,14 @@ public class TableStructure {
         return false;
     }
 
-    public Map<String, Set<TableIndexStructure>> getMapIndex() {
-        Map<String, Set<TableIndexStructure>> structures = null;
+    public Map<String, List<TableIndexStructure>> getMapIndex() {
+        Map<String, List<TableIndexStructure>> structures = null;
         if (indexStructures != null) {
             for (TableIndexStructure indexStructure : indexStructures) {
                 if (structures == null) structures = new HashMap<>();
-                Set<TableIndexStructure> list = structures.get(indexStructure.getIndexName());
-                if (list == null) list = new LinkedHashSet<>();
-                list.add(indexStructure);
+                List<TableIndexStructure> list = structures.get(indexStructure.getIndexName());
+                if (list == null) list = new ArrayList<>();
+                if (list.indexOf(indexStructure) == -1) list.add(indexStructure);
                 structures.put(indexStructure.getIndexName(), list);
             }
         }
@@ -264,11 +264,16 @@ public class TableStructure {
     }
 
     public List<TableIndexStructure> getIndexStructures(List<MappingField> indexColumns) {
-        Map<String, Set<TableIndexStructure>> map = this.getMapIndex();
-        Iterator<Map.Entry<String, Set<TableIndexStructure>>> iterator = map.entrySet().iterator();
+        Map<String, List<TableIndexStructure>> map = this.getMapIndex();
+        Map.Entry<String, List<TableIndexStructure>> entry = this.getIndexStructures(map, indexColumns);
+        return entry.getValue();
+    }
+
+    public Map.Entry<String, List<TableIndexStructure>> getIndexStructures(Map<String, List<TableIndexStructure>> map, List<MappingField> indexColumns) {
+        Iterator<Map.Entry<String, List<TableIndexStructure>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String, Set<TableIndexStructure>> entry = iterator.next();
-            Set<TableIndexStructure> structures = entry.getValue();
+            Map.Entry<String, List<TableIndexStructure>> entry = iterator.next();
+            List<TableIndexStructure> structures = entry.getValue();
             if (structures != null && structures.size() > 0 && structures.size() == indexColumns.size()) {
                 boolean eq = true;
                 for (TableIndexStructure s : structures) {
@@ -285,7 +290,7 @@ public class TableStructure {
                     }
                 }
                 if (eq) {
-                    return new ArrayList<>(structures);
+                    return entry;
                 }
             }
         }

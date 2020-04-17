@@ -68,6 +68,7 @@ public class PlatformExecutor {
                 List<TableColumnStructure> delColumns = new ArrayList<>();
                 List<MappingIndex> updateIndexes = new ArrayList<>();
                 List<MappingIndex> newIndexes = new ArrayList<>();
+                List<String> dropIndexes = new ArrayList<>();
 
                 if (currTable != null) {
                     List<MappingField> rmCol = new ArrayList<>();
@@ -118,12 +119,15 @@ public class PlatformExecutor {
 
                 if (currTable != null) {
                     Set<MappingIndex> mappingIndexes = currTable.getMappingIndexes();
+                    Map<String, List<TableIndexStructure>> fromIndexStructure = structure.getMapIndex();
                     if (mappingIndexes != null) {
                         for (MappingIndex index : mappingIndexes) {
                             String mappingIndexName = index.getIndexName();
-                            List<TableIndexStructure> indexStructures = structure.getIndexStructures(mappingIndexName);
+                            List<TableIndexStructure> indexStructures = fromIndexStructure.get(mappingIndexName);
 
                             if (indexStructures != null && indexStructures.size() > 0) {
+                                fromIndexStructure.remove(mappingIndexName);
+
                                 List<MappingField> indexMappingFields = index.getIndexColumns();
                                 if (!indexStructures.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
                                     // 索引类型不一致需要重建索引
@@ -159,6 +163,28 @@ public class PlatformExecutor {
                             }
                         }
                     }
+
+                    if (fromIndexStructure != null && fromIndexStructure.size() > 0) {
+                        Set<MappingField> mappingFields = currTable.getMappingFields();
+                        for (MappingField mappingField : mappingFields) {
+                            if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex()) {
+                                Map.Entry<String, List<TableIndexStructure>> hasIndex = structure
+                                        .getIndexStructures(fromIndexStructure, Arrays.asList(new MappingField[]{mappingField}));
+                                if (hasIndex != null && hasIndex.getValue() != null && hasIndex.getValue().size() == 1) {
+                                    fromIndexStructure.remove(hasIndex.getKey());
+                                }
+                            }
+                        }
+
+                        Iterator<Map.Entry<String, List<TableIndexStructure>>> iterator = fromIndexStructure.entrySet().iterator();
+                        while (iterator.hasNext()) {
+                            Map.Entry<String, List<TableIndexStructure>> entry = iterator.next();
+                            List<TableIndexStructure> values = entry.getValue();
+                            if (values != null && values.size() > 0 && !values.get(0).getType().equalsIgnoreCase("P")) {
+                                dropIndexes.add(entry.getKey());
+                            }
+                        }
+                    }
                 }
 
 
@@ -183,6 +209,11 @@ public class PlatformExecutor {
 
                 if (newIndexes != null && newIndexes.size() > 0) {
                     tableMate.setNewIndexes(newIndexes);
+                    update = true;
+                }
+
+                if (dropIndexes != null && dropIndexes.size() > 0) {
+                    tableMate.setDropIndexes(dropIndexes);
                     update = true;
                 }
 

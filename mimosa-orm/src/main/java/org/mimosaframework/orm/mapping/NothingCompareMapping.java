@@ -114,10 +114,12 @@ public class NothingCompareMapping implements StartCompareMapping {
                         if (tableMate.getDelColumns() != null && tableMate.getDelColumns().size() > 0) {
                             List<TableColumnStructure> delColumns = tableMate.getDelColumns();
                             MappingTable mappingTable = tableMate.getMappingTable();
-                            TableStructure tableStructure = tableMate.getStructure();
-                            for (TableColumnStructure columnStructure : delColumns) {
-                                DialectNextStep step = executor.dropField(mappingTable, tableStructure, columnStructure);
-                                if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                            if (mappingLevel == MappingLevel.UPDATE) {
+                                TableStructure tableStructure = tableMate.getStructure();
+                                for (TableColumnStructure columnStructure : delColumns) {
+                                    DialectNextStep step = executor.dropField(mappingTable, tableStructure, columnStructure);
+                                    if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                                }
                             }
 
                             if (mappingLevel == MappingLevel.WARN) {
@@ -152,7 +154,6 @@ public class NothingCompareMapping implements StartCompareMapping {
                                             mappingIndex.getIndexName()));
                                 }
                             }
-
                         }
 
                         // create index
@@ -171,6 +172,26 @@ public class NothingCompareMapping implements StartCompareMapping {
                                     logger.warn(I18n.print("compare_mapping_warn_index_add",
                                             mappingTable.getMappingTableName(),
                                             mappingIndex.getIndexName()));
+                                }
+                            }
+                        }
+
+                        // drop index
+                        if (tableMate.getDropIndexes() != null && tableMate.getDropIndexes().size() > 0) {
+                            List<String> dropIndexes = tableMate.getDropIndexes();
+                            MappingTable mappingTable = tableMate.getMappingTable();
+                            if (mappingLevel == MappingLevel.UPDATE) {
+                                for (String indexName : dropIndexes) {
+                                    DialectNextStep step = executor.dropIndex(mappingTable, indexName);
+                                    if (step == DialectNextStep.REBUILD) isRebuildTable = true;
+                                }
+                            }
+
+                            if (mappingLevel == MappingLevel.WARN) {
+                                for (String indexName : dropIndexes) {
+                                    logger.warn(I18n.print("compare_mapping_warn_index_add",
+                                            mappingTable.getMappingTableName(),
+                                            indexName));
                                 }
                             }
                         }

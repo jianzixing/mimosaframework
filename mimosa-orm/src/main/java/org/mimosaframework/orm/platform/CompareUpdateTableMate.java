@@ -17,6 +17,7 @@ public class CompareUpdateTableMate {
     private List<TableColumnStructure> delColumns = null;
     private List<MappingIndex> updateIndexes = null;
     private List<MappingIndex> newIndexes = null;
+    private List<String> dropIndexes = null;
 
     public MappingTable getMappingTable() {
         return mappingTable;
@@ -80,5 +81,13 @@ public class CompareUpdateTableMate {
 
     public void setNewIndexes(List<MappingIndex> newIndexes) {
         this.newIndexes = newIndexes;
+    }
+
+    public List<String> getDropIndexes() {
+        return dropIndexes;
+    }
+
+    public void setDropIndexes(List<String> dropIndexes) {
+        this.dropIndexes = dropIndexes;
     }
 }
