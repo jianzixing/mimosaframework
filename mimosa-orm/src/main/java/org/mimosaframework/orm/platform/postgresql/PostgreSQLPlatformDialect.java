@@ -3,7 +3,6 @@ package org.mimosaframework.orm.platform.postgresql;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.platform.mysql.*;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
@@ -37,49 +36,49 @@ public class PostgreSQLPlatformDialect extends PlatformDialect {
 
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
-        StampCombineBuilder builder = new MysqlStampAlter();
+        StampCombineBuilder builder = new PostgreSQLStampAlter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine create(StampCreate create) {
-        StampCombineBuilder builder = new MysqlStampCreate();
+        StampCombineBuilder builder = new PostgreSQLStampCreate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine drop(StampDrop drop) {
-        StampCombineBuilder builder = new MysqlStampDrop();
+        StampCombineBuilder builder = new PostgreSQLStampDrop();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, drop);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine insert(StampInsert insert) {
-        StampCombineBuilder builder = new MysqlStampInsert();
+        StampCombineBuilder builder = new PostgreSQLStampInsert();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, insert);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine delete(StampDelete delete) {
-        StampCombineBuilder builder = new MysqlStampDelete();
+        StampCombineBuilder builder = new PostgreSQLStampDelete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine select(StampSelect select) {
-        StampCombineBuilder builder = new MysqlStampSelect();
+        StampCombineBuilder builder = new PostgreSQLStampSelect();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, select);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine update(StampUpdate update) {
-        StampCombineBuilder builder = new MysqlStampUpdate();
+        StampCombineBuilder builder = new PostgreSQLStampUpdate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
     }

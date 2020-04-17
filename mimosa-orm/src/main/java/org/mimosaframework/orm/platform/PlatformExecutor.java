@@ -216,7 +216,8 @@ public class PlatformExecutor {
                             if (iss != null) {
                                 for (TableIndexStructure is : iss) {
                                     for (TableColumnStructure delC : delColumns) {
-                                        if (is.getColumnName().equals(delC.getColumnName())) {
+                                        if (StringTools.isNotEmpty(is.getColumnName())
+                                                && is.getColumnName().equals(delC.getColumnName())) {
                                             if (rms == null) rms = new ArrayList<>();
                                             rms.add(entry);
                                             break;
@@ -245,7 +246,11 @@ public class PlatformExecutor {
                 if (dropIndexes != null && dropIndexes.size() > 0) {
                     List<String> deli = new ArrayList<>();
                     for (Map.Entry<String, List<TableIndexStructure>> entry : dropIndexes) {
-                        deli.add(entry.getKey());
+                        if (!structure.isIndexInConstraintByColumns(entry.getKey(), entry.getValue())) {
+                            deli.add(entry.getKey());
+                        } else {
+
+                        }
                     }
                     tableMate.setDropIndexes(deli);
                     update = true;
@@ -373,9 +378,37 @@ public class PlatformExecutor {
                 insertBuilder.row(values);
             }
 
-            SQLBuilderCombine combine = dialect.insert(insertBuilder.compile());
+            StampInsert insert = insertBuilder.compile();
+            if (insert != null && !dialect.isSupportGeneratedKeys()) {
+                List<MappingField> pks = table.getMappingPrimaryKeyFields();
+                for (MappingField pk : pks) {
+                    if (pk.isMappingAutoIncrement()) {
+                        insert.autoField = new StampInsert.StampInsertSequence();
+                        insert.autoField.columnName = pk.getMappingColumnName();
+                        break;
+                    }
+                }
+            }
+            SQLBuilderCombine combine = dialect.insert(insert);
             Object object = this.runner.doHandler(new JDBCTraversing(TypeForRunner.INSERT,
                     combine.getSql(), combine.getPlaceholders()));
+            if (!dialect.isSupportGeneratedKeys()) {
+                StampColumn[] stampColumns = insert.columns;
+                Object[][] values = insert.values;
+                int k = 0;
+                for (StampColumn column : stampColumns) {
+                    if (column.column.equals(insert.autoField.columnName)) {
+                        break;
+                    }
+                    k++;
+                }
+
+                List<Long> ids = new ArrayList<>();
+                for (Object[] o : values) {
+                    ids.add((Long) o[k]);
+                }
+                return ids;
+            }
             return (List<Long>) object;
         }
         return null;

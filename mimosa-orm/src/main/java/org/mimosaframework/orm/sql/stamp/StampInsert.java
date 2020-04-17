@@ -11,6 +11,8 @@ public class StampInsert implements StampAction {
     public Object[][] values;
     public StampSelect select;
 
+    public StampInsertSequence autoField;
+
     @Override
     public List<STItem> getTables() {
         List<STItem> items = null;
@@ -19,5 +21,10 @@ public class StampInsert implements StampAction {
             items.add(new STItem(tableClass));
         }
         return items;
+    }
+
+    public static class StampInsertSequence {
+        public int type = 0; // 执行方式 0 默认程序获取序列ID可以返回ID 1插入自动添加ID无法返回ID
+        public String columnName;
     }
 }

@@ -2,13 +2,13 @@ package org.mimosaframework.orm.platform.oracle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.mapping.SpecificMappingField;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.platform.mysql.*;
 import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
@@ -31,7 +31,7 @@ public class OraclePlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.BIGINT, "NUMBER", 19, ColumnCompareType.SELF);
         registerColumnType(KeyColumnType.FLOAT, "FLOAT");
         registerColumnType(KeyColumnType.DOUBLE, "FLOAT", 24, ColumnCompareType.SELF);
-        registerColumnType(KeyColumnType.DECIMAL, "DECIMAL", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.DECIMAL, "NUMBER", ColumnCompareType.JAVA);
         registerColumnType(KeyColumnType.BOOLEAN, "NUMBER", 1, ColumnCompareType.SELF);
         registerColumnType(KeyColumnType.DATE, "DATE");
         registerColumnType(KeyColumnType.TIME, "DATE");
@@ -48,49 +48,96 @@ public class OraclePlatformDialect extends PlatformDialect {
 
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
-        StampCombineBuilder builder = new MysqlStampAlter();
+        StampCombineBuilder builder = new OracleStampAlter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine create(StampCreate create) {
-        StampCombineBuilder builder = new MysqlStampCreate();
+        StampCombineBuilder builder = new OracleStampCreate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine drop(StampDrop drop) {
-        StampCombineBuilder builder = new MysqlStampDrop();
+        StampCombineBuilder builder = new OracleStampDrop();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, drop);
         return combine;
     }
 
     @Override
-    public SQLBuilderCombine insert(StampInsert insert) {
-        StampCombineBuilder builder = new MysqlStampInsert();
+    public SQLBuilderCombine insert(StampInsert insert) throws SQLException {
+        if (insert.autoField != null && insert.autoField.type == 0) {
+            StampColumn[] columns = insert.columns;
+            boolean isContain = false;
+            if (columns != null) {
+                for (StampColumn column : columns) {
+                    if (column.column.equals(insert.autoField.columnName)) {
+                        isContain = true;
+                    }
+                }
+            }
+            if (!isContain) {
+                StampColumn[] newColumns = new StampColumn[columns.length + 1];
+                newColumns[0] = new StampColumn(insert.autoField.columnName);
+                int i = 1;
+                for (StampColumn column : columns) {
+                    newColumns[i] = column;
+                    i++;
+                }
+
+                insert.columns = newColumns;
+
+                Object[][] values = insert.values;
+                for (int j = 0; j < values.length; j++) {
+                    List<ModelObject> objects = (List<ModelObject>)
+                            this.runner(new JDBCTraversing("SELECT " + insert.tableName.toUpperCase() + "_SEQ.NEXTVAL AS ID FROM DUAL", null));
+
+                    long seq = 0;
+                    if (objects != null && objects.size() > 0) {
+                        ModelObject id = objects.get(0);
+                        seq = id.getLong("ID");
+                    }
+
+                    Object[] value = values[j];
+                    Object[] newValue = new Object[value == null ? 1 : value.length + 1];
+                    newValue[0] = seq;
+                    int m = 1;
+                    if (value != null) {
+                        for (Object v : value) {
+                            newValue[m] = v;
+                            m++;
+                        }
+                    }
+
+                    values[j] = newValue;
+                }
+            }
+        }
+        StampCombineBuilder builder = new OracleStampInsert();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, insert);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine delete(StampDelete delete) {
-        StampCombineBuilder builder = new MysqlStampDelete();
+        StampCombineBuilder builder = new OracleStampDelete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine select(StampSelect select) {
-        StampCombineBuilder builder = new MysqlStampSelect();
+        StampCombineBuilder builder = new OracleStampSelect();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, select);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine update(StampUpdate update) {
-        StampCombineBuilder builder = new MysqlStampUpdate();
+        StampCombineBuilder builder = new OracleStampUpdate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
     }
@@ -164,7 +211,7 @@ public class OraclePlatformDialect extends PlatformDialect {
 
     @Override
     public boolean isSupportGeneratedKeys() {
-        return true;
+        return false;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.platform;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 
 import java.util.*;
@@ -249,6 +250,26 @@ public class TableStructure {
         return false;
     }
 
+    public Map<String, List<TableConstraintStructure>> getMapConstraint() {
+        if (constraintStructures != null) {
+            Map<String, List<TableConstraintStructure>> map = null;
+            for (TableConstraintStructure constraintStructure : constraintStructures) {
+                if (map == null) map = new HashMap<>();
+                List<TableConstraintStructure> cname = map.get(constraintStructure.getConstraintName());
+                if (cname == null) cname = new ArrayList<>();
+                if (cname.indexOf(constraintStructure) == -1) cname.add(constraintStructure);
+                map.put(constraintStructure.getConstraintName(), cname);
+            }
+            return map;
+        }
+        return null;
+    }
+
+    /**
+     * 获取数据库的索引
+     *
+     * @return
+     */
     public Map<String, List<TableIndexStructure>> getMapIndex() {
         Map<String, List<TableIndexStructure>> structures = null;
         if (indexStructures != null) {
@@ -256,17 +277,63 @@ public class TableStructure {
                 if (structures == null) structures = new HashMap<>();
                 List<TableIndexStructure> list = structures.get(indexStructure.getIndexName());
                 if (list == null) list = new ArrayList<>();
-                if (list.indexOf(indexStructure) == -1) list.add(indexStructure);
-                structures.put(indexStructure.getIndexName(), list);
+                // oracle有一些字段为空的索引
+                if (StringTools.isNotEmpty(indexStructure.getColumnName())) {
+                    if (list.indexOf(indexStructure) == -1) list.add(indexStructure);
+                    structures.put(indexStructure.getIndexName(), list);
+                }
             }
         }
         return structures;
     }
 
+    /**
+     * 判断相同列是否在索引和约束中都存在
+     *
+     * @param indexName
+     * @param indexes
+     * @return
+     */
+    public boolean isIndexInConstraintByColumns(String indexName, List<TableIndexStructure> indexes) {
+        // 排除约束同名的索引
+        Map<String, List<TableConstraintStructure>> crts = this.getMapConstraint();
+        Iterator<Map.Entry<String, List<TableConstraintStructure>>> iterator = crts.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, List<TableConstraintStructure>> entry = iterator.next();
+            List<TableConstraintStructure> cs = entry.getValue();
+
+            if (indexes != null && cs != null && indexes.size() == cs.size()) {
+                boolean eq = true;
+                for (TableConstraintStructure a : cs) {
+                    boolean is = false;
+                    for (TableIndexStructure b : indexes) {
+                        if (a.getColumnName().equals(b.getColumnName())) {
+                            is = true;
+                            break;
+                        }
+                    }
+                    if (!is) {
+                        eq = false;
+                        break;
+                    }
+                }
+                if (eq) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public List<TableIndexStructure> getIndexStructures(List<MappingField> indexColumns) {
         Map<String, List<TableIndexStructure>> map = this.getMapIndex();
         Map.Entry<String, List<TableIndexStructure>> entry = this.getIndexStructures(map, indexColumns);
-        return entry.getValue();
+        if (entry != null) {
+            return entry.getValue();
+        }
+        return null;
     }
 
     public Map.Entry<String, List<TableIndexStructure>> getIndexStructures(Map<String, List<TableIndexStructure>> map, List<MappingField> indexColumns) {
@@ -279,7 +346,8 @@ public class TableStructure {
                 for (TableIndexStructure s : structures) {
                     boolean in = false;
                     for (MappingField field : indexColumns) {
-                        if (s.getColumnName().equals(field.getMappingColumnName())) {
+                        if (StringTools.isNotEmpty(s.getColumnName())
+                                && s.getColumnName().equals(field.getMappingColumnName())) {
                             in = true;
                             break;
                         }

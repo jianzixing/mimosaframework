@@ -156,7 +156,7 @@ public abstract class PlatformDialect {
                     for (ModelObject o : listConstraint) {
                         TableConstraintStructure constraintStructure = new TableConstraintStructure();
                         constraintStructure.setTableSchema(o.getString("TABSCHEMA"));
-                        constraintStructure.setConstraintName(o.getString("CONSTNAME"));
+                        constraintStructure.setConstraintName(o.getString("CONSNAME"));
                         constraintStructure.setTableName(o.getString("TABNAME"));
                         constraintStructure.setColumnName(o.getString("COLNAME"));
                         constraintStructure.setForeignTableName(o.getString("FGNTABNAME"));
@@ -534,7 +534,7 @@ public abstract class PlatformDialect {
 
     public abstract SQLBuilderCombine drop(StampDrop drop);
 
-    public abstract SQLBuilderCombine insert(StampInsert insert);
+    public abstract SQLBuilderCombine insert(StampInsert insert) throws SQLException;
 
     public abstract SQLBuilderCombine delete(StampDelete delete);
 
