@@ -173,7 +173,11 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
             sb.append(" PRIMARY KEY");
         }
         if (column.defaultValue != null) {
-            sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+            if (column.defaultValue.equals("*****")) {
+                sb.append(" DEFAULT NULL");
+            } else {
+                sb.append(" DEFAULT '" + column.defaultValue + "'");
+            }
         }
         if (StringTools.isNotEmpty(column.comment)) {
             logger.warn("sqlite can't set column comment");

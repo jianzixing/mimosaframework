@@ -18,11 +18,7 @@ public class RunJoinSession {
     @Before
     public void init() throws ContextException {
         if (template == null) {
-            String config = "/template-mimosa.xml";
-            XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream(config));
-            SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
-            template = new MimosaSessionTemplate();
-            ((MimosaSessionTemplate) template).setSessionFactory(sessionFactory);
+            template = RunDataSourceBuilder.currTemplate();
         }
     }
 

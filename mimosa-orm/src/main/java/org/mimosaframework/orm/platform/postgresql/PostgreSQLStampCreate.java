@@ -80,8 +80,10 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreatePrimaryKey index = create.primaryKey;
-        sb.append("PRIMARY KEY");
-        this.setTableIndexColumn(index, sb, wrapper, create);
+        if (index != null) {
+            sb.append("PRIMARY KEY");
+            this.setTableIndexColumn(index, sb, wrapper, create);
+        }
     }
 
     private void setTableIndexColumn(StampCreatePrimaryKey index,
@@ -112,9 +114,10 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
                 sb.append(this.getColumnName(wrapper, create, column.column));
 
                 if (column.autoIncrement == KeyConfirm.YES) {
-                    if (column.columnType.equals("INT")) {
+                    if (column.columnType.equals(KeyColumnType.INT)) {
                         sb.append(" SERIAL");
-                    } else if (column.columnType.equals("SMALLINT")) {
+                    } else if (column.columnType.equals(KeyColumnType.SMALLINT)
+                            || column.columnType.equals(KeyColumnType.TINYINT)) {
                         sb.append(" SMALLSERIAL");
                     } else {
                         sb.append(" BIGSERIAL");
@@ -132,7 +135,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
                     primaryKeyIndex.add(column.column);
                 }
                 if (column.defaultValue != null) {
-                    sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+                    sb.append(" DEFAULT '" + column.defaultValue + "'");
                 }
                 if (StringTools.isNotEmpty(column.comment)) {
                     this.addCommentSQL(wrapper, create, column.column, column.comment, 1);
@@ -142,9 +145,11 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
                 if (i != columns.length) sb.append(",");
             }
 
-            StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
-            pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
-            create.primaryKey = pkIdx;
+            if (primaryKeyIndex != null && primaryKeyIndex.size() > 0) {
+                StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
+                pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
+                create.primaryKey = pkIdx;
+            }
         }
     }
 }

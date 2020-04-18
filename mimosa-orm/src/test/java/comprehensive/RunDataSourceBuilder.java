@@ -10,10 +10,10 @@ import javax.sql.DataSource;
 public class RunDataSourceBuilder {
     //    private static final DatabaseType type = DatabaseType.DB2;
 //    private static final DatabaseType type = DatabaseType.MYSQL;
-    private static final DatabaseType type = DatabaseType.ORACLE;
+//    private static final DatabaseType type = DatabaseType.ORACLE;
+    private static final DatabaseType type = DatabaseType.POSTGRESQL;
 //    private static final DatabaseType type = DatabaseType.SQLITE;
 //    private static final DatabaseType type = DatabaseType.SQL_SERVER;
-//    private static final DatabaseType type = DatabaseType.POSTGRESQL;
 
     public static SessionTemplate currTemplate() throws ContextException {
         return getTemplate(type);
@@ -53,7 +53,7 @@ public class RunDataSourceBuilder {
 
         }
         if (type == DatabaseType.POSTGRESQL) {
-
+            return getPostgreSQLSource();
         }
         if (type == DatabaseType.SQLITE) {
 
@@ -85,6 +85,15 @@ public class RunDataSourceBuilder {
         dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:XE");
         dataSource.setUsername("system");
         dataSource.setPassword("oracle");
+        return dataSource;
+    }
+
+    public static DataSource getPostgreSQLSource() {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/mimosa");
+        dataSource.setUsername("postgres");
+        dataSource.setPassword("12345");
         return dataSource;
     }
 }

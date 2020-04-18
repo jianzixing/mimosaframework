@@ -45,7 +45,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         if (item.action == KeyAction.ADD) {
             sb.append(" ADD");
             if (item.struct == KeyAlterStruct.COLUMN) {
-                this.buildAlterColumn(sb, wrapper, alter, item, 1);
+                this.buildAddAlterColumn(sb, wrapper, alter, item);
             }
             if (item.struct == KeyAlterStruct.INDEX) {
                 this.buildAlterIndex(sb, wrapper, alter, item);
@@ -108,7 +108,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                 sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.newName);
+                sb.append(" TO " + item.newName);
             }
         }
 
@@ -184,22 +184,58 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         }
     }
 
+    private void buildAddAlterColumn(StringBuilder sb,
+                                     MappingGlobalWrapper wrapper,
+                                     StampAlter alter,
+                                     StampAlterItem column) {
+        sb.append(" " + this.getColumnName(wrapper, alter, column.column));
+        if (column.columnType != null) {
+            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+        }
+        if (column.autoIncrement == KeyConfirm.YES) {
+            if (column.columnType.equals(KeyColumnType.INT)) {
+                sb.append(" SERIAL");
+            } else if (column.columnType.equals(KeyColumnType.SMALLINT)
+                    || column.columnType.equals(KeyColumnType.TINYINT)) {
+                sb.append(" SMALLSERIAL");
+            } else {
+                sb.append(" BIGSERIAL");
+            }
+        }
+        if (column.nullable == KeyConfirm.NO) {
+            sb.append(" NOT NULL");
+        }
+        if (column.pk == KeyConfirm.YES) {
+            sb.append(" PRIMARY KEY");
+        }
+        if (column.defaultValue != null) {
+            if (column.defaultValue.equals("*****")) {
+                sb.append(" DEFAULT NULL");
+            } else {
+                sb.append(" DEFAULT '" + column.defaultValue + "'");
+            }
+        }
+        if (StringTools.isNotEmpty(column.comment)) {
+            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
+        }
+        if (column.after != null) {
+            logger.warn("postgresql can't set column order");
+        }
+        if (column.before != null) {
+            logger.warn("postgresql can't set column order");
+        }
+    }
+
     private void buildAlterColumn(StringBuilder sb,
                                   MappingGlobalWrapper wrapper,
                                   StampAlter alter,
                                   StampAlterItem column,
                                   int type) {
-        if (type == 3 || type == 2) {
-            sb.append(" ALTER COLUMN");
-        }
+        sb.append(" ALTER COLUMN");
         sb.append(" " + this.getColumnName(wrapper, alter, type == 2 ? column.oldColumn : column.column));
         if (column.columnType != null) {
-            if (type == 3 || type == 2) {
-                sb.append(" TYPE");
-            }
-            if (column.autoIncrement == KeyConfirm.NO) {
-                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
-            }
+            sb.append(" TYPE");
+            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
         }
         if (column.autoIncrement == KeyConfirm.YES) {
             if (type == 3) {
@@ -244,7 +280,11 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             sb.append(" PRIMARY KEY");
         }
         if (column.defaultValue != null) {
-            sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+            if (column.defaultValue.equals("*****")) {
+                sb.append(" SET DEFAULT NULL");
+            } else {
+                sb.append(" SET DEFAULT '" + column.defaultValue + "'");
+            }
         }
         if (StringTools.isNotEmpty(column.comment)) {
             this.addCommentSQL(wrapper, alter, type == 2 ? column.oldColumn : column.column, column.comment, 1);

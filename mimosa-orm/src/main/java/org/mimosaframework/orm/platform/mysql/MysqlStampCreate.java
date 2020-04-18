@@ -75,8 +75,10 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreatePrimaryKey index = create.primaryKey;
-        sb.append("PRIMARY KEY");
-        this.setTableIndexColumn(index, sb, wrapper, create);
+        if (index != null) {
+            sb.append("PRIMARY KEY");
+            this.setTableIndexColumn(index, sb, wrapper, create);
+        }
     }
 
     private void setTableIndexColumn(StampCreatePrimaryKey index,
@@ -134,9 +136,11 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
                 if (i != columns.length) sb.append(",");
             }
 
-            StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
-            pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
-            create.primaryKey = pkIdx;
+            if (primaryKeyIndex != null && primaryKeyIndex.size() > 0) {
+                StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
+                pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
+                create.primaryKey = pkIdx;
+            }
         }
     }
 }

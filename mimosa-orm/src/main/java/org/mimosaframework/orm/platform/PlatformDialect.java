@@ -5,10 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
-import org.mimosaframework.orm.mapping.MappingField;
-import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.mapping.MappingIndex;
-import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.sql.StructureBuilder;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
@@ -23,6 +20,7 @@ import org.mimosaframework.orm.utils.LOBLoader;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public abstract class PlatformDialect {
@@ -492,7 +490,8 @@ public abstract class PlatformDialect {
             String defB = columnStructure.getDefaultValue();
             // 如果返回当前字符串则表示获取默认值出错了
             // 获取默认值出错后不再对比
-            if (defB == null || !defB.equals("$'clob_get_error'")) {
+            // 自增主键不需要设置默认值
+            if (!currField.isMappingAutoIncrement() && (defB == null || !defB.equals("$'clob_get_error'"))) {
                 if (!(StringTools.isEmpty(defA) && StringTools.isEmpty(defB))
                         && !(StringTools.isEmpty(defA) && "0".equals(defB))) {  // int bigint 等 数据库默认值总是0
                     if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
@@ -607,21 +606,58 @@ public abstract class PlatformDialect {
     }
 
     protected DialectNextStep defineAddColumn(DataDefinition definition) throws SQLException {
-        TableStructure structure = definition.getTableStructure();
-        List<TableConstraintStructure> pks = structure.getPrimaryKey();
-        List<TableColumnStructure> autos = structure.getAutoIncrement();
+        MappingTable mappingTable = definition.getMappingTable();
         MappingField mappingField = definition.getMappingField();
-        if ((pks != null && pks.size() > 0 && mappingField.isMappingFieldPrimaryKey())
-                || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
-            return DialectNextStep.REBUILD;
-        } else {
-            StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), mappingField);
-            this.runner(stampAlter);
+        String tableName = mappingTable.getMappingTableName();
+        String columnName = mappingField.getMappingColumnName();
+        try {
+            TableStructure structure = definition.getTableStructure();
+            List<TableConstraintStructure> pks = structure.getPrimaryKey();
+            List<TableColumnStructure> autos = structure.getAutoIncrement();
+            if ((pks != null && pks.size() > 0 && mappingField.isMappingFieldPrimaryKey())
+                    || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
+                return DialectNextStep.REBUILD;
+            } else {
+                String def = mappingField.getMappingFieldDefaultValue();
+                boolean nullable = mappingField.isMappingFieldNullable();
 
-            this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
-                    definition.getMappingField(), null);
+                boolean setDefault = false;
+                if (!nullable && StringTools.isEmpty(def)) {
+                    KeyColumnType type = JavaType2ColumnType.getColumnTypeByJava(mappingField.getMappingFieldType());
+                    if (JavaType2ColumnType.isNumber(type) || JavaType2ColumnType.isBoolean(type))
+                        ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("0");
+                    else if (JavaType2ColumnType.isTime(type))
+                        ((SpecificMappingField) mappingField)
+                                .setMappingFieldDefaultValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                    else
+                        ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("");
+
+                    setDefault = true;
+                }
+
+                try {
+                    StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), mappingField);
+                    this.runner(stampAlter);
+
+                    if (setDefault) {
+                        DefaultSQLAlterBuilder alterBuilder = new DefaultSQLAlterBuilder();
+                        alterBuilder.alter().table(tableName).modify().column(columnName).defaultValue("*****");
+                        this.runner(alterBuilder.compile());
+                    }
+                } finally {
+                    if (setDefault) {
+                        ((SpecificMappingField) mappingField).setMappingFieldDefaultValue(null);
+                    }
+                }
+
+                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
+                        definition.getMappingField(), null);
+            }
+            return DialectNextStep.NONE;
+        } catch (Exception e) {
+            logger.error(I18n.print("dialect_add_column_error", tableName, columnName), e);
+            return DialectNextStep.REBUILD;
         }
-        return DialectNextStep.NONE;
     }
 
     protected DialectNextStep defineModifyColumn(DataDefinition definition) throws SQLException {
@@ -681,6 +717,13 @@ public abstract class PlatformDialect {
     public void rebuildTable(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
         if (mappingTable != null && tableStructure != null) {
             String tableName = mappingTable.getMappingTableName() + "_ctmp";
+
+            // 1.先修改原表名称
+            DefaultSQLAlterBuilder renameBuilder = new DefaultSQLAlterBuilder();
+            renameBuilder.alter().table(mappingTable.getMappingTableName()).rename().name(tableName);
+            this.runner(renameBuilder.compile());
+
+            // 2.再创建新表
             this.rebuildStartTable(mappingTable, tableName);
             DefaultSQLInsertBuilder insertBuilder = new DefaultSQLInsertBuilder();
             insertBuilder.insert().into().table(tableName);
@@ -701,6 +744,7 @@ public abstract class PlatformDialect {
             selectBuilder.select().fields(cols.toArray(new String[]{})).from().table(mappingTable.getMappingTableName());
             insertBuilder.select(selectBuilder);
             try {
+                // 3.再拷贝数据
                 this.runner(insertBuilder.compile());
             } catch (Exception e) {
                 logger.error(I18n.print("copy_table_data_error",
@@ -709,22 +753,16 @@ public abstract class PlatformDialect {
             }
 
             try {
-                DefaultSQLDropBuilder dropBuilder = new DefaultSQLDropBuilder();
-                dropBuilder.drop().table().name(mappingTable.getMappingTableName());
-                this.runner(dropBuilder.compile());
-
-                DefaultSQLAlterBuilder renameBuilder = new DefaultSQLAlterBuilder();
-                renameBuilder.alter().table(tableName).rename().name(mappingTable.getMappingTableName());
-                this.runner(renameBuilder.compile());
-            } catch (Exception e) {
+                // 最后删除原表
                 DefaultSQLDropBuilder dropBuilder = new DefaultSQLDropBuilder();
                 dropBuilder.drop().table().name(tableName);
                 this.runner(dropBuilder.compile());
-
+            } catch (Exception e) {
                 throw new IllegalArgumentException(I18n.print("dialect_reset_table_error",
                         mappingTable.getMappingTableName(),
                         e.getMessage()), e);
             }
+
             this.rebuildEndTable(mappingTable, tableStructure);
 
             Set<MappingField> mappingFields = mappingTable.getMappingFields();

@@ -152,63 +152,7 @@ public class OraclePlatformDialect extends PlatformDialect {
         }
         return super.defineModifyColumn(definition);
     }
-
-    @Override
-    protected DialectNextStep defineAddColumn(DataDefinition definition) throws SQLException {
-        MappingTable mappingTable = definition.getMappingTable();
-        MappingField mappingField = definition.getMappingField();
-        String tableName = mappingTable.getMappingTableName();
-        String columnName = mappingField.getMappingColumnName();
-        try {
-            TableStructure structure = definition.getTableStructure();
-            List<TableConstraintStructure> pks = structure.getPrimaryKey();
-            List<TableColumnStructure> autos = structure.getAutoIncrement();
-            if ((pks != null && pks.size() > 0 && mappingField.isMappingFieldPrimaryKey())
-                    || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
-                return DialectNextStep.REBUILD;
-            } else {
-                String def = mappingField.getMappingFieldDefaultValue();
-                boolean nullable = mappingField.isMappingFieldNullable();
-
-                boolean setDefault = false;
-                if (!nullable && StringTools.isEmpty(def)) {
-                    KeyColumnType type = JavaType2ColumnType.getColumnTypeByJava(mappingField.getMappingFieldType());
-                    if (JavaType2ColumnType.isNumber(type) || JavaType2ColumnType.isBoolean(type))
-                        ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("0");
-                    else if (JavaType2ColumnType.isTime(type))
-                        ((SpecificMappingField) mappingField)
-                                .setMappingFieldDefaultValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-                    else
-                        ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("");
-
-                    setDefault = true;
-                }
-
-                try {
-                    StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), mappingField);
-                    this.runner(stampAlter);
-
-                    if (setDefault) {
-                        DefaultSQLAlterBuilder alterBuilder = new DefaultSQLAlterBuilder();
-                        alterBuilder.alter().table(tableName).modify().column(columnName).defaultValue("*****");
-                        this.runner(alterBuilder.compile());
-                    }
-                } finally {
-                    if (setDefault) {
-                        ((SpecificMappingField) mappingField).setMappingFieldDefaultValue(null);
-                    }
-                }
-
-                this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
-                        definition.getMappingField(), null);
-            }
-            return DialectNextStep.NONE;
-        } catch (Exception e) {
-            logger.error(I18n.print("dialect_add_column_error", tableName, columnName), e);
-            return DialectNextStep.REBUILD;
-        }
-    }
-
+    
     @Override
     public boolean isSupportGeneratedKeys() {
         return false;

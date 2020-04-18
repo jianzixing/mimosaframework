@@ -232,6 +232,11 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
 
         if (column.strategy().equals(AutoIncrementStrategy.class)) {
             mappingField.setMappingFieldAutoIncrement(true);
+            if (mappingField.getMappingFieldType() != short.class
+                    && mappingField.getMappingFieldType() != int.class
+                    && mappingField.getMappingFieldType() != long.class) {
+                throw new IllegalArgumentException(I18n.print("auto_field_type_error"));
+            }
         }
         mappingTable.addMappingField(mappingField);
         if (mappingField.getMappingFieldType().equals(BigDecimal.class)

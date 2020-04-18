@@ -86,7 +86,7 @@ public class MysqlPlatformDialect extends PlatformDialect {
         return combine;
     }
 
-    protected DialectNextStep defineModifyField(DataDefinition definition) throws SQLException {
+    protected DialectNextStep defineModifyColumn(DataDefinition definition) throws SQLException {
         TableStructure tableStructure = definition.getTableStructure();
         MappingTable mappingTable = definition.getMappingTable();
         MappingField mappingField = definition.getMappingField();
@@ -146,6 +146,25 @@ public class MysqlPlatformDialect extends PlatformDialect {
         } else {
             return DialectNextStep.REBUILD;
         }
+    }
+
+    @Override
+    protected DialectNextStep defineAddColumn(DataDefinition definition) throws SQLException {
+        TableStructure structure = definition.getTableStructure();
+        List<TableConstraintStructure> pks = structure.getPrimaryKey();
+        List<TableColumnStructure> autos = structure.getAutoIncrement();
+        MappingField mappingField = definition.getMappingField();
+        if ((pks != null && pks.size() > 0 && mappingField.isMappingFieldPrimaryKey())
+                || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
+            return DialectNextStep.REBUILD;
+        } else {
+            StampAlter stampAlter = this.commonAddColumn(definition.getMappingTable(), mappingField);
+            this.runner(stampAlter);
+
+            this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
+                    definition.getMappingField(), null);
+        }
+        return DialectNextStep.NONE;
     }
 
     @Override

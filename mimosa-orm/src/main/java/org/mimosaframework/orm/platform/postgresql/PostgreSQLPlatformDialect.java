@@ -7,31 +7,53 @@ import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PostgreSQLPlatformDialect extends PlatformDialect {
     public PostgreSQLPlatformDialect() {
-        registerColumnType(KeyColumnType.INT, "INT");
+        registerColumnType(KeyColumnType.INT, "INT4");
         registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.CHAR, "CHAR", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.TINYINT, "TINYINT");
-        registerColumnType(KeyColumnType.SMALLINT, "SMALLINT");
-        registerColumnType(KeyColumnType.BIGINT, "BIGINT");
-        registerColumnType(KeyColumnType.FLOAT, "FLOAT");
-        registerColumnType(KeyColumnType.DOUBLE, "DOUBLE");
-        registerColumnType(KeyColumnType.DECIMAL, "DECIMAL", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.BOOLEAN, "TINYINT");
+        registerColumnType(KeyColumnType.CHAR, "BPCHAR", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.TINYINT, "INT2");
+        registerColumnType(KeyColumnType.SMALLINT, "INT2");
+        registerColumnType(KeyColumnType.BIGINT, "INT8");
+        registerColumnType(KeyColumnType.FLOAT, "FLOAT4");
+        registerColumnType(KeyColumnType.DOUBLE, "FLOAT8");
+        registerColumnType(KeyColumnType.DECIMAL, "NUMERIC", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.BOOLEAN, "BOOL");
         registerColumnType(KeyColumnType.DATE, "DATE");
         registerColumnType(KeyColumnType.TIME, "TIME");
-        registerColumnType(KeyColumnType.DATETIME, "DATETIME");
+        registerColumnType(KeyColumnType.DATETIME, "TIMESTAMP");
         registerColumnType(KeyColumnType.TIMESTAMP, "TIMESTAMP");
 
-        registerColumnType(KeyColumnType.BLOB, "BLOB");
-        registerColumnType(KeyColumnType.MEDIUMBLOB, "MEDIUMBLOB");
-        registerColumnType(KeyColumnType.LONGBLOB, "LONGBLOB");
+        registerColumnType(KeyColumnType.BLOB, "BYTEA");
+        registerColumnType(KeyColumnType.MEDIUMBLOB, "BYTEA");
+        registerColumnType(KeyColumnType.LONGBLOB, "BYTEA");
         registerColumnType(KeyColumnType.TEXT, "TEXT");
-        registerColumnType(KeyColumnType.MEDIUMTEXT, "MEDIUMTEXT");
-        registerColumnType(KeyColumnType.LONGTEXT, "LONGTEXT");
+        registerColumnType(KeyColumnType.MEDIUMTEXT, "TEXT");
+        registerColumnType(KeyColumnType.LONGTEXT, "TEXT");
+    }
+
+    protected String getCatalogAndSchema() throws SQLException {
+        Connection connection = null;
+        try {
+            connection = dataSourceWrapper.getConnection();
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet resultSet = metaData.getSchemas();
+            String schema = null;
+            while (resultSet.next()) {
+                // 取排名第一个的SCHEMA
+                schema = resultSet.getString("TABLE_SCHEM");
+                if (schema.equals("public")) break;
+            }
+            resultSet.close();
+            return schema;
+        } finally {
+            dataSourceWrapper.close();
+        }
     }
 
     @Override

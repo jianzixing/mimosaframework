@@ -84,8 +84,33 @@ public class TableStructure {
         return columnStructures;
     }
 
+    private boolean isSameString(String s1, String s2) {
+        if (s1 == null && s2 == null) return true;
+        if (s1 != null) {
+            return s1.equalsIgnoreCase(s2);
+        } else {
+            return s2.equalsIgnoreCase(s1);
+        }
+    }
+
     public void setColumnStructures(List<TableColumnStructure> columnStructures) {
-        this.columnStructures = columnStructures;
+        // 去除重复的列
+        if (columnStructures != null && columnStructures.size() > 0) {
+            List<TableColumnStructure> newColumns = new ArrayList<>();
+            for (TableColumnStructure structure : columnStructures) {
+                boolean eq = false;
+                for (TableColumnStructure n : newColumns) {
+                    if (structure.getColumnName().equalsIgnoreCase(n.getColumnName())) {
+                        eq = true;
+                        break;
+                    }
+                }
+                if (!eq) {
+                    newColumns.add(structure);
+                }
+            }
+            this.columnStructures = newColumns;
+        }
     }
 
     public List<TableIndexStructure> getIndexStructures() {
@@ -93,7 +118,29 @@ public class TableStructure {
     }
 
     public void setIndexStructures(List<TableIndexStructure> indexStructures) {
-        this.indexStructures = indexStructures;
+        // 去除重复的索引
+        if (indexStructures != null && indexStructures.size() > 0) {
+            List<TableIndexStructure> newIndex = new ArrayList<>();
+            for (TableIndexStructure structure : indexStructures) {
+                boolean eq = false;
+                for (TableIndexStructure n : newIndex) {
+                    if (isSameString(structure.getTableSchema(), n.getTableSchema())
+                            && isSameString(structure.getIndexName(), n.getIndexName())
+                            && isSameString(structure.getTableName(), n.getTableName())
+                            && isSameString(structure.getType(), n.getType())
+                            && isSameString(structure.getColumnName(), n.getColumnName())
+                            && isSameString(structure.getComment(), n.getComment())
+                    ) {
+                        eq = true;
+                        break;
+                    }
+                }
+                if (!eq) {
+                    newIndex.add(structure);
+                }
+            }
+            this.indexStructures = newIndex;
+        }
     }
 
     public List<TableConstraintStructure> getConstraintStructures() {
@@ -101,7 +148,30 @@ public class TableStructure {
     }
 
     public void setConstraintStructures(List<TableConstraintStructure> constraintStructures) {
-        this.constraintStructures = constraintStructures;
+        // 去除重复的约束
+        if (constraintStructures != null && constraintStructures.size() > 0) {
+            List<TableConstraintStructure> newConstraint = new ArrayList<>();
+            for (TableConstraintStructure structure : constraintStructures) {
+                boolean eq = false;
+                for (TableConstraintStructure n : newConstraint) {
+                    if (isSameString(structure.getTableSchema(), n.getTableSchema())
+                            && isSameString(structure.getConstraintName(), n.getConstraintName())
+                            && isSameString(structure.getTableName(), n.getTableName())
+                            && isSameString(structure.getColumnName(), n.getColumnName())
+                            && isSameString(structure.getForeignTableName(), n.getForeignTableName())
+                            && isSameString(structure.getForeignColumnName(), n.getForeignColumnName())
+                            && isSameString(structure.getType(), n.getType())
+                    ) {
+                        eq = true;
+                        break;
+                    }
+                }
+                if (!eq) {
+                    newConstraint.add(structure);
+                }
+            }
+            this.constraintStructures = newConstraint;
+        }
     }
 
     public List<TableIndexStructure> getIndexStructures(String indexName) {
@@ -250,15 +320,17 @@ public class TableStructure {
         return false;
     }
 
-    public Map<String, List<TableConstraintStructure>> getMapConstraint() {
+    public Map<String, List<TableConstraintStructure>> getMapConstraintWithOutC() {
         if (constraintStructures != null) {
             Map<String, List<TableConstraintStructure>> map = null;
             for (TableConstraintStructure constraintStructure : constraintStructures) {
-                if (map == null) map = new HashMap<>();
-                List<TableConstraintStructure> cname = map.get(constraintStructure.getConstraintName());
-                if (cname == null) cname = new ArrayList<>();
-                if (cname.indexOf(constraintStructure) == -1) cname.add(constraintStructure);
-                map.put(constraintStructure.getConstraintName(), cname);
+                if (!constraintStructure.getType().equals("C")) { // C表示其它约束比如不为空约束
+                    if (map == null) map = new HashMap<>();
+                    List<TableConstraintStructure> cname = map.get(constraintStructure.getConstraintName());
+                    if (cname == null) cname = new ArrayList<>();
+                    if (cname.indexOf(constraintStructure) == -1) cname.add(constraintStructure);
+                    map.put(constraintStructure.getConstraintName(), cname);
+                }
             }
             return map;
         }
@@ -296,30 +368,37 @@ public class TableStructure {
      */
     public boolean isIndexInConstraintByColumns(String indexName, List<TableIndexStructure> indexes) {
         // 排除约束同名的索引
-        Map<String, List<TableConstraintStructure>> crts = this.getMapConstraint();
+        Map<String, List<TableConstraintStructure>> crts = this.getMapConstraintWithOutC();
         Iterator<Map.Entry<String, List<TableConstraintStructure>>> iterator = crts.entrySet().iterator();
 
         while (iterator.hasNext()) {
             Map.Entry<String, List<TableConstraintStructure>> entry = iterator.next();
             List<TableConstraintStructure> cs = entry.getValue();
 
-            if (indexes != null && cs != null && indexes.size() == cs.size()) {
-                boolean eq = true;
-                for (TableConstraintStructure a : cs) {
-                    boolean is = false;
-                    for (TableIndexStructure b : indexes) {
-                        if (a.getColumnName().equals(b.getColumnName())) {
-                            is = true;
+            if (indexes != null && cs != null) {
+                Set<String> consColumns = new HashSet<>();
+                for (TableConstraintStructure c : cs) {
+                    consColumns.add(c.getColumnName());
+                }
+
+                if (indexes.size() == consColumns.size()) {
+                    boolean eq = true;
+                    for (TableConstraintStructure a : cs) {
+                        boolean is = false;
+                        for (TableIndexStructure b : indexes) {
+                            if (a.getColumnName().equals(b.getColumnName())) {
+                                is = true;
+                                break;
+                            }
+                        }
+                        if (!is) {
+                            eq = false;
                             break;
                         }
                     }
-                    if (!is) {
-                        eq = false;
-                        break;
+                    if (eq) {
+                        return true;
                     }
-                }
-                if (eq) {
-                    return true;
                 }
             }
         }

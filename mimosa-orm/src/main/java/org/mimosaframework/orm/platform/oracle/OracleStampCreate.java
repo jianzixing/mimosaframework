@@ -93,8 +93,10 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreatePrimaryKey primaryKey = create.primaryKey;
-        sb.append("PRIMARY KEY");
-        this.setTableIndexColumn(primaryKey, sb, wrapper, create);
+        if (primaryKey != null) {
+            sb.append("PRIMARY KEY");
+            this.setTableIndexColumn(primaryKey, sb, wrapper, create);
+        }
     }
 
     private void setTableIndexColumn(StampCreatePrimaryKey index,
@@ -149,9 +151,11 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                 if (i != columns.length) sb.append(",");
             }
 
-            StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
-            pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
-            create.primaryKey = pkIdx;
+            if (primaryKeyIndex != null && primaryKeyIndex.size() > 0) {
+                StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
+                pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
+                create.primaryKey = pkIdx;
+            }
         }
     }
 }

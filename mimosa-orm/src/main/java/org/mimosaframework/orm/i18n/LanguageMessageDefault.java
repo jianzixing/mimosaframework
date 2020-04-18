@@ -82,6 +82,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("miss_table_index_name", "表 %s 的索引必须添加一个索引名称");
         words.put("miss_table_index_column", "表 %s 的索引使用不存在的字段 %s");
         words.put("miss_table_index_columns", "表 %s 的索引缺少要索引的字段");
+        words.put("auto_field_type_error", "自增列只允许使用short、int和long类型");
 
         // WarnCompareMapping
         words.put("defect_class", "对比数据库发现缺失映射表 %s 映射类 %s");
