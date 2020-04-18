@@ -139,7 +139,7 @@ public class PlatformExecutor {
                                     // 索引类型不一致需要重建索引
                                     updateIndexes.add(index);
                                 } else {
-                                    List<MappingField> rmIdxCol = new ArrayList<>();
+                                    Set<MappingField> rmIdxCol = new HashSet<>();
                                     for (TableIndexStructure indexStructure : indexStructures) {
                                         String indexColumnName = indexStructure.getColumnName();
                                         for (MappingField indexMappingField : indexMappingFields) {
@@ -148,8 +148,7 @@ public class PlatformExecutor {
                                             }
                                         }
                                     }
-                                    indexMappingFields.removeAll(rmIdxCol);
-                                    if (indexMappingFields.size() != 0) {
+                                    if (indexMappingFields.size() != rmIdxCol.size()) {
                                         // 需要重建索引
                                         updateIndexes.add(index);
                                     }

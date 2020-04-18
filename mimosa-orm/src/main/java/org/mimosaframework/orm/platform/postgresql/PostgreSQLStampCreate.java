@@ -61,6 +61,9 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
             }
         }
         if (create.target == KeyTarget.INDEX) {
+            if (create.indexType == KeyIndexType.UNIQUE) {
+                sb.append(" UNIQUE");
+            }
             sb.append(" INDEX");
             sb.append(" " + create.indexName);
             sb.append(" ON");

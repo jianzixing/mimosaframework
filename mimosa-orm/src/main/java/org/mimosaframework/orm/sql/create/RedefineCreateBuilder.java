@@ -14,6 +14,7 @@ public interface RedefineCreateBuilder
         AbsColumnBuilder,
         AbsExtraBuilder,
         IndexBuilder,
+        UniqueBuilder,
         OnBuilder,
         AbsTableBuilder,
         CreateIndexColumnsBuilder,

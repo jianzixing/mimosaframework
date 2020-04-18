@@ -371,9 +371,12 @@ public abstract class PlatformDialect {
             i++;
         }
         DefaultSQLCreateBuilder sqlCreateBuilder = new DefaultSQLCreateBuilder();
-        StampCreate sql = sqlCreateBuilder.create()
-                .index().name(indexName).on().table(tableName).columns(columns).compile();
-        return sql;
+        sqlCreateBuilder.create();
+        if (mappingIndex.getIndexType() == IndexType.U) {
+            sqlCreateBuilder.unique();
+        }
+        sqlCreateBuilder.index().name(indexName).on().table(tableName).columns(columns);
+        return sqlCreateBuilder.compile();
     }
 
     protected StampDrop commonDropIndex(MappingTable mappingTable, String indexName) {
@@ -498,9 +501,8 @@ public abstract class PlatformDialect {
                         boolean last = false;
                         // 由于某些数据库(eg:db2)的default值区分数据类型所以会加入字符串包装，这里判断一下
                         if (defB != null) defB = defB.trim();
-                        if (defB != null && defB.startsWith("'") && defB.endsWith("'")) {
-                            defB = defB.substring(1, defB.length() - 1);
-                            if (defB.equals(defA)) {
+                        if (defB != null && defB.startsWith("'")) {
+                            if (defB.startsWith("'" + defA + "'")) {
                                 last = true;
                             }
                         }

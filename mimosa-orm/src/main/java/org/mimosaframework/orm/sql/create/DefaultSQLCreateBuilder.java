@@ -101,6 +101,9 @@ public class DefaultSQLCreateBuilder
     @Override
     public DefaultSQLCreateBuilder index() {
         this.addPoint("index");
+        if (this.previous("unique")) {
+            stampCreate.indexType = KeyIndexType.UNIQUE;
+        }
         stampCreate.target = KeyTarget.INDEX;
         return this;
     }
@@ -380,6 +383,12 @@ public class DefaultSQLCreateBuilder
         if (column != null) {
             column.timeForUpdate = true;
         }
+        return this;
+    }
+
+    @Override
+    public DefaultSQLCreateBuilder unique() {
+        this.gammars.add("unique");
         return this;
     }
 }
