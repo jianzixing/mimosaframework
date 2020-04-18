@@ -66,20 +66,23 @@ public class SQLServerStampStructure implements StampCombineBuilder {
         }
         if (structure.type == 3) {
             sb.append(
-                    "SELECT A.CONSTRAINT_NAME AS CONSNAME," +
-                            "A.TABLE_NAME AS TABNAME," +
-                            "B.COLUMN_NAME AS COLNAME," +
-                            "C.TABLE_NAME AS FGNTABNAME," +
-                            "C.COLUMN_NAME AS FGNCOLNAME," +
+                    "SELECT B.NAME AS CONSNAME," +
+                            "A.NAME AS TABNAME," +
+                            "D.NAME AS COLNAME," +
+                            "OBJECT_NAME(F.referenced_object_id) AS FGNTABNAME," +
+                            "COL_NAME(F.referenced_object_id, F.referenced_column_id) AS FGNCOLNAME," +
                             "(CASE" +
-                            " WHEN A.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN 'P'" +
-                            " WHEN A.CONSTRAINT_TYPE = 'UNIQUE' THEN 'U'" +
-                            " WHEN A.CONSTRAINT_TYPE = 'CHECK' THEN 'C'" +
-                            " WHEN A.CONSTRAINT_TYPE = 'FOREIGN KEY' THEN 'F' END) AS TYPE " +
-                            "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS A " +
-                            "LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME " +
-                            "LEFT JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE C ON A.CONSTRAINT_NAME = C.CONSTRAINT_NAME " +
-                            "WHERE A.TABLE_NAME IN (" + this.getTableNames(structure) + ")"
+                            " WHEN B.TYPE = 'PK' THEN 'P'" +
+                            " WHEN B.TYPE = 'UQ' THEN 'U'" +
+                            " WHEN B.TYPE = 'C' THEN 'C'" +
+                            " WHEN B.TYPE = 'F' THEN 'F' ELSE B.TYPE END) AS TYPE " +
+                            "FROM SYS.OBJECTS A" +
+                            " JOIN SYS.OBJECTS B ON A.OBJECT_ID = B.PARENT_OBJECT_ID" +
+                            " JOIN SYS.SYSCONSTRAINTS C ON C.CONSTID = B.OBJECT_ID" +
+                            " LEFT JOIN SYS.COLUMNS D ON D.OBJECT_ID = A.OBJECT_ID AND D.COLUMN_ID = C.COLID" +
+                            " LEFT JOIN SYS.FOREIGN_KEYS E ON E.name = B.name" +
+                            " LEFT JOIN SYS.FOREIGN_KEY_COLUMNS F ON F.constraint_object_id = E.object_id " +
+                            "WHERE A.NAME IN (" + this.getTableNames(structure) +")"
             );
         }
         return new SQLBuilderCombine(sb.toString(), null);

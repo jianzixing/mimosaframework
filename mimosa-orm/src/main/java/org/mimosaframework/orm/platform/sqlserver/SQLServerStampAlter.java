@@ -43,7 +43,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 sb.append(" TABLE");
                 sb.append(" " + tableName);
                 sb.append(" ADD");
-                this.buildAlterColumn(sb, wrapper, alter, item, 1);
+                this.buildAddAlterColumn(sb, wrapper, alter, item);
             }
             if (item.struct == KeyAlterStruct.INDEX) {
                 this.buildAlterIndex(sb, wrapper, alter, item);
@@ -185,6 +185,44 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         }
     }
 
+    private void buildAddAlterColumn(StringBuilder sb,
+                                     MappingGlobalWrapper wrapper,
+                                     StampAlter alter,
+                                     StampAlterItem column) {
+        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String columnName = this.getColumnName(wrapper, alter, column.column);
+
+        sb.append(" " + columnName);
+        if (column.columnType != null) {
+            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+        }
+        if (column.nullable == KeyConfirm.NO) {
+            sb.append(" NOT NULL");
+        }
+        if (column.autoIncrement == KeyConfirm.YES) {
+            sb.append(" IDENTITY(1,1)");
+        }
+        if (column.pk == KeyConfirm.YES) {
+            sb.append(" PRIMARY KEY");
+        }
+        if (column.defaultValue != null) {
+            if (column.defaultValue.equals("*****")) {
+                sb.append(" DEFAULT NULL");
+            } else {
+                sb.append(" DEFAULT '" + column.defaultValue + "'");
+            }
+        }
+        if (StringTools.isNotEmpty(column.comment)) {
+            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1, false);
+        }
+        if (column.after != null) {
+            logger.warn("sqlserver can't set column order");
+        }
+        if (column.before != null) {
+            logger.warn("sqlserver can't set column order");
+        }
+    }
+
     private void buildAlterColumn(StringBuilder sb,
                                   MappingGlobalWrapper wrapper,
                                   StampAlter alter,
@@ -222,10 +260,11 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
             sb.append(" PRIMARY KEY");
         }
         if (column.defaultValue != null) {
+            sb.setLength(0);
             if (column.defaultValue.equals("*****")) {
-                sb.append(" DEFAULT NULL");
+                sb.append("ALTER TABLE " + tableName + " ADD DEFAULT (NULL) FOR " + columnName + " WITH VALUES");
             } else {
-                sb.append(" DEFAULT '" + column.defaultValue + "'");
+                sb.append("ALTER TABLE " + tableName + " ADD DEFAULT ('" + column.defaultValue + "') FOR " + columnName + " WITH VALUES");
             }
         }
         if (StringTools.isNotEmpty(column.comment)) {

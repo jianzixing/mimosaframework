@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public abstract class PlatformDialect {
+public abstract class PlatformDialect implements Dialect {
     private static final Log logger = LogFactory.getLog(PlatformDialect.class);
     private Map<KeyColumnType, ColumnType> columnTypes = new HashMap<>();
     private DBRunner runner = null;
@@ -201,7 +201,7 @@ public abstract class PlatformDialect {
         return null;
     }
 
-    public Object runner(StampAction action) throws SQLException {
+    protected Object runner(StampAction action) throws SQLException {
         StampCombineBuilder combineBuilder = PlatformFactory
                 .getStampAlterBuilder(this.dataSourceWrapper.getDatabaseTypeEnum(), action);
         SQLBuilderCombine builderCombine = combineBuilder.getSqlBuilder(this.mappingGlobalWrapper, action);
@@ -210,7 +210,7 @@ public abstract class PlatformDialect {
         return this.runner(jdbcTraversing);
     }
 
-    public Object runner(JDBCTraversing traversing) throws SQLException {
+    protected Object runner(JDBCTraversing traversing) throws SQLException {
         if (this.runner != null) {
             return this.runner.doHandler(traversing);
         }
@@ -642,9 +642,7 @@ public abstract class PlatformDialect {
                     this.runner(stampAlter);
 
                     if (setDefault) {
-                        DefaultSQLAlterBuilder alterBuilder = new DefaultSQLAlterBuilder();
-                        alterBuilder.alter().table(tableName).modify().column(columnName).defaultValue("*****");
-                        this.runner(alterBuilder.compile());
+                        this.defineAddColumnDefaultNull(tableName, columnName);
                     }
                 } finally {
                     if (setDefault) {
@@ -660,6 +658,12 @@ public abstract class PlatformDialect {
             logger.error(I18n.print("dialect_add_column_error", tableName, columnName), e);
             return DialectNextStep.REBUILD;
         }
+    }
+
+    protected void defineAddColumnDefaultNull(String tableName, String columnName) throws SQLException {
+        DefaultSQLAlterBuilder alterBuilder = new DefaultSQLAlterBuilder();
+        alterBuilder.alter().table(tableName).modify().column(columnName).defaultValue("*****");
+        this.runner(alterBuilder.compile());
     }
 
     protected DialectNextStep defineModifyColumn(DataDefinition definition) throws SQLException {

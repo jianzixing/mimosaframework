@@ -19,9 +19,9 @@ public class RunCompareTesting {
 //        this.test2();
 //        this.test3();
 //        this.test4();
-        this.test5();
+//        this.test5();
 //        this.test7();
-//        this.test8();
+        this.test8();
     }
 
     public StartCompareMapping getMapping(MappingLevel level, MappingTable mappingTable) {

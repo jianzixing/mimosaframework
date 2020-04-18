@@ -3,11 +3,13 @@ package org.mimosaframework.orm.platform.sqlserver;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class SQLServerPlatformDialect extends PlatformDialect {
     public SQLServerPlatformDialect() {
@@ -81,6 +83,15 @@ public class SQLServerPlatformDialect extends PlatformDialect {
         StampCombineBuilder builder = new SQLServerStampUpdate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
+    }
+
+    @Override
+    protected DialectNextStep defineAddColumn(DataDefinition definition) throws SQLException {
+        return super.defineAddColumn(definition);
+    }
+
+    protected void defineAddColumnDefaultNull(String tableName, String columnName) throws SQLException {
+
     }
 
     @Override
