@@ -458,11 +458,23 @@ public class PlatformExecutor {
         Map<Class, List<String>> fields = query.getFields();
         Map<Class, List<String>> excludes = query.getExcludes();
 
-
         Limit limit = query.getLimit();
         Class<?> tableClass = query.getTableClass();
         boolean isMaster = query.isMaster();
         String slaveName = query.getSlaveName();
+
+
+        MappingTable queryTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
+        if ((orders == null || orders.size() == 0) && limit != null && dialect.isSelectLimitMustOrderBy()) {
+            // 如果排序是空的且分页查询必须排序字段则默认添加主键升序
+            List<MappingField> pks = queryTable.getMappingPrimaryKeyFields();
+            orders = new ArrayList<>();
+            if (pks != null && pks.size() > 0) {
+                for (MappingField field : pks) {
+                    orders.add(new Order(true, field.getMappingFieldName()));
+                }
+            }
+        }
 
         dswrapper.setMaster(isMaster);
         dswrapper.setSlaveName(slaveName);
@@ -523,7 +535,6 @@ public class PlatformExecutor {
 
         DefaultSQLSelectBuilder select = new DefaultSQLSelectBuilder();
         select.select();
-        MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
 
         if (limit != null && joins != null && joins.size() > 0) {
             select.fields("T", "*");
@@ -532,7 +543,7 @@ public class PlatformExecutor {
                 this.buildSelectField(select, alias, fieldAlias);
             } else {
                 if (fields != null || excludes != null) {
-                    Set<MappingField> mappingFields = this.getSelectFields(fields, excludes, mappingTable);
+                    Set<MappingField> mappingFields = this.getSelectFields(fields, excludes, queryTable);
                     for (MappingField field : mappingFields) {
                         select.fields("T", field.getMappingColumnName());
                     }
@@ -541,12 +552,12 @@ public class PlatformExecutor {
                 }
             }
         }
-        select.from().table(mappingTable.getMappingTableName(), "T");
+        select.from().table(queryTable.getMappingTableName(), "T");
         this.buildJoinQuery(select, alias, joins, false);
         if (logicWraps != null) select.where();
-        this.buildWraps(select, mappingTable, logicWraps, hasJoin);
+        this.buildWraps(select, queryTable, logicWraps, hasJoin);
 
-        this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
+        this.buildOrderBy(select, orders, queryTable, (limit != null && joins != null && joins.size() > 0));
 
         if (limit != null) {
             select.limit(limit.getStart(), limit.getLimit());
@@ -558,7 +569,7 @@ public class PlatformExecutor {
             this.buildSelectField(selectWrap, alias, fieldAlias);
             selectWrap.from().table(select, "T");
             this.buildJoinQuery(selectWrap, alias, joins, false);
-            this.buildOrderBy(select, orders, mappingTable, (limit != null && joins != null && joins.size() > 0));
+            this.buildOrderBy(select, orders, queryTable, (limit != null && joins != null && joins.size() > 0));
 
             select = selectWrap;
         }

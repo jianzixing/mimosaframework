@@ -121,6 +121,11 @@ public class SQLServerPlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public boolean isSelectLimitMustOrderBy() {
+        return true;
+    }
+
+    @Override
     protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) throws SQLException {
         String tableName = mappingTable.getMappingTableName();
         String indexName = "idx_" + mappingField.getMappingColumnName();

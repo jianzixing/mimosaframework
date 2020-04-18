@@ -483,6 +483,15 @@ public abstract class PlatformDialect implements Dialect {
         return false;
     }
 
+    /**
+     * 重要！
+     * 判断数据库和当前配置的字段是否一致
+     *
+     * @param structure
+     * @param currField
+     * @param columnStructure
+     * @return
+     */
     public List<ColumnEditType> compareColumnChange(TableStructure structure,
                                                     MappingField currField,
                                                     TableColumnStructure columnStructure) {
@@ -817,4 +826,14 @@ public abstract class PlatformDialect implements Dialect {
      * @return
      */
     public abstract boolean isSupportGeneratedKeys();
+
+    /**
+     * 是否查询分页时必须要排序字段
+     * 大部分数据库都不是必须的 sqlserver 必须要
+     *
+     * @return
+     */
+    public boolean isSelectLimitMustOrderBy() {
+        return false;
+    }
 }

@@ -40,4 +40,6 @@ public interface Dialect {
     void rebuildTable(MappingTable mappingTable, TableStructure tableStructure) throws SQLException;
 
     boolean isSupportGeneratedKeys();
+
+    boolean isSelectLimitMustOrderBy();
 }
