@@ -34,7 +34,7 @@ public class SQLServerStampStructure implements StampCombineBuilder {
                             "B.name AS TABNAME," +
                             "A.name AS COLNAME," +
                             "C.name AS TYPENAME," +
-                            "A.max_length AS LENGTH," +
+                            "(CASE WHEN A.precision>0 THEN A.precision ELSE A.max_length END) AS LENGTH," +
                             "A.scale AS SCALE," +
                             "D.definition AS \"DEFAULT\"," +
                             "(CASE WHEN A.is_nullable = 1 THEN 'Y' ELSE 'N' END) AS IS_NULLABLE," +
@@ -68,7 +68,7 @@ public class SQLServerStampStructure implements StampCombineBuilder {
             sb.append(
                     "SELECT B.NAME AS CONSNAME," +
                             "A.NAME AS TABNAME," +
-                            "D.NAME AS COLNAME," +
+                            "(CASE WHEN B.TYPE = 'PK' THEN I.NAME ELSE D.NAME END) AS COLNAME," +
                             "OBJECT_NAME(F.referenced_object_id) AS FGNTABNAME," +
                             "COL_NAME(F.referenced_object_id, F.referenced_column_id) AS FGNCOLNAME," +
                             "(CASE" +
@@ -78,11 +78,14 @@ public class SQLServerStampStructure implements StampCombineBuilder {
                             " WHEN B.TYPE = 'F' THEN 'F' ELSE B.TYPE END) AS TYPE " +
                             "FROM SYS.OBJECTS A" +
                             " JOIN SYS.OBJECTS B ON A.OBJECT_ID = B.PARENT_OBJECT_ID" +
-                            " JOIN SYS.SYSCONSTRAINTS C ON C.CONSTID = B.OBJECT_ID" +
-                            " LEFT JOIN SYS.COLUMNS D ON D.OBJECT_ID = A.OBJECT_ID AND D.COLUMN_ID = C.COLID" +
-                            " LEFT JOIN SYS.FOREIGN_KEYS E ON E.name = B.name" +
-                            " LEFT JOIN SYS.FOREIGN_KEY_COLUMNS F ON F.constraint_object_id = E.object_id " +
-                            "WHERE A.NAME IN (" + this.getTableNames(structure) +")"
+                            " JOIN SYS.SYSCONSTRAINTS C ON C.CONSTID = B.OBJECT_ID" + // 约束列
+                            " LEFT JOIN SYS.COLUMNS D ON D.OBJECT_ID = A.OBJECT_ID AND D.COLUMN_ID = C.COLID" + // 约束列
+                            " LEFT JOIN SYS.FOREIGN_KEYS E ON E.name = B.name" + // 外键列
+                            " LEFT JOIN SYS.FOREIGN_KEY_COLUMNS F ON F.constraint_object_id = E.object_id" + // 外键列
+                            " LEFT JOIN SYS.INDEXES G ON G.name = B.name" + // 主键列
+                            " LEFT JOIN SYS.INDEX_COLUMNS H ON H.object_id=G.object_id AND H.index_id=G.index_id" + // 主键列
+                            " LEFT JOIN SYS.COLUMNS I ON I.object_id=G.object_id AND I.column_id=H.column_id" +     // 主键列
+                            " WHERE A.NAME IN (" + this.getTableNames(structure) + ")"
             );
         }
         return new SQLBuilderCombine(sb.toString(), null);

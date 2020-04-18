@@ -20,7 +20,7 @@ public class SQLServerPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.SMALLINT, "SMALLINT");
         registerColumnType(KeyColumnType.BIGINT, "BIGINT");
         registerColumnType(KeyColumnType.FLOAT, "REAL");
-        registerColumnType(KeyColumnType.DOUBLE, "DOUBLE");
+        registerColumnType(KeyColumnType.DOUBLE, "REAL");
         registerColumnType(KeyColumnType.DECIMAL, "NUMERIC", ColumnCompareType.JAVA);
         registerColumnType(KeyColumnType.BOOLEAN, "BIT");
         registerColumnType(KeyColumnType.DATE, "DATE");
@@ -29,11 +29,19 @@ public class SQLServerPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.TIMESTAMP, "TIMESTAMP");
 
         registerColumnType(KeyColumnType.BLOB, "Binary");
-        registerColumnType(KeyColumnType.MEDIUMBLOB, "VarBinary", 16777216, ColumnCompareType.SELF);
-        registerColumnType(KeyColumnType.LONGBLOB, "VarBinary", 4294967296l, ColumnCompareType.SELF);
+        registerColumnType(KeyColumnType.MEDIUMBLOB, "VarBinary(max)");
+        registerColumnType(KeyColumnType.LONGBLOB, "VarBinary(max)");
         registerColumnType(KeyColumnType.TEXT, "NTEXT");
         registerColumnType(KeyColumnType.MEDIUMTEXT, "NTEXT");
         registerColumnType(KeyColumnType.LONGTEXT, "NTEXT");
+    }
+
+    protected boolean compareColumnChangeType(TableColumnStructure columnStructure, ColumnType columnType) {
+        if (columnStructure.getTypeName().equalsIgnoreCase("VarBinary")
+                && columnType.getTypeName().startsWith("VarBinary")) {
+            return true;
+        }
+        return columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName());
     }
 
     @Override

@@ -457,6 +457,10 @@ public abstract class PlatformDialect implements Dialect {
 
     }
 
+    protected boolean compareColumnChangeType(TableColumnStructure columnStructure, ColumnType columnType) {
+        return columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName());
+    }
+
     public List<ColumnEditType> compareColumnChange(TableStructure structure,
                                                     MappingField currField,
                                                     TableColumnStructure columnStructure) {
@@ -468,7 +472,7 @@ public abstract class PlatformDialect implements Dialect {
         }
 
         if (currField.isMappingFieldTimeForUpdate()) return columnEditTypes;
-        if (columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName())) {
+        if (this.compareColumnChangeType(columnStructure, columnType)) {
             if (columnType.getCompareType() == ColumnCompareType.JAVA
                     && (columnStructure.getLength() != currField.getMappingFieldLength()
                     || columnStructure.getScale() != currField.getMappingFieldDecimalDigits())) {
