@@ -40,7 +40,7 @@ public class PostgreSQLStampSelect extends PostgreSQLStampCommonality implements
         for (StampFrom from : froms) {
             this.buildFrom(wrapper, sb, select, placeholders, from, null);
             if (StringTools.isNotEmpty(from.aliasName)) {
-                sb.append(" AS " + RS + from.aliasName + RE);
+                sb.append(" AS " + from.aliasName);
             }
             i++;
             if (i != froms.length) sb.append(",");
@@ -57,7 +57,7 @@ public class PostgreSQLStampSelect extends PostgreSQLStampCommonality implements
                 }
                 this.buildFrom(wrapper, sb, select, placeholders, null, join);
                 if (StringTools.isNotEmpty(join.tableAliasName)) {
-                    sb.append(" AS " + RS + join.tableAliasName + RE);
+                    sb.append(" AS " + join.tableAliasName);
                 }
                 if (join.on != null) {
                     sb.append(" ON ");
