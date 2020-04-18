@@ -43,7 +43,7 @@ public class SQLServerStampStructure implements StampCombineBuilder {
                             "FROM SYS.COLUMNS A " +
                             "INNER JOIN SYS.OBJECTS B ON A.object_id = B.object_id " +
                             "LEFT JOIN SYS.TYPES C ON C.user_type_id = A.user_type_id " +
-                            "LEFT JOIN SYS.DEFAULT_CONSTRAINTS D ON A.object_id = D.object_id " +
+                            "LEFT JOIN SYS.DEFAULT_CONSTRAINTS D ON A.object_id = D.parent_object_id and A.column_id=D.parent_column_id " +
                             "LEFT JOIN SYS.EXTENDED_PROPERTIES E ON E.minor_id = A.column_id AND E.major_id = A.object_id AND E.class = 1 " +
                             "WHERE B.name IN (" + this.getTableNames(structure) + ")"
             );

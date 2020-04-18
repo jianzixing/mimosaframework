@@ -57,6 +57,18 @@ public class PostgreSQLPlatformDialect extends PlatformDialect {
     }
 
     @Override
+    protected boolean compareColumnChangeDefault(String defA, String defB) {
+        boolean last = false;
+        if (defB != null) defB = defB.trim();
+        if (defB != null && defB.startsWith("'")) {
+            if (defB.startsWith("'" + defA)) {
+                last = true;
+            }
+        }
+        return last;
+    }
+
+    @Override
     public SQLBuilderCombine alter(StampAlter alter) {
         StampCombineBuilder builder = new PostgreSQLStampAlter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);

@@ -457,8 +457,30 @@ public abstract class PlatformDialect implements Dialect {
 
     }
 
+    /**
+     * 判断当前两个类型是否相等，一般情况下不需要重写判断
+     * 但是如果数据库的数据类型名称和配置的类型名称无法一致时需要重写
+     *
+     * @param columnStructure
+     * @param columnType
+     * @return
+     */
     protected boolean compareColumnChangeType(TableColumnStructure columnStructure, ColumnType columnType) {
         return columnStructure.getTypeName().equalsIgnoreCase(columnType.getTypeName());
+    }
+
+    /**
+     * 默认情况下默认值是相同的字符串然后做判断，但是某些数据库
+     * 默认值不走寻常路，会在默认值外添加包装字符串
+     * 比如 默认值 A 在sqlserver中为 ('A')
+     * 这个时候需要重写判断
+     *
+     * @param defA
+     * @param defB
+     * @return
+     */
+    protected boolean compareColumnChangeDefault(String defA, String defB) {
+        return false;
     }
 
     public List<ColumnEditType> compareColumnChange(TableStructure structure,
@@ -502,14 +524,7 @@ public abstract class PlatformDialect implements Dialect {
                 if (!(StringTools.isEmpty(defA) && StringTools.isEmpty(defB))
                         && !(StringTools.isEmpty(defA) && "0".equals(defB))) {  // int bigint 等 数据库默认值总是0
                     if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
-                        boolean last = false;
-                        // 由于某些数据库(eg:db2)的default值区分数据类型所以会加入字符串包装，这里判断一下
-                        if (defB != null) defB = defB.trim();
-                        if (defB != null && defB.startsWith("'")) {
-                            if (defB.startsWith("'" + defA + "'")) {
-                                last = true;
-                            }
-                        }
+                        boolean last = this.compareColumnChangeDefault(defA, defB);
                         if (!last) {
                             columnEditTypes.add(ColumnEditType.DEF_VALUE);
                         }

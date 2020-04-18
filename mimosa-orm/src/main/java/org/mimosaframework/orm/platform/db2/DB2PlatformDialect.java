@@ -59,6 +59,20 @@ public class DB2PlatformDialect extends PlatformDialect {
     }
 
     @Override
+    protected boolean compareColumnChangeDefault(String defA, String defB) {
+        // 由于某些数据库(eg:db2)的default值区分数据类型所以会加入字符串包装，这里判断一下
+        boolean last = false;
+        if (defB != null) defB = defB.trim();
+        if (defB != null && defB.startsWith("'") && defB.endsWith("'")) {
+            defB = defB.substring(1, defB.length() - 1);
+            if (defB.equals(defA)) {
+                last = true;
+            }
+        }
+        return last;
+    }
+
+    @Override
     public SQLBuilderCombine alter(StampAlter alter) {
         StampCombineBuilder builder = new DB2StampAlter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
