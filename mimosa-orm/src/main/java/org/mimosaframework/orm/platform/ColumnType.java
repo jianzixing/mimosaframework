@@ -5,7 +5,7 @@ import org.mimosaframework.orm.sql.stamp.KeyColumnType;
 public class ColumnType {
     private KeyColumnType type;
     private String typeName;
-    private int length;
+    private long length;
     private int scale;
 
     private ColumnCompareType compareType;
@@ -17,7 +17,7 @@ public class ColumnType {
         this.scale = scale;
     }
 
-    public ColumnType(KeyColumnType type, String typeName, int length, int scale, ColumnCompareType compareType) {
+    public ColumnType(KeyColumnType type, String typeName, long length, int scale, ColumnCompareType compareType) {
         this.type = type;
         this.typeName = typeName;
         this.length = length;
@@ -49,11 +49,11 @@ public class ColumnType {
         this.typeName = typeName;
     }
 
-    public int getLength() {
+    public long getLength() {
         return length;
     }
 
-    public void setLength(int length) {
+    public void setLength(long length) {
         this.length = length;
     }
 

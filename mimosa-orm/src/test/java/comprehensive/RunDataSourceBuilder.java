@@ -11,9 +11,9 @@ public class RunDataSourceBuilder {
     //    private static final DatabaseType type = DatabaseType.DB2;
 //    private static final DatabaseType type = DatabaseType.MYSQL;
 //    private static final DatabaseType type = DatabaseType.ORACLE;
-    private static final DatabaseType type = DatabaseType.POSTGRESQL;
+//    private static final DatabaseType type = DatabaseType.POSTGRESQL;
+    private static final DatabaseType type = DatabaseType.SQL_SERVER;
 //    private static final DatabaseType type = DatabaseType.SQLITE;
-//    private static final DatabaseType type = DatabaseType.SQL_SERVER;
 
     public static SessionTemplate currTemplate() throws ContextException {
         return getTemplate(type);
@@ -50,13 +50,13 @@ public class RunDataSourceBuilder {
             return getOracleDataSource();
         }
         if (type == DatabaseType.SQL_SERVER) {
-
+            return getSQLServerSource();
         }
         if (type == DatabaseType.POSTGRESQL) {
             return getPostgreSQLSource();
         }
         if (type == DatabaseType.SQLITE) {
-
+            return getSqliteSource();
         }
         return null;
     }
@@ -94,6 +94,23 @@ public class RunDataSourceBuilder {
         dataSource.setUrl("jdbc:postgresql://localhost:5432/mimosa");
         dataSource.setUsername("postgres");
         dataSource.setPassword("12345");
+        return dataSource;
+    }
+
+    public static DataSource getSQLServerSource() {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        dataSource.setUrl("jdbc:sqlserver://127.0.0.1:1433;DatabaseName=mimosa");
+        dataSource.setUsername("SA");
+        dataSource.setPassword("MSPWD_12345");
+        return dataSource;
+    }
+
+    public static DataSource getSqliteSource() {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setUrl("jdbc:sqlite:mimosa.db");
+        dataSource.setUsername("");
+        dataSource.setPassword("");
         return dataSource;
     }
 }

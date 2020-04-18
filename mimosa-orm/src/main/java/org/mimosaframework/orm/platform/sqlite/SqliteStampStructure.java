@@ -23,7 +23,7 @@ public class SqliteStampStructure implements StampCombineBuilder {
                             "0 AS COUNT," +
                             "NULL AS LASTUSED," +
                             "NULL AS CREATE_TIME," +
-                            "NULL AS COMMENT" +
+                            "NULL AS COMMENT " +
                             "FROM SQLITE_MASTER WHERE TYPE='table'"
             );
         }

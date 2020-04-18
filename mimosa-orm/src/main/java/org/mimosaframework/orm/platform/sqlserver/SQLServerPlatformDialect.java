@@ -14,24 +14,24 @@ public class SQLServerPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.INT, "INT");
         registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
         registerColumnType(KeyColumnType.CHAR, "CHAR", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.TINYINT, "TINYINT");
+        registerColumnType(KeyColumnType.TINYINT, "SMALLINT");
         registerColumnType(KeyColumnType.SMALLINT, "SMALLINT");
         registerColumnType(KeyColumnType.BIGINT, "BIGINT");
-        registerColumnType(KeyColumnType.FLOAT, "FLOAT");
+        registerColumnType(KeyColumnType.FLOAT, "REAL");
         registerColumnType(KeyColumnType.DOUBLE, "DOUBLE");
-        registerColumnType(KeyColumnType.DECIMAL, "DECIMAL", ColumnCompareType.JAVA);
-        registerColumnType(KeyColumnType.BOOLEAN, "TINYINT");
+        registerColumnType(KeyColumnType.DECIMAL, "NUMERIC", ColumnCompareType.JAVA);
+        registerColumnType(KeyColumnType.BOOLEAN, "BIT");
         registerColumnType(KeyColumnType.DATE, "DATE");
         registerColumnType(KeyColumnType.TIME, "TIME");
         registerColumnType(KeyColumnType.DATETIME, "DATETIME");
         registerColumnType(KeyColumnType.TIMESTAMP, "TIMESTAMP");
 
-        registerColumnType(KeyColumnType.BLOB, "BLOB");
-        registerColumnType(KeyColumnType.MEDIUMBLOB, "MEDIUMBLOB");
-        registerColumnType(KeyColumnType.LONGBLOB, "LONGBLOB");
-        registerColumnType(KeyColumnType.TEXT, "TEXT");
-        registerColumnType(KeyColumnType.MEDIUMTEXT, "MEDIUMTEXT");
-        registerColumnType(KeyColumnType.LONGTEXT, "LONGTEXT");
+        registerColumnType(KeyColumnType.BLOB, "Binary");
+        registerColumnType(KeyColumnType.MEDIUMBLOB, "VarBinary", 16777216, ColumnCompareType.SELF);
+        registerColumnType(KeyColumnType.LONGBLOB, "VarBinary", 4294967296l, ColumnCompareType.SELF);
+        registerColumnType(KeyColumnType.TEXT, "NTEXT");
+        registerColumnType(KeyColumnType.MEDIUMTEXT, "NTEXT");
+        registerColumnType(KeyColumnType.LONGTEXT, "NTEXT");
     }
 
     @Override

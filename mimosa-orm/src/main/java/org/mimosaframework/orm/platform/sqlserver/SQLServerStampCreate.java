@@ -135,7 +135,7 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
                     primaryKeyIndex.add(column.column);
                 }
                 if (column.defaultValue != null) {
-                    sb.append(" DEFAULT \"" + column.defaultValue + "\"");
+                    sb.append(" DEFAULT '" + column.defaultValue + "'");
                 }
                 if (StringTools.isNotEmpty(column.comment)) {
                     this.addCommentSQL(wrapper, create, column.column, column.comment, 1,

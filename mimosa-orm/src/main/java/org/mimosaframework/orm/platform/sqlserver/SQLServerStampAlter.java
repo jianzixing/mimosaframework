@@ -117,7 +117,8 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 sb.append(" " + item.newName);
             }
             if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.newName);
+                sb.append(" EXEC sp_rename '" + this.getTableName(wrapper, alter.tableClass, alter.tableName, false)
+                        + "', '" + item.newName + "'");
             }
         }
 

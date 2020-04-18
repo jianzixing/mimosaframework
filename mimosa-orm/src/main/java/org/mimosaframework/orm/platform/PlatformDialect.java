@@ -51,7 +51,7 @@ public abstract class PlatformDialect {
     }
 
     protected void registerColumnType(KeyColumnType type, String typeName,
-                                      int length, ColumnCompareType columnCompareType) {
+                                      long length, ColumnCompareType columnCompareType) {
         this.columnTypes.put(type, new ColumnType(type, typeName,
                 length, -1, columnCompareType));
     }
@@ -726,9 +726,9 @@ public abstract class PlatformDialect {
             this.runner(renameBuilder.compile());
 
             // 2.再创建新表
-            this.rebuildStartTable(mappingTable, tableName);
+            this.rebuildStartTable(mappingTable, mappingTable.getMappingTableName());
             DefaultSQLInsertBuilder insertBuilder = new DefaultSQLInsertBuilder();
-            insertBuilder.insert().into().table(tableName);
+            insertBuilder.insert().into().table(mappingTable.getMappingTableName());
 
             Set<MappingField> fields = mappingTable.getMappingFields();
             List<TableColumnStructure> columns = tableStructure.getColumnStructures();
@@ -743,7 +743,7 @@ public abstract class PlatformDialect {
             }
             insertBuilder.columns(cols.toArray(new String[]{}));
             DefaultSQLSelectBuilder selectBuilder = new DefaultSQLSelectBuilder();
-            selectBuilder.select().fields(cols.toArray(new String[]{})).from().table(mappingTable.getMappingTableName());
+            selectBuilder.select().fields(cols.toArray(new String[]{})).from().table(tableName);
             insertBuilder.select(selectBuilder);
             try {
                 // 3.再拷贝数据

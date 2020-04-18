@@ -19,9 +19,9 @@ public class RunCompareTesting {
 //        this.test2();
 //        this.test3();
 //        this.test4();
-//        this.test5();
+        this.test5();
 //        this.test7();
-        this.test8();
+//        this.test8();
     }
 
     public StartCompareMapping getMapping(MappingLevel level, MappingTable mappingTable) {
@@ -54,7 +54,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField1 = new SpecificMappingField();
         mappingField1.setMappingColumnName("id");
-        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldType(int.class);
         mappingField1.setMappingFieldPrimaryKey(true);
         mappingField1.setMappingFieldAutoIncrement(true);
         mappingField1.setMappingFieldComment("测试id备注");

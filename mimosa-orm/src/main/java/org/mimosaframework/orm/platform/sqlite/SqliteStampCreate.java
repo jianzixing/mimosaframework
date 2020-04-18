@@ -95,8 +95,13 @@ public class SqliteStampCreate extends SqliteStampCommonality implements StampCo
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateColumn[] columns = create.columns;
         if (columns != null && columns.length > 0) {
-            int i = 0;
+            int i = 0, pkCount = 0;
 
+            for (StampCreateColumn column : columns) {
+                if (column.pk == KeyConfirm.YES) {
+                    pkCount++;
+                }
+            }
             List<StampColumn> primaryKeyIndex = null;
             for (StampCreateColumn column : columns) {
                 sb.append(this.getColumnName(wrapper, create, column.column));
@@ -106,8 +111,12 @@ public class SqliteStampCreate extends SqliteStampCommonality implements StampCo
                 if (column.nullable == KeyConfirm.NO) {
                     sb.append(" NOT NULL");
                 }
-                if (column.autoIncrement == KeyConfirm.YES) {
-                    sb.append(" AUTO_INCREMENT");
+
+                if (column.pk == KeyConfirm.YES) {
+                    sb.append(" PRIMARY KEY");
+                }
+                if (pkCount <= 1 && column.autoIncrement == KeyConfirm.YES) {
+                    sb.append(" AUTOINCREMENT");
                 }
                 if (column.pk == KeyConfirm.YES) {
                     if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
@@ -124,7 +133,7 @@ public class SqliteStampCreate extends SqliteStampCommonality implements StampCo
                 if (i != columns.length) sb.append(",");
             }
 
-            if (primaryKeyIndex != null && primaryKeyIndex.size() > 0) {
+            if (primaryKeyIndex != null && primaryKeyIndex.size() > 1) {
                 StampCreatePrimaryKey pkIdx = new StampCreatePrimaryKey();
                 pkIdx.columns = primaryKeyIndex.toArray(new StampColumn[]{});
                 create.primaryKey = pkIdx;
