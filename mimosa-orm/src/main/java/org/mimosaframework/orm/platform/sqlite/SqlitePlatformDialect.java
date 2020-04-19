@@ -3,19 +3,23 @@ package org.mimosaframework.orm.platform.sqlite;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.mapping.SpecificMappingField;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.platform.sqlite.analysis.AnalysisItem;
 import org.mimosaframework.orm.platform.sqlite.analysis.AnalysisType;
 import org.mimosaframework.orm.platform.sqlite.analysis.SQLAnalysis;
 import org.mimosaframework.orm.sql.StructureBuilder;
+import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.utils.LOBLoader;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class SqlitePlatformDialect extends PlatformDialect {
@@ -295,6 +299,14 @@ public class SqlitePlatformDialect extends PlatformDialect {
             return DialectNextStep.REBUILD;
         }
         return DialectNextStep.NONE;
+    }
+
+    protected void defineAddColumnNotNullDefault(MappingField mappingField) throws SQLException {
+
+    }
+
+    protected void defineAddColumnDefaultNull(String tableName, String columnName) throws SQLException {
+
     }
 
     @Override

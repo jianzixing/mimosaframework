@@ -658,15 +658,7 @@ public abstract class PlatformDialect implements Dialect {
 
                 boolean setDefault = false;
                 if (!nullable && StringTools.isEmpty(def)) {
-                    KeyColumnType type = JavaType2ColumnType.getColumnTypeByJava(mappingField.getMappingFieldType());
-                    if (JavaType2ColumnType.isNumber(type) || JavaType2ColumnType.isBoolean(type))
-                        ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("0");
-                    else if (JavaType2ColumnType.isTime(type))
-                        ((SpecificMappingField) mappingField)
-                                .setMappingFieldDefaultValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-                    else
-                        ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("");
-
+                    this.defineAddColumnNotNullDefault(mappingField);
                     setDefault = true;
                 }
 
@@ -691,6 +683,18 @@ public abstract class PlatformDialect implements Dialect {
             logger.error(I18n.print("dialect_add_column_error", tableName, columnName), e);
             return DialectNextStep.REBUILD;
         }
+    }
+
+    protected void defineAddColumnNotNullDefault(MappingField mappingField) throws SQLException {
+        KeyColumnType type = JavaType2ColumnType.getColumnTypeByJava(mappingField.getMappingFieldType());
+        if (JavaType2ColumnType.isNumber(type) || JavaType2ColumnType.isBoolean(type))
+            ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("0");
+        else if (JavaType2ColumnType.isTime(type))
+            ((SpecificMappingField) mappingField)
+                    .setMappingFieldDefaultValue(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        else
+            ((SpecificMappingField) mappingField).setMappingFieldDefaultValue("");
+
     }
 
     protected void defineAddColumnDefaultNull(String tableName, String columnName) throws SQLException {
