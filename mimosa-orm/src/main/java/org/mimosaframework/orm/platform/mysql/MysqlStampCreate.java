@@ -56,6 +56,9 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             }
         }
         if (create.target == KeyTarget.INDEX) {
+            if (create.indexType == KeyIndexType.UNIQUE) {
+                sb.append(" UNIQUE");
+            }
             sb.append(" INDEX");
             sb.append(" " + create.indexName);
             sb.append(" ON");

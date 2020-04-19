@@ -89,7 +89,11 @@ public abstract class PlatformDialect implements Dialect {
                 tableStructure.setComment(o.getString("COMMENT"));
                 tableStructure.setCreateTime(o.get("CREATE_TIME"));
                 tableStructures.add(tableStructure);
-                if (classTableNames != null && classTableNames.contains(tableName.toLowerCase())) {
+                if (classTableNames != null) {
+                    if (classTableNames.contains(tableName.toLowerCase())) {
+                        tables.add(tableStructure.getTableName());
+                    }
+                } else {
                     tables.add(tableStructure.getTableName());
                 }
             }
