@@ -66,6 +66,10 @@ public abstract class PlatformDialect implements Dialect {
     }
 
     public List<TableStructure> getTableStructures(List<String> classTableNames) throws SQLException {
+        return this.loadingTableStructures(null);
+    }
+
+    protected List<TableStructure> loadingTableStructures(List<String> classTableNames) throws SQLException {
         StructureBuilder structureBuilder = new StructureBuilder();
         String schema = this.getCatalogAndSchema();
         StampAction table = structureBuilder.table(schema).compile();
@@ -90,7 +94,7 @@ public abstract class PlatformDialect implements Dialect {
                 }
             }
 
-            if (tableStructures != null && tableStructures.size() > 0) {
+            if (tableStructures != null && tableStructures.size() > 0 && tables.size() > 0) {
                 StampAction column = structureBuilder.column(schema, tables).compile();
                 List<TableColumnStructure> columnStructures = new ArrayList<>();
                 LOBLoader.register(new LOBLoader.Loader() {
@@ -202,9 +206,13 @@ public abstract class PlatformDialect implements Dialect {
         StampCombineBuilder combineBuilder = PlatformFactory
                 .getStampAlterBuilder(this.dataSourceWrapper.getDatabaseTypeEnum(), action);
         SQLBuilderCombine builderCombine = combineBuilder.getSqlBuilder(this.mappingGlobalWrapper, action);
-        JDBCTraversing jdbcTraversing = new JDBCTraversing(builderCombine.getSql(), builderCombine.getPlaceholders());
-        jdbcTraversing.setTypeForRunner(TypeForRunner.SELECT);
-        return this.runner(jdbcTraversing);
+        String sql = builderCombine.getSql();
+        if (StringTools.isNotEmpty(sql)) {
+            JDBCTraversing jdbcTraversing = new JDBCTraversing(sql, builderCombine.getPlaceholders());
+            jdbcTraversing.setTypeForRunner(TypeForRunner.SELECT);
+            return this.runner(jdbcTraversing);
+        }
+        return null;
     }
 
     protected Object runner(JDBCTraversing traversing) throws SQLException {

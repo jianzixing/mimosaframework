@@ -56,209 +56,211 @@ public class PlatformExecutor {
         if (structures != null) {
             List<MappingTable> rmTab = new ArrayList<>();
             for (TableStructure structure : structures) {
-                List<TableColumnStructure> columnStructures = new ArrayList<>(structure.getColumnStructures());
+                if (structure.getColumnStructures() != null) {
+                    List<TableColumnStructure> columnStructures = new ArrayList<>(structure.getColumnStructures());
 
-                MappingTable currTable = null;
-                for (MappingTable mappingTable : mappingTables) {
-                    String mappingTableName = mappingTable.getMappingTableName();
-                    String tableName = structure.getTableName();
-                    if (tableName.equalsIgnoreCase(mappingTableName)) {
-                        rmTab.add(mappingTable);
-                        currTable = mappingTable;
-                        break;
-                    }
-                }
-
-                Map<MappingField, CompareUpdateMate> updateFields = new LinkedHashMap();
-                List<MappingField> createFields = new ArrayList<>();
-                List<TableColumnStructure> delColumns = new ArrayList<>();
-                List<MappingIndex> updateIndexes = new ArrayList<>();
-                List<MappingIndex> newIndexes = new ArrayList<>();
-                List<Map.Entry<String, List<TableIndexStructure>>> dropIndexes = new ArrayList<>();
-
-                if (currTable != null) {
-                    List<MappingField> rmCol = new ArrayList<>();
-                    List<TableColumnStructure> rmSCol = new ArrayList<>();
-                    Set<MappingField> mappingFields = currTable.getMappingFields();
-                    if (columnStructures != null && columnStructures.size() > 0) {
-                        for (TableColumnStructure columnStructure : columnStructures) {
-                            if (mappingFields != null) {
-                                MappingField currField = null;
-                                for (MappingField field : mappingFields) {
-                                    String mappingFieldName = field.getMappingColumnName();
-                                    String fieldName = columnStructure.getColumnName();
-                                    if (mappingFieldName.equalsIgnoreCase(fieldName)) {
-                                        currField = field;
-                                        rmCol.add(field);
-                                        rmSCol.add(columnStructure);
-                                        break;
-                                    }
-                                }
-
-                                if (currField != null) {
-                                    List<ColumnEditType> columnEditTypes = dialect.compareColumnChange(
-                                            structure, currField, columnStructure
-                                    );
-
-                                    if (columnEditTypes.size() > 0) {
-                                        updateFields.put(currField, new CompareUpdateMate(columnEditTypes, columnStructure));
-                                    }
-                                }
-                            }
-                        }
-
-                        mappingFields.removeAll(rmCol);
-                        columnStructures.removeAll(rmSCol);
-                        if (mappingFields.size() > 0) {
-                            // 有新添加的字段需要添加
-                            createFields.addAll(mappingFields);
-                        }
-                        if (columnStructures.size() > 0) {
-                            // 有多余的字段需要删除
-                            delColumns.addAll(columnStructures);
-                        }
-                    } else {
-                        // 数据库的字段没有需要重新添加全部字段
-                        createFields.addAll(mappingFields);
-                    }
-                }
-
-                if (currTable != null) {
-                    Set<MappingIndex> mappingIndexes = currTable.getMappingIndexes();
-                    Map<String, List<TableIndexStructure>> fromIndexStructure = structure.getMapIndex();
-                    if (mappingIndexes != null) {
-                        for (MappingIndex index : mappingIndexes) {
-                            String mappingIndexName = index.getIndexName();
-                            List<TableIndexStructure> indexStructures = fromIndexStructure.get(mappingIndexName);
-
-                            if (indexStructures != null && indexStructures.size() > 0) {
-                                fromIndexStructure.remove(mappingIndexName);
-
-                                List<MappingField> indexMappingFields = index.getIndexColumns();
-                                if (!indexStructures.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
-                                    // 索引类型不一致需要重建索引
-                                    updateIndexes.add(index);
-                                } else {
-                                    Set<MappingField> rmIdxCol = new HashSet<>();
-                                    for (TableIndexStructure indexStructure : indexStructures) {
-                                        String indexColumnName = indexStructure.getColumnName();
-                                        for (MappingField indexMappingField : indexMappingFields) {
-                                            if (indexMappingField.getMappingColumnName().equalsIgnoreCase(indexColumnName)) {
-                                                rmIdxCol.add(indexMappingField);
-                                            }
-                                        }
-                                    }
-                                    if (indexMappingFields.size() != rmIdxCol.size()) {
-                                        // 需要重建索引
-                                        updateIndexes.add(index);
-                                    }
-                                }
-                            } else {
-                                List<TableIndexStructure> indexStructuresByColumns = structure.getIndexStructures(index.getIndexColumns());
-                                if (indexStructuresByColumns != null && indexStructuresByColumns.size() > 0) {
-                                    if (!indexStructuresByColumns.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
-                                        // 已经有一个相同类型的所有存在，不再做任何操作
-                                    } else {
-                                        // 已经有一个相同类型的所有存在，不再做任何操作
-                                    }
-                                } else {
-                                    // 需要新建索引
-                                    newIndexes.add(index);
-                                }
-                            }
+                    MappingTable currTable = null;
+                    for (MappingTable mappingTable : mappingTables) {
+                        String mappingTableName = mappingTable.getMappingTableName();
+                        String tableName = structure.getTableName();
+                        if (tableName.equalsIgnoreCase(mappingTableName)) {
+                            rmTab.add(mappingTable);
+                            currTable = mappingTable;
+                            break;
                         }
                     }
 
-                    if (fromIndexStructure != null && fromIndexStructure.size() > 0) {
+                    Map<MappingField, CompareUpdateMate> updateFields = new LinkedHashMap();
+                    List<MappingField> createFields = new ArrayList<>();
+                    List<TableColumnStructure> delColumns = new ArrayList<>();
+                    List<MappingIndex> updateIndexes = new ArrayList<>();
+                    List<MappingIndex> newIndexes = new ArrayList<>();
+                    List<Map.Entry<String, List<TableIndexStructure>>> dropIndexes = new ArrayList<>();
+
+                    if (currTable != null) {
+                        List<MappingField> rmCol = new ArrayList<>();
+                        List<TableColumnStructure> rmSCol = new ArrayList<>();
                         Set<MappingField> mappingFields = currTable.getMappingFields();
-                        for (MappingField mappingField : mappingFields) {
-                            if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex() || mappingField.isMappingFieldPrimaryKey()) {
-                                Map.Entry<String, List<TableIndexStructure>> hasIndex = structure
-                                        .getIndexStructures(fromIndexStructure, Arrays.asList(new MappingField[]{mappingField}));
-                                if (hasIndex != null && hasIndex.getValue() != null && hasIndex.getValue().size() == 1) {
-                                    fromIndexStructure.remove(hasIndex.getKey());
-                                }
-                            }
-                        }
-
-                        Iterator<Map.Entry<String, List<TableIndexStructure>>> iterator = fromIndexStructure.entrySet().iterator();
-                        while (iterator.hasNext()) {
-                            Map.Entry<String, List<TableIndexStructure>> entry = iterator.next();
-                            List<TableIndexStructure> values = entry.getValue();
-                            if (values != null && values.size() > 0 && !values.get(0).getType().equalsIgnoreCase("P")) {
-                                dropIndexes.add(entry);
-                            }
-                        }
-                    }
-                }
-
-
-                boolean update = false;
-                CompareUpdateTableMate tableMate = new CompareUpdateTableMate();
-                if (updateFields != null && updateFields.size() > 0) {
-                    tableMate.setUpdateFields(updateFields);
-                    update = true;
-                }
-                if (createFields != null && createFields.size() > 0) {
-                    tableMate.setCreateFields(createFields);
-                    update = true;
-                }
-                if (delColumns != null && delColumns.size() > 0) {
-                    tableMate.setDelColumns(delColumns);
-                    // 如果字段删除了那么对应的索引也被删除
-                    // 所以去除已经被删除的字段索引
-                    // 如果不删除已经删除的字段的索引，删除索引时会报不存在索引
-                    if (dropIndexes != null && dropIndexes.size() > 0) {
-                        List<Map.Entry<String, List<TableIndexStructure>>> rms = null;
-                        for (Map.Entry<String, List<TableIndexStructure>> entry : dropIndexes) {
-                            List<TableIndexStructure> iss = entry.getValue();
-                            if (iss != null) {
-                                for (TableIndexStructure is : iss) {
-                                    for (TableColumnStructure delC : delColumns) {
-                                        if (StringTools.isNotEmpty(is.getColumnName())
-                                                && is.getColumnName().equals(delC.getColumnName())) {
-                                            if (rms == null) rms = new ArrayList<>();
-                                            rms.add(entry);
+                        if (columnStructures != null && columnStructures.size() > 0) {
+                            for (TableColumnStructure columnStructure : columnStructures) {
+                                if (mappingFields != null) {
+                                    MappingField currField = null;
+                                    for (MappingField field : mappingFields) {
+                                        String mappingFieldName = field.getMappingColumnName();
+                                        String fieldName = columnStructure.getColumnName();
+                                        if (mappingFieldName.equalsIgnoreCase(fieldName)) {
+                                            currField = field;
+                                            rmCol.add(field);
+                                            rmSCol.add(columnStructure);
                                             break;
                                         }
                                     }
+
+                                    if (currField != null) {
+                                        List<ColumnEditType> columnEditTypes = dialect.compareColumnChange(
+                                                structure, currField, columnStructure
+                                        );
+
+                                        if (columnEditTypes.size() > 0) {
+                                            updateFields.put(currField, new CompareUpdateMate(columnEditTypes, columnStructure));
+                                        }
+                                    }
+                                }
+                            }
+
+                            mappingFields.removeAll(rmCol);
+                            columnStructures.removeAll(rmSCol);
+                            if (mappingFields.size() > 0) {
+                                // 有新添加的字段需要添加
+                                createFields.addAll(mappingFields);
+                            }
+                            if (columnStructures.size() > 0) {
+                                // 有多余的字段需要删除
+                                delColumns.addAll(columnStructures);
+                            }
+                        } else {
+                            // 数据库的字段没有需要重新添加全部字段
+                            createFields.addAll(mappingFields);
+                        }
+                    }
+
+                    if (currTable != null) {
+                        Set<MappingIndex> mappingIndexes = currTable.getMappingIndexes();
+                        Map<String, List<TableIndexStructure>> fromIndexStructure = structure.getMapIndex();
+                        if (mappingIndexes != null) {
+                            for (MappingIndex index : mappingIndexes) {
+                                String mappingIndexName = index.getIndexName();
+                                List<TableIndexStructure> indexStructures = fromIndexStructure.get(mappingIndexName);
+
+                                if (indexStructures != null && indexStructures.size() > 0) {
+                                    fromIndexStructure.remove(mappingIndexName);
+
+                                    List<MappingField> indexMappingFields = index.getIndexColumns();
+                                    if (!indexStructures.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
+                                        // 索引类型不一致需要重建索引
+                                        updateIndexes.add(index);
+                                    } else {
+                                        Set<MappingField> rmIdxCol = new HashSet<>();
+                                        for (TableIndexStructure indexStructure : indexStructures) {
+                                            String indexColumnName = indexStructure.getColumnName();
+                                            for (MappingField indexMappingField : indexMappingFields) {
+                                                if (indexMappingField.getMappingColumnName().equalsIgnoreCase(indexColumnName)) {
+                                                    rmIdxCol.add(indexMappingField);
+                                                }
+                                            }
+                                        }
+                                        if (indexMappingFields.size() != rmIdxCol.size()) {
+                                            // 需要重建索引
+                                            updateIndexes.add(index);
+                                        }
+                                    }
+                                } else {
+                                    List<TableIndexStructure> indexStructuresByColumns = structure.getIndexStructures(index.getIndexColumns());
+                                    if (indexStructuresByColumns != null && indexStructuresByColumns.size() > 0) {
+                                        if (!indexStructuresByColumns.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
+                                            // 已经有一个相同类型的所有存在，不再做任何操作
+                                        } else {
+                                            // 已经有一个相同类型的所有存在，不再做任何操作
+                                        }
+                                    } else {
+                                        // 需要新建索引
+                                        newIndexes.add(index);
+                                    }
                                 }
                             }
                         }
 
-                        if (rms != null) {
-                            dropIndexes.removeAll(rms);
+                        if (fromIndexStructure != null && fromIndexStructure.size() > 0) {
+                            Set<MappingField> mappingFields = currTable.getMappingFields();
+                            for (MappingField mappingField : mappingFields) {
+                                if (mappingField.isMappingFieldUnique() || mappingField.isMappingFieldIndex() || mappingField.isMappingFieldPrimaryKey()) {
+                                    Map.Entry<String, List<TableIndexStructure>> hasIndex = structure
+                                            .getIndexStructures(fromIndexStructure, Arrays.asList(new MappingField[]{mappingField}));
+                                    if (hasIndex != null && hasIndex.getValue() != null && hasIndex.getValue().size() == 1) {
+                                        fromIndexStructure.remove(hasIndex.getKey());
+                                    }
+                                }
+                            }
+
+                            Iterator<Map.Entry<String, List<TableIndexStructure>>> iterator = fromIndexStructure.entrySet().iterator();
+                            while (iterator.hasNext()) {
+                                Map.Entry<String, List<TableIndexStructure>> entry = iterator.next();
+                                List<TableIndexStructure> values = entry.getValue();
+                                if (values != null && values.size() > 0 && !values.get(0).getType().equalsIgnoreCase("P")) {
+                                    dropIndexes.add(entry);
+                                }
+                            }
                         }
                     }
-                    update = true;
-                }
-                if (updateIndexes != null && updateIndexes.size() > 0) {
-                    tableMate.setUpdateIndexes(updateIndexes);
-                    update = true;
-                }
 
-                if (newIndexes != null && newIndexes.size() > 0) {
-                    tableMate.setNewIndexes(newIndexes);
-                    update = true;
-                }
 
-                if (dropIndexes != null && dropIndexes.size() > 0) {
-                    List<String> deli = new ArrayList<>();
-                    for (Map.Entry<String, List<TableIndexStructure>> entry : dropIndexes) {
-                        if (!structure.isIndexInConstraintByColumns(entry.getKey(), entry.getValue())) {
-                            deli.add(entry.getKey());
-                        } else {
-
-                        }
+                    boolean update = false;
+                    CompareUpdateTableMate tableMate = new CompareUpdateTableMate();
+                    if (updateFields != null && updateFields.size() > 0) {
+                        tableMate.setUpdateFields(updateFields);
+                        update = true;
                     }
-                    tableMate.setDropIndexes(deli);
-                    update = true;
-                }
+                    if (createFields != null && createFields.size() > 0) {
+                        tableMate.setCreateFields(createFields);
+                        update = true;
+                    }
+                    if (delColumns != null && delColumns.size() > 0) {
+                        tableMate.setDelColumns(delColumns);
+                        // 如果字段删除了那么对应的索引也被删除
+                        // 所以去除已经被删除的字段索引
+                        // 如果不删除已经删除的字段的索引，删除索引时会报不存在索引
+                        if (dropIndexes != null && dropIndexes.size() > 0) {
+                            List<Map.Entry<String, List<TableIndexStructure>>> rms = null;
+                            for (Map.Entry<String, List<TableIndexStructure>> entry : dropIndexes) {
+                                List<TableIndexStructure> iss = entry.getValue();
+                                if (iss != null) {
+                                    for (TableIndexStructure is : iss) {
+                                        for (TableColumnStructure delC : delColumns) {
+                                            if (StringTools.isNotEmpty(is.getColumnName())
+                                                    && is.getColumnName().equals(delC.getColumnName())) {
+                                                if (rms == null) rms = new ArrayList<>();
+                                                rms.add(entry);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
 
-                if (update && currTable != null && structure != null) {
-                    tableMate.setMappingTable(currTable);
-                    tableMate.setStructure(structure);
-                    compare.checking(tableMate);
+                            if (rms != null) {
+                                dropIndexes.removeAll(rms);
+                            }
+                        }
+                        update = true;
+                    }
+                    if (updateIndexes != null && updateIndexes.size() > 0) {
+                        tableMate.setUpdateIndexes(updateIndexes);
+                        update = true;
+                    }
+
+                    if (newIndexes != null && newIndexes.size() > 0) {
+                        tableMate.setNewIndexes(newIndexes);
+                        update = true;
+                    }
+
+                    if (dropIndexes != null && dropIndexes.size() > 0) {
+                        List<String> deli = new ArrayList<>();
+                        for (Map.Entry<String, List<TableIndexStructure>> entry : dropIndexes) {
+                            if (!structure.isIndexInConstraintByColumns(entry.getKey(), entry.getValue())) {
+                                deli.add(entry.getKey());
+                            } else {
+
+                            }
+                        }
+                        tableMate.setDropIndexes(deli);
+                        update = true;
+                    }
+
+                    if (update && currTable != null && structure != null) {
+                        tableMate.setMappingTable(currTable);
+                        tableMate.setStructure(structure);
+                        compare.checking(tableMate);
+                    }
                 }
             }
             mappingTables.removeAll(rmTab);

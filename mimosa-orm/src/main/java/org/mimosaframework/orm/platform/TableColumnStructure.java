@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.platform;
 
+import org.mimosaframework.core.utils.StringTools;
+
 import java.sql.Clob;
 import java.sql.SQLException;
 
@@ -91,6 +93,7 @@ public class TableColumnStructure {
     }
 
     public boolean isNullable() {
+        if (StringTools.isEmpty(isNullable)) return true;
         return "Y".equals(isNullable);
     }
 

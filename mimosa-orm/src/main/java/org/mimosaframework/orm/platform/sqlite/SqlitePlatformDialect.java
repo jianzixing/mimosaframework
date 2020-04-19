@@ -63,13 +63,11 @@ public class SqlitePlatformDialect extends PlatformDialect {
                 tableStructure.setComment(o.getString("COMMENT"));
                 tableStructure.setCreateTime(o.get("CREATE_TIME"));
                 tableStructures.add(tableStructure);
-                if (classTableNames != null && classTableNames.contains(tableName.toLowerCase())) {
-                    tables.add(tableStructure.getTableName());
-                }
+                tables.add(tableStructure.getTableName());
             }
 
 
-            if (tableStructures != null && tableStructures.size() > 0) {
+            if (tableStructures != null && tableStructures.size() > 0 && tables.size() > 0) {
                 List<TableColumnStructure> columnStructures = new ArrayList<>();
                 List<TableConstraintStructure> constraintStructures = new ArrayList<>();
                 for (ModelObject o : list) {
@@ -140,9 +138,6 @@ public class SqlitePlatformDialect extends PlatformDialect {
                                         if (item.type == AnalysisType.CHILD) {
                                             List<AnalysisItem> lens = item.child;
                                             if (lens.size() == 1) {
-                                                if (lens.get(0).text.equals("age")) {
-                                                    System.out.println();
-                                                }
                                                 columnStructure.setLength(Integer.parseInt(lens.get(0).text));
                                             } else if (lens.size() >= 2) {
                                                 columnStructure.setLength(Integer.parseInt(lens.get(0).text));
@@ -170,6 +165,7 @@ public class SqlitePlatformDialect extends PlatformDialect {
                                                 structure.setTableName(tableName);
                                                 structure.setColumnName(columnName);
                                                 structure.setType("P");
+                                                constraintStructures.add(structure);
                                             } else {
 
                                             }
@@ -292,7 +288,13 @@ public class SqlitePlatformDialect extends PlatformDialect {
 
     @Override
     protected DialectNextStep defineModifyColumn(DataDefinition definition) throws SQLException {
-        return DialectNextStep.REBUILD;
+        List<ColumnEditType> columnEditTypes = this.compareColumnChange(definition.getTableStructure(),
+                definition.getMappingField(), definition.getColumnStructure());
+        columnEditTypes.remove(ColumnEditType.COMMENT);
+        if (columnEditTypes.size() > 0) {
+            return DialectNextStep.REBUILD;
+        }
+        return DialectNextStep.NONE;
     }
 
     @Override

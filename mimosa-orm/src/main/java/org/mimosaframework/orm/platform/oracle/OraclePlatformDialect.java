@@ -46,6 +46,10 @@ public class OraclePlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.LONGTEXT, "CLOB");
     }
 
+    public List<TableStructure> getTableStructures(List<String> classTableNames) throws SQLException {
+        return this.loadingTableStructures(classTableNames);
+    }
+
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
         StampCombineBuilder builder = new OracleStampAlter();
@@ -152,7 +156,7 @@ public class OraclePlatformDialect extends PlatformDialect {
         }
         return super.defineModifyColumn(definition);
     }
-    
+
     @Override
     public boolean isSupportGeneratedKeys() {
         return false;

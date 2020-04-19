@@ -94,9 +94,9 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
             if (item.renameType == KeyAlterRenameType.TABLE) {
                 sb.append("ALTER");
                 sb.append(" TABLE");
-                sb.append(" " + item.newName);
+                sb.append(" " + tableName);
                 sb.append(" RENAME");
-                sb.append(" TO " + tableName);
+                sb.append(" TO " + item.newName);
             }
         }
 

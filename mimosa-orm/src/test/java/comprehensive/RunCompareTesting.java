@@ -15,12 +15,12 @@ public class RunCompareTesting {
     @Test
     public void runAll() throws ContextException, SQLException {
         mimosaDataSource = new MimosaDataSource(RunDataSourceBuilder.currDataSource(), "mater");
-        this.test1();
+//        this.test1();
 //        this.test2();
 //        this.test3();
 //        this.test4();
 //        this.test5();
-//        this.test7();
+        this.test7();
 //        this.test8();
     }
 
@@ -87,7 +87,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField1 = new SpecificMappingField();
         mappingField1.setMappingColumnName("id");
-        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldType(int.class);
         mappingField1.setMappingFieldPrimaryKey(true);
         mappingField1.setMappingFieldAutoIncrement(true);
         mappingField1.setMappingFieldComment("测试id备注");
@@ -125,7 +125,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField1 = new SpecificMappingField();
         mappingField1.setMappingColumnName("id");
-        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldType(int.class);
         mappingField1.setMappingFieldPrimaryKey(true);
         mappingField1.setMappingFieldAutoIncrement(true);
         mappingField1.setMappingFieldComment("测试id备注");
@@ -164,7 +164,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField1 = new SpecificMappingField();
         mappingField1.setMappingColumnName("id");
-        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldType(int.class);
         // mappingField1.setMappingFieldPrimaryKey(true);
         // mappingField1.setMappingFieldAutoIncrement(true);
         mappingField1.setMappingFieldComment("测试id备注");
@@ -180,7 +180,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField3 = new SpecificMappingField();
         mappingField3.setMappingColumnName("age");
-        mappingField3.setMappingFieldType(byte.class);
+        mappingField3.setMappingFieldType(int.class);
         mappingField3.setMappingFieldLength(30);
         mappingField3.setMappingFieldPrimaryKey(true);
         mappingField3.setMappingFieldAutoIncrement(true);
@@ -204,7 +204,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField1 = new SpecificMappingField();
         mappingField1.setMappingColumnName("id");
-        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldType(int.class);
         // mappingField1.setMappingFieldPrimaryKey(true);
         // mappingField1.setMappingFieldAutoIncrement(true);
         mappingField1.setMappingFieldComment("测试id备注");
@@ -235,7 +235,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField1 = new SpecificMappingField();
         mappingField1.setMappingColumnName("id");
-        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldType(int.class);
         mappingField1.setMappingFieldPrimaryKey(true);
         mappingField1.setMappingFieldAutoIncrement(true);
         mappingField1.setMappingFieldComment("测试id备注");
@@ -268,7 +268,8 @@ public class RunCompareTesting {
     }
 
     // 定向测试
-    // 字段A拥有索引B，如果删除字段A则索引B删除报错
+    // 由于对比会先对比出需要删除的字段和索引，
+    // 假如字段A拥有索引B，如果删除字段A则索引B删除报错
     // 测试删除A时移除删除索引B的数据
     // PlatformExecutor的212行
     public void test7() throws SQLException {
@@ -283,7 +284,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField1 = new SpecificMappingField();
         mappingField1.setMappingColumnName("id");
-        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldType(int.class);
         mappingField1.setMappingFieldPrimaryKey(false);
         mappingField1.setMappingFieldComment("测试id备注");
         mappingFields.put("id", mappingField1);
@@ -320,7 +321,7 @@ public class RunCompareTesting {
 
         SpecificMappingField mappingField1 = new SpecificMappingField();
         mappingField1.setMappingColumnName("id");
-        mappingField1.setMappingFieldType(Long.class);
+        mappingField1.setMappingFieldType(int.class);
         mappingField1.setMappingFieldPrimaryKey(true);
         mappingField1.setMappingFieldAutoIncrement(true);
         mappingField1.setMappingFieldComment("测试id备注");
