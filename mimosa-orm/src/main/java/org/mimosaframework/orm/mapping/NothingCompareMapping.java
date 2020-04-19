@@ -197,7 +197,7 @@ public class NothingCompareMapping implements StartCompareMapping {
 
                         if (isRebuildTable && mappingLevel == MappingLevel.UPDATE) {
                             MappingTable mappingTable = tableMate.getMappingTable();
-                            executor.doDialectRebuild(mappingTable, tableMate.getStructure());
+                            executor.doDialectRebuild(tableMate.getTableStructures(), mappingTable, tableMate.getStructure());
                             Set<MappingIndex> mappingIndices = mappingTable.getMappingIndexes();
                             if (mappingIndices != null) {
                                 for (MappingIndex mappingIndex : mappingIndices) {

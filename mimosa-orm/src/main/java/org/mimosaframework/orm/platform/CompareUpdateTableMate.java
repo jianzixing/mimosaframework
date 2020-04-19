@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CompareUpdateTableMate {
+    private List<TableStructure> tableStructures;
+
     private MappingTable mappingTable;
     private TableStructure structure;
 
@@ -18,6 +20,14 @@ public class CompareUpdateTableMate {
     private List<MappingIndex> updateIndexes = null;
     private List<MappingIndex> newIndexes = null;
     private List<String> dropIndexes = null;
+
+    public List<TableStructure> getTableStructures() {
+        return tableStructures;
+    }
+
+    public void setTableStructures(List<TableStructure> tableStructures) {
+        this.tableStructures = tableStructures;
+    }
 
     public MappingTable getMappingTable() {
         return mappingTable;

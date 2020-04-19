@@ -130,7 +130,7 @@ public class PlatformExecutor {
                         if (mappingIndexes != null) {
                             for (MappingIndex index : mappingIndexes) {
                                 String mappingIndexName = index.getIndexName();
-                                List<TableIndexStructure> indexStructures = fromIndexStructure.get(mappingIndexName);
+                                List<TableIndexStructure> indexStructures = (fromIndexStructure != null ? fromIndexStructure.get(mappingIndexName) : null);
 
                                 if (indexStructures != null && indexStructures.size() > 0) {
                                     fromIndexStructure.remove(mappingIndexName);
@@ -259,6 +259,7 @@ public class PlatformExecutor {
                     if (update && currTable != null && structure != null) {
                         tableMate.setMappingTable(currTable);
                         tableMate.setStructure(structure);
+                        tableMate.setTableStructures(structures);
                         compare.checking(tableMate);
                     }
                 }
@@ -329,9 +330,11 @@ public class PlatformExecutor {
         return dialect.define(new DataDefinition(DataDefinitionType.DROP_INDEX, mappingTable, indexName));
     }
 
-    public void doDialectRebuild(MappingTable mappingTable, TableStructure structure) throws SQLException {
+    public void doDialectRebuild(List<TableStructure> structures,
+                                 MappingTable mappingTable,
+                                 TableStructure structure) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        dialect.rebuildTable(mappingTable, structure);
+        dialect.rebuildTable(structures, mappingTable, structure);
     }
 
     public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {

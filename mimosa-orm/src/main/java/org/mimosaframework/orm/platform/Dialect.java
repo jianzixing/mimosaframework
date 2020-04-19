@@ -37,7 +37,9 @@ public interface Dialect {
 
     DialectNextStep define(DataDefinition definition) throws SQLException;
 
-    void rebuildTable(MappingTable mappingTable, TableStructure tableStructure) throws SQLException;
+    void rebuildTable(List<TableStructure> structures,
+                      MappingTable mappingTable,
+                      TableStructure tableStructure) throws SQLException;
 
     boolean isSupportGeneratedKeys();
 

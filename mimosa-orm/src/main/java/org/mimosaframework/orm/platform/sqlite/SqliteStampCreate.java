@@ -112,15 +112,16 @@ public class SqliteStampCreate extends SqliteStampCommonality implements StampCo
                     sb.append(" NOT NULL");
                 }
 
-                if (column.pk == KeyConfirm.YES) {
+                if (pkCount <= 1 && column.pk == KeyConfirm.YES) {
                     sb.append(" PRIMARY KEY");
+                } else {
+                    if (pkCount > 1) {
+                        if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
+                        primaryKeyIndex.add(column.column);
+                    }
                 }
-                if (pkCount <= 1 && column.autoIncrement == KeyConfirm.YES) {
+                if (column.autoIncrement == KeyConfirm.YES) {
                     sb.append(" AUTOINCREMENT");
-                }
-                if (column.pk == KeyConfirm.YES) {
-                    if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
-                    primaryKeyIndex.add(column.column);
                 }
                 if (column.defaultValue != null) {
                     sb.append(" DEFAULT \"" + column.defaultValue + "\"");

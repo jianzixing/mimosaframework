@@ -100,7 +100,7 @@ public class TableStructure {
             for (TableColumnStructure structure : columnStructures) {
                 boolean eq = false;
                 for (TableColumnStructure n : newColumns) {
-                    if (structure == null || structure.getColumnName() == null){
+                    if (structure == null || structure.getColumnName() == null) {
                         System.out.println();
                     }
                     if (structure.getColumnName().equalsIgnoreCase(n.getColumnName())) {
@@ -411,9 +411,11 @@ public class TableStructure {
 
     public List<TableIndexStructure> getIndexStructures(List<MappingField> indexColumns) {
         Map<String, List<TableIndexStructure>> map = this.getMapIndex();
-        Map.Entry<String, List<TableIndexStructure>> entry = this.getIndexStructures(map, indexColumns);
-        if (entry != null) {
-            return entry.getValue();
+        if (map != null) {
+            Map.Entry<String, List<TableIndexStructure>> entry = this.getIndexStructures(map, indexColumns);
+            if (entry != null) {
+                return entry.getValue();
+            }
         }
         return null;
     }

@@ -286,7 +286,12 @@ public abstract class PlatformDialect implements Dialect {
                 String comment = mappingField.getMappingFieldComment();
 
                 sql.column(field);
-                this.setSQLType(sql, type, length, scale);
+                KeyColumnType aptype = this.getAutoIncrementPrimaryKeyType();
+                if (autoIncr && isPk && aptype != null) {
+                    JavaType2ColumnType.setBuilderType(aptype, sql, length, scale);
+                } else {
+                    this.setSQLType(sql, type, length, scale);
+                }
                 if (!nullable) {
                     sql.not();
                     sql.nullable();
@@ -488,6 +493,10 @@ public abstract class PlatformDialect implements Dialect {
         return false;
     }
 
+    protected KeyColumnType getAutoIncrementPrimaryKeyType() {
+        return null;
+    }
+
     /**
      * 重要！
      * 判断数据库和当前配置的字段是否一致
@@ -508,18 +517,27 @@ public abstract class PlatformDialect implements Dialect {
         }
 
         if (currField.isMappingFieldTimeForUpdate()) return columnEditTypes;
-        if (this.compareColumnChangeType(columnStructure, columnType)) {
-            if (columnType.getCompareType() == ColumnCompareType.JAVA
-                    && (columnStructure.getLength() != currField.getMappingFieldLength()
-                    || columnStructure.getScale() != currField.getMappingFieldDecimalDigits())) {
-                columnEditTypes.add(ColumnEditType.TYPE_LENGTH);
-            }
-            if (columnType.getCompareType() == ColumnCompareType.SELF
-                    && (columnStructure.getLength() != columnType.getLength())) {
-                columnEditTypes.add(ColumnEditType.TYPE_LENGTH);
+        KeyColumnType pkAutoType = this.getAutoIncrementPrimaryKeyType();
+        if (currField.isMappingFieldPrimaryKey()
+                && currField.isMappingAutoIncrement()
+                && pkAutoType != null) {
+            if (!this.compareColumnChangeType(columnStructure, columnType)) {
+                columnEditTypes.add(ColumnEditType.TYPE);
             }
         } else {
-            columnEditTypes.add(ColumnEditType.TYPE);
+            if (this.compareColumnChangeType(columnStructure, columnType)) {
+                if (columnType.getCompareType() == ColumnCompareType.JAVA
+                        && (columnStructure.getLength() != currField.getMappingFieldLength()
+                        || columnStructure.getScale() != currField.getMappingFieldDecimalDigits())) {
+                    columnEditTypes.add(ColumnEditType.TYPE_LENGTH);
+                }
+                if (columnType.getCompareType() == ColumnCompareType.SELF
+                        && (columnStructure.getLength() != columnType.getLength())) {
+                    columnEditTypes.add(ColumnEditType.TYPE_LENGTH);
+                }
+            } else {
+                columnEditTypes.add(ColumnEditType.TYPE);
+            }
         }
 
         boolean isPk = structure.isPrimaryKeyColumn(columnStructure.getColumnName());
@@ -757,11 +775,23 @@ public abstract class PlatformDialect implements Dialect {
      *
      * @throws SQLException
      */
-    public void rebuildTable(MappingTable mappingTable, TableStructure tableStructure) throws SQLException {
+    public void rebuildTable(List<TableStructure> structures,
+                             MappingTable mappingTable,
+                             TableStructure tableStructure) throws SQLException {
         if (mappingTable != null && tableStructure != null) {
             String tableName = mappingTable.getMappingTableName() + "_ctmp";
 
             // 1.先修改原表名称
+            if (structures != null) {
+                for (TableStructure structure : structures) {
+                    if (structure.getTableName().equalsIgnoreCase(tableName)) {
+                        // 如果发现有同名的表现删除
+                        DefaultSQLDropBuilder dropBuilder = new DefaultSQLDropBuilder();
+                        dropBuilder.drop().table().name(tableName);
+                        this.runner(dropBuilder.compile());
+                    }
+                }
+            }
             DefaultSQLAlterBuilder renameBuilder = new DefaultSQLAlterBuilder();
             renameBuilder.alter().table(mappingTable.getMappingTableName()).rename().name(tableName);
             this.runner(renameBuilder.compile());
