@@ -26,7 +26,7 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
                              List<SQLDataPlaceholder> placeholders) {
         if (select.limit != null) {
             sb.append("SELECT * FROM (");
-            sb.append("SELECT RN_TABLE_ALIAS.*, ROWNUM AS RN_ALIAS FROM (");
+            sb.append("SELECT RN_TABLE_ALIAS.*, ROWNUM AS RN_ALIAS_ROW_NUMBER FROM (");
         }
 
         sb.append("SELECT ");
@@ -112,7 +112,7 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
         if (select.limit != null) {
             long start = select.limit.start, limit = start + select.limit.limit;
 
-            sb.append(") RN_TABLE_ALIAS WHERE ROWNUM <= " + limit + ") RN_TABLE_ALIAS_2 WHERE RN_TABLE_ALIAS_2.RN_ALIAS >= " + start);
+            sb.append(") RN_TABLE_ALIAS WHERE ROWNUM <= " + limit + ") RN_TABLE_ALIAS_2 WHERE RN_TABLE_ALIAS_2.RN_ALIAS_ROW_NUMBER >= " + start);
         }
     }
 

@@ -126,6 +126,11 @@ public class OraclePlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public boolean isSupportSameColumnIndex() {
+        return false;
+    }
+
+    @Override
     public SQLBuilderCombine delete(StampDelete delete) {
         StampCombineBuilder builder = new OracleStampDelete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);

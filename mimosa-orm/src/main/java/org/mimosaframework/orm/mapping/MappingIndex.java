@@ -8,4 +8,6 @@ public interface MappingIndex {
     List<MappingField> getIndexColumns();
 
     IndexType getIndexType();
+
+    boolean isSameColumn(MappingIndex index);
 }

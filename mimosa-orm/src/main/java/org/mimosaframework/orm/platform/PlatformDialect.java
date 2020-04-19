@@ -494,7 +494,16 @@ public abstract class PlatformDialect implements Dialect {
      * @return
      */
     protected boolean compareColumnChangeDefault(String defA, String defB) {
-        return false;
+        // 由于某些数据库(eg:db2 , oracle)的default值区分数据类型所以会加入字符串包装，这里判断一下
+        boolean last = false;
+        if (defB != null) defB = defB.trim();
+        if (defB != null && defB.startsWith("'") && defB.endsWith("'")) {
+            defB = defB.substring(1, defB.length() - 1);
+            if (defB.equals(defA)) {
+                last = true;
+            }
+        }
+        return last;
     }
 
     protected KeyColumnType getAutoIncrementPrimaryKeyType() {
@@ -891,5 +900,19 @@ public abstract class PlatformDialect implements Dialect {
      */
     public boolean isSelectHavingMustGroupBy() {
         return false;
+    }
+
+    /**
+     * 是否支持相同列的索引
+     * 比如：
+     * index1 (A,B)
+     * index2 (A，B)
+     * mysql can create index1 and index2
+     * oracle just only create one index
+     *
+     * @return
+     */
+    public boolean isSupportSameColumnIndex() {
+        return true;
     }
 }

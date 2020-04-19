@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class CompareUpdateTableMate {
     private List<TableStructure> tableStructures;
+    private PlatformDialect dialect;
 
     private MappingTable mappingTable;
     private TableStructure structure;
@@ -20,6 +21,14 @@ public class CompareUpdateTableMate {
     private List<MappingIndex> updateIndexes = null;
     private List<MappingIndex> newIndexes = null;
     private List<String> dropIndexes = null;
+
+    public PlatformDialect getDialect() {
+        return dialect;
+    }
+
+    public void setDialect(PlatformDialect dialect) {
+        this.dialect = dialect;
+    }
 
     public List<TableStructure> getTableStructures() {
         return tableStructures;

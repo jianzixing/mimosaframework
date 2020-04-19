@@ -46,4 +46,6 @@ public interface Dialect {
     boolean isSelectLimitMustOrderBy();
 
     boolean isSelectHavingMustGroupBy();
+
+    boolean isSupportSameColumnIndex();
 }

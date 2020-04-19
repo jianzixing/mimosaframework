@@ -7,10 +7,7 @@ import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.platform.*;
 
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class NothingCompareMapping implements StartCompareMapping {
     private static final Log logger = LogFactory.getLog(NothingCompareMapping.class);
@@ -200,6 +197,24 @@ public class NothingCompareMapping implements StartCompareMapping {
                             executor.doDialectRebuild(tableMate.getTableStructures(), mappingTable, tableMate.getStructure());
                             Set<MappingIndex> mappingIndices = mappingTable.getMappingIndexes();
                             if (mappingIndices != null) {
+                                PlatformDialect dialect = tableMate.getDialect();
+                                if (!dialect.isSupportSameColumnIndex()) {
+                                    // 如果不支持多列索引则这里删除相同列索引
+                                    Set<MappingIndex> onlyDiffIndex = new LinkedHashSet<>();
+                                    for (MappingIndex index : mappingIndices) {
+                                        boolean is = false;
+                                        for (MappingIndex odi : onlyDiffIndex) {
+                                            if (index.isSameColumn(odi)) {
+                                                is = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!is) {
+                                            onlyDiffIndex.add(index);
+                                        }
+                                    }
+                                    mappingIndices = onlyDiffIndex;
+                                }
                                 for (MappingIndex mappingIndex : mappingIndices) {
                                     executor.createIndex(mappingTable, mappingIndex);
                                 }

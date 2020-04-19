@@ -57,9 +57,8 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
         if (create.target == KeyTarget.INDEX) {
             if (create.indexType == KeyIndexType.UNIQUE) {
                 sb.append(" UNIQUE");
-            } else {
-                sb.append(" INDEX");
             }
+            sb.append(" INDEX");
             sb.append(" " + RS + create.indexName + RE);
             sb.append(" ON");
             sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));

@@ -27,4 +27,27 @@ public class SpecificMappingIndex implements MappingIndex {
     public IndexType getIndexType() {
         return this.indexType;
     }
+
+    @Override
+    public boolean isSameColumn(MappingIndex index) {
+        List<MappingField> columns = index.getIndexColumns();
+        if (fields != null && columns != null && fields.size() == columns.size()) {
+            boolean aeq = true;
+            for (MappingField field : fields) {
+                boolean eq = false;
+                for (MappingField column : columns) {
+                    if (field.getMappingFieldName().equalsIgnoreCase(column.getMappingFieldName())) {
+                        eq = true;
+                        break;
+                    }
+                }
+                if (!eq) {
+                    aeq = false;
+                    break;
+                }
+            }
+            return aeq;
+        }
+        return false;
+    }
 }

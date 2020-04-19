@@ -155,16 +155,21 @@ public class PlatformExecutor {
                                         }
                                     }
                                 } else {
-                                    List<TableIndexStructure> indexStructuresByColumns = structure.getIndexStructures(index.getIndexColumns());
-                                    if (indexStructuresByColumns != null && indexStructuresByColumns.size() > 0) {
-                                        if (!indexStructuresByColumns.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
-                                            // 已经有一个相同类型的所有存在，不再做任何操作
-                                        } else {
-                                            // 已经有一个相同类型的所有存在，不再做任何操作
-                                        }
-                                    } else {
-                                        // 需要新建索引
+                                    // 如果数据库支持同列不同名索引则直接添加
+                                    if (dialect.isSupportSameColumnIndex()) {
                                         newIndexes.add(index);
+                                    } else {
+                                        List<TableIndexStructure> indexStructuresByColumns = structure.getIndexStructures(index.getIndexColumns());
+                                        if (indexStructuresByColumns != null && indexStructuresByColumns.size() > 0) {
+                                            if (!indexStructuresByColumns.get(0).getType().equalsIgnoreCase(index.getIndexType().toString())) {
+                                                // 已经有一个相同类型的所有存在，不再做任何操作
+                                            } else {
+                                                // 已经有一个相同类型的所有存在，不再做任何操作
+                                            }
+                                        } else {
+                                            // 需要新建索引
+                                            newIndexes.add(index);
+                                        }
                                     }
                                 }
                             }
@@ -239,6 +244,23 @@ public class PlatformExecutor {
                     }
 
                     if (newIndexes != null && newIndexes.size() > 0) {
+                        if (!dialect.isSupportSameColumnIndex()) {
+                            // 如果不支持多列索引则这里删除相同列索引
+                            List<MappingIndex> onlyDiffIndex = new ArrayList<>();
+                            for (MappingIndex index : newIndexes) {
+                                boolean is = false;
+                                for (MappingIndex odi : onlyDiffIndex) {
+                                    if (index.isSameColumn(odi)) {
+                                        is = true;
+                                        break;
+                                    }
+                                }
+                                if (!is) {
+                                    onlyDiffIndex.add(index);
+                                }
+                            }
+                            newIndexes = onlyDiffIndex;
+                        }
                         tableMate.setNewIndexes(newIndexes);
                         update = true;
                     }
@@ -260,6 +282,7 @@ public class PlatformExecutor {
                         tableMate.setMappingTable(currTable);
                         tableMate.setStructure(structure);
                         tableMate.setTableStructures(structures);
+                        tableMate.setDialect(dialect);
                         compare.checking(tableMate);
                     }
                 }
