@@ -85,24 +85,9 @@ public class SQLAutonomously implements Serializable {
         return new SQLAutonomously(builder, slaveName);
     }
 
-    public static AlterAnyBuilder alter() {
-        AlterAnyBuilder alterAnyBuilder = SQLActionFactory.alter();
-        return alterAnyBuilder;
-    }
-
-    public static CreateAnyBuilder create() {
-        CreateAnyBuilder createAnyBuilder = SQLActionFactory.create();
-        return createAnyBuilder;
-    }
-
     public static DeleteStartBuilder delete() {
         DeleteStartBuilder deleteStartBuilder = SQLActionFactory.delete();
         return deleteStartBuilder;
-    }
-
-    public static DropAnyBuilder drop() {
-        DropAnyBuilder dropAnyBuilder = SQLActionFactory.drop();
-        return dropAnyBuilder;
     }
 
     public static InsertStartBuilder insert() {

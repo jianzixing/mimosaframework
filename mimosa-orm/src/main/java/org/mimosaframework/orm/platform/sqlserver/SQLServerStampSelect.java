@@ -33,9 +33,6 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
                              StampSelect select,
                              StringBuilder sb,
                              List<SQLDataPlaceholder> placeholders) {
-        if (select.limit != null) {
-            sb.append("SELECT * FROM (");
-        }
 
         StringBuilder orderBySql = null;
         if (select.orderBy != null && select.orderBy.length > 0) {
@@ -44,13 +41,26 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
             orderBySql.append("ORDER BY ");
             int j = 0;
             for (StampOrderBy ob : orderBy) {
-                orderBySql.append(this.getColumnName(wrapper, select, ob.column));
+                StampColumn copyColumn = new StampColumn();
+                copyColumn.column = ob.column.column;
+                copyColumn.table = ob.column.table;
+                copyColumn.tableAliasName = "RN_TABLE_ALIAS";
+                orderBySql.append(this.getColumnName(wrapper, select, copyColumn));
                 if (ob.sortType == KeySortType.ASC)
                     orderBySql.append(" ASC");
                 else
                     orderBySql.append(" DESC");
                 j++;
                 if (j != orderBy.length) orderBySql.append(",");
+            }
+        }
+
+        if (select.limit != null) {
+            sb.append("SELECT * FROM (");
+            if (orderBySql != null) {
+                sb.append("SELECT *, ROW_NUMBER() OVER (" + orderBySql + ") AS RN_ALIAS_ROW_NUMBER FROM (");
+            } else {
+                sb.append("SELECT *, ROW_NUMBER() OVER () AS RN_ALIAS_ROW_NUMBER FROM (");
             }
         }
 
@@ -61,16 +71,6 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
             this.buildSelectField(wrapper, select, column, sb, placeholders);
             m++;
             if (m != columns.length) sb.append(",");
-        }
-        if (columns != null && columns.length > 0 && select.limit != null) {
-            sb.append(",");
-        }
-        if (select.limit != null) {
-            if (orderBySql != null) {
-                sb.append(" ROW_NUMBER() OVER (" + orderBySql + ") AS RN_ALIAS");
-            } else {
-                sb.append(" ROW_NUMBER() OVER () AS RN_ALIAS");
-            }
         }
 
         sb.append(" FROM ");
@@ -135,7 +135,8 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
 
         if (select.limit != null) {
             long start = select.limit.start, limit = start + select.limit.limit;
-            sb.append(") RN_TABLE_ALIAS WHERE RN_TABLE_ALIAS.RN_ALIAS BETWEEN " + start + " AND " + limit);
+            sb.append(") RN_TABLE_ALIAS ) AS A ");
+            sb.append("WHERE A.RN_ALIAS_ROW_NUMBER BETWEEN " + start + " AND " + limit);
         }
     }
 
@@ -148,6 +149,10 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
         StampFieldFun fun = field.fun;
         String aliasName = field.aliasName;
         String tableAliasName = field.tableAliasName;
+
+        if (field.distinct) {
+            sb.append("DISTINCT ");
+        }
 
         if (field.fieldType == KeyFieldType.ALL) {
             if (StringTools.isNotEmpty(tableAliasName)) {

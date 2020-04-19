@@ -3,6 +3,7 @@ package comprehensive;
 import org.junit.Before;
 import org.junit.Test;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.exception.ContextException;
@@ -32,9 +33,22 @@ public class RunJoinSession {
 
     @Test
     public void testInnerJoin() {
+        for (int i = 0; i < 20; i++) {
+            ModelObject user = new ModelObject(TableUser.class);
+            user.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(10));
+            template.save(user);
+
+            ModelObject pay = new ModelObject(TablePay.class);
+            pay.put(TablePay.userId, user.getIntValue(TableUser.id));
+            template.save(pay);
+            pay.remove(TablePay.id);
+            template.save(pay);
+        }
+
         List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
                 .subjoin(Criteria.inner(TablePay.class).on(TableUser.id, TablePay.userId).single().aliasName("pays"))
                 .limit(0, 20));
+        System.out.println(objects.size());
         System.out.println(objects);
     }
 

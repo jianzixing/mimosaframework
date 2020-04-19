@@ -70,7 +70,7 @@ public class TestSQLGrammar {
                 .limit(0, 10);
 
         unifyBuilder = SelectFactory.select()
-                .distinct("", (Serializable) "")
+                .distinct("","")
                 .from()
                 .table(SelectFactory.select().all().from().table(""));
 

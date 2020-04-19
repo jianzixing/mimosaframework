@@ -21,7 +21,7 @@ public interface SelectFieldBuilder<T> extends FieldFunBuilder<T> {
 
     T distinct(Serializable field);
 
-    T distinct(String tableAliasName, Serializable field);
+    T distinctByAlias(String tableAliasName, Serializable field);
 
     T distinct(Class table, Serializable field);
 

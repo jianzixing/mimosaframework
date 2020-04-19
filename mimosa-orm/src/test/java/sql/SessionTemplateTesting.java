@@ -7,6 +7,9 @@ import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.sql.FieldItem;
 import org.mimosaframework.orm.sql.Wrapper;
+import org.mimosaframework.orm.sql.alter.AlterFactory;
+import org.mimosaframework.orm.sql.create.CreateFactory;
+import org.mimosaframework.orm.sql.drop.DropFactory;
 import tables.TablePay;
 import tables.TableUser;
 
@@ -50,7 +53,7 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter1() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .modify().column(TableUser.id).bigint().autoIncrement().comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
@@ -58,18 +61,18 @@ public class SessionTemplateTesting {
 
     @Test
     public void testAlter2() throws Exception {
-        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
                 .change().oldColumn(TableUser.createdTime)
                 .newColumn("created_time2").datetime().comment("aaa").autonomously());
 
-        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
                 .rename().column().oldColumn("created_time2").to().newColumn("created_time").autonomously());
     }
 
     @Test
     public void testAlter3() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .add().column("t1").intType().comment("t+t1").after().column(TableUser.id)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
@@ -78,7 +81,7 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter4() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .drop().column("t1")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
@@ -87,7 +90,7 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter5() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .autoIncrement().value(20)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
@@ -96,7 +99,7 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter6() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .charset("utf8")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
@@ -104,24 +107,24 @@ public class SessionTemplateTesting {
 
     @Test
     public void testAlter7() throws Exception {
-        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
                 .add().index().name("a").columns(TableUser.address, TableUser.age)
                 .comment("aaa").autonomously());
-        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
                 .drop().index().name("a").autonomously());
     }
 
     @Test
     public void testAlter8() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .add().index().name("b").columns(TableUser.address, TableUser.userName)
                         .comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
         sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .drop().index().name("b")
         );
         autoResult = template.getAutonomously(sqlAutonomously);
@@ -131,14 +134,14 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter9() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .add().unique().name("c").columns(TableUser.address, TableUser.userName)
                         .comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
         sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .drop().index().name("c")
         );
         autoResult = template.getAutonomously(sqlAutonomously);
@@ -147,13 +150,13 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter10() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .add().index().name("pk").column(TableUser.id)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
         sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().table(TableUser.class)
+                AlterFactory.alter().table(TableUser.class)
                         .drop().index().name("pk")
         );
         template.getAutonomously(sqlAutonomously);
@@ -162,7 +165,7 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter11() throws Exception {
 //        SQLAutonomously sqlAutonomously;
-        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
                 .add().primary().key().column(TableUser.id).autonomously());
 
 //        sqlAutonomously = new SQLAutonomously(
@@ -171,7 +174,7 @@ public class SessionTemplateTesting {
 //        );
 //        template.getAutonomously(sqlAutonomously);
 
-        template.getAutonomously(SQLAutonomously.alter().table(TableUser.class)
+        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
                 .drop().primary().key().autonomously());
 
 //        sqlAutonomously = new SQLAutonomously(
@@ -184,7 +187,7 @@ public class SessionTemplateTesting {
     @Test
     public void testAlter12() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                SQLAutonomously.alter().database().name("mimosa").charset("utf8")
+                AlterFactory.alter().database().name("mimosa").charset("utf8")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
     }
@@ -192,7 +195,7 @@ public class SessionTemplateTesting {
     @Test
     public void testCreate1() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.create().table().ifNotExist().name("t_tt")
+                CreateFactory.create().table().ifNotExist().name("t_tt")
                         .column("id").intType().autoIncrement().primary().key().comment("a")
                         .column("name").varchar(50).not().nullable().comment("b")
                         .tableComment("ttt")
@@ -205,7 +208,7 @@ public class SessionTemplateTesting {
     @Test
     public void testCreate2() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.create().table().ifNotExist().name(TableUser.class)
+                CreateFactory.create().table().ifNotExist().name(TableUser.class)
                         .column("id").intType().autoIncrement().primary().key().comment("a")
                         .column("name").varchar(50).not().nullable().comment("b")
                         .column(TableUser.createdTime).datetime().not().nullable().comment("b")
@@ -218,7 +221,7 @@ public class SessionTemplateTesting {
     @Test
     public void testCreate3() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.create().table().ifNotExist().name("t_user_2")
+                CreateFactory.create().table().ifNotExist().name("t_user_2")
                         .column("id").intType().autoIncrement().primary().key().comment("a")
                         .column("name").varchar(50).not().nullable().comment("b")
                         .column(TableUser.userName).varchar(50).not().nullable().comment("b")
@@ -232,12 +235,12 @@ public class SessionTemplateTesting {
     @Test
     public void testCreate4() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.create().database().name("bb").charset("utf8")
+                CreateFactory.create().database().name("bb").charset("utf8")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
         sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.drop().database().name("bb")
+                DropFactory.drop().database().name("bb")
         );
         template.getAutonomously(sqlAutonomously);
 
@@ -246,13 +249,13 @@ public class SessionTemplateTesting {
     @Test
     public void testCreate5() throws Exception {
         SQLAutonomously sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.create().index().name("bb").on()
+                CreateFactory.create().index().name("bb").on()
                         .table(TableUser.class).columns(TableUser.address)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
 
         sqlAutonomously = SQLAutonomously.newInstance(
-                SQLAutonomously.drop().index().name("bb").on().table(TableUser.class)
+                DropFactory.drop().index().name("bb").on().table(TableUser.class)
         );
         template.getAutonomously(sqlAutonomously);
 
@@ -329,7 +332,7 @@ public class SessionTemplateTesting {
 
     @Test
     public void testDrop1() throws Exception {
-        AutoResult autoResult = template.getAutonomously(SQLAutonomously.drop().table().table(TableUser.class).autonomously());
+        AutoResult autoResult = template.getAutonomously(DropFactory.drop().table().table(TableUser.class).autonomously());
         System.out.println(autoResult.getValue());
     }
 

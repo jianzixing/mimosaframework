@@ -542,7 +542,7 @@ public class PlatformExecutor {
         select.select();
 
         if (limit != null && joins != null && joins.size() > 0) {
-            select.fields("T", "*");
+            select.distinctByAlias("T", "*");
         } else {
             if (hasJoin) {
                 this.buildSelectField(select, alias, fieldAlias);

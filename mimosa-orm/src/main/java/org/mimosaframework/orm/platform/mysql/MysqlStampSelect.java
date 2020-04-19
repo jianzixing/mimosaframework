@@ -119,6 +119,10 @@ public class MysqlStampSelect extends MysqlStampCommonality implements StampComb
         String aliasName = field.aliasName;
         String tableAliasName = field.tableAliasName;
 
+        if (field.distinct) {
+            sb.append("DISTINCT ");
+        }
+
         if (field.fieldType == KeyFieldType.ALL) {
             if (StringTools.isNotEmpty(tableAliasName)) {
                 sb.append(RS + tableAliasName + RE + ".");

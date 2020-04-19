@@ -24,11 +24,6 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
                              StampSelect select,
                              StringBuilder sb,
                              List<SQLDataPlaceholder> placeholders) {
-
-        if (select.limit != null) {
-            sb.append("SELECT * FROM (");
-        }
-
         StringBuilder orderBySql = null;
         if (select.orderBy != null && select.orderBy.length > 0) {
             StampOrderBy[] orderBy = select.orderBy;
@@ -45,6 +40,15 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             }
         }
 
+        if (select.limit != null) {
+            sb.append("SELECT * FROM (");
+            if (orderBySql != null) {
+                sb.append("SELECT *, ROW_NUMBER() OVER (" + orderBySql + ") AS RN_ALIAS_ROW_NUMBER FROM (");
+            } else {
+                sb.append("SELECT *, ROW_NUMBER() OVER () AS RN_ALIAS_ROW_NUMBER FROM (");
+            }
+        }
+
         sb.append("SELECT ");
         StampSelectField[] columns = select.columns;
         int m = 0;
@@ -52,16 +56,6 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             this.buildSelectField(wrapper, select, column, sb, placeholders);
             m++;
             if (m != columns.length) sb.append(",");
-        }
-        if (columns != null && columns.length > 0 && select.limit != null) {
-            sb.append(",");
-        }
-        if (select.limit != null) {
-            if (orderBySql != null) {
-                sb.append(" ROW_NUMBER() OVER (" + orderBySql + ") AS RN_ALIAS");
-            } else {
-                sb.append(" ROW_NUMBER() OVER () AS RN_ALIAS");
-            }
         }
 
         sb.append(" FROM ");
@@ -126,7 +120,8 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
 
         if (select.limit != null) {
             long start = select.limit.start, limit = start + select.limit.limit;
-            sb.append(") RN_TABLE_ALIAS WHERE RN_TABLE_ALIAS.RN_ALIAS BETWEEN " + start + " AND " + limit);
+            sb.append(") RN_TABLE_ALIAS ) ");
+            sb.append("WHERE RN_ALIAS_ROW_NUMBER BETWEEN " + start + " AND " + limit);
         }
     }
 
@@ -139,6 +134,10 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
         StampFieldFun fun = field.fun;
         String aliasName = field.aliasName;
         String tableAliasName = field.tableAliasName;
+
+        if (field.distinct) {
+            sb.append("DISTINCT ");
+        }
 
         if (field.fieldType == KeyFieldType.ALL) {
             if (StringTools.isNotEmpty(tableAliasName)) {

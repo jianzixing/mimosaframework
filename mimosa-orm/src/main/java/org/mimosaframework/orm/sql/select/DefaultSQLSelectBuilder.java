@@ -155,7 +155,7 @@ public class DefaultSQLSelectBuilder
     }
 
     @Override
-    public DefaultSQLSelectBuilder distinct(String tableAliasName, Serializable field) {
+    public DefaultSQLSelectBuilder distinctByAlias(String tableAliasName, Serializable field) {
         this.gammars.add("distinct");
         StampSelectField selectField = new StampSelectField();
         selectField.fieldType = KeyFieldType.COLUMN;
