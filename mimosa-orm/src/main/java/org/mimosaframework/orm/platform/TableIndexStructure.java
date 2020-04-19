@@ -60,4 +60,16 @@ public class TableIndexStructure {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    @Override
+    public TableIndexStructure clone() {
+        TableIndexStructure structure = new TableIndexStructure();
+        structure.tableSchema = tableSchema;
+        structure.indexName = indexName;
+        structure.tableName = tableName;
+        structure.type = type;
+        structure.columnName = columnName;
+        structure.comment = comment;
+        return structure;
+    }
 }

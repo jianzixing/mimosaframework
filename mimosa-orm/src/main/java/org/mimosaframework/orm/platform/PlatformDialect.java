@@ -521,7 +521,7 @@ public abstract class PlatformDialect implements Dialect {
         if (currField.isMappingFieldPrimaryKey()
                 && currField.isMappingAutoIncrement()
                 && pkAutoType != null) {
-            if (!this.compareColumnChangeType(columnStructure, columnType)) {
+            if (!this.compareColumnChangeType(columnStructure, this.getColumnType(pkAutoType))) {
                 columnEditTypes.add(ColumnEditType.TYPE);
             }
         } else {
@@ -869,10 +869,23 @@ public abstract class PlatformDialect implements Dialect {
     /**
      * 是否查询分页时必须要排序字段
      * 大部分数据库都不是必须的 sqlserver 必须要
+     * <p>
+     * limit require order by
      *
      * @return
      */
     public boolean isSelectLimitMustOrderBy() {
+        return false;
+    }
+
+    /**
+     * 查询使用having时是否必须带入group by
+     * <p>
+     * having require group by
+     *
+     * @return
+     */
+    public boolean isSelectHavingMustGroupBy() {
         return false;
     }
 }

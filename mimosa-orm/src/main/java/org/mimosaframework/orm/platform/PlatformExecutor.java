@@ -718,6 +718,20 @@ public class PlatformExecutor {
         select.from().table(mappingTable.getMappingTableName());
         if (logicWraps != null) select.where();
         this.buildWraps(select, mappingTable, logicWraps, false);
+
+        // 如果having要求必须传入group by那么就传入主键
+        if (havingFields != null && havingFields.size() > 0
+                && (groups == null || groups.size() == 0)
+                && dialect.isSelectHavingMustGroupBy()) {
+            groups = new ArrayList();
+            List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
+            if (pks != null) {
+                for (MappingField field : pks) {
+                    groups.add(field.getMappingColumnName());
+                }
+            }
+        }
+
         if (groups != null && groups.size() > 0) {
             select.groupBy();
             for (Object field : groups) {

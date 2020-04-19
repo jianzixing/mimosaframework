@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.platform.sqlite;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
@@ -120,6 +121,7 @@ public class SqlitePlatformDialect extends PlatformDialect {
                                                 TableConstraintStructure structure = new TableConstraintStructure();
                                                 structure.setTableName(tableName);
                                                 structure.setColumnName(key.text);
+                                                structure.setType("P");
                                                 constraintStructures.add(structure);
                                             }
                                         }
@@ -191,10 +193,36 @@ public class SqlitePlatformDialect extends PlatformDialect {
                         indexStructure.setTableSchema(o.getString("TABSCHEMA"));
                         indexStructure.setIndexName(o.getString("name"));
                         indexStructure.setTableName(o.getString("tbl_name"));
-                        indexStructure.setType(o.getString("type"));
+                        indexStructure.setType("D");
                         indexStructure.setColumnName(o.getString("COLNAME"));
-                        indexStructure.setComment(o.getString("COMMENT"));
                         indexStructures.add(indexStructure);
+
+                        String sql = o.getString("sql");
+                        if (StringTools.isNotEmpty(sql)) {
+                            List<AnalysisItem> items = new SQLAnalysis().analysis(sql);
+                            for (AnalysisItem item : items) {
+                                if (item.type == AnalysisType.CHILD) {
+                                    List<AnalysisItem> fields = item.child;
+                                    if (fields != null) {
+                                        int m = 0;
+                                        for (AnalysisItem f : fields) {
+                                            if (m == 0) {
+                                                indexStructure.setColumnName(f.text);
+                                            } else {
+                                                TableIndexStructure newS = indexStructure.clone();
+                                                newS.setColumnName(f.text);
+                                                indexStructures.add(newS);
+                                            }
+                                            m++;
+                                        }
+                                    }
+                                } else {
+                                    if (item.text.equalsIgnoreCase("unique")) {
+                                        indexStructure.setType("U");
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -316,6 +344,11 @@ public class SqlitePlatformDialect extends PlatformDialect {
 
     @Override
     public boolean isSupportGeneratedKeys() {
+        return true;
+    }
+
+    @Override
+    public boolean isSelectHavingMustGroupBy() {
         return true;
     }
 

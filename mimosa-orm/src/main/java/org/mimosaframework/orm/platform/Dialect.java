@@ -44,4 +44,6 @@ public interface Dialect {
     boolean isSupportGeneratedKeys();
 
     boolean isSelectLimitMustOrderBy();
+
+    boolean isSelectHavingMustGroupBy();
 }

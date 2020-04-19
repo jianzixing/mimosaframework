@@ -89,7 +89,11 @@ public abstract class SqliteStampCommonality extends PlatformStampCommonality {
                 }
             }
 
-            return RS + columnName + RE;
+            if (StringTools.isNotEmpty(tableAliasName)) {
+                return tableAliasName + "." + RS + columnName + RE;
+            } else {
+                return RS + columnName + RE;
+            }
         }
         return null;
     }
