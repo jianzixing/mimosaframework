@@ -23,7 +23,8 @@ public class SqliteStampStructure implements StampCombineBuilder {
                             "0 AS COUNT," +
                             "NULL AS LASTUSED," +
                             "NULL AS CREATE_TIME," +
-                            "NULL AS COMMENT " +
+                            "NULL AS COMMENT," +
+                            "sql AS SQL " +
                             "FROM SQLITE_MASTER WHERE TYPE='table'"
             );
         }
@@ -31,7 +32,8 @@ public class SqliteStampStructure implements StampCombineBuilder {
             sb.append("pragma table_info (" + this.getTableNames(structure) + ")");
         }
         if (structure.type == 2) {
-
+            sb.append("select * from sqlite_master where type='index' " +
+                    "and tbl_name in (" + this.getTableNames(structure) + ")");
         }
         return new SQLBuilderCombine(sb.toString(), null);
     }

@@ -76,20 +76,17 @@ public abstract class PlatformDialect implements Dialect {
             List<ModelObject> list = (List<ModelObject>) result;
             for (ModelObject o : list) {
                 String tableName = o.getString("TABNAME");
-                for (String ctn : classTableNames) {
-                    if (ctn.equalsIgnoreCase(tableName)) {
-                        TableStructure tableStructure = new TableStructure();
-                        tableStructure.setTableSchema(o.getString("TABSCHEMA"));
-                        tableStructure.setTableName(o.getString("TABNAME"));
-                        tableStructure.setType(o.getString("TYPE"));
-                        tableStructure.setCount(o.getLongValue("COUNT"));
-                        tableStructure.setLastUsed(o.get("LASTUSED"));
-                        tableStructure.setComment(o.getString("COMMENT"));
-                        tableStructure.setCreateTime(o.get("CREATE_TIME"));
-                        tableStructures.add(tableStructure);
-                        tables.add(tableStructure.getTableName());
-                        break;
-                    }
+                TableStructure tableStructure = new TableStructure();
+                tableStructure.setTableSchema(o.getString("TABSCHEMA"));
+                tableStructure.setTableName(o.getString("TABNAME"));
+                tableStructure.setType(o.getString("TYPE"));
+                tableStructure.setCount(o.getLongValue("COUNT"));
+                tableStructure.setLastUsed(o.get("LASTUSED"));
+                tableStructure.setComment(o.getString("COMMENT"));
+                tableStructure.setCreateTime(o.get("CREATE_TIME"));
+                tableStructures.add(tableStructure);
+                if (classTableNames != null && classTableNames.contains(tableName.toLowerCase())) {
+                    tables.add(tableStructure.getTableName());
                 }
             }
 

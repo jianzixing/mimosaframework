@@ -48,7 +48,7 @@ public class PlatformExecutor {
         List<MappingTable> mappingTables = mappingGlobalWrapper.getMappingTables();
         if (mappingTables != null && mappingTables.size() > 0) {
             for (MappingTable mappingTable : mappingTables) {
-                existTableNames.add(mappingTable.getMappingTableName());
+                existTableNames.add(mappingTable.getMappingTableName().toLowerCase());
             }
         }
         List<TableStructure> structures = dialect.getTableStructures(existTableNames);

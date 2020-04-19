@@ -4,18 +4,19 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.platform.sqlite.analysis.AnalysisItem;
+import org.mimosaframework.orm.platform.sqlite.analysis.AnalysisType;
+import org.mimosaframework.orm.platform.sqlite.analysis.SQLAnalysis;
 import org.mimosaframework.orm.sql.StructureBuilder;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.utils.LOBLoader;
 
-import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class SqlitePlatformDialect extends PlatformDialect {
     public SqlitePlatformDialect() {
@@ -53,44 +54,135 @@ public class SqlitePlatformDialect extends PlatformDialect {
             List<ModelObject> list = (List<ModelObject>) result;
             for (ModelObject o : list) {
                 String tableName = o.getString("TABNAME");
-                for (String ctn : classTableNames) {
-                    if (ctn.equalsIgnoreCase(tableName)) {
-                        TableStructure tableStructure = new TableStructure();
-                        tableStructure.setTableSchema(o.getString("TABSCHEMA"));
-                        tableStructure.setTableName(o.getString("TABNAME"));
-                        tableStructure.setType(o.getString("TYPE"));
-                        tableStructure.setCount(o.getLongValue("COUNT"));
-                        tableStructure.setLastUsed(o.get("LASTUSED"));
-                        tableStructure.setComment(o.getString("COMMENT"));
-                        tableStructure.setCreateTime(o.get("CREATE_TIME"));
-                        tableStructures.add(tableStructure);
-                        tables.add(tableStructure.getTableName());
-                        break;
-                    }
+                TableStructure tableStructure = new TableStructure();
+                tableStructure.setTableSchema(o.getString("TABSCHEMA"));
+                tableStructure.setTableName(o.getString("TABNAME"));
+                tableStructure.setType(o.getString("TYPE"));
+                tableStructure.setCount(o.getLongValue("COUNT"));
+                tableStructure.setLastUsed(o.get("LASTUSED"));
+                tableStructure.setComment(o.getString("COMMENT"));
+                tableStructure.setCreateTime(o.get("CREATE_TIME"));
+                tableStructures.add(tableStructure);
+                if (classTableNames != null && classTableNames.contains(tableName.toLowerCase())) {
+                    tables.add(tableStructure.getTableName());
                 }
             }
 
+
             if (tableStructures != null && tableStructures.size() > 0) {
                 List<TableColumnStructure> columnStructures = new ArrayList<>();
-                for (String tableName : tables) {
-                    StampAction column = structureBuilder.column(schema, Arrays.asList(tableName)).compile();
-                    Object resultColumn = this.runner(column);
-                    LOBLoader.close();
-                    if (resultColumn instanceof List) {
-                        List<ModelObject> listColumn = (List<ModelObject>) resultColumn;
-                        for (ModelObject o : listColumn) {
-                            TableColumnStructure columnStructure = new TableColumnStructure();
-                            columnStructure.setTableSchema(o.getString("TABSCHEMA"));
-                            columnStructure.setTableName(o.getString("TABNAME"));
-                            columnStructure.setColumnName(o.getString("COLNAME"));
-                            columnStructure.setTypeName(o.getString("TYPENAME"));
-                            columnStructure.setLength(o.getIntValue("LENGTH"));
-                            columnStructure.setScale(o.getIntValue("SCALE"));
-                            columnStructure.setDefaultValue(o.getString("DEFAULT"));
-                            columnStructure.setIsNullable(o.getString("IS_NULLABLE"));
-                            columnStructure.setAutoIncrement(o.getString("AUTO_INCREMENT"));
-                            columnStructure.setComment(o.getString("COMMENT"));
-                            columnStructures.add(columnStructure);
+                List<TableConstraintStructure> constraintStructures = new ArrayList<>();
+                for (ModelObject o : list) {
+                    String sql = o.getString("SQL");
+                    List<AnalysisItem> items = new SQLAnalysis().analysis(sql);
+                    int c = 0;
+                    List<AnalysisItem> fields = null;
+                    String tableName = null;
+                    for (int j = 0; j < items.size(); j++) {
+                        AnalysisItem item = items.get(j);
+                        if (item.type != AnalysisType.CHILD) {
+                            if (item.text.equalsIgnoreCase("create")) c++;
+                            if (item.text.equalsIgnoreCase("table")) {
+                                c++;
+                                tableName = items.get(j + 1).text;
+                            }
+                        }
+                        if (item.type == AnalysisType.CHILD) {
+                            fields = item.child;
+                            break;
+                        }
+                    }
+                    if (c == 2) {
+                        TableColumnStructure columnStructure = new TableColumnStructure();
+                        columnStructure.setTableName(tableName);
+                        columnStructure.setAutoIncrement("N");
+                        columnStructures.add(columnStructure);
+                        int index = 0;
+                        String columnName = null;
+                        for (int total = 0; total < fields.size(); total++) {
+                            AnalysisItem item = fields.get(total);
+                            if (item.type != AnalysisType.CHILD && item.text.equalsIgnoreCase(",")) {
+                                if ((fields.size() > total + 2)
+                                        && fields.get(total + 1).text.equalsIgnoreCase("primary")
+                                        && fields.get(total + 2).text.equalsIgnoreCase("key")) {
+
+                                } else {
+                                    columnStructure = new TableColumnStructure();
+                                    columnStructure.setTableName(tableName);
+                                    columnStructure.setAutoIncrement("N");
+                                    columnStructures.add(columnStructure);
+                                }
+                                index = 0;
+                                columnName = null;
+                            } else {
+                                if (index == 0 && item.text.equalsIgnoreCase("primary")
+                                        && fields.get(total + 1).text.equalsIgnoreCase("key")) {
+                                    AnalysisItem keys = fields.get(total + 2);
+                                    if (keys.type == AnalysisType.CHILD) {
+                                        for (AnalysisItem key : keys.child) {
+                                            if (!key.text.equalsIgnoreCase(",")) {
+                                                TableConstraintStructure structure = new TableConstraintStructure();
+                                                structure.setTableName(tableName);
+                                                structure.setColumnName(key.text);
+                                                constraintStructures.add(structure);
+                                            }
+                                        }
+                                        index += 2;
+                                        total += 2;
+                                    }
+                                } else {
+                                    if (index == 0) {
+                                        columnStructure.setColumnName(item.text);
+                                        columnName = item.text;
+                                    } else if (index == 1) {
+                                        columnStructure.setTypeName(item.text);
+                                    } else {
+                                        if (item.type == AnalysisType.CHILD) {
+                                            List<AnalysisItem> lens = item.child;
+                                            if (lens.size() == 1) {
+                                                if (lens.get(0).text.equals("age")) {
+                                                    System.out.println();
+                                                }
+                                                columnStructure.setLength(Integer.parseInt(lens.get(0).text));
+                                            } else if (lens.size() >= 2) {
+                                                columnStructure.setLength(Integer.parseInt(lens.get(0).text));
+                                                columnStructure.setScale(Integer.parseInt(lens.get(lens.size() - 1).text));
+                                            }
+                                        } else if (item.text.equalsIgnoreCase("constraint")) {
+                                            String consName = fields.get(total + 1).text;
+                                            index += 1;
+                                            total += 1;
+                                        } else if (item.text.equalsIgnoreCase("references")) {
+                                            String foreignTableName = fields.get(total + 1).text;
+                                            AnalysisItem foreignColumnName = fields.get(total + 2);
+
+                                            index += 2;
+                                            total += 2;
+                                        } else if (item.text.equalsIgnoreCase("null")) {
+                                            if (fields.get(total - 1).text.equalsIgnoreCase("not")) {
+                                                columnStructure.setIsNullable("N");
+                                            } else {
+                                                columnStructure.setIsNullable("Y");
+                                            }
+                                        } else if (item.text.equalsIgnoreCase("key")) {
+                                            if (fields.get(total - 1).text.equalsIgnoreCase("primary")) {
+                                                TableConstraintStructure structure = new TableConstraintStructure();
+                                                structure.setTableName(tableName);
+                                                structure.setColumnName(columnName);
+                                                structure.setType("P");
+                                            } else {
+
+                                            }
+                                        } else if (item.text.equalsIgnoreCase("default")) {
+                                            String value = fields.get(total + 1).text;
+                                            columnStructure.setDefaultValue(value);
+                                        } else if (item.text.equalsIgnoreCase("autoincrement")) {
+                                            columnStructure.setAutoIncrement("Y");
+                                        }
+                                    }
+                                }
+                                index++;
+                            }
                         }
                     }
                 }
@@ -103,30 +195,12 @@ public class SqlitePlatformDialect extends PlatformDialect {
                     for (ModelObject o : listIndex) {
                         TableIndexStructure indexStructure = new TableIndexStructure();
                         indexStructure.setTableSchema(o.getString("TABSCHEMA"));
-                        indexStructure.setIndexName(o.getString("INDNAME"));
-                        indexStructure.setTableName(o.getString("TABNAME"));
-                        indexStructure.setType(o.getString("TYPE"));
+                        indexStructure.setIndexName(o.getString("name"));
+                        indexStructure.setTableName(o.getString("tbl_name"));
+                        indexStructure.setType(o.getString("type"));
                         indexStructure.setColumnName(o.getString("COLNAME"));
                         indexStructure.setComment(o.getString("COMMENT"));
                         indexStructures.add(indexStructure);
-                    }
-                }
-
-                StampAction constraint = structureBuilder.constraint(schema, tables).compile();
-                List<TableConstraintStructure> constraintStructures = new ArrayList<>();
-                Object resultConstraint = this.runner(constraint);
-                if (resultConstraint instanceof List) {
-                    List<ModelObject> listConstraint = (List<ModelObject>) resultConstraint;
-                    for (ModelObject o : listConstraint) {
-                        TableConstraintStructure constraintStructure = new TableConstraintStructure();
-                        constraintStructure.setTableSchema(o.getString("TABSCHEMA"));
-                        constraintStructure.setConstraintName(o.getString("CONSNAME"));
-                        constraintStructure.setTableName(o.getString("TABNAME"));
-                        constraintStructure.setColumnName(o.getString("COLNAME"));
-                        constraintStructure.setForeignTableName(o.getString("FGNTABNAME"));
-                        constraintStructure.setForeignColumnName(o.getString("FGNCOLNAME"));
-                        constraintStructure.setType(o.getString("TYPE"));
-                        constraintStructures.add(constraintStructure);
                     }
                 }
 

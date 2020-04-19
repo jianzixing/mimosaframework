@@ -100,6 +100,9 @@ public class TableStructure {
             for (TableColumnStructure structure : columnStructures) {
                 boolean eq = false;
                 for (TableColumnStructure n : newColumns) {
+                    if (structure == null || structure.getColumnName() == null){
+                        System.out.println();
+                    }
                     if (structure.getColumnName().equalsIgnoreCase(n.getColumnName())) {
                         eq = true;
                         break;

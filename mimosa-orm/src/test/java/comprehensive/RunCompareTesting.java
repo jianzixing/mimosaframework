@@ -15,13 +15,13 @@ public class RunCompareTesting {
     @Test
     public void runAll() throws ContextException, SQLException {
         mimosaDataSource = new MimosaDataSource(RunDataSourceBuilder.currDataSource(), "mater");
-//        this.test1();
+        this.test1();
 //        this.test2();
 //        this.test3();
 //        this.test4();
 //        this.test5();
 //        this.test7();
-        this.test8();
+//        this.test8();
     }
 
     public StartCompareMapping getMapping(MappingLevel level, MappingTable mappingTable) {
