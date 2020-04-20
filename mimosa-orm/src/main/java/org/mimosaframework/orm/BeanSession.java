@@ -42,7 +42,7 @@ public interface BeanSession extends Closeable {
 
     <T> Paging<T> paging(Query query);
 
-    Map<String, Object> calculate(Function function);
+    AutoResult calculate(Function function);
 
     <T> ZipperTable<T> getZipperTable(Class<T> c);
 }

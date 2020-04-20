@@ -103,8 +103,12 @@ public class SingleZipperTable<T> implements ZipperTable<T> {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            context.getModelObjectConvertKey().reconvert(c, object);
-            return (T) object;
+            object = context.getModelObjectConvertKey().reconvert(c, object);
+            if (c.isEnum()) {
+                return (T) object;
+            } else {
+                return (T) ModelObject.toJavaObject(object, c);
+            }
         }
 
         @Override

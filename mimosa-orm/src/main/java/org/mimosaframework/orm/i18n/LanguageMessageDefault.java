@@ -276,6 +276,9 @@ public class LanguageMessageDefault implements MessagesRegister {
         // DefaultSQLSelectBuilder
         words.put("select_from_select_must", "select的from子句必须是select语句");
 
+        // MimosaBeanSessionTemplate
+        words.put("bean_save_not_json", "使用的对象不是映射对象");
+
         messageWords.add(new MessageWords(PROJECT, words));
     }
 

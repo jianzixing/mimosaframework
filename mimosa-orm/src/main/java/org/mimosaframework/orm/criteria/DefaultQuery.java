@@ -15,8 +15,8 @@ public class DefaultQuery implements LogicQuery {
      * 包含所有的join查询，每个join查询拥有独立的父子结构，
      * 用于查询时数据包装。
      */
-    private List<Join> joins = new LinkedList<Join>();
-    private List<Order> orders = new LinkedList<Order>();
+    private Set<Join> joins = new LinkedHashSet<>();
+    private Set<Order> orders = new LinkedHashSet<>();
     private Map<Class, List<String>> fields = new HashMap<>();
     private Map<Class, List<String>> excludes = new HashMap<>();
 
@@ -145,13 +145,13 @@ public class DefaultQuery implements LogicQuery {
         return logicWraps;
     }
 
-    public List<Join> getJoins() {
+    public Set<Join> getJoins() {
         return joins;
     }
 
-    public List<Join> getTopJoin() {
+    public Set<Join> getTopJoin() {
         if (this.joins != null && this.joins.size() > 0) {
-            List<Join> joins = new ArrayList<>();
+            Set<Join> joins = new LinkedHashSet<>();
             for (Join join : this.joins) {
                 DefaultJoin j = (DefaultJoin) join;
                 if (j.getParentJoin() == null) {
@@ -162,11 +162,11 @@ public class DefaultQuery implements LogicQuery {
         return null;
     }
 
-    public void setJoins(List<Join> joins) {
+    public void setJoins(Set<Join> joins) {
         this.joins = joins;
     }
 
-    public List<Order> getOrders() {
+    public Set<Order> getOrders() {
         return orders;
     }
 
@@ -434,7 +434,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     public void clearLeftJoin() {
-        joins = new ArrayList<Join>(1);
+        joins = new LinkedHashSet<>(1);
     }
 
     public void removeLimit() {
@@ -445,7 +445,7 @@ public class DefaultQuery implements LogicQuery {
         this.logicWraps = null;
     }
 
-    private void checkJoinHasOnFilter(List<Join> joins) {
+    private void checkJoinHasOnFilter(Set<Join> joins) {
         if (joins != null
                 && joins.size() > 0) {
             for (Join join : joins) {
