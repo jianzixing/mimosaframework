@@ -60,16 +60,6 @@ public class SessionTemplateTesting {
     }
 
     @Test
-    public void testAlter2() throws Exception {
-        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
-                .change().oldColumn(TableUser.createdTime)
-                .newColumn("created_time2").datetime().comment("aaa").autonomously());
-
-        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
-                .rename().column().oldColumn("created_time2").to().newColumn("created_time").autonomously());
-    }
-
-    @Test
     public void testAlter3() throws Exception {
         SQLAutonomously sqlAutonomously = new SQLAutonomously(
                 AlterFactory.alter().table(TableUser.class)
@@ -110,8 +100,7 @@ public class SessionTemplateTesting {
         template.getAutonomously(AlterFactory.alter().table(TableUser.class)
                 .add().index().name("a").columns(TableUser.address, TableUser.age)
                 .comment("aaa").autonomously());
-        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
-                .drop().index().name("a").autonomously());
+        template.getAutonomously(DropFactory.drop().index().name("a").on().table(TableUser.class).autonomously());
     }
 
     @Test
@@ -122,11 +111,7 @@ public class SessionTemplateTesting {
                         .comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-
-        sqlAutonomously = new SQLAutonomously(
-                AlterFactory.alter().table(TableUser.class)
-                        .drop().index().name("b")
-        );
+        template.getAutonomously(DropFactory.drop().index().name("b").on().table(TableUser.class).autonomously());
         autoResult = template.getAutonomously(sqlAutonomously);
     }
 
@@ -139,11 +124,7 @@ public class SessionTemplateTesting {
                         .comment("aaa")
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-
-        sqlAutonomously = new SQLAutonomously(
-                AlterFactory.alter().table(TableUser.class)
-                        .drop().index().name("c")
-        );
+        template.getAutonomously(DropFactory.drop().index().name("c").on().table(TableUser.class).autonomously());
         autoResult = template.getAutonomously(sqlAutonomously);
     }
 
@@ -154,11 +135,7 @@ public class SessionTemplateTesting {
                         .add().index().name("pk").column(TableUser.id)
         );
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-
-        sqlAutonomously = new SQLAutonomously(
-                AlterFactory.alter().table(TableUser.class)
-                        .drop().index().name("pk")
-        );
+        template.getAutonomously(DropFactory.drop().index().name("pk").on().table(TableUser.class).autonomously());
         template.getAutonomously(sqlAutonomously);
     }
 

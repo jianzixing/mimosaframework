@@ -66,21 +66,6 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
             }
         }
 
-        if (item.action == KeyAction.CHANGE) {
-            sb.setLength(0);
-            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-            String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn);
-            String newColumnName = this.getColumnName(wrapper, alter, item.column);
-
-            this.buildAlterColumn(wrapper, alter, item, 2);
-            if (!oldColumnName.equalsIgnoreCase(newColumnName)) {
-                this.getBuilders().add(new ExecuteImmediate("ALTER TABLE " + tableName + " " +
-                        "RENAME COLUMN " + oldColumnName + " TO " + newColumnName));
-            }
-            this.getBuilders().add(new ExecuteImmediate().setProcedure
-                    ("call sysproc.admin_cmd ('reorg table db2inst1." + tableName + "')"));
-        }
-
         if (item.action == KeyAction.MODIFY) {
             sb.setLength(0);
             String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
@@ -99,43 +84,11 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" COLUMN");
                 sb.append(" " + this.getColumnName(wrapper, alter, item.column));
             }
-            if (item.dropType == KeyAlterDropType.INDEX) {
-                sb.append(" DROP");
-                sb.append(" INDEX");
-                sb.append(" " + RS + item.indexName + RE);
-            }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.append("ALTER TABLE");
                 sb.append(" " + tableName);
                 sb.append(" DROP");
                 sb.append(" PRIMARY KEY");
-            }
-        }
-
-        if (item.action == KeyAction.RENAME) {
-            sb.append("ALTER TABLE");
-            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-            sb.append(" " + tableName);
-            sb.append(" RENAME");
-            if (item.renameType == KeyAlterRenameType.COLUMN) {
-                sb.append(" COLUMN");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.oldColumn));
-                sb.append(" TO");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.column));
-            }
-            if (item.renameType == KeyAlterRenameType.INDEX) {
-                sb.append(" INDEX");
-                sb.append(" " + item.oldName);
-                sb.append(" TO");
-                sb.append(" " + item.newName);
-            }
-            if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.setLength(0);
-                sb.append("RENAME TABLE");
-                sb.append(" " + tableName + " TO");
-                if (StringTools.isNotEmpty(item.newName)) {
-                    sb.append(" " + item.newName.toUpperCase());
-                }
             }
         }
 

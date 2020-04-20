@@ -5,6 +5,7 @@ import org.mimosaframework.orm.sql.create.*;
 import org.mimosaframework.orm.sql.delete.*;
 import org.mimosaframework.orm.sql.drop.*;
 import org.mimosaframework.orm.sql.insert.*;
+import org.mimosaframework.orm.sql.rename.*;
 import org.mimosaframework.orm.sql.select.*;
 import org.mimosaframework.orm.sql.update.*;
 
@@ -18,8 +19,6 @@ public class SQLActionFactory {
                         AlterAddAnyBuilder.class,
                         AlterAddBuilder.class,
                         AlterAnyBuilder.class,
-                        AlterChangeBuilder.class,
-                        AlterChangeNextBuilder.class,
                         AlterColumnAssistBuilder.class,
                         AlterColumnsBuilder.class,
                         AlterDatabaseBuilder.class,
@@ -27,10 +26,6 @@ public class SQLActionFactory {
                         AlterDropBuilder.class,
                         AlterModifyBuilder.class,
                         AlterModifyNextBuilder.class,
-                        AlterNewColumnBuilder.class,
-                        AlterOldColumnBuilder.class,
-                        AlterRenameAnyBuilder.class,
-                        AlterRenameBuilder.class,
                         AlterTableAnyBuilder.class,
                         AlterTableOptionBuilder.class,
                         AlterPKColumnBuilder.class
@@ -39,6 +34,22 @@ public class SQLActionFactory {
         );
 
         return (AlterAnyBuilder) invoker.getInterface(AlterBuilder.class).alter();
+    }
+
+    public static RenameAnyBuilder rename() {
+        RenameBuilder<RenameAnyBuilder> renameBuilder = new DefaultSQLRenameBuilder();
+        SQLProxyInvoker invoker = new SQLProxyInvoker(
+                new Class[]{
+                        RedefineRenameBuilder.class,
+                        RenameTableNameBuilder.class,
+                        RenameStartBuilder.class,
+                        RenameAnyBuilder.class,
+                        UnifyBuilder.class
+                },
+                renameBuilder
+        );
+
+        return (RenameAnyBuilder) invoker.getInterface(RenameBuilder.class).rename();
     }
 
     public static CreateAnyBuilder create() {

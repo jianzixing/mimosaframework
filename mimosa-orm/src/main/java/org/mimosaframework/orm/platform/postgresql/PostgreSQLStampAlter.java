@@ -52,18 +52,6 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             }
         }
 
-        if (item.action == KeyAction.CHANGE) {
-            String columnName = this.getColumnName(wrapper, alter, item.column);
-            String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn);
-            this.buildAlterColumn(sb, wrapper, alter, item, 2);
-            if (!columnName.equalsIgnoreCase(oldColumnName)) {
-                this.getBuilders().add(new ExecuteImmediate().setProcedure(
-                        "ALTER TABLE " + tableName + " RENAME " +
-                                oldColumnName + " TO " + columnName
-                ));
-            }
-        }
-
         if (item.action == KeyAction.MODIFY) {
             this.buildAlterColumn(sb, wrapper, alter, item, 3);
         }
@@ -73,12 +61,6 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             if (item.dropType == KeyAlterDropType.COLUMN) {
                 sb.append(" COLUMN");
                 sb.append(" " + this.getColumnName(wrapper, alter, item.column));
-            }
-            if (item.dropType == KeyAlterDropType.INDEX) {
-                sb.setLength(0);
-                sb.append("DROP");
-                sb.append(" INDEX");
-                sb.append(" " + item.indexName);
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.setLength(0);
@@ -90,25 +72,6 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                 "AND B.RELNAME = '" + outTableName + "' " +
                                 "AND A.CONTYPE = 'p' LIMIT 1)"));
                 sb.append("EXECUTE 'ALTER TABLE " + tableName + " DROP CONSTRAINT '||PK_INDEX_NAME");
-            }
-        }
-
-        if (item.action == KeyAction.RENAME) {
-            sb.append(" RENAME");
-            if (item.renameType == KeyAlterRenameType.COLUMN) {
-                sb.append(" COLUMN");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.oldColumn));
-                sb.append(" TO");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.column));
-            }
-            if (item.renameType == KeyAlterRenameType.INDEX) {
-                sb.append(" INDEX");
-                sb.append(" " + item.oldName);
-                sb.append(" TO");
-                sb.append(" " + item.newName);
-            }
-            if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" TO " + item.newName);
             }
         }
 

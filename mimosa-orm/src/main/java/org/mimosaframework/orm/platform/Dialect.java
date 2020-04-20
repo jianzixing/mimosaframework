@@ -23,6 +23,8 @@ public interface Dialect {
 
     SQLBuilderCombine alter(StampAlter alter);
 
+    SQLBuilderCombine rename(StampRename alter);
+
     SQLBuilderCombine create(StampCreate create);
 
     SQLBuilderCombine drop(StampDrop drop);

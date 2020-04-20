@@ -66,6 +66,13 @@ public class DB2PlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public SQLBuilderCombine rename(StampRename alter) {
+        StampCombineBuilder builder = new DB2StampRename();
+        SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
+        return combine;
+    }
+
+    @Override
     public SQLBuilderCombine create(StampCreate create) {
         StampCombineBuilder builder = new DB2StampCreate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);

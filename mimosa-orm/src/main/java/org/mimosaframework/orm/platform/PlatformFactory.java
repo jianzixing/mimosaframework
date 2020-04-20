@@ -13,6 +13,7 @@ public class PlatformFactory {
     public static StampCombineBuilder getStampAlterBuilder(DatabaseType databaseTypes, StampAction stampAction) {
         if (databaseTypes == DatabaseType.DB2) {
             if (stampAction instanceof StampAlter) return new DB2StampAlter();
+            if (stampAction instanceof StampRename) return new DB2StampRename();
             if (stampAction instanceof StampCreate) return new DB2StampCreate();
             if (stampAction instanceof StampDelete) return new DB2StampDelete();
             if (stampAction instanceof StampDrop) return new DB2StampDrop();
@@ -22,6 +23,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampStructure) return new DB2StampStructure();
         } else if (databaseTypes == DatabaseType.MYSQL) {
             if (stampAction instanceof StampAlter) return new MysqlStampAlter();
+            if (stampAction instanceof StampRename) return new MysqlStampRename();
             if (stampAction instanceof StampCreate) return new MysqlStampCreate();
             if (stampAction instanceof StampDelete) return new MysqlStampDelete();
             if (stampAction instanceof StampDrop) return new MysqlStampDrop();
@@ -31,6 +33,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampStructure) return new MysqlStampStructure();
         } else if (databaseTypes == DatabaseType.ORACLE) { // 没有schema概念
             if (stampAction instanceof StampAlter) return new OracleStampAlter();
+            if (stampAction instanceof StampRename) return new OracleStampRename();
             if (stampAction instanceof StampCreate) return new OracleStampCreate();
             if (stampAction instanceof StampDelete) return new OracleStampDelete();
             if (stampAction instanceof StampDrop) return new OracleStampDrop();
@@ -40,6 +43,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampStructure) return new OracleStampStructure();
         } else if (databaseTypes == DatabaseType.POSTGRESQL) {
             if (stampAction instanceof StampAlter) return new PostgreSQLStampAlter();
+            if (stampAction instanceof StampRename) return new PostgreSQLStampRename();
             if (stampAction instanceof StampCreate) return new PostgreSQLStampCreate();
             if (stampAction instanceof StampDelete) return new PostgreSQLStampDelete();
             if (stampAction instanceof StampDrop) return new PostgreSQLStampDrop();
@@ -49,6 +53,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampStructure) return new PostgreSQLStampStructure();
         } else if (databaseTypes == DatabaseType.SQLITE) {
             if (stampAction instanceof StampAlter) return new SqliteStampAlter();
+            if (stampAction instanceof StampRename) return new SqliteStampRename();
             if (stampAction instanceof StampCreate) return new SqliteStampCreate();
             if (stampAction instanceof StampDelete) return new SqliteStampDelete();
             if (stampAction instanceof StampDrop) return new SqliteStampDrop();
@@ -58,6 +63,7 @@ public class PlatformFactory {
             if (stampAction instanceof StampStructure) return new SqliteStampStructure();
         } else if (databaseTypes == DatabaseType.SQL_SERVER) {
             if (stampAction instanceof StampAlter) return new SQLServerStampAlter();
+            if (stampAction instanceof StampRename) return new SQLServerStampRename();
             if (stampAction instanceof StampCreate) return new SQLServerStampCreate();
             if (stampAction instanceof StampDelete) return new SQLServerStampDelete();
             if (stampAction instanceof StampDrop) return new SQLServerStampDrop();

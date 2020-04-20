@@ -55,13 +55,7 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                 this.buildAlterIndex(sb, wrapper, alter, item);
             }
         }
-
-        if (item.action == KeyAction.CHANGE) {
-            sb.setLength(0);
-            logger.warn("sqlite can't modify column");
-            return;
-        }
-
+        
         if (item.action == KeyAction.MODIFY) {
             sb.setLength(0);
             logger.warn("sqlite can't modify column");
@@ -73,30 +67,9 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                 sb.setLength(0);
                 logger.warn("sqlite can't drop column");
             }
-            if (item.dropType == KeyAlterDropType.INDEX) {
-                sb.append(" DROP");
-                sb.append(" INDEX");
-                sb.append(" " + item.indexName);
-            }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.setLength(0);
                 logger.warn("sqlite can't drop primary key");
-            }
-        }
-
-        if (item.action == KeyAction.RENAME) {
-            if (item.renameType == KeyAlterRenameType.COLUMN) {
-                logger.warn("sqlite can't modify column name");
-            }
-            if (item.renameType == KeyAlterRenameType.INDEX) {
-                logger.warn("sqlite can't modify index name");
-            }
-            if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(" RENAME");
-                sb.append(" TO " + item.newName);
             }
         }
 

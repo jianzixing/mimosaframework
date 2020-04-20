@@ -3,7 +3,6 @@ package org.mimosaframework.orm.platform.mysql;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.PlatformDialect;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.stamp.*;
 
@@ -61,12 +60,6 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             }
         }
 
-        if (item.action == KeyAction.CHANGE) {
-            sb.append(" CHANGE");
-            sb.append(" " + this.getColumnName(wrapper, alter, item.oldColumn));
-            this.buildAlterColumn(sb, wrapper, alter, item);
-        }
-
         if (item.action == KeyAction.MODIFY) {
             sb.append(" MODIFY");
             this.buildAlterColumn(sb, wrapper, alter, item);
@@ -78,31 +71,8 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
                 sb.append(" COLUMN");
                 sb.append(" " + this.getColumnName(wrapper, alter, item.column));
             }
-            if (item.dropType == KeyAlterDropType.INDEX) {
-                sb.append(" INDEX");
-                sb.append(" " + item.indexName);
-            }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.append(" PRIMARY KEY");
-            }
-        }
-
-        if (item.action == KeyAction.RENAME) {
-            sb.append(" RENAME");
-            if (item.renameType == KeyAlterRenameType.COLUMN) {
-                sb.append(" COLUMN");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.oldColumn));
-                sb.append(" TO");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.column));
-            }
-            if (item.renameType == KeyAlterRenameType.INDEX) {
-                sb.append(" INDEX");
-                sb.append(" " + item.oldName);
-                sb.append(" TO");
-                sb.append(" " + item.newName);
-            }
-            if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" " + item.newName);
             }
         }
 

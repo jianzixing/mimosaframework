@@ -65,6 +65,13 @@ public class SQLServerPlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public SQLBuilderCombine rename(StampRename alter) {
+        StampCombineBuilder builder = new SQLServerStampRename();
+        SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
+        return combine;
+    }
+
+    @Override
     public SQLBuilderCombine create(StampCreate create) {
         StampCombineBuilder builder = new SQLServerStampCreate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);

@@ -1,5 +1,5 @@
 package org.mimosaframework.orm.sql.stamp;
 
-public enum KeyAlterRenameType {
+public enum KeyRenameType {
     COLUMN, INDEX, TABLE
 }

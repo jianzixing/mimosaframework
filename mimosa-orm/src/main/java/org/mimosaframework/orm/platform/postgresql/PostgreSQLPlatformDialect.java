@@ -76,6 +76,13 @@ public class PostgreSQLPlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public SQLBuilderCombine rename(StampRename alter) {
+        StampCombineBuilder builder = new PostgreSQLStampRename();
+        SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
+        return combine;
+    }
+
+    @Override
     public SQLBuilderCombine create(StampCreate create) {
         StampCombineBuilder builder = new PostgreSQLStampCreate();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);

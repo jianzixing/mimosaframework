@@ -49,20 +49,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 this.buildAlterIndex(sb, wrapper, alter, item);
             }
         }
-
-        if (item.action == KeyAction.CHANGE) {
-            String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
-            String columnName = this.getColumnName(wrapper, alter, item.column, false);
-            String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn, false);
-            this.buildAlterColumn(sb, wrapper, alter, item, 2);
-            if (!columnName.equalsIgnoreCase(oldColumnName)) {
-                this.getBuilders().add(new ExecuteImmediate().setProcedure(
-                        "EXEC SP_RENAME \"" + tableOutName + "." +
-                                oldColumnName + "\", \"" + columnName + "\", \"COLUMN\""
-                ));
-            }
-        }
-
+        
         if (item.action == KeyAction.MODIFY) {
             this.buildAlterColumn(sb, wrapper, alter, item, 3);
         }
@@ -76,12 +63,6 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 sb.append(" COLUMN");
                 sb.append(" " + this.getColumnName(wrapper, alter, item.column));
             }
-            if (item.dropType == KeyAlterDropType.INDEX) {
-                sb.append("DROP");
-                sb.append(" INDEX");
-                sb.append(" " + item.indexName);
-                sb.append(" ON " + tableName);
-            }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
                 this.getDeclares().add("@PK_INDEXNAME VARCHAR(MAX)");
@@ -94,31 +75,6 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                 "WHERE A.OBJECT_ID = OBJECT_ID('" + tableOutName + "') " +
                                 "AND A.IS_PRIMARY_KEY = 1)"));
                 sb.append("exec ('ALTER TABLE " + tableName + " DROP CONSTRAINT ' + @PK_INDEXNAME)");
-            }
-        }
-
-        if (item.action == KeyAction.RENAME) {
-            if (item.renameType == KeyAlterRenameType.COLUMN) {
-                String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
-                sb.append("EXEC SP_RENAME ");
-                sb.append("\"" + tableOutName + "." + this.getColumnName(wrapper, alter, item.oldColumn, false) + "\"");
-                sb.append(",");
-                sb.append(" \"" + this.getColumnName(wrapper, alter, item.column, false) + "\"");
-                sb.append(", \"COLUMN\"");
-            }
-            if (item.renameType == KeyAlterRenameType.INDEX) {
-                sb.append("ALTER");
-                sb.append(" TABLE");
-                sb.append(" " + tableName);
-                sb.append(" RENAME");
-                sb.append(" INDEX");
-                sb.append(" " + item.oldName);
-                sb.append(" TO");
-                sb.append(" " + item.newName);
-            }
-            if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" EXEC sp_rename '" + this.getTableName(wrapper, alter.tableClass, alter.tableName, false)
-                        + "', '" + item.newName + "'");
             }
         }
 

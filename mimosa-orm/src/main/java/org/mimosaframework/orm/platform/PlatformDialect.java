@@ -13,6 +13,7 @@ import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
 import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
 import org.mimosaframework.orm.sql.drop.DefaultSQLDropBuilder;
 import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
+import org.mimosaframework.orm.sql.rename.DefaultSQLRenameBuilder;
 import org.mimosaframework.orm.sql.select.DefaultSQLSelectBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.utils.LOBLoader;
@@ -805,8 +806,8 @@ public abstract class PlatformDialect implements Dialect {
                     }
                 }
             }
-            DefaultSQLAlterBuilder renameBuilder = new DefaultSQLAlterBuilder();
-            renameBuilder.alter().table(mappingTable.getMappingTableName()).rename().name(tableName);
+            DefaultSQLRenameBuilder renameBuilder = new DefaultSQLRenameBuilder();
+            renameBuilder.rename().table(mappingTable.getMappingTableName()).to().name(tableName);
             this.runner(renameBuilder.compile());
 
             // 2.再创建新表

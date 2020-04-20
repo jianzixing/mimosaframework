@@ -77,21 +77,6 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             }
         }
 
-        if (item.action == KeyAction.CHANGE) {
-            totalAction++;
-            sb.append(" MODIFY");
-            String oldColumnName = this.getColumnName(wrapper, alter, item.oldColumn);
-            String newColumnName = this.getColumnName(wrapper, alter, item.column);
-            if (!oldColumnName.equalsIgnoreCase(newColumnName)) {
-                StringBuilder rnsb = new StringBuilder();
-                rnsb.append("ALTER TABLE");
-                rnsb.append(" " + this.getTableName(wrapper, alter.tableClass, alter.tableName));
-                rnsb.append(" RENAME COLUMN " + oldColumnName + " TO " + newColumnName);
-                this.getBuilders().add(new ExecuteImmediate(rnsb));
-            }
-            this.buildAlterColumn(sb, wrapper, alter, item, true);
-        }
-
         if (item.action == KeyAction.MODIFY) {
             totalAction++;
             sb.append(" MODIFY");
@@ -105,34 +90,8 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                 sb.append(" COLUMN");
                 sb.append(" " + this.getColumnName(wrapper, alter, item.column));
             }
-            if (item.dropType == KeyAlterDropType.INDEX) {
-                sb.setLength(0);
-                sb.append("DROP");
-                sb.append(" INDEX");
-                sb.append(" " + RS + item.indexName + RE);
-            }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.append(" PRIMARY KEY");
-            }
-        }
-
-        if (item.action == KeyAction.RENAME) {
-            totalAction++;
-            sb.append(" RENAME");
-            if (item.renameType == KeyAlterRenameType.COLUMN) {
-                sb.append(" COLUMN");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.oldColumn));
-                sb.append(" TO");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.column));
-            }
-            if (item.renameType == KeyAlterRenameType.INDEX) {
-                sb.append(" INDEX");
-                sb.append(" " + item.oldName);
-                sb.append(" TO");
-                sb.append(" " + item.newName);
-            }
-            if (item.renameType == KeyAlterRenameType.TABLE) {
-                sb.append(" TO " + item.newName);
             }
         }
 

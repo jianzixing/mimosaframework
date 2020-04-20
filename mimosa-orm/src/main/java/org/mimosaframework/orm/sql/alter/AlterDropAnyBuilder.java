@@ -8,6 +8,5 @@ import org.mimosaframework.orm.sql.PrimaryKeyBuilder;
 public interface AlterDropAnyBuilder<T>
         extends
         AbsColumnBuilder<T>,
-        IndexBuilder<AbsNameBuilder<T>>,
         PrimaryKeyBuilder<T> {
 }

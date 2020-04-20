@@ -28,18 +28,13 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public DefaultSQLAlterBuilder name(Serializable value) {
+    public DefaultSQLAlterBuilder name(String value) {
         this.gammars.add("name");
         if (this.previous("index") || this.previous("unique")) {
             StampAlterItem item = this.getLastItem();
-            item.dropType = KeyAlterDropType.INDEX;
-            item.indexName = value.toString();
+            item.indexName = value;
         } else if (this.previous("database")) {
-            this.stampAlter.databaseName = value.toString();
-        } else if (this.point.equals("rename") && this.getPointNext(1).equals("name")) {
-            StampAlterItem item = this.getLastItem();
-            item.renameType = KeyAlterRenameType.TABLE;
-            item.newName = "" + value;
+            this.stampAlter.databaseName = value;
         }
         return this;
     }
@@ -139,10 +134,6 @@ public class DefaultSQLAlterBuilder
     @Override
     public DefaultSQLAlterBuilder column() {
         this.gammars.add("column");
-        if (this.previous("rename")) {
-            StampAlterItem item = this.getLastItem();
-            item.renameType = KeyAlterRenameType.COLUMN;
-        }
         return this;
     }
 
@@ -335,13 +326,6 @@ public class DefaultSQLAlterBuilder
         if (this.previous("unique")) {
             item.indexType = KeyIndexType.UNIQUE;
         }
-
-        if (this.point.equals("drop")) {
-            item.dropType = KeyAlterDropType.INDEX;
-        }
-        if (this.previous("rename")) {
-            item.renameType = KeyAlterRenameType.INDEX;
-        }
         return this;
     }
 
@@ -386,44 +370,10 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public DefaultSQLAlterBuilder change() {
-        this.addPoint("change");
-        StampAlterItem item = new StampAlterItem();
-        item.action = KeyAction.CHANGE;
-        this.items.add(item);
-        return this;
-    }
-
-    @Override
     public DefaultSQLAlterBuilder modify() {
         this.addPoint("modify");
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.MODIFY;
-        this.items.add(item);
-        return this;
-    }
-
-    @Override
-    public DefaultSQLAlterBuilder newColumn(Serializable field) {
-        this.gammars.add("column");
-        StampAlterItem item = this.getLastItem();
-        item.column = new StampColumn(field);
-        return this;
-    }
-
-    @Override
-    public DefaultSQLAlterBuilder oldColumn(Serializable field) {
-        this.gammars.add("column");
-        StampAlterItem item = this.getLastItem();
-        item.oldColumn = new StampColumn(field);
-        return this;
-    }
-
-    @Override
-    public DefaultSQLAlterBuilder rename() {
-        this.addPoint("rename");
-        StampAlterItem item = new StampAlterItem();
-        item.action = KeyAction.RENAME;
         this.items.add(item);
         return this;
     }

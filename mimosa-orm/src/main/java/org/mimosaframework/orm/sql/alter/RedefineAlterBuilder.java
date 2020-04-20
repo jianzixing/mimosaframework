@@ -3,6 +3,8 @@ package org.mimosaframework.orm.sql.alter;
 import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.create.ColumnAssistBuilder;
 import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
+import org.mimosaframework.orm.sql.rename.RenameNewColumnBuilder;
+import org.mimosaframework.orm.sql.rename.RenameOldColumnBuilder;
 
 public interface RedefineAlterBuilder
         extends
@@ -22,12 +24,8 @@ public interface RedefineAlterBuilder
         CommentBuilder,
         AlterDropBuilder,
         AlterModifyBuilder,
-        AlterChangeBuilder,
-        AlterOldColumnBuilder,
-        AlterNewColumnBuilder,
         PrimaryBuilder,
         KeyBuilder,
-        AlterRenameBuilder,
         ToBuilder,
         UniqueBuilder,
         AbsIntBuilder,

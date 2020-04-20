@@ -21,16 +21,16 @@ public class DefaultSQLDropBuilder
     }
 
     @Override
-    public DefaultSQLDropBuilder name(Serializable value) {
+    public DefaultSQLDropBuilder name(String value) {
         this.gammars.add("name");
         if (this.point.equals("database")) {
-            this.stampDrop.databaseName = value.toString();
+            this.stampDrop.databaseName = value;
         }
         if (this.point.equals("index")) {
-            this.stampDrop.indexName = value.toString();
+            this.stampDrop.indexName = value;
         }
         if (this.point.equals("table")) {
-            this.stampDrop.tableName = value.toString();
+            this.stampDrop.tableName = value;
         }
         return this;
     }

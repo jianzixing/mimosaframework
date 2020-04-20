@@ -63,4 +63,13 @@ public class RunJoinSession {
                 .limit(0, 20));
         System.out.println(objects);
     }
+
+    @Test
+    public void testInnerJoinNoLimit() {
+        List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
+                .subjoin(Criteria.inner(TablePay.class).on(TableUser.id, TablePay.userId).single().aliasName("pays"))
+                .gte(TableUser.id, 1).lte(TableUser.id, 20));
+        System.out.println(objects.size());
+        System.out.println(objects);
+    }
 }

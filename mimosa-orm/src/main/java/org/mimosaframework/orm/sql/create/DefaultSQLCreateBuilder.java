@@ -37,14 +37,14 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
-    public DefaultSQLCreateBuilder name(Serializable value) {
+    public DefaultSQLCreateBuilder name(String value) {
         this.gammars.add("name");
         if (this.previous("index") || this.previous("unique")) {
-            stampCreate.indexName = value.toString();
+            stampCreate.indexName = value;
         } else if (this.point.equals("database")) {
-            stampCreate.databaseName = value.toString();
+            stampCreate.databaseName = value;
         } else {
-            stampCreate.tableName = value.toString();
+            stampCreate.tableName = value;
         }
         return this;
     }
