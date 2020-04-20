@@ -16,13 +16,13 @@ public class DefaultSQLRenameBuilder
     @Override
     public DefaultSQLRenameBuilder name(String value) {
         this.gammars.add("name");
-        rename.newName = "" + value;
+        rename.newName = value;
         return this;
     }
 
     @Override
     public DefaultSQLRenameBuilder table(Class table) {
-        if (this.previous("on")) {
+        if (!this.previous("on")) {
             this.addPoint("table");
             rename.tableClass = table;
             rename.renameType = KeyRenameType.TABLE;
@@ -67,7 +67,7 @@ public class DefaultSQLRenameBuilder
 
     @Override
     public DefaultSQLRenameBuilder table(String name) {
-        if (this.previous("on")) {
+        if (!this.previous("on")) {
             this.addPoint("table");
             rename.tableName = name;
             rename.renameType = KeyRenameType.TABLE;
