@@ -480,8 +480,8 @@ public class PlatformExecutor {
     public List<ModelObject> select(DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
         PlatformDialect dialect = this.getDialect();
         Wraps<Filter> logicWraps = query.getLogicWraps();
-        List<Join> joins = query.getJoins();
-        List<Order> orders = query.getOrders();
+        Set<Join> joins = query.getJoins();
+        Set<Order> orders = query.getOrders();
 
         Map<Class, List<String>> fields = query.getFields();
         Map<Class, List<String>> excludes = query.getExcludes();
@@ -496,7 +496,7 @@ public class PlatformExecutor {
         if ((orders == null || orders.size() == 0) && limit != null && dialect.isSelectLimitMustOrderBy()) {
             // 如果排序是空的且分页查询必须排序字段则默认添加主键升序
             List<MappingField> pks = queryTable.getMappingPrimaryKeyFields();
-            orders = new ArrayList<>();
+            orders = new LinkedHashSet<>();
             if (pks != null && pks.size() > 0) {
                 for (MappingField field : pks) {
                     orders.add(new Order(true, field.getMappingFieldName()));
@@ -612,7 +612,7 @@ public class PlatformExecutor {
     public long count(DefaultQuery query) throws SQLException {
         PlatformDialect dialect = this.getDialect();
         Wraps<Filter> logicWraps = query.getLogicWraps();
-        List<Join> joins = query.getJoins();
+        Set<Join> joins = query.getJoins();
 
         Class<?> tableClass = query.getTableClass();
         boolean isMaster = query.isMaster();
@@ -671,12 +671,12 @@ public class PlatformExecutor {
 
     public List<ModelObject> function(DefaultFunction f) throws SQLException {
         PlatformDialect dialect = this.getDialect();
-        List<FunctionField> funs = f.getFuns();
+        Set<FunctionField> funs = f.getFuns();
         Class tableClass = f.getTableClass();
         Wraps<Filter> logicWraps = f.getLogicWraps();
-        List groups = f.getGroupBy();
-        List<Order> orders = f.getOrderBy();
-        List<HavingField> havingFields = f.getHavingFields();
+        Set groups = f.getGroupBy();
+        Set<Order> orders = f.getOrderBy();
+        Set<HavingField> havingFields = f.getHavingFields();
 
         boolean isMaster = f.isMaster();
         String slaveName = f.getSlaveName();
@@ -746,7 +746,7 @@ public class PlatformExecutor {
         if (havingFields != null && havingFields.size() > 0
                 && (groups == null || groups.size() == 0)
                 && dialect.isSelectHavingMustGroupBy()) {
-            groups = new ArrayList();
+            groups = new LinkedHashSet();
             List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
             if (pks != null) {
                 for (MappingField field : pks) {
@@ -871,7 +871,7 @@ public class PlatformExecutor {
 
     private void buildJoinQuery(DefaultSQLSelectBuilder select,
                                 Map<Object, String> alias,
-                                List<Join> joins,
+                                Set<Join> joins,
                                 boolean onlyInnerJoin) {
         if (joins != null && joins.size() > 0) {
             for (Join j : joins) {
@@ -951,7 +951,7 @@ public class PlatformExecutor {
     }
 
     private void buildOrderBy(DefaultSQLSelectBuilder select,
-                              List<Order> orders,
+                              Set<Order> orders,
                               MappingTable mappingTable,
                               boolean isInnerSelect) {
         if (orders != null) {
@@ -997,7 +997,7 @@ public class PlatformExecutor {
         }
         mergeTrees.add(top);
 
-        List<Join> joins = query.getJoins();
+        Set<Join> joins = query.getJoins();
 
         if (joins != null) {
             for (Join join : joins) {

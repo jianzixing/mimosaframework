@@ -55,6 +55,7 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException(I18n.print("miss_table_class"));
         }
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, obj);
+        SessionUtils.clearPkZeroModelObject(this.mappingGlobalWrapper, c, obj);
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
@@ -435,7 +436,7 @@ public class DefaultSession implements Session {
         try {
             List<ModelObject> objects = executor.function(f);
             if (objects != null) {
-                List<FunctionField> funs = f.getFuns();
+                Set<FunctionField> funs = f.getFuns();
                 if (funs != null) {
                     for (FunctionField field : funs) {
                         if (field.getScale() != 0) {

@@ -158,6 +158,7 @@ public class DefaultQuery implements LogicQuery {
                     joins.add(j);
                 }
             }
+            return joins;
         }
         return null;
     }

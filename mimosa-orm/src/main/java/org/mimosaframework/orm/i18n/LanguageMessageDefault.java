@@ -279,6 +279,9 @@ public class LanguageMessageDefault implements MessagesRegister {
         // MimosaBeanSessionTemplate
         words.put("bean_save_not_json", "使用的对象不是映射对象");
 
+        // MimosaBeanSessionTemplate
+        words.put("model_to_bean_error", "Map转换成JavaBean出错");
+
         messageWords.add(new MessageWords(PROJECT, words));
     }
 

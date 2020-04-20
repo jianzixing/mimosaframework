@@ -19,6 +19,10 @@ public class RunDataSourceBuilder {
         return getTemplate(type);
     }
 
+    public static BeanSessionTemplate currBeanTemplate() throws ContextException {
+        return getBeanTemplate(type);
+    }
+
     public static DataSource currDataSource() throws ContextException {
         return getDataSource(type);
     }
@@ -36,6 +40,22 @@ public class RunDataSourceBuilder {
         SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
         SessionTemplate template = new MimosaSessionTemplate();
         ((MimosaSessionTemplate) template).setSessionFactory(sessionFactory);
+        return template;
+    }
+
+    public static BeanSessionTemplate getBeanTemplate(DatabaseType type) throws ContextException {
+        String config = null;
+        if (type == DatabaseType.MYSQL) config = "/template-mimosa.xml";
+        if (type == DatabaseType.DB2) config = "/db2-template-mimosa.xml";
+        if (type == DatabaseType.ORACLE) config = "/oracle-template-mimosa.xml";
+        if (type == DatabaseType.SQL_SERVER) config = "/sqlserver-template-mimosa.xml";
+        if (type == DatabaseType.POSTGRESQL) config = "/postgresql-template-mimosa.xml";
+        if (type == DatabaseType.SQLITE) config = "/sqlite-template-mimosa.xml";
+
+        XmlAppContext context = new XmlAppContext(SessionFactoryBuilder.class.getResourceAsStream(config));
+        SessionFactory sessionFactory = context.getSessionFactoryBuilder().build();
+        BeanSessionTemplate template = new MimosaBeanSessionTemplate();
+        ((MimosaBeanSessionTemplate) template).setSessionFactory(sessionFactory);
         return template;
     }
 

@@ -45,4 +45,18 @@ public interface BeanSession extends Closeable {
     AutoResult calculate(Function function);
 
     <T> ZipperTable<T> getZipperTable(Class<T> c);
+
+    /**
+     * 指定在哪些数据源上执行SQL
+     * 得到的结果会汇总然后给使用者
+     *
+     * @param autonomously
+     * @return
+     * @throws Exception
+     */
+    AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception;
+
+    AutoResult getAutonomously(TAutonomously autonomously) throws Exception;
+
+    List<DataSourceTableName> getDataSourceNames(Class c);
 }

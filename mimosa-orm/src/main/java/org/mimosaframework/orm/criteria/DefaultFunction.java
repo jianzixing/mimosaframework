@@ -3,17 +3,19 @@ package org.mimosaframework.orm.criteria;
 import org.mimosaframework.orm.BasicFunction;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DefaultFunction implements LogicFunction {
-    private List<FunctionField> funs = null;
-    private List<HavingField> havingFields = null;
+    private Set<FunctionField> funs = null;
+    private Set<HavingField> havingFields = null;
     private Class tableClass;
     private boolean isMaster = true;
     private String slaveName;
     private Wraps<Filter> logicWraps;
-    private List groupBy = null;
-    private List<Order> orderBy = null;
+    private Set groupBy = null;
+    private Set<Order> orderBy = null;
 
     public DefaultFunction() {
     }
@@ -25,7 +27,7 @@ public class DefaultFunction implements LogicFunction {
     @Override
     public LogicFunction addFunction(BasicFunction function, Object field) {
         if (funs == null) {
-            funs = new ArrayList<>();
+            funs = new LinkedHashSet<>();
         }
         funs.add(new FunctionField(field, function));
         return this;
@@ -34,7 +36,7 @@ public class DefaultFunction implements LogicFunction {
     @Override
     public LogicFunction addFunction(BasicFunction function, Object field, String alias) {
         if (funs == null) {
-            funs = new ArrayList<>();
+            funs = new LinkedHashSet<>();
         }
         funs.add(new FunctionField(field, function, alias));
         return this;
@@ -43,7 +45,7 @@ public class DefaultFunction implements LogicFunction {
     @Override
     public LogicFunction addFunction(FunctionField function) {
         if (funs == null) {
-            funs = new ArrayList<>();
+            funs = new LinkedHashSet<>();
         }
         funs.add(function);
         return this;
@@ -107,7 +109,7 @@ public class DefaultFunction implements LogicFunction {
     @Override
     public LogicFunction groupBy(Object field) {
         if (groupBy == null && field != null) {
-            groupBy = new ArrayList();
+            groupBy = new LinkedHashSet();
         }
         if (field != null) {
             groupBy.add(field);
@@ -118,7 +120,7 @@ public class DefaultFunction implements LogicFunction {
     @Override
     public LogicFunction orderBy(Object field, boolean isAsc) {
         if (orderBy == null && field != null) {
-            orderBy = new ArrayList();
+            orderBy = new LinkedHashSet<>();
         }
         if (field != null) {
             orderBy.add(new Order(isAsc, field));
@@ -129,7 +131,7 @@ public class DefaultFunction implements LogicFunction {
     @Override
     public LogicFunction having(HavingField field) {
         if (field != null) {
-            if (this.havingFields == null) this.havingFields = new ArrayList<>();
+            if (this.havingFields == null) this.havingFields = new LinkedHashSet<>();
             this.havingFields.add(field);
         }
         return this;
@@ -251,7 +253,7 @@ public class DefaultFunction implements LogicFunction {
         return slaveName;
     }
 
-    public List<FunctionField> getFuns() {
+    public Set<FunctionField> getFuns() {
         return funs;
     }
 
@@ -259,16 +261,16 @@ public class DefaultFunction implements LogicFunction {
         return logicWraps;
     }
 
-    public List getGroupBy() {
+    public Set getGroupBy() {
         return groupBy;
     }
 
-    public List<Order> getOrderBy() {
+    public Set<Order> getOrderBy() {
         return orderBy;
     }
 
 
-    public void setFuns(List<FunctionField> funs) {
+    public void setFuns(Set<FunctionField> funs) {
         this.funs = funs;
     }
 
@@ -288,19 +290,19 @@ public class DefaultFunction implements LogicFunction {
         this.logicWraps = logicWraps;
     }
 
-    public void setGroupBy(List groupBy) {
+    public void setGroupBy(Set groupBy) {
         this.groupBy = groupBy;
     }
 
-    public void setOrderBy(List<Order> orderBy) {
+    public void setOrderBy(Set<Order> orderBy) {
         this.orderBy = orderBy;
     }
 
-    public List<HavingField> getHavingFields() {
+    public Set<HavingField> getHavingFields() {
         return havingFields;
     }
 
-    public void setHavingFields(List<HavingField> havingFields) {
+    public void setHavingFields(Set<HavingField> havingFields) {
         this.havingFields = havingFields;
     }
 }

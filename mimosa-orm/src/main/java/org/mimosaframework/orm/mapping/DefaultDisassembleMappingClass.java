@@ -131,35 +131,37 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                     e.printStackTrace();
                 }
 
-                if (column.type().equals(Timestamp.class)) {
-                    if (timestamp != null && timestamp.equals(Timestamp.class)) {
-                        throw new IllegalArgumentException(I18n.print("timestamp_one"));
+                if (column != null) {
+                    if (column.type().equals(Timestamp.class)) {
+                        if (timestamp != null && timestamp.equals(Timestamp.class)) {
+                            throw new IllegalArgumentException(I18n.print("timestamp_one"));
+                        }
+                        timestamp = Timestamp.class;
                     }
-                    timestamp = Timestamp.class;
-                }
 
-                if (column.strategy().equals(AutoIncrementStrategy.class)) {
-                    if (strategy != null && strategy.equals(AutoIncrementStrategy.class)) {
-                        throw new IllegalArgumentException(I18n.print("incr_field_one",
-                                mappingTable.getMappingTableName()));
+                    if (column.strategy().equals(AutoIncrementStrategy.class)) {
+                        if (strategy != null && strategy.equals(AutoIncrementStrategy.class)) {
+                            throw new IllegalArgumentException(I18n.print("incr_field_one",
+                                    mappingTable.getMappingTableName()));
+                        }
+                        strategy = AutoIncrementStrategy.class;
+
+                        if (!column.pk()) {
+                            throw new IllegalArgumentException(I18n.print("auto_strategy_pk",
+                                    mappingClass.getSimpleName() + "." + fieldName));
+                        }
                     }
-                    strategy = AutoIncrementStrategy.class;
 
-                    if (!column.pk()) {
-                        throw new IllegalArgumentException(I18n.print("auto_strategy_pk",
-                                mappingClass.getSimpleName() + "." + fieldName));
+                    if (column.timeForUpdate()) countTimeForUpdate++;
+
+
+                    fieldObject = o;
+                    MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject);
+                    if (lastField != null) {
+                        newField.setPrevious(lastField);
                     }
+                    lastField = newField;
                 }
-
-                if (column.timeForUpdate()) countTimeForUpdate++;
-
-
-                fieldObject = o;
-                MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject);
-                if (lastField != null) {
-                    newField.setPrevious(lastField);
-                }
-                lastField = newField;
             }
         } else {
             Field[] fields = mappingClass.getDeclaredFields();
@@ -167,21 +169,25 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                 fieldName = field.getName();
                 column = field.getAnnotation(Column.class);
 
-                if (column.strategy().equals(AutoIncrementStrategy.class)) {
-                    if (strategy != null && strategy.equals(AutoIncrementStrategy.class)) {
-                        throw new IllegalArgumentException(I18n.print("incr_field_one", mappingTable.getMappingTableName()));
+                if (column != null) {
+                    if (column.strategy().equals(AutoIncrementStrategy.class)) {
+                        if (strategy != null && strategy.equals(AutoIncrementStrategy.class)) {
+                            throw new IllegalArgumentException(I18n.print("incr_field_one", mappingTable.getMappingTableName()));
+                        }
+                        strategy = AutoIncrementStrategy.class;
                     }
-                    strategy = AutoIncrementStrategy.class;
-                }
 
-                fieldObject = field;
-                MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject);
-                if (lastField != null) {
-                    newField.setPrevious(lastField);
-                }
-                lastField = newField;
+                    // todo:校验一下column配置的类型是否和bean类型一致
 
-                if (column.timeForUpdate()) countTimeForUpdate++;
+                    fieldObject = field;
+                    MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject);
+                    if (lastField != null) {
+                        newField.setPrevious(lastField);
+                    }
+                    lastField = newField;
+
+                    if (column.timeForUpdate()) countTimeForUpdate++;
+                }
             }
         }
 

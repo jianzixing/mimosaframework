@@ -3,7 +3,13 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.annotation.JoinName;
 import org.mimosaframework.orm.criteria.*;
+import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.transaction.Transaction;
+import org.mimosaframework.orm.transaction.TransactionCallback;
+import org.mimosaframework.orm.transaction.TransactionIsolationType;
+import org.mimosaframework.orm.transaction.TransactionPropagationType;
+import org.mimosaframework.orm.utils.ModelObjectToBean;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +18,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
-public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
+public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate implements BeanSessionTemplate {
     private MimosaSessionTemplate modelSession = new MimosaSessionTemplate();
     private SessionFactory sessionFactory;
 
@@ -21,10 +27,10 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
+        super.setSessionFactory(sessionFactory);
         this.sessionFactory = sessionFactory;
         modelSession.setSessionFactory(sessionFactory);
     }
-
 
     @Override
     public <T> T save(T obj) {
@@ -33,7 +39,9 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
             modelSession.save(model);
-            return (T) ModelObject.toJavaObject(model, obj.getClass());
+
+            ModelObjectToBean.toJavaObject(model, obj);
+            return obj;
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
@@ -46,7 +54,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
             modelSession.saveAndUpdate(model);
-            return (T) ModelObject.toJavaObject(model, obj.getClass());
+            return (T) ModelObjectToBean.toJavaObject(model, obj.getClass());
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
@@ -151,13 +159,17 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     @Override
     public <T> T get(Class<T> c, Serializable id) {
         ModelObject object = modelSession.get(c, id);
-        return ModelObject.toJavaObject(object, c);
+        return ModelObjectToBean.toJavaObject(object, c);
     }
 
     @Override
     public <T> T get(Query query) {
         ModelObject result = modelSession.get(query);
-        return this.model2JavaObject(query, Arrays.asList(result));
+        List list = this.model2JavaObject(query, Arrays.asList(result));
+        if (list != null && list.size() > 0) {
+            return (T) list.get(0);
+        }
+        return null;
     }
 
     @Override
@@ -194,9 +206,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     private List model2JavaObject(Class tableClass, Set<Join> joins, List<ModelObject> objects) {
-        Map<ModelObject, Map<Field, Object>> objectLinked = null;
         if (joins != null && joins.size() > 0 && objects != null && objects.size() > 0) {
-            if (objectLinked == null) objectLinked = new HashMap<>();
             for (Join j : joins) {
                 DefaultJoin join = (DefaultJoin) j;
                 String aliasName = join.getAliasName();
@@ -206,91 +216,29 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                     String fieldName = field.getName();
                     JoinName joinName = field.getAnnotation(JoinName.class);
 
-                    Class fieldType = field.getDeclaringClass();
+                    Class fieldType = field.getType();
                     Type type = field.getGenericType();
-                    ParameterizedType pt = (ParameterizedType) type;
-                    // 获取字段第一个泛型
-                    Class genericType = (Class<?>) pt.getActualTypeArguments()[0];
-
-                    for (ModelObject object : objects) {
-                        Map<Field, Object> map = objectLinked.get(object);
-                        if (map == null) {
-                            map = new HashMap<>();
-                            objectLinked.put(object, map);
-                        }
-                        Object child = object.get(fieldType);
-                        if (child != null) {
-                            if (child instanceof List) {
-                                List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                        (List<ModelObject>) child);
-                                if (fieldType.isArray()) {
-                                    map.put(field, childBeans.toArray());
-                                } else {
-                                    if (childBeans != null && childBeans.size() > 0) {
-                                        map.put(field, childBeans.get(0));
-                                    }
-                                }
-                            } else {
-                                List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                        Arrays.asList((ModelObject) child));
-
-                                if (childBeans != null && childBeans.size() > 0) {
-                                    if (fieldType.isArray()) {
-                                        map.put(field, childBeans.toArray());
-                                    } else {
-                                        map.put(field, childBeans.get(0));
-                                    }
-                                }
-                            }
-                        }
+                    Class genericType = null;
+                    if (type instanceof ParameterizedType) {
+                        ParameterizedType pt = (ParameterizedType) type;
+                        // 获取字段第一个泛型
+                        genericType = (Class<?>) pt.getActualTypeArguments()[0];
                     }
-
-                    if (genericType != null && fieldType.isAssignableFrom(Collection.class)) {
-                        for (ModelObject object : objects) {
-                            Map<Field, Object> map = objectLinked.get(object);
-                            if (map == null) {
-                                map = new HashMap<>();
-                                objectLinked.put(object, map);
-                            }
-
-                            Object child = object.get(genericType);
-                            if (child instanceof List) {
-                                List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                        (List<ModelObject>) child);
-                                if (childBeans != null && childBeans.size() > 0) {
-                                    map.put(field, this.list2Collection(childBeans, fieldType));
-                                }
-                            } else {
-                                List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                        Arrays.asList((ModelObject) child));
-
-                                if (childBeans != null && childBeans.size() > 0) {
-                                    map.put(field, this.list2Collection(childBeans, fieldType));
-                                }
-                            }
-                        }
-                    }
-
 
                     if (fieldName.equals(aliasName)
                             || (joinName != null && joinName.value().equals(aliasName))) {
                         for (ModelObject object : objects) {
-                            Map<Field, Object> map = objectLinked.get(object);
-                            if (map == null) {
-                                map = new HashMap<>();
-                                objectLinked.put(object, map);
-                            }
                             Object child = object.get(aliasName);
                             if (child instanceof List) {
                                 List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
                                         (List<ModelObject>) child);
                                 if (childBeans != null && childBeans.size() > 0) {
                                     if (fieldType.isAssignableFrom(Collection.class)) {
-                                        map.put(field, this.list2Collection(childBeans, fieldType));
+                                        object.put(field.getName(), this.list2Collection(childBeans, fieldType));
                                     } else if (fieldType.isArray()) {
-                                        map.put(field, childBeans.toArray());
+                                        object.put(field.getName(), childBeans.toArray());
                                     } else {
-                                        map.put(field, childBeans.get(0));
+                                        object.put(field.getName(), childBeans.get(0));
                                     }
                                 }
                             } else {
@@ -298,11 +246,59 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                                         Arrays.asList((ModelObject) child));
                                 if (childBeans != null && childBeans.size() > 0) {
                                     if (fieldType.isAssignableFrom(Collection.class)) {
-                                        map.put(field, this.list2Collection(childBeans, fieldType));
+                                        object.put(field.getName(), this.list2Collection(childBeans, fieldType));
                                     } else if (fieldType.isArray()) {
-                                        map.put(field, childBeans.toArray());
+                                        object.put(field.getName(), childBeans.toArray());
                                     } else {
-                                        map.put(field, childBeans.get(0));
+                                        object.put(field.getName(), childBeans.get(0));
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        for (ModelObject object : objects) {
+                            Object child = object.get(fieldType);
+                            if (child != null) {
+                                if (child instanceof List) {
+                                    List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
+                                            (List<ModelObject>) child);
+                                    if (fieldType.isArray()) {
+                                        object.put(field.getName(), childBeans.toArray());
+                                    } else {
+                                        if (childBeans != null && childBeans.size() > 0) {
+                                            object.put(field.getName(), childBeans.get(0));
+                                        }
+                                    }
+                                } else {
+                                    List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
+                                            Arrays.asList((ModelObject) child));
+
+                                    if (childBeans != null && childBeans.size() > 0) {
+                                        if (fieldType.isArray()) {
+                                            object.put(field.getName(), childBeans.toArray());
+                                        } else {
+                                            object.put(field.getName(), childBeans.get(0));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (genericType != null && fieldType.isAssignableFrom(Collection.class)) {
+                            for (ModelObject object : objects) {
+                                Object child = object.get(genericType);
+                                if (child instanceof List) {
+                                    List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
+                                            (List<ModelObject>) child);
+                                    if (childBeans != null && childBeans.size() > 0) {
+                                        object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                    }
+                                } else {
+                                    List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
+                                            Arrays.asList((ModelObject) child));
+
+                                    if (childBeans != null && childBeans.size() > 0) {
+                                        object.put(field.getName(), this.list2Collection(childBeans, fieldType));
                                     }
                                 }
                             }
@@ -315,7 +311,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         if (tableClass != null && objects != null && objects.size() > 0) {
             List beans = new ArrayList();
             for (ModelObject object : objects) {
-                beans.add(ModelObject.toJavaObject(object, tableClass));
+                beans.add(ModelObjectToBean.toJavaObject(object, tableClass));
             }
             return beans;
         }
@@ -342,6 +338,21 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         return (ZipperTable<T>) modelSession.getZipperTable(c);
     }
 
+    @Override
+    public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
+        return modelSession.getAutonomously(autonomously);
+    }
+
+    @Override
+    public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
+        return modelSession.getAutonomously(autonomously);
+    }
+
+    @Override
+    public List<DataSourceTableName> getDataSourceNames(Class c) {
+        return modelSession.getDataSourceNames(c);
+    }
+
 
     @Override
     public Query query(Class clazz) {
@@ -365,5 +376,35 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     @Override
     public void close() throws IOException {
         modelSession.close();
+    }
+
+    @Override
+    public Transaction beginTransaction() throws TransactionException {
+        return modelSession.beginTransaction();
+    }
+
+    @Override
+    public Transaction createTransaction() {
+        return modelSession.createTransaction();
+    }
+
+    @Override
+    public <T> T execute(TransactionCallback<T> callback) throws TransactionException {
+        return modelSession.execute(callback);
+    }
+
+    @Override
+    public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt) throws TransactionException {
+        return modelSession.execute(callback, pt);
+    }
+
+    @Override
+    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws TransactionException {
+        return modelSession.execute(callback, it);
+    }
+
+    @Override
+    public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt, TransactionIsolationType it) throws TransactionException {
+        return modelSession.execute(callback, pt, it);
     }
 }

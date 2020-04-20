@@ -133,4 +133,19 @@ public final class SessionUtils {
         }
         return delete;
     }
+
+    public static void clearPkZeroModelObject(MappingGlobalWrapper mappingGlobalWrapper, Class c, ModelObject obj) {
+        MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(c);
+        if (mappingTable != null) {
+            List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
+            if (pks != null && pks.size() > 0) {
+                for (MappingField pk : pks) {
+                    Object object = obj.getString(pk.getMappingFieldName());
+                    if (object.equals(0)) {
+                        obj.remove(pk.getMappingFieldName());
+                    }
+                }
+            }
+        }
+    }
 }
