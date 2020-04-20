@@ -7,13 +7,11 @@ public class StampAlterItem extends StampTableColumn {
     public StampColumn after;
     public StampColumn before;
 
+    // primary key name
+    public String indexName;
+
     // add columns
     public StampColumn[] columns;
-
-    // index
-    public KeyIndexType indexType;
-    // index
-    public String indexName;
 
     // column change && column rename
     public StampColumn oldColumn;

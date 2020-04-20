@@ -30,11 +30,13 @@ public class DefaultSQLAlterBuilder
     @Override
     public DefaultSQLAlterBuilder name(String value) {
         this.gammars.add("name");
-        if (this.previous("index") || this.previous("unique")) {
+        if (this.previous("database")) {
+            this.stampAlter.databaseName = value;
+        }
+        if (this.point.equals("add") && this.getPointNext(1).equals("primary")
+                && this.getPointNext(2).equals("key")) {
             StampAlterItem item = this.getLastItem();
             item.indexName = value;
-        } else if (this.previous("database")) {
-            this.stampAlter.databaseName = value;
         }
         return this;
     }
@@ -319,17 +321,6 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
-    public DefaultSQLAlterBuilder index() {
-        this.gammars.add("index");
-        StampAlterItem item = this.getLastItem();
-        item.struct = KeyAlterStruct.INDEX;
-        if (this.previous("unique")) {
-            item.indexType = KeyIndexType.UNIQUE;
-        }
-        return this;
-    }
-
-    @Override
     public DefaultSQLAlterBuilder drop() {
         this.addPoint("drop");
         StampAlterItem item = new StampAlterItem();
@@ -347,8 +338,7 @@ public class DefaultSQLAlterBuilder
                 item.pk = KeyConfirm.YES;
             } else if (this.point.equals("add")
                     && !this.getPointNext(1).equals("column")) {
-                item.struct = KeyAlterStruct.INDEX;
-                item.indexType = KeyIndexType.PRIMARY_KEY;
+                item.struct = KeyAlterStruct.PRIMARY_KEY;
             }
             if (this.point.equals("drop")) {
                 item.dropType = KeyAlterDropType.PRIMARY_KEY;
@@ -375,17 +365,6 @@ public class DefaultSQLAlterBuilder
         StampAlterItem item = new StampAlterItem();
         item.action = KeyAction.MODIFY;
         this.items.add(item);
-        return this;
-    }
-
-    @Override
-    public DefaultSQLAlterBuilder unique() {
-        this.gammars.add("unique");
-        if (this.getPointNext(1).equals("unique")) {
-            StampAlterItem item = this.getLastItem();
-            item.struct = KeyAlterStruct.INDEX;
-            item.indexType = KeyIndexType.UNIQUE;
-        }
         return this;
     }
 

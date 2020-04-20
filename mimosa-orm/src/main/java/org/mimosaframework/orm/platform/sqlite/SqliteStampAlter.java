@@ -51,11 +51,11 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                 sb.append(" ADD");
                 this.buildAlterColumn(sb, wrapper, alter, item);
             }
-            if (item.struct == KeyAlterStruct.INDEX) {
-                this.buildAlterIndex(sb, wrapper, alter, item);
+            if (item.struct == KeyAlterStruct.PRIMARY_KEY) {
+                this.buildAddPrimaryKey(sb, wrapper, alter, item);
             }
         }
-        
+
         if (item.action == KeyAction.MODIFY) {
             sb.setLength(0);
             logger.warn("sqlite can't modify column");
@@ -84,44 +84,12 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
         }
     }
 
-    private void buildAlterIndex(StringBuilder sb,
-                                 MappingGlobalWrapper wrapper,
-                                 StampAlter alter,
-                                 StampAlterItem item) {
+    private void buildAddPrimaryKey(StringBuilder sb,
+                                    MappingGlobalWrapper wrapper,
+                                    StampAlter alter,
+                                    StampAlterItem item) {
         sb.setLength(0);
-        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
-            sb.append("CREATE");
-
-            if (item.indexType == KeyIndexType.UNIQUE) {
-                sb.append(" UNIQUE");
-                sb.append(" INDEX");
-            } else {
-                sb.append(" INDEX");
-            }
-
-            if (StringTools.isNotEmpty(item.indexName)) {
-                sb.append(" " + item.indexName);
-            }
-
-            sb.append(" ON ");
-            sb.append(tableName);
-
-            if (item.columns != null) {
-                sb.append(" (");
-                int i = 0;
-                for (StampColumn column : item.columns) {
-                    sb.append(this.getColumnName(wrapper, alter, column));
-                    i++;
-                    if (i != item.columns.length) sb.append(",");
-                }
-                sb.append(")");
-            } else {
-                throw new IllegalArgumentException(I18n.print("miss_index_columns"));
-            }
-        } else {
-            logger.warn("sqlite can't create primary key");
-        }
+        logger.warn("sqlite can't create primary key");
 
         if (StringTools.isNotEmpty(item.comment)) {
             logger.warn("sqlite can't set index comment");

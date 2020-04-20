@@ -45,11 +45,11 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 sb.append(" ADD");
                 this.buildAddAlterColumn(sb, wrapper, alter, item);
             }
-            if (item.struct == KeyAlterStruct.INDEX) {
-                this.buildAlterIndex(sb, wrapper, alter, item);
+            if (item.struct == KeyAlterStruct.PRIMARY_KEY) {
+                this.buildAddPrimaryKey(sb, wrapper, alter, item);
             }
         }
-        
+
         if (item.action == KeyAction.MODIFY) {
             this.buildAlterColumn(sb, wrapper, alter, item, 3);
         }
@@ -94,35 +94,20 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         }
     }
 
-    private void buildAlterIndex(StringBuilder sb,
-                                 MappingGlobalWrapper wrapper,
-                                 StampAlter alter,
-                                 StampAlterItem item) {
+    private void buildAddPrimaryKey(StringBuilder sb,
+                                    MappingGlobalWrapper wrapper,
+                                    StampAlter alter,
+                                    StampAlterItem item) {
         String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
-            sb.append("CREATE");
-        }
-        if (item.indexType == KeyIndexType.UNIQUE) {
-            sb.append(" UNIQUE");
-            sb.append(" INDEX");
-        } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-            sb.append("ALTER TABLE " + tableName + " ADD");
-            if (StringTools.isNotEmpty(item.indexName)) {
-                sb.append(" CONSTRAINT " + item.indexName);
-            }
-            sb.append(" PRIMARY KEY");
+        String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
+
+        sb.append("ALTER TABLE " + tableName + " ADD");
+        if (StringTools.isNotEmpty(item.indexName)) {
+            sb.append(" CONSTRAINT " + item.indexName);
         } else {
-            sb.append(" INDEX");
+            sb.append(" CONSTRAINT " + outTableName.toUpperCase() + "_PKEY");
         }
-
-        if (item.indexType != KeyIndexType.PRIMARY_KEY && StringTools.isNotEmpty(item.indexName)) {
-            sb.append(" " + item.indexName);
-        }
-
-        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
-            sb.append(" ON");
-            sb.append(" " + tableName);
-        }
+        sb.append(" PRIMARY KEY");
         if (item.columns != null) {
             sb.append(" (");
             int i = 0;

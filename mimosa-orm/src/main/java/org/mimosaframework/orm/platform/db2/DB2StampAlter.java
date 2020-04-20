@@ -61,8 +61,8 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
                 sb.append(" ADD COLUMN");
                 this.buildAddAlterColumn(sb, wrapper, alter, item);
             }
-            if (item.struct == KeyAlterStruct.INDEX) {
-                this.buildAlterIndex(sb, wrapper, alter, item);
+            if (item.struct == KeyAlterStruct.PRIMARY_KEY) {
+                this.buildAddPrimaryKey(sb, wrapper, alter, item);
             }
         }
 
@@ -110,46 +110,32 @@ public class DB2StampAlter extends DB2StampCommonality implements StampCombineBu
         }
     }
 
-    private void buildAlterIndex(StringBuilder sb,
-                                 MappingGlobalWrapper wrapper,
-                                 StampAlter alter,
-                                 StampAlterItem item) {
+    private void buildAddPrimaryKey(StringBuilder sb,
+                                    MappingGlobalWrapper wrapper,
+                                    StampAlter alter,
+                                    StampAlterItem item) {
         String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
-            sb.append("CREATE");
-        }
-        if (item.indexType == KeyIndexType.UNIQUE) {
-            sb.append(" UNIQUE");
-            sb.append(" INDEX");
-        } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-            sb.append("ALTER TABLE ");
-            sb.append(tableName);
-            sb.append(" ADD CONSTRAINT");
-        } else {
-            sb.append(" INDEX");
-        }
+        sb.append("ALTER TABLE ");
+        sb.append(tableName);
+        sb.append(" ADD CONSTRAINT");
 
         if (StringTools.isNotEmpty(item.indexName)) {
             sb.append(" " + RS + item.indexName + RE);
         }
 
-        if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-            if (StringTools.isEmpty(item.indexName)) {
-                StringBuilder indexName = new StringBuilder();
-                int m = 0;
-                for (StampColumn column : item.columns) {
-                    indexName.append(this.getColumnName(wrapper, alter,
-                            new StampColumn(column.column), false).toUpperCase());
-                    m++;
-                    if (m != item.columns.length) indexName.append("_");
-                }
-                sb.append(" " + RS + tableName.toUpperCase() + "_" + indexName.toString() + RE);
+        if (StringTools.isEmpty(item.indexName)) {
+            StringBuilder indexName = new StringBuilder();
+            int m = 0;
+            for (StampColumn column : item.columns) {
+                indexName.append(this.getColumnName(wrapper, alter,
+                        new StampColumn(column.column), false).toUpperCase());
+                m++;
+                if (m != item.columns.length) indexName.append("_");
             }
-            sb.append(" PRIMARY KEY");
-        } else {
-            sb.append(" ON");
-            sb.append(" " + tableName);
+            sb.append(" " + RS + tableName.toUpperCase() + "_" + indexName.toString() + RE);
         }
+        sb.append(" PRIMARY KEY");
+
         if (item.columns != null) {
             sb.append(" (");
             int i = 0;

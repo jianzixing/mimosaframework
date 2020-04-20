@@ -55,8 +55,8 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             if (item.struct == KeyAlterStruct.COLUMN) {
                 this.buildAlterColumn(sb, wrapper, alter, item);
             }
-            if (item.struct == KeyAlterStruct.INDEX) {
-                this.buildAlterIndex(sb, wrapper, alter, item);
+            if (item.struct == KeyAlterStruct.PRIMARY_KEY) {
+                this.buildAddPrimaryKey(sb, wrapper, alter, item);
             }
         }
 
@@ -87,18 +87,11 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
         }
     }
 
-    private void buildAlterIndex(StringBuilder sb,
-                                 MappingGlobalWrapper wrapper,
-                                 StampAlter alter,
-                                 StampAlterItem item) {
-        if (item.indexType == KeyIndexType.UNIQUE) {
-            sb.append(" UNIQUE");
-        } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-            sb.append(" PRIMARY KEY");
-        } else {
-            sb.append(" INDEX");
-        }
-
+    private void buildAddPrimaryKey(StringBuilder sb,
+                                    MappingGlobalWrapper wrapper,
+                                    StampAlter alter,
+                                    StampAlterItem item) {
+        sb.append(" PRIMARY KEY");
         if (StringTools.isNotEmpty(item.indexName)) {
             sb.append(" " + item.indexName);
         }

@@ -96,50 +96,6 @@ public class SessionTemplateTesting {
     }
 
     @Test
-    public void testAlter7() throws Exception {
-        template.getAutonomously(AlterFactory.alter().table(TableUser.class)
-                .add().index().name("a").columns(TableUser.address, TableUser.age)
-                .comment("aaa").autonomously());
-        template.getAutonomously(DropFactory.drop().index().name("a").on().table(TableUser.class).autonomously());
-    }
-
-    @Test
-    public void testAlter8() throws Exception {
-        SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                AlterFactory.alter().table(TableUser.class)
-                        .add().index().name("b").columns(TableUser.address, TableUser.userName)
-                        .comment("aaa")
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-        template.getAutonomously(DropFactory.drop().index().name("b").on().table(TableUser.class).autonomously());
-        autoResult = template.getAutonomously(sqlAutonomously);
-    }
-
-
-    @Test
-    public void testAlter9() throws Exception {
-        SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                AlterFactory.alter().table(TableUser.class)
-                        .add().unique().name("c").columns(TableUser.address, TableUser.userName)
-                        .comment("aaa")
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-        template.getAutonomously(DropFactory.drop().index().name("c").on().table(TableUser.class).autonomously());
-        autoResult = template.getAutonomously(sqlAutonomously);
-    }
-
-    @Test
-    public void testAlter10() throws Exception {
-        SQLAutonomously sqlAutonomously = new SQLAutonomously(
-                AlterFactory.alter().table(TableUser.class)
-                        .add().index().name("pk").column(TableUser.id)
-        );
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
-        template.getAutonomously(DropFactory.drop().index().name("pk").on().table(TableUser.class).autonomously());
-        template.getAutonomously(sqlAutonomously);
-    }
-
-    @Test
     public void testAlter11() throws Exception {
 //        SQLAutonomously sqlAutonomously;
         template.getAutonomously(AlterFactory.alter().table(TableUser.class)

@@ -72,8 +72,8 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             if (item.struct == KeyAlterStruct.COLUMN) {
                 this.buildAlterColumn(sb, wrapper, alter, item, false);
             }
-            if (item.struct == KeyAlterStruct.INDEX) {
-                this.buildAlterIndex(sb, wrapper, alter, item);
+            if (item.struct == KeyAlterStruct.PRIMARY_KEY) {
+                this.buildAddPrimaryKey(sb, wrapper, alter, item);
             }
         }
 
@@ -118,37 +118,17 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
     }
 
-    private void buildAlterIndex(StringBuilder sb,
-                                 MappingGlobalWrapper wrapper,
-                                 StampAlter alter,
-                                 StampAlterItem item) {
-        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
-            sb.setLength(0);
-            sb.append("CREATE");
-        }
-        if (item.indexType == KeyIndexType.UNIQUE) {
-            sb.append(" UNIQUE");
-            sb.append(" INDEX");
-        } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-            sb.append(" PRIMARY KEY");
-        } else {
-            sb.append(" INDEX");
-        }
+    private void buildAddPrimaryKey(StringBuilder sb,
+                                    MappingGlobalWrapper wrapper,
+                                    StampAlter alter,
+                                    StampAlterItem item) {
+        sb.append(" PRIMARY KEY");
 
         if (StringTools.isNotEmpty(item.indexName)) {
             sb.append(" " + RS + item.indexName + RE);
         }
-        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
-            sb.append(" ON ");
-            sb.append(this.getTableName(wrapper, alter.tableClass, alter.tableName));
-        }
-
-        List<String> fullTextIndexNames = new ArrayList<>();
-
+        
         if (item.columns != null && item.columns.length > 0) {
-            for (StampColumn column : item.columns) {
-                fullTextIndexNames.add(this.getColumnName(wrapper, alter, column, false));
-            }
             sb.append(" (");
             int i = 0;
             for (StampColumn column : item.columns) {

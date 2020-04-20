@@ -139,7 +139,7 @@ public class TestSQLGrammar {
 
 
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
-                .add().index().name("").column("").comment("");
+                .add().primary().key().name("").column("");
 
         unifyBuilder = AlterFactory.alter().table(TestSQLGrammar.class)
                 .modify().column("").intType().autoIncrement().after().column("");

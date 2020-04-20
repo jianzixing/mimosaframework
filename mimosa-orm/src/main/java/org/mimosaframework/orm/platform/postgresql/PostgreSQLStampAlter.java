@@ -47,8 +47,8 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             if (item.struct == KeyAlterStruct.COLUMN) {
                 this.buildAddAlterColumn(sb, wrapper, alter, item);
             }
-            if (item.struct == KeyAlterStruct.INDEX) {
-                this.buildAlterIndex(sb, wrapper, alter, item);
+            if (item.struct == KeyAlterStruct.PRIMARY_KEY) {
+                this.buildAddPrimaryKey(sb, wrapper, alter, item);
             }
         }
 
@@ -96,38 +96,21 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
         }
     }
 
-    private void buildAlterIndex(StringBuilder sb,
-                                 MappingGlobalWrapper wrapper,
-                                 StampAlter alter,
-                                 StampAlterItem item) {
+    private void buildAddPrimaryKey(StringBuilder sb,
+                                    MappingGlobalWrapper wrapper,
+                                    StampAlter alter,
+                                    StampAlterItem item) {
         String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
         String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
         sb.setLength(0);
-        if (item.indexType != KeyIndexType.PRIMARY_KEY) {
-            sb.append("CREATE");
-        } else {
-            sb.append("ALTER TABLE " + tableName + " ADD CONSTRAINT ");
-        }
-        if (item.indexType == KeyIndexType.UNIQUE) {
-            sb.append(" UNIQUE");
-            sb.append(" INDEX");
-        } else if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-
-        } else {
-            sb.append(" INDEX");
-        }
+        sb.append("ALTER TABLE " + tableName + " ADD CONSTRAINT ");
 
         if (StringTools.isNotEmpty(item.indexName)) {
             sb.append(" " + item.indexName);
         } else {
-            sb.append(" " + outTableName + "_pkey");
+            sb.append(" " + outTableName.toUpperCase() + "_PKEY");
         }
-        if (item.indexType == KeyIndexType.PRIMARY_KEY) {
-            sb.append(" PRIMARY KEY");
-        } else {
-            sb.append(" ON ");
-            sb.append(tableName);
-        }
+        sb.append(" PRIMARY KEY");
 
         if (item.columns != null) {
             sb.append(" (");
