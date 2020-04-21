@@ -14,4 +14,12 @@ public class DefaultMappingNamedConvert implements NamingConvert {
         }
         return name;
     }
+
+    @Override
+    public String prefix(String name, String prefix) {
+        if (name.startsWith(prefix)) {
+            return name;
+        }
+        return prefix + name;
+    }
 }

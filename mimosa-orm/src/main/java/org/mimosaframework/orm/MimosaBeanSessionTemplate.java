@@ -9,6 +9,7 @@ import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionCallback;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionPropagationType;
+import org.mimosaframework.orm.utils.Model2BeanFactory;
 import org.mimosaframework.orm.utils.ModelObjectToBean;
 
 import java.io.IOException;
@@ -20,10 +21,15 @@ import java.util.*;
 
 public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate implements BeanSessionTemplate {
     private MimosaSessionTemplate modelSession = new MimosaSessionTemplate();
+    private Model2BeanFactory model2BeanFactory = new ModelObjectToBean();
     private SessionFactory sessionFactory;
 
     public SessionFactory getSessionFactory() {
         return sessionFactory;
+    }
+
+    public void setModel2BeanFactory(Model2BeanFactory model2BeanFactory) {
+        this.model2BeanFactory = model2BeanFactory;
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -40,7 +46,7 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
             model.setObjectClass(obj.getClass());
             modelSession.save(model);
 
-            ModelObjectToBean.toJavaObject(model, obj);
+            model2BeanFactory.toJavaObject(model, obj);
             return obj;
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
@@ -54,7 +60,7 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
             modelSession.saveAndUpdate(model);
-            return (T) ModelObjectToBean.toJavaObject(model, obj.getClass());
+            return (T) model2BeanFactory.toJavaObject(model, obj.getClass());
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
@@ -159,7 +165,7 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
     @Override
     public <T> T get(Class<T> c, Serializable id) {
         ModelObject object = modelSession.get(c, id);
-        return ModelObjectToBean.toJavaObject(object, c);
+        return model2BeanFactory.toJavaObject(object, c);
     }
 
     @Override
@@ -229,28 +235,30 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
                             || (joinName != null && joinName.value().equals(aliasName))) {
                         for (ModelObject object : objects) {
                             Object child = object.get(aliasName);
-                            if (child instanceof List) {
-                                List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                        (List<ModelObject>) child);
-                                if (childBeans != null && childBeans.size() > 0) {
-                                    if (fieldType.isAssignableFrom(Collection.class)) {
-                                        object.put(field.getName(), this.list2Collection(childBeans, fieldType));
-                                    } else if (fieldType.isArray()) {
-                                        object.put(field.getName(), childBeans.toArray());
-                                    } else {
-                                        object.put(field.getName(), childBeans.get(0));
+                            if (child != null) {
+                                if (child instanceof List) {
+                                    List childBeans = this.model2JavaObject(Collection.class.isAssignableFrom(fieldType) ? genericType : fieldType,
+                                            join.getChildJoin(), (List<ModelObject>) child);
+                                    if (childBeans != null && childBeans.size() > 0) {
+                                        if (Collection.class.isAssignableFrom(fieldType)) {
+                                            object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                        } else if (fieldType.isArray()) {
+                                            object.put(field.getName(), childBeans.toArray());
+                                        } else {
+                                            object.put(field.getName(), childBeans.get(0));
+                                        }
                                     }
-                                }
-                            } else {
-                                List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                        Arrays.asList((ModelObject) child));
-                                if (childBeans != null && childBeans.size() > 0) {
-                                    if (fieldType.isAssignableFrom(Collection.class)) {
-                                        object.put(field.getName(), this.list2Collection(childBeans, fieldType));
-                                    } else if (fieldType.isArray()) {
-                                        object.put(field.getName(), childBeans.toArray());
-                                    } else {
-                                        object.put(field.getName(), childBeans.get(0));
+                                } else {
+                                    List childBeans = this.model2JavaObject(Collection.class.isAssignableFrom(fieldType) ? genericType : fieldType,
+                                            join.getChildJoin(), Arrays.asList((ModelObject) child));
+                                    if (childBeans != null && childBeans.size() > 0) {
+                                        if (Collection.class.isAssignableFrom(fieldType)) {
+                                            object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                        } else if (fieldType.isArray()) {
+                                            object.put(field.getName(), childBeans.toArray());
+                                        } else {
+                                            object.put(field.getName(), childBeans.get(0));
+                                        }
                                     }
                                 }
                             }
@@ -284,21 +292,23 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
                             }
                         }
 
-                        if (genericType != null && fieldType.isAssignableFrom(Collection.class)) {
+                        if (genericType != null && Collection.class.isAssignableFrom(fieldType)) {
                             for (ModelObject object : objects) {
                                 Object child = object.get(genericType);
-                                if (child instanceof List) {
-                                    List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                            (List<ModelObject>) child);
-                                    if (childBeans != null && childBeans.size() > 0) {
-                                        object.put(field.getName(), this.list2Collection(childBeans, fieldType));
-                                    }
-                                } else {
-                                    List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                            Arrays.asList((ModelObject) child));
+                                if (child != null) {
+                                    if (child instanceof List) {
+                                        List childBeans = this.model2JavaObject(genericType, join.getChildJoin(),
+                                                (List<ModelObject>) child);
+                                        if (childBeans != null && childBeans.size() > 0) {
+                                            object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                        }
+                                    } else {
+                                        List childBeans = this.model2JavaObject(genericType, join.getChildJoin(),
+                                                Arrays.asList((ModelObject) child));
 
-                                    if (childBeans != null && childBeans.size() > 0) {
-                                        object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                        if (childBeans != null && childBeans.size() > 0) {
+                                            object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                        }
                                     }
                                 }
                             }
@@ -311,7 +321,7 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
         if (tableClass != null && objects != null && objects.size() > 0) {
             List beans = new ArrayList();
             for (ModelObject object : objects) {
-                beans.add(ModelObjectToBean.toJavaObject(object, tableClass));
+                beans.add(model2BeanFactory.toJavaObject(object, tableClass));
             }
             return beans;
         }

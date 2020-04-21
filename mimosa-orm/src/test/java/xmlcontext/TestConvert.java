@@ -27,4 +27,9 @@ public class TestConvert implements NamingConvert {
         }
         return name;
     }
+
+    @Override
+    public String prefix(String name, String prefix) {
+        return null;
+    }
 }

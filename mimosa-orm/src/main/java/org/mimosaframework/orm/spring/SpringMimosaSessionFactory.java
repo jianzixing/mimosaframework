@@ -51,6 +51,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     protected NamingConvert convert;
     protected String convertType;
     protected String scanPackage;
+    protected String tablePrefix;
     protected Set<String> mappingClasses;
     protected DataSource dataSource;
     protected MappingLevel mappingLevel;
@@ -84,6 +85,11 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public void setConvert(NamingConvert convert) {
         this.convert = convert;
         this.basicSetting.setConvert(convert);
+    }
+
+    public void setTablePrefix(String tablePrefix) {
+        this.tablePrefix = tablePrefix;
+        this.basicSetting.setTablePrefix(tablePrefix);
     }
 
     public void setConvertType(String convertType) throws ContextException {

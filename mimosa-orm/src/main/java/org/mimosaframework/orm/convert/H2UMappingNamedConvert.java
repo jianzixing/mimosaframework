@@ -28,4 +28,12 @@ public class H2UMappingNamedConvert implements NamingConvert {
 
         return tableName;
     }
+
+    @Override
+    public String prefix(String name, String prefix) {
+        if (name.startsWith(prefix + "_")) {
+            return name;
+        }
+        return prefix + "_" + name;
+    }
 }

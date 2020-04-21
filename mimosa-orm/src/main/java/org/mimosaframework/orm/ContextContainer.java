@@ -36,6 +36,8 @@ public interface ContextContainer {
 
     Set<Class> getResolvers();
 
+    String getTablePrefix();
+
     MappingTable getMappingTableByClass(Class tableClass);
 
     MappingTable getMappingTableByClassName(String tableClassName);

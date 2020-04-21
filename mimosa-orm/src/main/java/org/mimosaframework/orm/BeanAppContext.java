@@ -3,6 +3,7 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.*;
 import org.mimosaframework.orm.exception.ContextException;
@@ -94,6 +95,9 @@ public class BeanAppContext implements Context {
             contextValues.setMappingLevel(basicInfo.getMappingLevel());
             if (basicInfo.isIgnoreEmptySlave() != null) {
                 contextValues.setIgnoreEmptySlave(basicInfo.isIgnoreEmptySlave());
+            }
+            if (StringTools.isNotEmpty(basicInfo.getTablePrefix())) {
+                contextValues.setTablePrefix(basicInfo.getTablePrefix());
             }
 
             contextValues.setInterceptSession(basicInfo.getInterceptSession());

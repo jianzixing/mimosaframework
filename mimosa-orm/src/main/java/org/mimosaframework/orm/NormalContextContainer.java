@@ -35,6 +35,8 @@ public class NormalContextContainer implements ContextContainer {
     protected Set<MappingTable> mappingTables;
     protected MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
     protected NamingConvert convert;
+    // 数据库表名前缀
+    protected String tablePrefix;
 
     protected DataSourceWrapper defaultDataSource;
 
@@ -82,6 +84,14 @@ public class NormalContextContainer implements ContextContainer {
         return resolvers;
     }
 
+    public String getTablePrefix() {
+        return tablePrefix;
+    }
+
+    public void setTablePrefix(String tablePrefix) {
+        this.tablePrefix = tablePrefix;
+    }
+
     @Override
     public MappingTable getMappingTableByClass(Class tableClass) {
         if (this.mappingTables != null) {
@@ -125,7 +135,8 @@ public class NormalContextContainer implements ContextContainer {
                 }
 
                 for (Class c : resolvers) {
-                    DisassembleMappingClass disassembleMappingClass = new DefaultDisassembleMappingClass(c, this.getConvert());
+                    DisassembleMappingClass disassembleMappingClass = new
+                            DefaultDisassembleMappingClass(c, this.getConvert(), this.tablePrefix);
                     MappingTable mappingTable = disassembleMappingClass.getMappingTable();
                     mappingTables.add(mappingTable);
                     if (names.containsKey(mappingTable.getMappingTableName())) {

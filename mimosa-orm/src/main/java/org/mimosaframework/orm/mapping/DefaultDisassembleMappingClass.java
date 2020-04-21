@@ -23,10 +23,12 @@ import java.util.Set;
 public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
     private Class mappingClass;
     private NamingConvert convert;
+    private String prefix;
 
-    public DefaultDisassembleMappingClass(Class mappingClass, NamingConvert convert) {
+    public DefaultDisassembleMappingClass(Class mappingClass, NamingConvert convert, String prefix) {
         this.mappingClass = mappingClass;
         this.convert = convert;
+        this.prefix = prefix;
     }
 
     @Override
@@ -43,6 +45,10 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             String tableName = table.value();
             if (tableName.equals("") && convert != null) {
                 tableName = convert.convert(mappingClass.getSimpleName(), ConvertType.TABLE_NAME);
+            }
+
+            if (StringTools.isNotEmpty(prefix)) {
+                tableName = convert.prefix(tableName, prefix);
             }
 
             mappingTable.setMappingClass(mappingClass);

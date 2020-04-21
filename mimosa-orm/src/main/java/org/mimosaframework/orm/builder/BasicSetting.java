@@ -7,6 +7,7 @@ import org.mimosaframework.orm.convert.NamingConvert;
 public class BasicSetting {
     private boolean isShowSQL;
     private NamingConvert convert;
+    private String tablePrefix;
     private MappingLevel mappingLevel;
     private Boolean isIgnoreEmptySlave = true;
     private AbstractInterceptSession interceptSession;
@@ -25,6 +26,14 @@ public class BasicSetting {
 
     public void setConvert(NamingConvert convert) {
         this.convert = convert;
+    }
+
+    public String getTablePrefix() {
+        return tablePrefix;
+    }
+
+    public void setTablePrefix(String tablePrefix) {
+        this.tablePrefix = tablePrefix;
     }
 
     public void setMappingLevel(MappingLevel mappingLevel) {

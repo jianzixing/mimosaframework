@@ -653,8 +653,12 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                         NamedNodeMap attributes = node.getAttributes();
                         Node attrScan = attributes.getNamedItem("scan");
                         Node levelNode = attributes.getNamedItem("level");
+                        Node prefixNode = attributes.getNamedItem("prefix");
                         if (levelNode != null) {
                             mappingLevel = levelNode.getNodeValue();
+                        }
+                        if (prefixNode != null) {
+                            basicInfo.setTablePrefix(prefixNode.getNodeValue());
                         }
                     }
 

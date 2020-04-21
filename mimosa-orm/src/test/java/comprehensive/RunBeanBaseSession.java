@@ -174,7 +174,7 @@ public class RunBeanBaseSession {
         }
 
         List<BeanUser> objects = template.list(Criteria.query(BeanUser.class)
-                .subjoin(Criteria.left(BeanPay.class).on("id", "userId").single().aliasName("pays"))
+                .subjoin(Criteria.left(BeanPay.class).on("id", "userId").aliasName("pays"))
                 .limit(0, 2));
         if (objects != null && objects.size() > 0) {
             for (BeanUser beanUser : objects) {
@@ -182,7 +182,9 @@ public class RunBeanBaseSession {
                 List<BeanPay> pays = beanUser.getPays();
                 if (pays != null) {
                     for (BeanPay pay : pays) {
-                        System.out.println("--" + pay.getMoney().toPlainString());
+                        if (pay.getMoney() != null) {
+                            System.out.println("--" + pay.getMoney().toPlainString());
+                        }
                     }
                 }
             }
