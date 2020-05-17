@@ -34,38 +34,7 @@ public class SearchFormArgumentResolver implements HandlerMethodArgumentResolver
 
         try {
             List<ModelObject> objects = (List<ModelObject>) ModelArray.parse(param);
-            Query query = new DefaultQuery(null);
-            SearchForm searchForm = new SearchForm(query);
-
-            for (ModelObject o : objects) {
-                String name = o.getString("name");
-                String value = o.getString("value");
-                String symbol = o.getString("symbol");
-                String s = o.getString("start");
-                String e = o.getString("end");
-
-                if ((StringTools.isNotEmpty(value)
-                        || StringTools.isNotEmpty(s)
-                        || StringTools.isNotEmpty(e))
-                        && StringTools.isNotEmpty(name)) {
-                    if (StringTools.isEmpty(symbol)) {
-                        query.and(Criteria.filter().eq(name, value));
-                    } else if (symbol.equalsIgnoreCase("between")) {
-                        query.and(Criteria.filter().between(name, s, e));
-                    } else if (symbol.equalsIgnoreCase("gt")) {
-                        query.and(Criteria.filter().gt(name, value));
-                    } else if (symbol.equalsIgnoreCase("lt")) {
-                        query.and(Criteria.filter().lt(name, value));
-                    } else if (symbol.equalsIgnoreCase("gte")) {
-                        query.and(Criteria.filter().gte(name, value));
-                    } else if (symbol.equalsIgnoreCase("lte")) {
-                        query.and(Criteria.filter().lte(name, value));
-                    } else if (symbol.equalsIgnoreCase("like")) {
-                        query.and(Criteria.filter().like(name, value));
-                    }
-                }
-            }
-
+            SearchForm searchForm = new SearchForm(objects);
             return searchForm;
         } catch (Exception e) {
             e.printStackTrace();
