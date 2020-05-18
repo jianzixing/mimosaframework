@@ -8,5 +8,7 @@ public interface Delete<T extends Delete> extends Filter<T> {
 
     T linked(WrapsLinked linked);
 
+    long delete();
+
     Query covert2query();
 }

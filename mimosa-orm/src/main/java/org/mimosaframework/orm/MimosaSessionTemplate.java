@@ -152,20 +152,20 @@ public class MimosaSessionTemplate extends AbstractAuxiliaryTemplate implements 
 
     @Override
     public Query query(Class clazz) {
-        Query query = new DefaultQuery(clazz);
+        Query query = new DefaultQuery(this, clazz);
         return query;
     }
 
 
     @Override
     public Delete delete(Class clazz) {
-        Delete delete = new DefaultDelete(clazz);
+        Delete delete = new DefaultDelete(this, clazz);
         return delete;
     }
 
     @Override
     public Update update(Class clazz) {
-        Update update = new DefaultUpdate(clazz);
+        Update update = new DefaultUpdate(this, clazz);
         return update;
     }
 

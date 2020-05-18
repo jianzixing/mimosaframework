@@ -29,7 +29,7 @@ public class MysqlStampDelete extends MysqlStampCommonality implements StampComb
 
         if (delete.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, delete, delete.where, sb);
+            this.buildWhere(wrapper, placeholders, delete, delete.where, sb, true);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

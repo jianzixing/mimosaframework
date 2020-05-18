@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.orm.Paging;
+
 import java.util.List;
 
 /**
@@ -58,4 +60,12 @@ public interface Query<T extends Query> extends Filter<T> {
     T excludes(Class tableClass, List fields);
 
     Class getTableClass();
+
+    Paging paging();
+
+    <M> M get();
+
+    <M> List<M> list();
+
+    long count();
 }

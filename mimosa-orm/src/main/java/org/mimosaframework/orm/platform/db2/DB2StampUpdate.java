@@ -35,7 +35,7 @@ public class DB2StampUpdate extends DB2StampCommonality implements StampCombineB
 
         if (update.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, update, update.where, sb);
+            this.buildWhere(wrapper, placeholders, update, update.where, sb, true);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

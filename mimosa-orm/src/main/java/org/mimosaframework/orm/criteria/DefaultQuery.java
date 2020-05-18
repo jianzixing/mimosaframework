@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.orm.BeanSessionTemplate;
+import org.mimosaframework.orm.Paging;
+import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.i18n.I18n;
 
 import java.util.*;
@@ -8,6 +11,8 @@ import java.util.*;
  * @author yangankang
  */
 public class DefaultQuery implements LogicQuery {
+    private SessionTemplate sessionTemplate;
+    private BeanSessionTemplate beanSessionTemplate;
 
     private Wraps<Filter> logicWraps;
 
@@ -31,6 +36,24 @@ public class DefaultQuery implements LogicQuery {
     private QueryType type;
 
     public DefaultQuery(Class<?> tableClass) {
+        this.tableClass = tableClass;
+    }
+
+    public DefaultQuery(SessionTemplate sessionTemplate) {
+        this.sessionTemplate = sessionTemplate;
+    }
+
+    public DefaultQuery(SessionTemplate sessionTemplate, Class<?> tableClass) {
+        this.sessionTemplate = sessionTemplate;
+        this.tableClass = tableClass;
+    }
+
+    public DefaultQuery(BeanSessionTemplate beanSessionTemplate) {
+        this.beanSessionTemplate = beanSessionTemplate;
+    }
+
+    public DefaultQuery(BeanSessionTemplate beanSessionTemplate, Class<?> tableClass) {
+        this.beanSessionTemplate = beanSessionTemplate;
         this.tableClass = tableClass;
     }
 
@@ -58,6 +81,51 @@ public class DefaultQuery implements LogicQuery {
 
     public Class<?> getTableClass() {
         return tableClass;
+    }
+
+    @Override
+    public Paging paging() {
+        if (this.sessionTemplate != null) {
+            return this.sessionTemplate.paging(this);
+        }
+        if (this.beanSessionTemplate != null) {
+            return this.beanSessionTemplate.paging(this);
+        }
+
+        return null;
+    }
+
+    @Override
+    public <M> M get() {
+        if (this.sessionTemplate != null) {
+            return (M) this.sessionTemplate.get(this);
+        }
+        if (this.beanSessionTemplate != null) {
+            return this.beanSessionTemplate.get(this);
+        }
+        return null;
+    }
+
+    @Override
+    public <M> List<M> list() {
+        if (this.sessionTemplate != null) {
+            return (List<M>) this.sessionTemplate.list(this);
+        }
+        if (this.beanSessionTemplate != null) {
+            return this.beanSessionTemplate.list(this);
+        }
+        return null;
+    }
+
+    @Override
+    public long count() {
+        if (this.sessionTemplate != null) {
+            return this.sessionTemplate.count(this);
+        }
+        if (this.beanSessionTemplate != null) {
+            return this.beanSessionTemplate.count(this);
+        }
+        return 0;
     }
 
     public Limit getLimit() {

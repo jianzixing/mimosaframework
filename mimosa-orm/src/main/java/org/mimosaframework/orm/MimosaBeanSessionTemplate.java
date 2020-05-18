@@ -117,8 +117,8 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
     }
 
     @Override
-    public void update(Update update) {
-        modelSession.update(update);
+    public long update(Update update) {
+        return modelSession.update(update);
     }
 
     @Override
@@ -153,8 +153,8 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
     }
 
     @Override
-    public void delete(Delete delete) {
-        modelSession.delete(delete);
+    public long delete(Delete delete) {
+        return modelSession.delete(delete);
     }
 
     @Override
@@ -366,20 +366,20 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
 
     @Override
     public Query query(Class clazz) {
-        Query query = new DefaultQuery(clazz);
+        Query query = new DefaultQuery(this, clazz);
         return query;
     }
 
 
     @Override
     public Delete delete(Class clazz) {
-        Delete delete = new DefaultDelete(clazz);
+        Delete delete = new DefaultDelete(this, clazz);
         return delete;
     }
 
     @Override
     public Update update(Class clazz) {
-        Update update = new DefaultUpdate(clazz);
+        Update update = new DefaultUpdate(this, clazz);
         return update;
     }
 

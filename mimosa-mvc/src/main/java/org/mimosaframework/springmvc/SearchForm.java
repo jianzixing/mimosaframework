@@ -113,7 +113,7 @@ public class SearchForm {
         Query query = this.getQuery(table, null);
         if (query != null) {
             Wraps wraps = ((DefaultQuery) query).getLogicWraps();
-            DefaultDelete delete = new DefaultDelete(null);
+            DefaultDelete delete = new DefaultDelete(table);
             delete.setLogicWraps(wraps);
             return delete;
         }
@@ -124,7 +124,7 @@ public class SearchForm {
         Query query = this.getQuery(table, null);
         if (query != null) {
             Wraps wraps = ((DefaultQuery) query).getLogicWraps();
-            DefaultUpdate update = new DefaultUpdate(null);
+            DefaultUpdate update = new DefaultUpdate(table);
             update.setLogicWraps(wraps);
             return update;
         }

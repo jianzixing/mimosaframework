@@ -1,11 +1,38 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.orm.BeanSessionTemplate;
+import org.mimosaframework.orm.SessionTemplate;
+
 /**
  * @author yangankang
  */
 public class DefaultDelete implements LogicDelete {
+    private SessionTemplate sessionTemplate;
+    private BeanSessionTemplate beanSessionTemplate;
+
     private Wraps<Filter> logicWraps;
     private Class tableClass;
+
+    public DefaultDelete() {
+    }
+
+    public DefaultDelete(SessionTemplate sessionTemplate) {
+        this.sessionTemplate = sessionTemplate;
+    }
+
+    public DefaultDelete(SessionTemplate sessionTemplate, Class tableClass) {
+        this.sessionTemplate = sessionTemplate;
+        this.tableClass = tableClass;
+    }
+
+    public DefaultDelete(BeanSessionTemplate beanSessionTemplate) {
+        this.beanSessionTemplate = beanSessionTemplate;
+    }
+
+    public DefaultDelete(BeanSessionTemplate beanSessionTemplate, Class tableClass) {
+        this.beanSessionTemplate = beanSessionTemplate;
+        this.tableClass = tableClass;
+    }
 
     public DefaultDelete(Class tableClass) {
         this.tableClass = tableClass;
@@ -47,6 +74,17 @@ public class DefaultDelete implements LogicDelete {
 
         this.logicWraps.addLastLink(lw);
         return this;
+    }
+
+    @Override
+    public long delete() {
+        if (this.sessionTemplate != null) {
+            return this.sessionTemplate.delete(this);
+        }
+        if (this.beanSessionTemplate != null) {
+            return this.beanSessionTemplate.delete(this);
+        }
+        return 0;
     }
 
     @Override

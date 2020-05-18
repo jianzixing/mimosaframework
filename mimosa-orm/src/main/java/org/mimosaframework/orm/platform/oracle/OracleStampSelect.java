@@ -66,14 +66,14 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
                 }
                 if (join.on != null) {
                     sb.append(" ON ");
-                    this.buildWhere(wrapper, placeholders, select, join.on, sb);
+                    this.buildWhere(wrapper, placeholders, select, join.on, sb, true);
                 }
             }
         }
 
         if (select.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, select, select.where, sb);
+            this.buildWhere(wrapper, placeholders, select, select.where, sb, true);
         }
 
         if (select.groupBy != null && select.groupBy.length > 0) {
@@ -91,7 +91,7 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
 
         if (select.having != null) {
             sb.append(" HAVING ");
-            this.buildWhere(wrapper, placeholders, select, select.having, sb);
+            this.buildWhere(wrapper, placeholders, select, select.having, sb, true);
         }
 
         if (select.orderBy != null && select.orderBy.length > 0) {

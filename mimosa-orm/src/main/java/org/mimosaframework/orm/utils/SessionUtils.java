@@ -141,7 +141,7 @@ public final class SessionUtils {
             if (pks != null && pks.size() > 0) {
                 for (MappingField pk : pks) {
                     Object object = obj.getString(pk.getMappingFieldName());
-                    if (object.equals(0)) {
+                    if (object != null && object.equals(0)) {
                         obj.remove(pk.getMappingFieldName());
                     }
                 }

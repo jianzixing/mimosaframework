@@ -22,5 +22,7 @@ public interface Update<T extends Update> extends Filter<T> {
 
     T subSelf(Object key, String step);
 
+    long update();
+
     Query covert2query();
 }

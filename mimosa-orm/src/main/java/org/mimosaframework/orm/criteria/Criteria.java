@@ -9,12 +9,16 @@ public final class Criteria {
         return new DefaultQuery(c);
     }
 
+    public static final LogicQuery logicQuery(Class c) {
+        return new DefaultQuery(c);
+    }
+
     public static final Filter filter() {
         return new DefaultFilter();
     }
 
     public static final Join join(Class c) {
-        return new DefaultJoin(c);
+        return new DefaultJoin(c, 0);
     }
 
     public static final Join left(Class c) {

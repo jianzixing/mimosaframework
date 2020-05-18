@@ -22,13 +22,13 @@ public interface BeanSession extends Closeable {
 
     <T> void update(List<T> objects);
 
-    void update(Update update);
+    long update(Update update);
 
     <T> void delete(T obj);
 
     <T> void delete(List<T> objects);
 
-    void delete(Delete delete);
+    long delete(Delete delete);
 
     <T> void delete(Class<T> c, Serializable id);
 

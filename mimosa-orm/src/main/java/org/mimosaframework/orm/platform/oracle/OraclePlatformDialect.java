@@ -3,20 +3,14 @@ package org.mimosaframework.orm.platform.oracle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.mapping.SpecificMappingField;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class OraclePlatformDialect extends PlatformDialect {

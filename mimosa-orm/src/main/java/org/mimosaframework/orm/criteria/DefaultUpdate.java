@@ -1,5 +1,8 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.orm.BeanSessionTemplate;
+import org.mimosaframework.orm.SessionTemplate;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -7,11 +10,32 @@ import java.util.Map;
  * @author yangankang
  */
 public class DefaultUpdate implements LogicUpdate {
+    private SessionTemplate sessionTemplate;
+    private BeanSessionTemplate beanSessionTemplate;
+
     private Wraps<Filter> logicWraps;
     private Map<Object, Object> values = new LinkedHashMap<Object, Object>();
     private Class tableClass;
 
     public DefaultUpdate() {
+    }
+
+    public DefaultUpdate(SessionTemplate sessionTemplate) {
+        this.sessionTemplate = sessionTemplate;
+    }
+
+    public DefaultUpdate(SessionTemplate sessionTemplate, Class tableClass) {
+        this.sessionTemplate = sessionTemplate;
+        this.tableClass = tableClass;
+    }
+
+    public DefaultUpdate(BeanSessionTemplate beanSessionTemplate) {
+        this.beanSessionTemplate = beanSessionTemplate;
+    }
+
+    public DefaultUpdate(BeanSessionTemplate beanSessionTemplate, Class tableClass) {
+        this.beanSessionTemplate = beanSessionTemplate;
+        this.tableClass = tableClass;
     }
 
     public DefaultUpdate(Class tableClass) {
@@ -102,6 +126,17 @@ public class DefaultUpdate implements LogicUpdate {
         v.setStep(step);
         values.put(key, v);
         return this;
+    }
+
+    @Override
+    public long update() {
+        if (this.sessionTemplate != null) {
+            return this.sessionTemplate.update(this);
+        }
+        if (this.beanSessionTemplate != null) {
+            return this.beanSessionTemplate.update(this);
+        }
+        return 0;
     }
 
     @Override

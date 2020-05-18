@@ -29,7 +29,7 @@ public class DB2StampDelete extends DB2StampCommonality implements StampCombineB
 
         if (delete.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, delete, delete.where, sb);
+            this.buildWhere(wrapper, placeholders, delete, delete.where, sb, true);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

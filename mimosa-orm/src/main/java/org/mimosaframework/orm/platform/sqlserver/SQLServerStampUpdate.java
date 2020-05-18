@@ -35,7 +35,7 @@ public class SQLServerStampUpdate extends SQLServerStampCommonality implements S
 
         if (update.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, update, update.where, sb);
+            this.buildWhere(wrapper, placeholders, update, update.where, sb, true);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

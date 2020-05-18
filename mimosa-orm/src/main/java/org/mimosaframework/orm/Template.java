@@ -1,13 +1,11 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.orm.criteria.Delete;
-import org.mimosaframework.orm.criteria.Query;
-import org.mimosaframework.orm.criteria.Update;
+import org.mimosaframework.orm.criteria.*;
 
 public interface Template {
-    Query query(Class clazz);
+    Query<LogicQuery> query(Class clazz);
 
-    Delete delete(Class clazz);
+    Delete<LogicDelete> delete(Class clazz);
 
-    Update update(Class clazz);
+    Update<LogicUpdate> update(Class clazz);
 }
