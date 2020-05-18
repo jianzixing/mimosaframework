@@ -13,8 +13,8 @@ public class OnField {
     private String symbol;
 
     public OnField(Object self, Object main, String symbol) {
-        this.key = main;
-        this.value = self;
+        this.key = self;
+        this.value = main;
         this.symbol = symbol;
     }
 

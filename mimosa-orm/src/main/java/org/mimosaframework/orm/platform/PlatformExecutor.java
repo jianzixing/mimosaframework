@@ -1080,6 +1080,10 @@ public class PlatformExecutor {
                               int type) {
         Object key = filter.getKey();
         MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
+        if (field == null) {
+            throw new IllegalArgumentException(I18n.print("miss_symbol_field",
+                    table.getMappingTableName(), "" + key));
+        }
         String columnName = field.getMappingColumnName();
 
         Object value = filter.getValue();

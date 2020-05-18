@@ -114,47 +114,47 @@ public class DefaultJoin implements Join {
     }
 
     @Override
-    public Join on(Object mainField, Object self) {
-        return this.jeq(mainField, self);
+    public Join on(Object self, Object mainField) {
+        return this.oneq(mainField, self);
     }
 
     @Override
-    public Join jeq(Object mainField, Object self) {
+    public Join oneq(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, "=")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join jne(Object mainField, Object self) {
+    public Join onne(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, "!=")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join jgt(Object mainField, Object self) {
+    public Join ongt(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, ">")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join jge(Object mainField, Object self) {
+    public Join onge(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, ">=")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join jlt(Object mainField, Object self) {
+    public Join onlt(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, "<")));
         this.checkFieldClass(self, mainField);
         return this;
     }
 
     @Override
-    public Join jle(Object mainField, Object self) {
+    public Join onle(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, "<=")));
         this.checkFieldClass(self, mainField);
         return this;

@@ -8,19 +8,19 @@ public interface Join extends Filter<Join> {
 
     Join subjoin(Join join);
 
-    Join on(Object mainField, Object self);
+    Join on(Object self, Object mainField);
 
-    Join jeq(Object mainField, Object self);
+    Join oneq(Object self, Object mainField);
 
-    Join jne(Object mainField, Object self);
+    Join onne(Object self, Object mainField);
 
-    Join jgt(Object mainField, Object self);
+    Join ongt(Object self, Object mainField);
 
-    Join jge(Object mainField, Object self);
+    Join onge(Object self, Object mainField);
 
-    Join jlt(Object mainField, Object self);
+    Join onlt(Object self, Object mainField);
 
-    Join jle(Object mainField, Object self);
+    Join onle(Object self, Object mainField);
 
     Join aliasName(Object s);
 
