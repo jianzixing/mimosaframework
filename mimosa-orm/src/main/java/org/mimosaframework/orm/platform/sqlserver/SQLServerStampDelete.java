@@ -29,7 +29,7 @@ public class SQLServerStampDelete extends SQLServerStampCommonality implements S
 
         if (delete.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, delete, delete.where, sb, true);
+            this.buildWhere(wrapper, placeholders, delete, delete.where, sb);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

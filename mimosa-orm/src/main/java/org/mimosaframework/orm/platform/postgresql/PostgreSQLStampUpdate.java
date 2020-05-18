@@ -31,7 +31,7 @@ public class PostgreSQLStampUpdate extends PostgreSQLStampCommonality implements
 
         if (update.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, update, update.where, sb, true);
+            this.buildWhere(wrapper, placeholders, update, update.where, sb);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);

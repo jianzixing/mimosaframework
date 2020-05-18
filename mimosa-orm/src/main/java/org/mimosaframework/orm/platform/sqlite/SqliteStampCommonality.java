@@ -102,15 +102,14 @@ public abstract class SqliteStampCommonality extends PlatformStampCommonality {
                               List<SQLDataPlaceholder> placeholders,
                               StampAction stampTables,
                               StampWhere where,
-                              StringBuilder sb,
-                              boolean first) {
+                              StringBuilder sb) {
         KeyWhereType whereType = where.whereType;
         StampWhere next = where.next;
 
         if (whereType == KeyWhereType.WRAP) {
             StampWhere wrapWhere = where.wrapWhere;
             sb.append("(");
-            this.buildWhere(wrapper, placeholders, stampTables, wrapWhere, sb, true);
+            this.buildWhere(wrapper, placeholders, stampTables, wrapWhere, sb);
             sb.append(")");
         } else {
             StampFieldFun fun = where.fun;
@@ -210,15 +209,17 @@ public abstract class SqliteStampCommonality extends PlatformStampCommonality {
         }
 
         if (next != null) {
-            if (!first) {
+            if (where.whereType != null) {
                 if (where.nextLogic == KeyLogic.AND) {
                     sb.append(" AND ");
                 } else if (where.nextLogic == KeyLogic.OR) {
                     sb.append(" OR ");
+                } else {
+                    sb.append(" AND ");
                 }
             }
 
-            this.buildWhere(wrapper, placeholders, stampTables, next, sb, false);
+            this.buildWhere(wrapper, placeholders, stampTables, next, sb);
         }
     }
 

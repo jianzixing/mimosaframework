@@ -101,14 +101,14 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
                 }
                 if (join.on != null) {
                     sb.append(" ON ");
-                    this.buildWhere(wrapper, placeholders, select, join.on, sb, true);
+                    this.buildWhere(wrapper, placeholders, select, join.on, sb);
                 }
             }
         }
 
         if (select.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, select, select.where, sb, true);
+            this.buildWhere(wrapper, placeholders, select, select.where, sb);
         }
 
         if (select.groupBy != null && select.groupBy.length > 0) {
@@ -126,7 +126,7 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
 
         if (select.having != null) {
             sb.append(" HAVING ");
-            this.buildWhere(wrapper, placeholders, select, select.having, sb, true);
+            this.buildWhere(wrapper, placeholders, select, select.having, sb);
         }
 
         if (select.orderBy != null && select.orderBy.length > 0 && select.limit == null) {
