@@ -194,7 +194,7 @@ public abstract class DB2StampCommonality extends PlatformStampCommonality {
                 if (StringTools.isEmpty(key)) {
                     placeholder2.setName("Unknown&End");
                 } else {
-                    placeholder1.setName(key + "&End");
+                    placeholder2.setName(key + "&End");
                 }
                 placeholder2.setValue(rightValueEnd);
                 placeholders.add(placeholder2);

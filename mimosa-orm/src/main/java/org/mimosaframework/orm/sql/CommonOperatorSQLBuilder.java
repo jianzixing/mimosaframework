@@ -100,6 +100,7 @@ public abstract class CommonOperatorSQLBuilder<T extends CommonOperatorSQLBuilde
     public T between() {
         this.gammars.add("between");
         this.lastWhere.operator = "between";
+        this.lastWhere.whereType = KeyWhereType.KEY_AND;
         return (T) this;
     }
 
@@ -108,6 +109,7 @@ public abstract class CommonOperatorSQLBuilder<T extends CommonOperatorSQLBuilde
         this.gammars.add("notBetween");
         this.lastWhere.not = true;
         this.lastWhere.operator = "between";
+        this.lastWhere.whereType = KeyWhereType.KEY_AND;
         return (T) this;
     }
 

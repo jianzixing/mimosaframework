@@ -228,7 +228,7 @@ public abstract class PostgreSQLStampCommonality extends PlatformStampCommonalit
                 if (StringTools.isEmpty(key)) {
                     placeholder2.setName("Unknown&End");
                 } else {
-                    placeholder1.setName(key + "&End");
+                    placeholder2.setName(key + "&End");
                 }
                 placeholder2.setValue(rightValueEnd);
                 placeholders.add(placeholder2);
