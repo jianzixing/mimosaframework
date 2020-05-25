@@ -39,6 +39,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
         if (tables == null || object.getObjectClass() == null) {
             throw new ModelCheckerException(null, Code.NULL_OBJ.toString(), I18n.print("not_found_mapping_class"));
         }
+        object.clearEmpty();
 
         Class c = object.getObjectClass();
         MappingTable table = tables.get(c);
