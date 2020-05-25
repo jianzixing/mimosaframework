@@ -115,7 +115,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
             Column column = field.getMappingFieldAnnotation();
             boolean isNullable = column.nullable();
             String defaultValue = column.defaultValue();
-            Class type = column.type();
+            Class type = field.getMappingFieldType();
             long extMinLength = column.extMinLength();
             String extDecimalFormat = column.extDecimalFormat();
             String extRegExp = column.extRegExp();
