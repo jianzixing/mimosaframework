@@ -842,8 +842,8 @@ public class PlatformExecutor {
         if (excludes != null) eld = excludes.get(mappingTable.getMappingClass());
         if (ild != null || eld != null) {
             for (MappingField field : mappingFields) {
-                if (eld != null && eld.indexOf(field.getMappingFieldName()) >= 0) break;
-                if (ild != null && ild.indexOf(field.getMappingFieldName()) == -1) break;
+                if (eld != null && eld.indexOf(field.getMappingFieldName()) >= 0) continue;
+                if (ild != null && ild.indexOf(field.getMappingFieldName()) == -1) continue;
                 if (nset == null) nset = new LinkedHashSet<>();
                 nset.add(field);
             }
