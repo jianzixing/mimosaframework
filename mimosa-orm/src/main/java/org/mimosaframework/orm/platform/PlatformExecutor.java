@@ -939,7 +939,7 @@ public class PlatformExecutor {
                             }
                         } else {
                             DefaultFilter f = (DefaultFilter) filter.getFilter();
-                            this.setSymbol(select, f, aliasName, mainMappingTable, 0);
+                            this.setSymbol(select, f, aliasName, mappingTable, 0);
                         }
                         if (iterator.hasNext()) {
                             select.and();
