@@ -7,35 +7,6 @@ import java.util.*;
  * 每一条链对应的一个括号括起来的高优先级条件
  */
 public class Wraps<T> extends LinkedList<WrapsObject<T>> {
-
-    public void addLast(Wraps<T> lw) {
-        for (WrapsObject<T> lwo : lw) {
-            this.addLast(lwo);
-        }
-    }
-
-    public void addLast(Wraps<T> lw, CriteriaLogic logic) {
-        if (lw != null) {
-            WrapsObject<T> last = this.getLast();
-            if (last != null) {
-                last.setLogic(logic);
-            }
-            for (WrapsObject<T> lwo : lw) {
-                this.addLast(lwo);
-            }
-        }
-    }
-
-    public void addLast(WrapsObject<T> lwo, CriteriaLogic logic) {
-        if (lwo != null) {
-            WrapsObject<T> last = this.getLast();
-            if (last != null) {
-                last.setLogic(logic);
-            }
-            this.addLast(lwo);
-        }
-    }
-
     public void addLastLink(Wraps<T> lw) {
         if (lw != null) {
             this.addLastLink(lw, CriteriaLogic.AND);
@@ -46,7 +17,8 @@ public class Wraps<T> extends LinkedList<WrapsObject<T>> {
         if (lw != null) {
             WrapsObject<T> newLwo = new WrapsObject<>(lw);
             newLwo.setLink(lw);
-            this.addLast(newLwo, logic);
+            newLwo.setLogic(logic);
+            this.addLast(newLwo);
         }
     }
 
@@ -316,144 +288,3 @@ public class Wraps<T> extends LinkedList<WrapsObject<T>> {
         return super.toString();
     }
 }
-//public class LogicWraps<T> implements Iterable<LogicWraps> {
-//    private T where;
-//    private LogicWraps next;
-//    private LogicWraps previous;
-//    private LogicWraps link;
-//    private CriteriaLogic logic = CriteriaLogic.AND;
-//
-//    public static <T> LogicWraps<T> getLastLogicWraps(LogicWraps<T> logicWraps) {
-//        while (logicWraps.hasNext()) logicWraps = logicWraps.next();
-//        return logicWraps;
-//    }
-//
-//    public static void addToLast(LogicWraps old, LogicWraps lw, CriteriaLogic logic) {
-//        while (lw.getPrevious() != null) {
-//            lw = lw.getPrevious();
-//        }
-//        LogicWraps<Filter> last = getLastLogicWraps(old);
-//        last.setLogic(logic);
-//        last.setNext(lw);
-//        lw.setPrevious(last);
-//    }
-//
-//    public static <T> void addNewToLast(LogicWraps lw, T t, CriteriaLogic logic) {
-//        LogicWraps<T> last = getLastLogicWraps(lw);
-//        LogicWraps<T> ins = new LogicWraps<>();
-//        ins.setWhere(t);
-//        ins.setPrevious(last);
-//        last.setNext(ins);
-//        last.setLogic(logic);
-//    }
-//
-//    public boolean hasNext() {
-//        if (next != null) {
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    public LogicWraps next() {
-//        return next;
-//    }
-//
-//    public LogicWraps getLink() {
-//        return link;
-//    }
-//
-//    public CriteriaLogic getLogic() {
-//        return logic;
-//    }
-//
-//    public T getWhere() {
-//        return where;
-//    }
-//
-//    public void setWhere(T where) {
-//        this.where = where;
-//    }
-//
-//    public void setNext(LogicWraps next) {
-//        this.next = next;
-//    }
-//
-//    public void setPrevious(LogicWraps previous) {
-//        this.previous = previous;
-//    }
-//
-//    public void setLink(LogicWraps link) {
-//        this.link = link;
-//    }
-//
-//    public void setLogic(CriteriaLogic logic) {
-//        this.logic = logic;
-//    }
-//
-//    public LogicWraps getNext() {
-//        return next;
-//    }
-//
-//    public LogicWraps getPrevious() {
-//        return previous;
-//    }
-//
-//    public LogicWraps clone(CloneCallback callback) {
-//        LogicWraps lw = new LogicWraps();
-//        if (where != null) lw.where = where;
-//        if (next != null) {
-//            lw.next = next.clone(callback);
-//            lw.next.previous = lw;
-//        }
-//        if (link != null) lw.link = link.clone(callback);
-//        if (logic != null) lw.logic = logic;
-//        Object addLinked = callback.call(lw);
-//        if (addLinked != null) {
-//            LogicWraps insert = new LogicWraps();
-//            insert.where = addLinked;
-//            insert.previous = lw;
-//            insert.next = lw.next;
-//            lw.next = insert;
-//            insert.link = lw.link;
-//            lw.link = null;
-//            insert.logic = lw.logic;
-//            lw.logic = CriteriaLogic.AND;
-//            return insert;
-//        }
-//        return lw;
-//    }
-//
-//    @Override
-//    public Iterator<LogicWraps> iterator() {
-//        Iterator iterator = (new Iterator<LogicWraps>() {
-//            private LogicWraps logicWraps;
-//
-//            public Iterator setLogicWraps(LogicWraps logicWraps) {
-//                this.logicWraps = logicWraps;
-//                return this;
-//            }
-//
-//            @Override
-//            public boolean hasNext() {
-//                return this.logicWraps.hasNext();
-//            }
-//
-//            @Override
-//            public LogicWraps next() {
-//                LogicWraps lw = this.logicWraps.next();
-//                this.logicWraps = lw;
-//                return lw;
-//            }
-//
-//            @Override
-//            public void remove() {
-//
-//            }
-//        }).setLogicWraps(this);
-//        return iterator;
-//    }
-//
-//    public interface CloneCallback {
-//        Object call(LogicWraps logicWraps);
-//    }
-//}

@@ -62,11 +62,11 @@ public class DefaultUpdate implements LogicUpdate {
         this.logicWraps = logicWraps;
     }
 
-    private Update add(Filter filter, CriteriaLogic logic) {
+    private Update add(Filter filter) {
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
         }
-        this.logicWraps.addLast(new WrapsObject<Filter>(filter), logic);
+        this.logicWraps.addLast(new WrapsObject<Filter>(filter));
         return this;
     }
 
@@ -182,98 +182,98 @@ public class DefaultUpdate implements LogicUpdate {
     @Override
     public LogicUpdate eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate nin(Object key, Iterable values) {
         Filter filter = new DefaultFilter().nin(key, values);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate nin(Object key, Object... values) {
         Filter filter = new DefaultFilter().nin(key, values);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicUpdate isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 }

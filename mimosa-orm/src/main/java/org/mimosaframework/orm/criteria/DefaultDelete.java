@@ -50,12 +50,12 @@ public class DefaultDelete implements LogicDelete {
         this.logicWraps = logicWraps;
     }
 
-    private Delete add(Filter filter, CriteriaLogic logic) {
+    private Delete add(Filter filter) {
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
         }
 
-        this.logicWraps.addLast(new WrapsObject<Filter>(filter), logic);
+        this.logicWraps.addLast(new WrapsObject<Filter>(filter));
         return this;
     }
 
@@ -112,98 +112,98 @@ public class DefaultDelete implements LogicDelete {
     @Override
     public LogicDelete eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete nin(Object key, Iterable values) {
         Filter filter = new DefaultFilter().nin(key, values);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete nin(Object key, Object... values) {
         Filter filter = new DefaultFilter().nin(key, values);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 
     @Override
     public LogicDelete isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
-        this.add(filter, CriteriaLogic.AND);
+        this.add(filter);
         return this;
     }
 }
