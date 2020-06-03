@@ -602,6 +602,10 @@ public class PlatformExecutor {
             select = selectWrap;
         }
 
+        if (query.isForUpdate()) {
+            select.forUpdate();
+        }
+
         SQLBuilderCombine combine = dialect.select(select.compile());
         Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
                 combine.getSql(), combine.getPlaceholders()));

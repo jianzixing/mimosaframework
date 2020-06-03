@@ -12,6 +12,7 @@ public class StampSelect implements StampAction {
     public StampWhere having;
     public StampOrderBy[] orderBy;
     public StampLimit limit;
+    public boolean forUpdate;
 
     @Override
     public List<STItem> getTables() {

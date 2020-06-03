@@ -23,6 +23,10 @@ public interface Query<T extends Query> extends Filter<T> {
 
     T setTableClass(Class c);
 
+    T forUpdate();
+
+    T forUpdate(boolean is);
+
     T master();
 
     T slave();

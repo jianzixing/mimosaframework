@@ -138,6 +138,10 @@ public class SQLServerStampSelect extends SQLServerStampCommonality implements S
             sb.append(") RN_TABLE_ALIAS ) AS A ");
             sb.append("WHERE A.RN_ALIAS_ROW_NUMBER BETWEEN " + start + " AND " + limit);
         }
+
+        if (select.forUpdate) {
+            sb.append(" FOR UPDATE");
+        }
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,

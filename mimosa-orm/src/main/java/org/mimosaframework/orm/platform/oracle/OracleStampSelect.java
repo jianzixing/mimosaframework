@@ -114,6 +114,10 @@ public class OracleStampSelect extends OracleStampCommonality implements StampCo
 
             sb.append(") RN_TABLE_ALIAS WHERE ROWNUM <= " + limit + ") RN_TABLE_ALIAS_2 WHERE RN_TABLE_ALIAS_2.RN_ALIAS_ROW_NUMBER >= " + start);
         }
+
+        if (select.forUpdate) {
+            sb.append(" FOR UPDATE");
+        }
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,

@@ -27,6 +27,7 @@ public class DefaultQuery implements LogicQuery {
 
     private Limit limit;
     private Class<?> tableClass;
+    private boolean isForUpdate = false;
     private boolean isMaster = true;
     private String slaveName;
 
@@ -206,6 +207,18 @@ public class DefaultQuery implements LogicQuery {
     @Override
     public LogicQuery setTableClass(Class c) {
         this.tableClass = c;
+        return this;
+    }
+
+    @Override
+    public LogicQuery forUpdate() {
+        this.isForUpdate = true;
+        return this;
+    }
+
+    @Override
+    public LogicQuery forUpdate(boolean is) {
+        this.isForUpdate = is;
         return this;
     }
 
@@ -451,6 +464,10 @@ public class DefaultQuery implements LogicQuery {
 
     public boolean isMaster() {
         return isMaster;
+    }
+
+    public boolean isForUpdate() {
+        return isForUpdate;
     }
 
     public String getSlaveName() {

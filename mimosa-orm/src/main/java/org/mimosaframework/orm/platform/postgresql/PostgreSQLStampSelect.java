@@ -107,6 +107,10 @@ public class PostgreSQLStampSelect extends PostgreSQLStampCommonality implements
         if (select.limit != null) {
             sb.append(" LIMIT " + select.limit.limit + " OFFSET " + select.limit.start);
         }
+
+        if (select.forUpdate) {
+            sb.append(" FOR UPDATE");
+        }
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,

@@ -598,4 +598,9 @@ public class DefaultSQLSelectBuilder
         }
         return this;
     }
+
+    public Object forUpdate() {
+        this.stampSelect.forUpdate = true;
+        return this;
+    }
 }

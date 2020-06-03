@@ -123,6 +123,10 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             sb.append(") RN_TABLE_ALIAS ) ");
             sb.append("WHERE RN_ALIAS_ROW_NUMBER BETWEEN " + start + " AND " + limit);
         }
+
+        if (select.forUpdate) {
+            sb.append(" FOR UPDATE");
+        }
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,

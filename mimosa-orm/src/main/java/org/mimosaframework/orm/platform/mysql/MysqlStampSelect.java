@@ -107,6 +107,10 @@ public class MysqlStampSelect extends MysqlStampCommonality implements StampComb
         if (select.limit != null) {
             sb.append(" LIMIT " + select.limit.start + "," + select.limit.limit);
         }
+
+        if (select.forUpdate) {
+            sb.append(" FOR UPDATE");
+        }
     }
 
     private void buildSelectField(MappingGlobalWrapper wrapper,

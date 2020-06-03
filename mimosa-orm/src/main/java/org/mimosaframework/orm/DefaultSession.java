@@ -351,6 +351,20 @@ public class DefaultSession implements Session {
         dq.checkQuery();
         wrapper.setMaster(dq.isMaster());
         wrapper.setSlaveName(dq.getSlaveName());
+        if (dq.isForUpdate()) {
+            Set<Join> joins = dq.getJoins();
+            if (joins != null && joins.size() > 0) {
+                throw new IllegalArgumentException(I18n.print("for_update_join_fail"));
+            }
+            Set<Order> orders = dq.getOrders();
+            if (orders != null && orders.size() > 0) {
+                throw new IllegalArgumentException(I18n.print("for_update_order_fail"));
+            }
+            Limit limit = dq.getLimit();
+            if (limit != null) {
+                throw new IllegalArgumentException(I18n.print("for_update_limit_fail"));
+            }
+        }
 
         PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         List<ModelObject> objects = null;
