@@ -120,7 +120,7 @@ public abstract class PlatformStampCommonality {
         if (value.getClass().isArray()) {
             Object[] values = (Object[]) value;
             sb.append("(");
-            for (int i = 0; i < values.length; i++) {
+            for (int i = 0; i < values.length; ) {
                 sb.append("?");
 
                 SQLDataPlaceholder placeholder = new SQLDataPlaceholder();

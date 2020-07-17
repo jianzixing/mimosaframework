@@ -643,13 +643,15 @@ public class PlatformExecutor {
         select.select();
         MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(tableClass);
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
-        Serializable[] params = new Serializable[pks.size()];
-        for (int k = 0; k < pks.size(); k++) {
+        Serializable[] params = new Serializable[1];
+        if (pks != null && pks.size() == 1) {
             if (hasJoins) {
-                params[k] = new FieldItem("T", pks.get(k).getMappingColumnName());
+                params[0] = new FieldItem("T", pks.get(0).getMappingColumnName());
             } else {
-                params[k] = new FieldItem(pks.get(k).getMappingColumnName());
+                params[0] = new FieldItem(pks.get(0).getMappingColumnName());
             }
+        } else {
+            params[0] = 1;
         }
         select.count(params).as("count");
 
