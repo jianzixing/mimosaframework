@@ -585,7 +585,7 @@ public class PlatformExecutor {
         if (logicWraps != null) select.where();
         this.buildWraps(select, queryTable, logicWraps, hasJoin);
 
-        this.buildOrderBy(select, orders, queryTable, (limit != null && joins != null && joins.size() > 0));
+        this.buildOrderBy(select, orders, queryTable, joins != null && joins.size() > 0);
 
         if (limit != null) {
             select.limit(limit.getStart(), limit.getLimit());
@@ -597,7 +597,7 @@ public class PlatformExecutor {
             this.buildSelectField(selectWrap, alias, fieldAlias);
             selectWrap.from().table(select, "T");
             this.buildJoinQuery(selectWrap, alias, joins, false);
-            this.buildOrderBy(select, orders, queryTable, (limit != null && joins != null && joins.size() > 0));
+            this.buildOrderBy(select, orders, queryTable, joins != null && joins.size() > 0);
 
             select = selectWrap;
         }
