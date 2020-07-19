@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class MysqlPlatformDialect extends PlatformDialect {
+    private MysqlStampBuilder builder = new MysqlStampBuilder();
+
     public MysqlPlatformDialect() {
         registerColumnType(KeyColumnType.INT, "INT");
         registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
@@ -39,56 +41,56 @@ public class MysqlPlatformDialect extends PlatformDialect {
 
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
-        StampCombineBuilder builder = new MysqlStampAlter();
+        StampCombineBuilder builder = this.builder.alter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine rename(StampRename alter) {
-        StampCombineBuilder builder = new MysqlStampRename();
+        StampCombineBuilder builder = this.builder.rename();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine create(StampCreate create) {
-        StampCombineBuilder builder = new MysqlStampCreate();
+        StampCombineBuilder builder = this.builder.create();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine drop(StampDrop drop) {
-        StampCombineBuilder builder = new MysqlStampDrop();
+        StampCombineBuilder builder = this.builder.drop();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, drop);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine insert(StampInsert insert) {
-        StampCombineBuilder builder = new MysqlStampInsert();
+        StampCombineBuilder builder = this.builder.insert();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, insert);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine delete(StampDelete delete) {
-        StampCombineBuilder builder = new MysqlStampDelete();
+        StampCombineBuilder builder = this.builder.delete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine select(StampSelect select) {
-        StampCombineBuilder builder = new MysqlStampSelect();
+        StampCombineBuilder builder = this.builder.select();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, select);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine update(StampUpdate update) {
-        StampCombineBuilder builder = new MysqlStampUpdate();
+        StampCombineBuilder builder = this.builder.update();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
     }

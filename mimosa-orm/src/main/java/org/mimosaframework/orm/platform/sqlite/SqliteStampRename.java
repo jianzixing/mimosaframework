@@ -3,11 +3,18 @@ package org.mimosaframework.orm.platform.sqlite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class SqliteStampRename extends SqliteStampCommonality implements StampCombineBuilder {
+public class SqliteStampRename extends PlatformStampRename {
     private static final Log logger = LogFactory.getLog(SqliteStampRename.class);
+
+    public SqliteStampRename(PlatformStampSection section,
+                             PlatformStampReference reference,
+                             PlatformDialect dialect,
+                             PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
@@ -22,7 +29,7 @@ public class SqliteStampRename extends SqliteStampCommonality implements StampCo
         if (stampRename.renameType == KeyRenameType.TABLE) {
             sb.append("ALTER");
             sb.append(" TABLE");
-            sb.append(" " + this.getTableName(wrapper, stampRename.tableClass, stampRename.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, stampRename.tableClass, stampRename.tableName));
             sb.append(" RENAME");
             sb.append(" TO " + stampRename.newName);
         }

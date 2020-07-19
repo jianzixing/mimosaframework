@@ -1,14 +1,20 @@
 package org.mimosaframework.orm.platform.postgresql;
 
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.platform.SQLDataPlaceholder;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostgreSQLStampUpdate extends PostgreSQLStampCommonality implements StampCombineBuilder {
+public class PostgreSQLStampUpdate extends PlatformStampUpdate {
+    public PostgreSQLStampUpdate(PlatformStampSection section,
+                                 PlatformStampReference reference,
+                                 PlatformDialect dialect,
+                                 PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampUpdate update = (StampUpdate) action;
@@ -17,7 +23,7 @@ public class PostgreSQLStampUpdate extends PostgreSQLStampCommonality implements
         sb.append("UPDATE ");
         StampFrom fromTarget = update.table;
         if (fromTarget != null) {
-            sb.append(this.getTableName(wrapper, fromTarget.table, fromTarget.name));
+            sb.append(this.reference.getTableName(wrapper, fromTarget.table, fromTarget.name));
         }
 
         sb.append(" SET ");
@@ -31,7 +37,7 @@ public class PostgreSQLStampUpdate extends PostgreSQLStampCommonality implements
 
         if (update.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, update, update.where, sb);
+            this.share.buildWhere(wrapper, placeholders, update, update.where, sb);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);
@@ -44,13 +50,13 @@ public class PostgreSQLStampUpdate extends PostgreSQLStampCommonality implements
                                  List<SQLDataPlaceholder> placeholders) {
         item.column.table = null;
         item.column.tableAliasName = null;
-        String name = this.getColumnName(wrapper, update, item.column);
+        String name = this.reference.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");
 
         if (item.value instanceof StampColumn) {
             StampColumn column = (StampColumn) item.value;
-            sb.append(this.getColumnName(wrapper, update, column));
+            sb.append(this.reference.getColumnName(wrapper, update, column));
         } else {
             sb.append("?");
             placeholders.add(new SQLDataPlaceholder(name, item.value));

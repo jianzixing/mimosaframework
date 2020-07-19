@@ -5,12 +5,18 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.ExecuteImmediate;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class SQLServerStampAlter extends SQLServerStampCommonality implements StampCombineBuilder {
+public class SQLServerStampAlter extends PlatformStampAlter {
     private static final Log logger = LogFactory.getLog(SQLServerStampAlter.class);
+
+    public SQLServerStampAlter(PlatformStampSection section,
+                               PlatformStampReference reference,
+                               PlatformDialect dialect,
+                               PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
@@ -29,14 +35,14 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 }
             }
         }
-        return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+        return new SQLBuilderCombine(this.section.toSQLString(new ExecuteImmediate(sb)), null);
     }
 
     private void buildAlterItem(MappingGlobalWrapper wrapper,
                                 StringBuilder sb,
                                 StampAlter alter,
                                 StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String tableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName);
         if (item.action == KeyAction.ADD) {
             if (item.struct == KeyAlterStruct.COLUMN) {
                 sb.append("ALTER");
@@ -61,12 +67,12 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                 sb.append(" " + tableName);
                 sb.append(" DROP");
                 sb.append(" COLUMN");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.column));
+                sb.append(" " + this.reference.getColumnName(wrapper, alter, item.column));
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
-                String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
-                this.getDeclares().add("@PK_INDEXNAME VARCHAR(MAX)");
-                this.getBegins().add(new ExecuteImmediate()
+                String tableOutName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName, false);
+                this.section.getDeclares().add("@PK_INDEXNAME VARCHAR(MAX)");
+                this.section.getBegins().add(new ExecuteImmediate()
                         .setProcedure("SELECT @PK_INDEXNAME=(SELECT A.NAME INDEXNAME " +
                                 "FROM SYS.INDEXES A " +
                                 "INNER JOIN SYS.INDEX_COLUMNS B ON A.OBJECT_ID = B.OBJECT_ID AND A.INDEX_ID = B.INDEX_ID " +
@@ -79,7 +85,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         }
 
         if (item.action == KeyAction.AUTO_INCREMENT) {
-            String tableOutName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
+            String tableOutName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName, false);
             sb.append("DBCC CHECKIDENT('" + tableOutName + "',RESEED," + item.value + ")");
         }
         if (item.action == KeyAction.CHARACTER_SET) {
@@ -98,8 +104,8 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                     MappingGlobalWrapper wrapper,
                                     StampAlter alter,
                                     StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-        String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
+        String tableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String outTableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName, false);
 
         sb.append("ALTER TABLE " + tableName + " ADD");
         if (StringTools.isNotEmpty(item.indexName)) {
@@ -112,7 +118,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
             sb.append(" (");
             int i = 0;
             for (StampColumn column : item.columns) {
-                sb.append(this.getColumnName(wrapper, alter, column));
+                sb.append(this.reference.getColumnName(wrapper, alter, column));
                 i++;
                 if (i != item.columns.length) sb.append(",");
             }
@@ -130,12 +136,12 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                      MappingGlobalWrapper wrapper,
                                      StampAlter alter,
                                      StampAlterItem column) {
-        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-        String columnName = this.getColumnName(wrapper, alter, column.column);
+        String tableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String columnName = this.reference.getColumnName(wrapper, alter, column.column);
 
         sb.append(" " + columnName);
         if (column.columnType != null) {
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
         }
         if (column.nullable == KeyConfirm.NO) {
             sb.append(" NOT NULL");
@@ -154,7 +160,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
             }
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1, false);
+            this.share.addCommentSQL(wrapper, alter, column.column, column.comment, 1, false);
         }
         if (column.after != null) {
             logger.warn("sqlserver can't set column order");
@@ -169,8 +175,8 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
                                   StampAlter alter,
                                   StampAlterItem column,
                                   int type) {
-        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-        String columnName = this.getColumnName(wrapper, alter, column.column);
+        String tableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String columnName = this.reference.getColumnName(wrapper, alter, column.column);
 
         if (type == 3 || type == 2) {
             sb.append("ALTER");
@@ -181,11 +187,11 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
         if (type != 2) {
             sb.append(" " + columnName);
         } else {
-            String oldColumnName = this.getColumnName(wrapper, alter, column.oldColumn);
+            String oldColumnName = this.reference.getColumnName(wrapper, alter, column.oldColumn);
             sb.append(" " + oldColumnName);
         }
         if (column.columnType != null) {
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
         }
         if (column.nullable == KeyConfirm.NO) {
             sb.append(" NOT NULL");
@@ -209,7 +215,7 @@ public class SQLServerStampAlter extends SQLServerStampCommonality implements St
             }
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter,
+            this.share.addCommentSQL(wrapper, alter,
                     type == 2 ? column.oldColumn : column.column, column.comment, 1, false);
         }
         if (column.after != null) {

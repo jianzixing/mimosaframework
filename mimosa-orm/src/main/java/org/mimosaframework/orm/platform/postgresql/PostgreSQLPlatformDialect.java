@@ -13,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PostgreSQLPlatformDialect extends PlatformDialect {
+    private PostgreSQLStampBuilder builder = new PostgreSQLStampBuilder();
+
     public PostgreSQLPlatformDialect() {
         registerColumnType(KeyColumnType.INT, "INT4");
         registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
@@ -70,56 +72,56 @@ public class PostgreSQLPlatformDialect extends PlatformDialect {
 
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
-        StampCombineBuilder builder = new PostgreSQLStampAlter();
+        StampCombineBuilder builder = this.builder.alter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine rename(StampRename alter) {
-        StampCombineBuilder builder = new PostgreSQLStampRename();
+        StampCombineBuilder builder = this.builder.rename();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine create(StampCreate create) {
-        StampCombineBuilder builder = new PostgreSQLStampCreate();
+        StampCombineBuilder builder = this.builder.create();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine drop(StampDrop drop) {
-        StampCombineBuilder builder = new PostgreSQLStampDrop();
+        StampCombineBuilder builder = this.builder.drop();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, drop);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine insert(StampInsert insert) {
-        StampCombineBuilder builder = new PostgreSQLStampInsert();
+        StampCombineBuilder builder = this.builder.insert();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, insert);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine delete(StampDelete delete) {
-        StampCombineBuilder builder = new PostgreSQLStampDelete();
+        StampCombineBuilder builder = this.builder.delete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine select(StampSelect select) {
-        StampCombineBuilder builder = new PostgreSQLStampSelect();
+        StampCombineBuilder builder = this.builder.select();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, select);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine update(StampUpdate update) {
-        StampCombineBuilder builder = new PostgreSQLStampUpdate();
+        StampCombineBuilder builder = this.builder.update();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
     }

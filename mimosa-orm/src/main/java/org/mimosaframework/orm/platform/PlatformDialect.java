@@ -209,7 +209,7 @@ public abstract class PlatformDialect implements Dialect {
 
     protected Object runner(StampAction action) throws SQLException {
         StampCombineBuilder combineBuilder = PlatformFactory
-                .getStampAlterBuilder(this.dataSourceWrapper.getDatabaseTypeEnum(), action);
+                .getStampBuilder(this.dataSourceWrapper.getDatabaseTypeEnum(), action);
         SQLBuilderCombine builderCombine = combineBuilder.getSqlBuilder(this.mappingGlobalWrapper, action);
         String sql = builderCombine.getSql();
         if (StringTools.isNotEmpty(sql)) {
@@ -593,20 +593,6 @@ public abstract class PlatformDialect implements Dialect {
         }
         return columnEditTypes;
     }
-
-    public abstract SQLBuilderCombine alter(StampAlter alter);
-
-    public abstract SQLBuilderCombine create(StampCreate create);
-
-    public abstract SQLBuilderCombine drop(StampDrop drop);
-
-    public abstract SQLBuilderCombine insert(StampInsert insert) throws SQLException;
-
-    public abstract SQLBuilderCombine delete(StampDelete delete);
-
-    public abstract SQLBuilderCombine select(StampSelect select);
-
-    public abstract SQLBuilderCombine update(StampUpdate update);
 
     /**
      * 处理单个单元相关的属性

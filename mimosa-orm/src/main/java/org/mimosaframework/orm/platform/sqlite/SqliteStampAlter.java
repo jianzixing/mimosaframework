@@ -5,11 +5,18 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class SqliteStampAlter extends SqliteStampCommonality implements StampCombineBuilder {
+public class SqliteStampAlter extends PlatformStampAlter {
     private static final Log logger = LogFactory.getLog(SqliteStampAlter.class);
+
+    public SqliteStampAlter(PlatformStampSection section,
+                            PlatformStampReference reference,
+                            PlatformDialect dialect,
+                            PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
@@ -39,7 +46,7 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                                 StringBuilder sb,
                                 StampAlter alter,
                                 StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String tableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName);
         if (item.action == KeyAction.ADD) {
 
             if (item.struct == KeyAlterStruct.COLUMN) {
@@ -100,9 +107,9 @@ public class SqliteStampAlter extends SqliteStampCommonality implements StampCom
                                   MappingGlobalWrapper wrapper,
                                   StampAlter alter,
                                   StampAlterItem column) {
-        sb.append(" " + this.getColumnName(wrapper, alter, column.column));
+        sb.append(" " + this.reference.getColumnName(wrapper, alter, column.column));
         if (column.columnType != null) {
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
         }
         if (column.nullable == KeyConfirm.NO) {
             sb.append(" NOT NULL");

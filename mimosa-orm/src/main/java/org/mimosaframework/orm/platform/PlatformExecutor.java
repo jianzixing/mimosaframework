@@ -453,7 +453,12 @@ public class PlatformExecutor {
             Object key = entry.getKey();
             MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
             if (field != null) {
-                updateBuilder.set(field.getMappingColumnName(), entry.getValue());
+                Object value = entry.getValue();
+                if (value instanceof UpdateSetValue) {
+                    updateBuilder.set();
+                } else {
+                    updateBuilder.set(field.getMappingColumnName(), value);
+                }
             }
         }
 

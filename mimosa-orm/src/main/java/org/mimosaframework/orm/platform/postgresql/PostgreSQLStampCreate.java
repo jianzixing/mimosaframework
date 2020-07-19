@@ -4,15 +4,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.ExecuteImmediate;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements StampCombineBuilder {
+public class PostgreSQLStampCreate extends PlatformStampCreate {
     private static final Log logger = LogFactory.getLog(PostgreSQLStampCreate.class);
+
+    public PostgreSQLStampCreate(PlatformStampSection section,
+                                 PlatformStampReference reference,
+                                 PlatformDialect dialect,
+                                 PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
@@ -39,7 +45,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
             if (create.checkExist) {
                 sb.append(" IF NOT EXISTS");
             }
-            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, create.tableClass, create.tableName));
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
@@ -51,7 +57,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
             sb.append(")");
 
             if (StringTools.isNotEmpty(create.comment)) {
-                this.addCommentSQL(wrapper, create, null, create.comment, 2);
+                this.share.addCommentSQL(wrapper, create, null, create.comment, 2);
             }
             if (StringTools.isNotEmpty(create.charset)) {
                 logger.warn("postgresql can't set table charset");
@@ -67,18 +73,18 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
             sb.append(" INDEX");
             sb.append(" " + create.indexName);
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, create.tableClass, create.tableName));
 
             int i = 0;
             sb.append(" (");
             for (StampColumn column : create.indexColumns) {
-                sb.append(this.getColumnName(wrapper, create, column));
+                sb.append(this.reference.getColumnName(wrapper, create, column));
                 i++;
                 if (i != create.indexColumns.length) sb.append(",");
             }
             sb.append(")");
         }
-        return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+        return new SQLBuilderCombine(this.section.toSQLString(new ExecuteImmediate(sb)), null);
     }
 
     private void buildTableIndex(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
@@ -100,7 +106,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
             // 创建表所以不需要别名
             column.table = null;
             column.tableAliasName = null;
-            sb.append(this.getColumnName(wrapper, create, column));
+            sb.append(this.reference.getColumnName(wrapper, create, column));
             j++;
             if (j != columns.length) sb.append(",");
         }
@@ -114,7 +120,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
 
             List<StampColumn> primaryKeyIndex = null;
             for (StampCreateColumn column : columns) {
-                sb.append(this.getColumnName(wrapper, create, column.column));
+                sb.append(this.reference.getColumnName(wrapper, create, column.column));
 
                 if (column.autoIncrement == KeyConfirm.YES) {
                     if (column.columnType.equals(KeyColumnType.INT)) {
@@ -126,7 +132,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
                         sb.append(" BIGSERIAL");
                     }
                 } else {
-                    sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                    sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
                 }
 
                 if (column.nullable == KeyConfirm.NO) {
@@ -141,7 +147,7 @@ public class PostgreSQLStampCreate extends PostgreSQLStampCommonality implements
                     sb.append(" DEFAULT '" + column.defaultValue + "'");
                 }
                 if (StringTools.isNotEmpty(column.comment)) {
-                    this.addCommentSQL(wrapper, create, column.column, column.comment, 1);
+                    this.share.addCommentSQL(wrapper, create, column.column, column.comment, 1);
                 }
 
                 i++;

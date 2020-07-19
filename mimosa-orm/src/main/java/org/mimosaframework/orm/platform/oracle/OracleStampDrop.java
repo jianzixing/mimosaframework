@@ -1,13 +1,20 @@
 package org.mimosaframework.orm.platform.oracle;
 
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.KeyTarget;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 import org.mimosaframework.orm.sql.stamp.StampDrop;
 
-public class OracleStampDrop extends OracleStampCommonality implements StampCombineBuilder {
+public class OracleStampDrop extends PlatformStampDrop {
+    public OracleStampDrop(PlatformStampSection section,
+                           PlatformStampReference reference,
+                           PlatformDialect dialect,
+                           PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampDrop drop = (StampDrop) action;
@@ -25,11 +32,11 @@ public class OracleStampDrop extends OracleStampCommonality implements StampComb
             if (drop.checkExist) {
                 sb.append(" IF EXIST");
             }
-            sb.append(" " + this.getTableName(wrapper, drop.tableClass, drop.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, drop.tableClass, drop.tableName));
         }
         if (drop.target == KeyTarget.INDEX) {
             sb.append(" INDEX");
-            sb.append(" " + RS + drop.indexName + RE);
+            sb.append(" " + this.reference.getWrapStart() + drop.indexName + this.reference.getWrapEnd());
         }
         return new SQLBuilderCombine(sb.toString(), null);
     }

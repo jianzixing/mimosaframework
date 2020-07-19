@@ -2,13 +2,20 @@ package org.mimosaframework.orm.platform.mysql;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MysqlStampCreate extends MysqlStampCommonality implements StampCombineBuilder {
+public class MysqlStampCreate extends PlatformStampCreate {
+    public MysqlStampCreate(PlatformStampSection section,
+                            PlatformStampReference reference,
+                            PlatformDialect dialect,
+                            PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampCreate create = (StampCreate) action;
@@ -34,7 +41,7 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             if (create.checkExist) {
                 sb.append(" IF NOT EXISTS");
             }
-            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, create.tableClass, create.tableName));
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
@@ -62,12 +69,12 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             sb.append(" INDEX");
             sb.append(" " + create.indexName);
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, create.tableClass, create.tableName));
 
             int i = 0;
             sb.append(" (");
             for (StampColumn column : create.indexColumns) {
-                sb.append(this.getColumnName(wrapper, create, column));
+                sb.append(this.reference.getColumnName(wrapper, create, column));
                 i++;
                 if (i != create.indexColumns.length) sb.append(",");
             }
@@ -95,7 +102,7 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
             // 创建表所以不需要别名
             column.table = null;
             column.tableAliasName = null;
-            sb.append(this.getColumnName(wrapper, create, column));
+            sb.append(this.reference.getColumnName(wrapper, create, column));
             j++;
             if (j != columns.length) sb.append(",");
         }
@@ -109,13 +116,13 @@ public class MysqlStampCreate extends MysqlStampCommonality implements StampComb
 
             List<StampColumn> primaryKeyIndex = null;
             for (StampCreateColumn column : columns) {
-                sb.append(this.getColumnName(wrapper, create, column.column));
+                sb.append(this.reference.getColumnName(wrapper, create, column.column));
 
                 if (column.timeForUpdate) {
                     sb.append(" TIMESTAMP");
                     sb.append(" NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
                 } else {
-                    sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                    sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
 
                     if (column.nullable == KeyConfirm.NO) {
                         sb.append(" NOT NULL");

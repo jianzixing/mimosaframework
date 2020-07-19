@@ -4,15 +4,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.ExecuteImmediate;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLServerStampCreate extends SQLServerStampCommonality implements StampCombineBuilder {
+public class SQLServerStampCreate extends PlatformStampAlter {
     private static final Log logger = LogFactory.getLog(SQLServerStampCreate.class);
+
+    public SQLServerStampCreate(PlatformStampSection section,
+                                PlatformStampReference reference,
+                                PlatformDialect dialect,
+                                PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
@@ -32,14 +38,14 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             }
         }
         if (create.target == KeyTarget.TABLE) {
-            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName, false);
+            String tableName = this.reference.getTableName(wrapper, create.tableClass, create.tableName, false);
             sb.append(" TABLE");
             if (create.checkExist) {
-                this.getDeclares().add("@HAS_TABLE INT");
-                this.getBegins().add(new ExecuteImmediate()
+                this.section.getDeclares().add("@HAS_TABLE INT");
+                this.section.getBegins().add(new ExecuteImmediate()
                         .setProcedure("SELECT @HAS_TABLE=(SELECT COUNT(1) FROM SYS.TABLES WHERE NAME='" + tableName + "')"));
             }
-            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, create.tableClass, create.tableName));
 
             sb.append(" (");
             this.buildTableColumns(wrapper, sb, create);
@@ -51,7 +57,7 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             sb.append(")");
 
             if (StringTools.isNotEmpty(create.comment)) {
-                this.addCommentSQL(wrapper, create, null, create.comment, 2,
+                this.share.addCommentSQL(wrapper, create, null, create.comment, 2,
                         create.target == KeyTarget.TABLE && create.checkExist);
             }
             if (StringTools.isNotEmpty(create.charset)) {
@@ -68,12 +74,12 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             sb.append(" INDEX");
             sb.append(" " + create.indexName);
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, create.tableClass, create.tableName));
 
             int i = 0;
             sb.append(" (");
             for (StampColumn column : create.indexColumns) {
-                sb.append(this.getColumnName(wrapper, create, column));
+                sb.append(this.reference.getColumnName(wrapper, create, column));
                 i++;
                 if (i != create.indexColumns.length) sb.append(",");
             }
@@ -81,10 +87,10 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
         }
 
         if (create.target == KeyTarget.TABLE && create.checkExist) {
-            return new SQLBuilderCombine(this.toSQLString(
+            return new SQLBuilderCombine(this.section.toSQLString(
                     new ExecuteImmediate("IF (@HAS_TABLE = 0)", sb.toString())), null);
         } else {
-            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+            return new SQLBuilderCombine(this.section.toSQLString(new ExecuteImmediate(sb)), null);
         }
     }
 
@@ -107,7 +113,7 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
             // 创建表所以不需要别名
             column.table = null;
             column.tableAliasName = null;
-            sb.append(this.getColumnName(wrapper, create, column));
+            sb.append(this.reference.getColumnName(wrapper, create, column));
             j++;
             if (j != columns.length) sb.append(",");
         }
@@ -117,15 +123,15 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
     private void buildTableColumns(MappingGlobalWrapper wrapper, StringBuilder sb, StampCreate create) {
         StampCreateColumn[] columns = create.columns;
         if (columns != null && columns.length > 0) {
-            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName, false);
+            String tableName = this.reference.getTableName(wrapper, create.tableClass, create.tableName, false);
             int i = 0;
 
             List<StampColumn> primaryKeyIndex = null;
             for (StampCreateColumn column : columns) {
-                String columnName = this.getColumnName(wrapper, create, column.column, false);
-                sb.append(this.getColumnName(wrapper, create, column.column));
+                String columnName = this.reference.getColumnName(wrapper, create, column.column, false);
+                sb.append(this.reference.getColumnName(wrapper, create, column.column));
 
-                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
 
                 if (column.nullable == KeyConfirm.NO) {
                     sb.append(" NOT NULL");
@@ -141,7 +147,7 @@ public class SQLServerStampCreate extends SQLServerStampCommonality implements S
                     sb.append(" DEFAULT '" + column.defaultValue + "'");
                 }
                 if (StringTools.isNotEmpty(column.comment)) {
-                    this.addCommentSQL(wrapper, create, column.column, column.comment, 1,
+                    this.share.addCommentSQL(wrapper, create, column.column, column.comment, 1,
                             create.target == KeyTarget.TABLE && create.checkExist);
                 }
 

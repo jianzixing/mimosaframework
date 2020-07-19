@@ -2,14 +2,20 @@ package org.mimosaframework.orm.platform.sqlite;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.platform.SQLDataPlaceholder;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqliteStampUpdate extends SqliteStampCommonality implements StampCombineBuilder {
+public class SqliteStampUpdate extends PlatformStampUpdate {
+    public SqliteStampUpdate(PlatformStampSection section,
+                             PlatformStampReference reference,
+                             PlatformDialect dialect,
+                             PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampUpdate update = (StampUpdate) action;
@@ -18,9 +24,9 @@ public class SqliteStampUpdate extends SqliteStampCommonality implements StampCo
         sb.append("UPDATE ");
         StampFrom fromTarget = update.table;
         if (fromTarget != null) {
-            sb.append(this.getTableName(wrapper, fromTarget.table, fromTarget.name));
+            sb.append(this.reference.getTableName(wrapper, fromTarget.table, fromTarget.name));
             if (StringTools.isNotEmpty(fromTarget.aliasName)) {
-                sb.append(" AS " + RS + fromTarget.aliasName + RE);
+                sb.append(" AS " + this.reference.getWrapStart() + fromTarget.aliasName + this.reference.getWrapEnd());
             }
         }
 
@@ -35,7 +41,7 @@ public class SqliteStampUpdate extends SqliteStampCommonality implements StampCo
 
         if (update.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, update, update.where, sb);
+            this.share.buildWhere(wrapper, placeholders, update, update.where, sb);
         }
 
         return new SQLBuilderCombine(sb.toString(), placeholders);
@@ -48,13 +54,13 @@ public class SqliteStampUpdate extends SqliteStampCommonality implements StampCo
                                  List<SQLDataPlaceholder> placeholders) {
         item.column.table = null;
         item.column.tableAliasName = null;
-        String name = this.getColumnName(wrapper, update, item.column);
+        String name = this.reference.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");
 
         if (item.value instanceof StampColumn) {
             StampColumn column = (StampColumn) item.value;
-            sb.append(this.getColumnName(wrapper, update, column));
+            sb.append(this.reference.getColumnName(wrapper, update, column));
         } else {
             sb.append("?");
             placeholders.add(new SQLDataPlaceholder(name, item.value));

@@ -10,17 +10,18 @@ import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.utils.DatabaseType;
 
 public class PlatformFactory {
-    public static StampCombineBuilder getStampAlterBuilder(DatabaseType databaseTypes, StampAction stampAction) {
+    public static StampCombineBuilder getStampBuilder(DatabaseType databaseTypes, StampAction stampAction) {
         if (databaseTypes == DatabaseType.DB2) {
-            if (stampAction instanceof StampAlter) return new DB2StampAlter();
-            if (stampAction instanceof StampRename) return new DB2StampRename();
-            if (stampAction instanceof StampCreate) return new DB2StampCreate();
-            if (stampAction instanceof StampDelete) return new DB2StampDelete();
-            if (stampAction instanceof StampDrop) return new DB2StampDrop();
-            if (stampAction instanceof StampInsert) return new DB2StampInsert();
-            if (stampAction instanceof StampSelect) return new DB2StampSelect();
-            if (stampAction instanceof StampUpdate) return new DB2StampUpdate();
-            if (stampAction instanceof StampStructure) return new DB2StampStructure();
+            DB2StampBuilder builder = new DB2StampBuilder();
+            if (stampAction instanceof StampAlter) return builder.alter();
+            if (stampAction instanceof StampRename) return builder.rename();
+            if (stampAction instanceof StampCreate) return builder.create();
+            if (stampAction instanceof StampDelete) return builder.delete();
+            if (stampAction instanceof StampDrop) return builder.drop();
+            if (stampAction instanceof StampInsert) return builder.insert();
+            if (stampAction instanceof StampSelect) return builder.select();
+            if (stampAction instanceof StampUpdate) return builder.update();
+            if (stampAction instanceof StampStructure) return builder.structure();
         } else if (databaseTypes == DatabaseType.MYSQL) {
             if (stampAction instanceof StampAlter) return new MysqlStampAlter();
             if (stampAction instanceof StampRename) return new MysqlStampRename();

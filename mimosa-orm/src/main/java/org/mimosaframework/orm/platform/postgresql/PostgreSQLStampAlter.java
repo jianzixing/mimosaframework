@@ -5,12 +5,18 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.ExecuteImmediate;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements StampCombineBuilder {
+public class PostgreSQLStampAlter extends PlatformStampAlter {
     private static final Log logger = LogFactory.getLog(PostgreSQLStampAlter.class);
+
+    public PostgreSQLStampAlter(PlatformStampSection section,
+                                PlatformStampReference reference,
+                                PlatformDialect dialect,
+                                PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
@@ -31,7 +37,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                 }
             }
         }
-        return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+        return new SQLBuilderCombine(this.section.toSQLString(new ExecuteImmediate(sb)), null);
     }
 
     private void buildAlterItem(MappingGlobalWrapper wrapper,
@@ -40,7 +46,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                 StampAlterItem item) {
         sb.append("ALTER");
         sb.append(" TABLE");
-        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String tableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName);
         sb.append(" " + tableName);
         if (item.action == KeyAction.ADD) {
             sb.append(" ADD");
@@ -60,13 +66,13 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             sb.append(" DROP");
             if (item.dropType == KeyAlterDropType.COLUMN) {
                 sb.append(" COLUMN");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.column));
+                sb.append(" " + this.reference.getColumnName(wrapper, alter, item.column));
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.setLength(0);
-                String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
-                this.getDeclares().add("PK_INDEX_NAME VARCHAR(5000)");
-                this.getBegins().add(new ExecuteImmediate()
+                String outTableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName, false);
+                this.section.getDeclares().add("PK_INDEX_NAME VARCHAR(5000)");
+                this.section.getBegins().add(new ExecuteImmediate()
                         .setProcedure("PK_INDEX_NAME = (SELECT CONNAME FROM PG_CONSTRAINT A, PG_CLASS B " +
                                 "WHERE A.CONRELID = B.OID " +
                                 "AND B.RELNAME = '" + outTableName + "' " +
@@ -77,9 +83,9 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
 
         if (item.action == KeyAction.AUTO_INCREMENT) {
             sb.setLength(0);
-            String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
-            this.getDeclares().add("AUTO_INCRE_SEQ_NAME VARCHAR(5000)");
-            this.getBegins().add(new ExecuteImmediate().setProcedure(
+            String outTableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName, false);
+            this.section.getDeclares().add("AUTO_INCRE_SEQ_NAME VARCHAR(5000)");
+            this.section.getBegins().add(new ExecuteImmediate().setProcedure(
                     "AUTO_INCRE_SEQ_NAME = (SELECT ARRAY_TO_STRING(REGEXP_MATCHES(COLUMN_DEFAULT, '[\"|''](.*)[\"|'']','gi'),'') " +
                             "FROM INFORMATION_SCHEMA.COLUMNS " +
                             "WHERE TABLE_NAME = '" + outTableName + "' " +
@@ -92,7 +98,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             logger.warn("postgresql can't set table charset");
         }
         if (item.action == KeyAction.COMMENT) {
-            this.addCommentSQL(wrapper, alter, null, item.comment, 2);
+            this.share.addCommentSQL(wrapper, alter, null, item.comment, 2);
         }
     }
 
@@ -100,8 +106,8 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                     MappingGlobalWrapper wrapper,
                                     StampAlter alter,
                                     StampAlterItem item) {
-        String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
-        String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
+        String tableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName);
+        String outTableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName, false);
         sb.setLength(0);
         sb.append("ALTER TABLE " + tableName + " ADD CONSTRAINT ");
 
@@ -116,7 +122,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             sb.append(" (");
             int i = 0;
             for (StampColumn column : item.columns) {
-                sb.append(this.getColumnName(wrapper, alter, column));
+                sb.append(this.reference.getColumnName(wrapper, alter, column));
                 i++;
                 if (i != item.columns.length) sb.append(",");
             }
@@ -134,9 +140,9 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                      MappingGlobalWrapper wrapper,
                                      StampAlter alter,
                                      StampAlterItem column) {
-        sb.append(" " + this.getColumnName(wrapper, alter, column.column));
+        sb.append(" " + this.reference.getColumnName(wrapper, alter, column.column));
         if (column.columnType != null) {
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
         }
         if (column.autoIncrement == KeyConfirm.YES) {
             if (column.columnType.equals(KeyColumnType.INT)) {
@@ -162,7 +168,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             }
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
+            this.share.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
         }
         if (column.after != null) {
             logger.warn("postgresql can't set column order");
@@ -178,35 +184,35 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
                                   StampAlterItem column,
                                   int type) {
         sb.append(" ALTER COLUMN");
-        sb.append(" " + this.getColumnName(wrapper, alter, type == 2 ? column.oldColumn : column.column));
+        sb.append(" " + this.reference.getColumnName(wrapper, alter, type == 2 ? column.oldColumn : column.column));
         if (column.columnType != null) {
             sb.append(" TYPE");
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
         }
         if (column.autoIncrement == KeyConfirm.YES) {
             if (type == 3) {
-                String outTableName = this.getTableName(wrapper, alter.tableClass, alter.tableName, false);
-                String outColumnName = this.getColumnName(wrapper, alter, column.column, false);
-                this.getDeclares().add("IS_AUTOINCRE INT");
-                this.getDeclares().add("HAS_SEQUENCE_AI INT");
+                String outTableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName, false);
+                String outColumnName = this.reference.getColumnName(wrapper, alter, column.column, false);
+                this.section.getDeclares().add("IS_AUTOINCRE INT");
+                this.section.getDeclares().add("HAS_SEQUENCE_AI INT");
                 String oldSeq = outTableName + "_" + outColumnName;
-                this.getBuilders().add(new ExecuteImmediate().setProcedure(
+                this.section.getBuilders().add(new ExecuteImmediate().setProcedure(
                         "HAS_SEQUENCE_AI = (SELECT COUNT(1) FROM INFORMATION_SCHEMA.SEQUENCES WHERE SEQUENCE_NAME='"
                                 + oldSeq + "')"
                 ));
-                this.getBuilders().add(new ExecuteImmediate().setProcedure(
+                this.section.getBuilders().add(new ExecuteImmediate().setProcedure(
                         "IS_AUTOINCRE = (SELECT COUNT(1) AS AUTO_INCRE_COUNT " +
                                 "FROM INFORMATION_SCHEMA.COLUMNS " +
                                 "WHERE TABLE_NAME='" + outTableName + "' " +
                                 "AND COLUMN_NAME='" + outColumnName + "' " +
                                 "AND POSITION('nextval' IN COLUMN_DEFAULT) > 0)"
                 ));
-                this.getBuilders().add(new ExecuteImmediate().setProcedure("" +
+                this.section.getBuilders().add(new ExecuteImmediate().setProcedure("" +
                         "IF IS_AUTOINCRE = 0 THEN " +
-                        NL_TAB + "IF HAS_SEQUENCE_AI = 0 THEN " +
-                        NL_TAB + "CREATE SEQUENCE " + oldSeq + " START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1; " +
-                        NL_TAB + "END IF; " +
-                        NL_TAB + "ALTER TABLE EVENT ALTER COLUMN ID SET DEFAULT NEXTVAL('" + oldSeq + "');" +
+                        this.section.getNTab() + "IF HAS_SEQUENCE_AI = 0 THEN " +
+                        this.section.getNTab() + "CREATE SEQUENCE " + oldSeq + " START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1; " +
+                        this.section.getNTab() + "END IF; " +
+                        this.section.getNTab() + "ALTER TABLE EVENT ALTER COLUMN ID SET DEFAULT NEXTVAL('" + oldSeq + "');" +
                         "END IF"
                 ));
             } else {
@@ -233,7 +239,7 @@ public class PostgreSQLStampAlter extends PostgreSQLStampCommonality implements 
             }
         }
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, type == 2 ? column.oldColumn : column.column, column.comment, 1);
+            this.share.addCommentSQL(wrapper, alter, type == 2 ? column.oldColumn : column.column, column.comment, 1);
         }
         if (column.after != null) {
             logger.warn("postgresql can't set column order");

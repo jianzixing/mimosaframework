@@ -4,15 +4,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.ExecuteImmediate;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OracleStampCreate extends OracleStampCommonality implements StampCombineBuilder {
+public class OracleStampCreate extends PlatformStampCreate {
     private static final Log logger = LogFactory.getLog(OracleStampCreate.class);
+
+    public OracleStampCreate(PlatformStampSection section,
+                             PlatformStampReference reference,
+                             PlatformDialect dialect,
+                             PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
@@ -25,10 +31,10 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
         }
         if (create.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
-            String tableName = this.getTableName(wrapper, create.tableClass, create.tableName);
+            String tableName = this.reference.getTableName(wrapper, create.tableClass, create.tableName);
             if (create.checkExist) {
-                this.getDeclares().add("HAS_TABLE NUMBER");
-                this.getBegins().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO HAS_TABLE FROM USER_TABLES " +
+                this.section.getDeclares().add("HAS_TABLE NUMBER");
+                this.section.getBegins().add(new ExecuteImmediate().setProcedure("SELECT COUNT(1) INTO HAS_TABLE FROM USER_TABLES " +
                         "WHERE TABLE_NAME = '" + tableName + "'"));
             }
             sb.append(" " + tableName);
@@ -44,7 +50,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
 
 
             if (StringTools.isNotEmpty(create.comment)) {
-                this.addCommentSQL(wrapper, create, create, create.comment, 2);
+                this.share.addCommentSQL(wrapper, create, create, create.comment, 2);
             }
 
             if (StringTools.isNotEmpty(create.charset)) {
@@ -59,9 +65,9 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                 sb.append(" UNIQUE");
             }
             sb.append(" INDEX");
-            sb.append(" " + RS + create.indexName + RE);
+            sb.append(" " + this.reference.getWrapStart() + create.indexName + this.reference.getWrapEnd());
             sb.append(" ON");
-            sb.append(" " + this.getTableName(wrapper, create.tableClass, create.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, create.tableClass, create.tableName));
 
             List<String> fullTextIndexNames = new ArrayList<>();
             int i = 0;
@@ -69,8 +75,8 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
             for (StampColumn column : create.indexColumns) {
                 column.table = null;
                 column.tableAliasName = null;
-                sb.append(this.getColumnName(wrapper, create, column));
-                fullTextIndexNames.add(this.getColumnName(wrapper, create, column, false));
+                sb.append(this.reference.getColumnName(wrapper, create, column));
+                fullTextIndexNames.add(this.reference.getColumnName(wrapper, create, column, false));
                 i++;
                 if (i != create.indexColumns.length) sb.append(",");
             }
@@ -78,15 +84,15 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
         }
 
         String createSql = sb.toString();
-        if (StringTools.isNotEmpty(createSql) && this.multiExecuteImmediate()) {
+        if (StringTools.isNotEmpty(createSql) && this.section.multiExecuteImmediate()) {
             createSql = createSql.replaceAll("'", "''");
         }
 
         if (create.target == KeyTarget.TABLE && create.checkExist) {
-            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate("IF HAS_TABLE = 0 THEN",
+            return new SQLBuilderCombine(this.section.toSQLString(new ExecuteImmediate("IF HAS_TABLE = 0 THEN",
                     sb != null ? createSql : "", "END IF")), null);
         } else {
-            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(createSql)), null);
+            return new SQLBuilderCombine(this.section.toSQLString(new ExecuteImmediate(createSql)), null);
         }
     }
 
@@ -109,7 +115,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
             // 创建表所以不需要别名
             column.table = null;
             column.tableAliasName = null;
-            sb.append(this.getColumnName(wrapper, create, column));
+            sb.append(this.reference.getColumnName(wrapper, create, column));
             j++;
             if (j != columns.length) sb.append(",");
         }
@@ -123,13 +129,13 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
 
             List<StampColumn> primaryKeyIndex = null;
             for (StampCreateColumn column : columns) {
-                String columnName = this.getColumnName(wrapper, create, column.column);
+                String columnName = this.reference.getColumnName(wrapper, create, column.column);
                 sb.append(columnName);
 
-                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
 
                 if (column.autoIncrement == KeyConfirm.YES) {
-                    this.addAutoIncrement(wrapper, create.tableClass, create.tableName);
+                    this.share.addAutoIncrement(wrapper, create.tableClass, create.tableName);
                 }
                 if (column.pk == KeyConfirm.YES) {
                     if (primaryKeyIndex == null) primaryKeyIndex = new ArrayList<>();
@@ -143,7 +149,7 @@ public class OracleStampCreate extends OracleStampCommonality implements StampCo
                 }
 
                 if (StringTools.isNotEmpty(column.comment)) {
-                    this.addCommentSQL(wrapper, create, column.column, column.comment, 1);
+                    this.share.addCommentSQL(wrapper, create, column.column, column.comment, 1);
                 }
 
                 i++;

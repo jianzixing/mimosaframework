@@ -3,10 +3,17 @@ package org.mimosaframework.orm.platform.mysql;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class MysqlStampAlter extends MysqlStampCommonality implements StampCombineBuilder {
+public class MysqlStampAlter extends PlatformStampAlter {
+
+    public MysqlStampAlter(PlatformStampSection section,
+                           PlatformStampReference reference,
+                           PlatformDialect dialect,
+                           PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
@@ -17,7 +24,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
         if (alter.target == KeyTarget.DATABASE) {
             sb.append(" DATABASE");
 
-            sb.append(" " + RS + alter.databaseName + RE);
+            sb.append(" " + this.reference.getWrapStart() + alter.databaseName + this.reference.getWrapEnd());
 
             if (StringTools.isNotEmpty(alter.charset)) {
                 sb.append(" CHARSET " + alter.charset);
@@ -29,7 +36,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
         if (alter.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
 
-            sb.append(" " + this.getTableName(wrapper, alter.tableClass, alter.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, alter.tableClass, alter.tableName));
 
             if (alter.items != null) {
                 for (StampAlterItem item : alter.items) {
@@ -69,7 +76,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             sb.append(" DROP");
             if (item.dropType == KeyAlterDropType.COLUMN) {
                 sb.append(" COLUMN");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.column));
+                sb.append(" " + this.reference.getColumnName(wrapper, alter, item.column));
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.append(" PRIMARY KEY");
@@ -100,7 +107,7 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             sb.append(" (");
             int i = 0;
             for (StampColumn column : item.columns) {
-                sb.append(this.getColumnName(wrapper, alter, column));
+                sb.append(this.reference.getColumnName(wrapper, alter, column));
                 i++;
                 if (i != item.columns.length) sb.append(",");
             }
@@ -122,9 +129,9 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             sb.append(" TIMESTAMP");
             sb.append(" NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         } else {
-            sb.append(" " + this.getColumnName(wrapper, alter, column.column));
+            sb.append(" " + this.reference.getColumnName(wrapper, alter, column.column));
             if (column.columnType != null) {
-                sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+                sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
             }
             if (column.nullable == KeyConfirm.NO) {
                 sb.append(" NOT NULL");
@@ -143,10 +150,10 @@ public class MysqlStampAlter extends MysqlStampCommonality implements StampCombi
             sb.append(" COMMENT \"" + column.comment + "\"");
         }
         if (column.after != null) {
-            sb.append(" AFTER " + this.getColumnName(wrapper, alter, column.after));
+            sb.append(" AFTER " + this.reference.getColumnName(wrapper, alter, column.after));
         }
         if (column.before != null) {
-            sb.append(" BEFORE " + this.getColumnName(wrapper, alter, column.before));
+            sb.append(" BEFORE " + this.reference.getColumnName(wrapper, alter, column.before));
         }
     }
 }

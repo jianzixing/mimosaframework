@@ -3,8 +3,7 @@ package org.mimosaframework.orm.platform.db2;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.platform.SQLDataPlaceholder;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.sql.stamp.StampColumn;
 import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
@@ -15,7 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class DB2StampInsert extends DB2StampCommonality implements StampCombineBuilder {
+public class DB2StampInsert extends PlatformStampInsert {
+    public DB2StampInsert(PlatformStampSection section, PlatformStampReference reference, PlatformDialect dialect, PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampInsert insert = (StampInsert) action;
@@ -23,7 +26,7 @@ public class DB2StampInsert extends DB2StampCommonality implements StampCombineB
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT");
         sb.append(" INTO");
-        sb.append(" " + this.getTableName(wrapper, insert.tableClass, insert.tableName));
+        sb.append(" " + this.reference.getTableName(wrapper, insert.tableClass, insert.tableName));
 
         StampColumn[] columns = insert.columns;
         String[] names = null;
@@ -32,7 +35,7 @@ public class DB2StampInsert extends DB2StampCommonality implements StampCombineB
             sb.append(" (");
             int i = 0;
             for (StampColumn column : columns) {
-                String name = this.getColumnName(wrapper, insert, column);
+                String name = this.reference.getColumnName(wrapper, insert, column);
                 sb.append(name);
                 names[i] = name;
                 i++;

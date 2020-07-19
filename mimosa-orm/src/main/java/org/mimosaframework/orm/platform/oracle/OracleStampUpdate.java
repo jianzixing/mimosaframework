@@ -2,14 +2,20 @@ package org.mimosaframework.orm.platform.oracle;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.platform.SQLDataPlaceholder;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OracleStampUpdate extends OracleStampCommonality implements StampCombineBuilder {
+public class OracleStampUpdate extends PlatformStampUpdate {
+
+    public OracleStampUpdate(PlatformStampSection section,
+                             PlatformStampReference reference,
+                             PlatformDialect dialect,
+                             PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
@@ -21,9 +27,9 @@ public class OracleStampUpdate extends OracleStampCommonality implements StampCo
 
         StampFrom fromTarget = update.table;
         if (fromTarget != null) {
-            sb.append(this.getTableName(wrapper, fromTarget.table, fromTarget.name));
+            sb.append(this.reference.getTableName(wrapper, fromTarget.table, fromTarget.name));
             if (StringTools.isNotEmpty(fromTarget.aliasName)) {
-                sb.append(" AS " + RS + fromTarget.aliasName + RE);
+                sb.append(" AS " + this.reference.getWrapStart() + fromTarget.aliasName + this.reference.getWrapEnd());
             }
         }
 
@@ -36,7 +42,7 @@ public class OracleStampUpdate extends OracleStampCommonality implements StampCo
         }
 
         sb.append(" WHERE ");
-        this.buildWhere(wrapper, placeholders, update, update.where, sb);
+        this.share.buildWhere(wrapper, placeholders, update, update.where, sb);
 
         return new SQLBuilderCombine(sb.toString(), placeholders);
     }
@@ -48,7 +54,7 @@ public class OracleStampUpdate extends OracleStampCommonality implements StampCo
                                  List<SQLDataPlaceholder> placeholders) {
         item.column.table = null;
         item.column.tableAliasName = null;
-        String name = this.getColumnName(wrapper, update, item.column);
+        String name = this.reference.getColumnName(wrapper, update, item.column);
         sb.append(name);
         sb.append(" = ");
 
@@ -56,7 +62,7 @@ public class OracleStampUpdate extends OracleStampCommonality implements StampCo
             StampColumn column = (StampColumn) item.value;
             column.table = null;
             column.tableAliasName = null;
-            sb.append(this.getColumnName(wrapper, update, column));
+            sb.append(this.reference.getColumnName(wrapper, update, column));
         } else {
             sb.append("?");
             placeholders.add(new SQLDataPlaceholder(name, item.value));

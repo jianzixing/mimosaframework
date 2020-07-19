@@ -3,8 +3,7 @@ package org.mimosaframework.orm.platform.sqlite;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.platform.SQLDataPlaceholder;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.platform.db2.DB2StampSelect;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.sql.stamp.StampColumn;
@@ -16,7 +15,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class SqliteStampInsert extends SqliteStampCommonality implements StampCombineBuilder {
+public class SqliteStampInsert extends PlatformStampInsert {
+    public SqliteStampInsert(PlatformStampSection section,
+                             PlatformStampReference reference,
+                             PlatformDialect dialect,
+                             PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampInsert insert = (StampInsert) action;
@@ -24,7 +30,7 @@ public class SqliteStampInsert extends SqliteStampCommonality implements StampCo
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT");
         sb.append(" INTO");
-        sb.append(" " + this.getTableName(wrapper, insert.tableClass, insert.tableName));
+        sb.append(" " + this.reference.getTableName(wrapper, insert.tableClass, insert.tableName));
 
         StampColumn[] columns = insert.columns;
         String[] names = null;
@@ -33,7 +39,7 @@ public class SqliteStampInsert extends SqliteStampCommonality implements StampCo
             sb.append(" (");
             int i = 0;
             for (StampColumn column : columns) {
-                String name = this.getColumnName(wrapper, insert, column);
+                String name = this.reference.getColumnName(wrapper, insert, column);
                 sb.append(name);
                 names[i] = name;
                 i++;
@@ -63,7 +69,7 @@ public class SqliteStampInsert extends SqliteStampCommonality implements StampCo
 
         if (insert.select != null) {
             sb.append(" ");
-            SQLBuilderCombine combine = new DB2StampSelect().getSqlBuilder(wrapper, insert.select);
+            SQLBuilderCombine combine = (new SqliteStampBuilder().select()).getSqlBuilder(wrapper, insert.select);
             sb.append(combine.getSql());
             if (combine.getPlaceholders() != null) {
                 placeholders.addAll(combine.getPlaceholders());

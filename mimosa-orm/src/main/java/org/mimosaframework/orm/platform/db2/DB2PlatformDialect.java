@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Set;
 
 public class DB2PlatformDialect extends PlatformDialect {
+    private DB2StampBuilder builder = new DB2StampBuilder();
 
     public DB2PlatformDialect() {
         registerColumnType(KeyColumnType.INT, "INTEGER");
@@ -60,56 +61,56 @@ public class DB2PlatformDialect extends PlatformDialect {
 
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
-        StampCombineBuilder builder = new DB2StampAlter();
+        StampCombineBuilder builder = this.builder.alter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine rename(StampRename alter) {
-        StampCombineBuilder builder = new DB2StampRename();
+        StampCombineBuilder builder = this.builder.rename();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine create(StampCreate create) {
-        StampCombineBuilder builder = new DB2StampCreate();
+        StampCombineBuilder builder = this.builder.create();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine drop(StampDrop drop) {
-        StampCombineBuilder builder = new DB2StampDrop();
+        StampCombineBuilder builder = this.builder.drop();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, drop);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine insert(StampInsert insert) {
-        StampCombineBuilder builder = new DB2StampInsert();
+        StampCombineBuilder builder = this.builder.insert();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, insert);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine delete(StampDelete delete) {
-        StampCombineBuilder builder = new DB2StampDelete();
+        StampCombineBuilder builder = this.builder.delete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine select(StampSelect select) {
-        StampCombineBuilder builder = new DB2StampSelect();
+        StampCombineBuilder builder = this.builder.select();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, select);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine update(StampUpdate update) {
-        StampCombineBuilder builder = new DB2StampUpdate();
+        StampCombineBuilder builder = this.builder.update();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
     }

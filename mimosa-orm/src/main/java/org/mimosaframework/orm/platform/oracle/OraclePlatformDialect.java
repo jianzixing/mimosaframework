@@ -15,6 +15,7 @@ import java.util.List;
 
 public class OraclePlatformDialect extends PlatformDialect {
     private static final Log logger = LogFactory.getLog(OraclePlatformDialect.class);
+    private OracleStampBuilder builder = new OracleStampBuilder();
 
     public OraclePlatformDialect() {
         registerColumnType(KeyColumnType.INT, "NUMBER", 10, ColumnCompareType.SELF);
@@ -46,28 +47,28 @@ public class OraclePlatformDialect extends PlatformDialect {
 
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
-        StampCombineBuilder builder = new OracleStampAlter();
+        StampCombineBuilder builder = this.builder.alter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine rename(StampRename alter) {
-        StampCombineBuilder builder = new OracleStampRename();
+        StampCombineBuilder builder = this.builder.rename();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine create(StampCreate create) {
-        StampCombineBuilder builder = new OracleStampCreate();
+        StampCombineBuilder builder = this.builder.create();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine drop(StampDrop drop) {
-        StampCombineBuilder builder = new OracleStampDrop();
+        StampCombineBuilder builder = this.builder.drop();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, drop);
         return combine;
     }
@@ -121,7 +122,7 @@ public class OraclePlatformDialect extends PlatformDialect {
                 }
             }
         }
-        StampCombineBuilder builder = new OracleStampInsert();
+        StampCombineBuilder builder = this.builder.insert();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, insert);
         return combine;
     }
@@ -133,21 +134,21 @@ public class OraclePlatformDialect extends PlatformDialect {
 
     @Override
     public SQLBuilderCombine delete(StampDelete delete) {
-        StampCombineBuilder builder = new OracleStampDelete();
+        StampCombineBuilder builder = this.builder.delete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine select(StampSelect select) {
-        StampCombineBuilder builder = new OracleStampSelect();
+        StampCombineBuilder builder = this.builder.select();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, select);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine update(StampUpdate update) {
-        StampCombineBuilder builder = new OracleStampUpdate();
+        StampCombineBuilder builder = this.builder.update();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
     }

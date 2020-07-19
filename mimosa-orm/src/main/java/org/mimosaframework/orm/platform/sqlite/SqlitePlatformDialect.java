@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SqlitePlatformDialect extends PlatformDialect {
+    private SqliteStampBuilder builder = new SqliteStampBuilder();
+
     public SqlitePlatformDialect() {
         registerColumnType(KeyColumnType.INT, "INTEGER");
         registerColumnType(KeyColumnType.VARCHAR, "VARCHAR", ColumnCompareType.JAVA);
@@ -265,56 +267,56 @@ public class SqlitePlatformDialect extends PlatformDialect {
 
     @Override
     public SQLBuilderCombine alter(StampAlter alter) {
-        StampCombineBuilder builder = new SqliteStampAlter();
+        StampCombineBuilder builder = this.builder.alter();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine rename(StampRename alter) {
-        StampCombineBuilder builder = new SqliteStampRename();
+        StampCombineBuilder builder = this.builder.rename();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, alter);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine create(StampCreate create) {
-        StampCombineBuilder builder = new SqliteStampCreate();
+        StampCombineBuilder builder = this.builder.create();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, create);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine drop(StampDrop drop) {
-        StampCombineBuilder builder = new SqliteStampDrop();
+        StampCombineBuilder builder = this.builder.drop();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, drop);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine insert(StampInsert insert) {
-        StampCombineBuilder builder = new SqliteStampInsert();
+        StampCombineBuilder builder = this.builder.insert();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, insert);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine delete(StampDelete delete) {
-        StampCombineBuilder builder = new SqliteStampDelete();
+        StampCombineBuilder builder = this.builder.delete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine select(StampSelect select) {
-        StampCombineBuilder builder = new SqliteStampSelect();
+        StampCombineBuilder builder = this.builder.select();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, select);
         return combine;
     }
 
     @Override
     public SQLBuilderCombine update(StampUpdate update) {
-        StampCombineBuilder builder = new SqliteStampUpdate();
+        StampCombineBuilder builder = this.builder.update();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
     }

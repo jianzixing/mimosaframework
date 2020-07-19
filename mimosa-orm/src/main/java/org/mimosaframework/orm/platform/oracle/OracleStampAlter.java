@@ -5,17 +5,23 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.ExecuteImmediate;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OracleStampAlter extends OracleStampCommonality implements StampCombineBuilder {
+public class OracleStampAlter extends PlatformStampAlter {
     private static final Log logger = LogFactory.getLog(OracleStampAlter.class);
     protected int totalAction = 0;
     protected boolean noNeedSource = false;
+
+    public OracleStampAlter(PlatformStampSection section,
+                            PlatformStampReference reference,
+                            PlatformDialect dialect,
+                            PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
 
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper,
@@ -26,7 +32,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (alter.target == KeyTarget.DATABASE) {
             sb.append(" DATABASE");
 
-            sb.append(" " + RS + alter.databaseName + RE);
+            sb.append(" " + this.reference.getWrapStart() + alter.databaseName + this.reference.getWrapEnd());
 
             if (StringTools.isNotEmpty(alter.charset)) {
                 sb.append(" CHARACTER SET " + alter.charset);
@@ -38,7 +44,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (alter.target == KeyTarget.TABLE) {
             sb.append(" TABLE");
 
-            sb.append(" " + this.getTableName(wrapper, alter.tableClass, alter.tableName));
+            sb.append(" " + this.reference.getTableName(wrapper, alter.tableClass, alter.tableName));
 
             if (alter.items != null) {
                 for (StampAlterItem item : alter.items) {
@@ -54,12 +60,12 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (totalAction <= 1 && noNeedSource) sb = null;
         if (sb != null) {
             String sql = sb.toString();
-            if (StringTools.isNotEmpty(sql) && this.multiExecuteImmediate()) {
+            if (StringTools.isNotEmpty(sql) && this.section.multiExecuteImmediate()) {
                 sql = sql.replaceAll("'", "''");
             }
-            return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sql)), null);
+            return new SQLBuilderCombine(this.section.toSQLString(new ExecuteImmediate(sql)), null);
         }
-        return new SQLBuilderCombine(this.toSQLString(new ExecuteImmediate(sb)), null);
+        return new SQLBuilderCombine(this.section.toSQLString(new ExecuteImmediate(sb)), null);
     }
 
     private void buildAlterItem(MappingGlobalWrapper wrapper,
@@ -88,7 +94,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
             sb.append(" DROP");
             if (item.dropType == KeyAlterDropType.COLUMN) {
                 sb.append(" COLUMN");
-                sb.append(" " + this.getColumnName(wrapper, alter, item.column));
+                sb.append(" " + this.reference.getColumnName(wrapper, alter, item.column));
             }
             if (item.dropType == KeyAlterDropType.PRIMARY_KEY) {
                 sb.append(" PRIMARY KEY");
@@ -98,15 +104,15 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         if (item.action == KeyAction.AUTO_INCREMENT) {
             totalAction++;
             this.noNeedSource = true;
-            String tableName = this.getTableName(wrapper, alter.tableClass, alter.tableName);
+            String tableName = this.reference.getTableName(wrapper, alter.tableClass, alter.tableName);
             String seqName = tableName + "_SEQ";
 
-            this.getDeclares().add("CACHE_CUR_SEQ NUMBER");
-            this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT " + seqName + ".NEXTVAL INTO CACHE_CUR_SEQ FROM DUAL"));
-            this.getBuilders().add(new ExecuteImmediate().setProcedure("EXECUTE IMMEDIATE concat('ALTER SEQUENCE " +
+            this.section.getDeclares().add("CACHE_CUR_SEQ NUMBER");
+            this.section.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT " + seqName + ".NEXTVAL INTO CACHE_CUR_SEQ FROM DUAL"));
+            this.section.getBuilders().add(new ExecuteImmediate().setProcedure("EXECUTE IMMEDIATE concat('ALTER SEQUENCE " +
                     seqName + " INCREMENT BY '," + item.value + "-CACHE_CUR_SEQ)"));
-            this.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT " + seqName + ".NEXTVAL INTO CACHE_CUR_SEQ FROM DUAL"));
-            this.getBuilders().add(new ExecuteImmediate("ALTER SEQUENCE " + seqName + " INCREMENT BY 1"));
+            this.section.getBuilders().add(new ExecuteImmediate().setProcedure("SELECT " + seqName + ".NEXTVAL INTO CACHE_CUR_SEQ FROM DUAL"));
+            this.section.getBuilders().add(new ExecuteImmediate("ALTER SEQUENCE " + seqName + " INCREMENT BY 1"));
         }
         if (item.action == KeyAction.CHARACTER_SET) {
             totalAction++;
@@ -114,7 +120,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
         if (item.action == KeyAction.COMMENT) {
             totalAction++;
-            this.addCommentSQL(wrapper, alter, item, item.comment, 2);
+            this.share.addCommentSQL(wrapper, alter, item, item.comment, 2);
         }
     }
 
@@ -125,14 +131,14 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         sb.append(" PRIMARY KEY");
 
         if (StringTools.isNotEmpty(item.indexName)) {
-            sb.append(" " + RS + item.indexName + RE);
+            sb.append(" " + this.reference.getWrapStart() + item.indexName + this.reference.getWrapEnd());
         }
-        
+
         if (item.columns != null && item.columns.length > 0) {
             sb.append(" (");
             int i = 0;
             for (StampColumn column : item.columns) {
-                sb.append(this.getColumnName(wrapper, alter, column));
+                sb.append(this.reference.getColumnName(wrapper, alter, column));
                 i++;
                 if (i != item.columns.length) {
                     sb.append(",");
@@ -154,12 +160,12 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
                                   StampAlter alter,
                                   StampAlterItem column,
                                   boolean isOldColumn) {
-        sb.append(" " + this.getColumnName(wrapper, alter, isOldColumn ? column.oldColumn : column.column));
+        sb.append(" " + this.reference.getColumnName(wrapper, alter, isOldColumn ? column.oldColumn : column.column));
         if (column.columnType != null) {
-            sb.append(" " + this.getColumnType(column.columnType, column.len, column.scale));
+            sb.append(" " + this.share.getColumnType(column.columnType, column.len, column.scale));
         }
         if (column.autoIncrement == KeyConfirm.YES) {
-            this.addAutoIncrement(wrapper, alter.tableClass, alter.tableName);
+            this.share.addAutoIncrement(wrapper, alter.tableClass, alter.tableName);
         }
         if (column.pk == KeyConfirm.YES) {
             sb.append(" PRIMARY KEY");
@@ -176,7 +182,7 @@ public class OracleStampAlter extends OracleStampCommonality implements StampCom
         }
 
         if (StringTools.isNotEmpty(column.comment)) {
-            this.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
+            this.share.addCommentSQL(wrapper, alter, column.column, column.comment, 1);
         }
         if (column.after != null) {
             logger.warn("oracle can't set column order");

@@ -1,21 +1,28 @@
 package org.mimosaframework.orm.platform.sqlserver;
 
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
-public class SQLServerStampRename extends SQLServerStampCommonality implements StampCombineBuilder {
+public class SQLServerStampRename extends PlatformStampRename {
+    public SQLServerStampRename(PlatformStampSection section,
+                                PlatformStampReference reference,
+                                PlatformDialect dialect,
+                                PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampRename stampRename = (StampRename) action;
         StringBuilder sb = new StringBuilder();
-        String tableName = this.getTableName(wrapper, stampRename.tableClass, stampRename.tableName);
+        String tableName = this.reference.getTableName(wrapper, stampRename.tableClass, stampRename.tableName);
         if (stampRename.renameType == KeyRenameType.COLUMN) {
-            String tableOutName = this.getTableName(wrapper, stampRename.tableClass, stampRename.tableName, false);
+            String tableOutName = this.reference.getTableName(wrapper, stampRename.tableClass, stampRename.tableName, false);
             sb.append("EXEC SP_RENAME ");
-            sb.append("\"" + tableOutName + "." + this.getColumnName(wrapper, stampRename, new StampColumn(stampRename.oldName), false) + "\"");
+            sb.append("\"" + tableOutName + "." + this.reference.getColumnName(wrapper, stampRename, new StampColumn(stampRename.oldName), false) + "\"");
             sb.append(",");
-            sb.append(" \"" + this.getColumnName(wrapper, stampRename, new StampColumn(stampRename.newName), false) + "\"");
+            sb.append(" \"" + this.reference.getColumnName(wrapper, stampRename, new StampColumn(stampRename.newName), false) + "\"");
             sb.append(", \"COLUMN\"");
         }
         if (stampRename.renameType == KeyRenameType.INDEX) {
@@ -29,7 +36,7 @@ public class SQLServerStampRename extends SQLServerStampCommonality implements S
             sb.append(" " + stampRename.newName);
         }
         if (stampRename.renameType == KeyRenameType.TABLE) {
-            sb.append(" EXEC sp_rename '" + this.getTableName(wrapper, stampRename.tableClass, stampRename.tableName, false)
+            sb.append(" EXEC sp_rename '" + this.reference.getTableName(wrapper, stampRename.tableClass, stampRename.tableName, false)
                     + "', '" + stampRename.newName + "'");
         }
         return new SQLBuilderCombine(sb.toString(), null);

@@ -2,14 +2,17 @@ package org.mimosaframework.orm.platform.db2;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.platform.SQLDataPlaceholder;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DB2StampSelect extends DB2StampCommonality implements StampCombineBuilder {
+public class DB2StampSelect extends PlatformStampSelect {
+    public DB2StampSelect(PlatformStampSection section, PlatformStampReference reference, PlatformDialect dialect, PlatformStampShare share) {
+        super(section, reference, dialect, share);
+    }
+
     @Override
     public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
         StampSelect select = (StampSelect) action;
@@ -30,7 +33,7 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             orderBySql.append("ORDER BY ");
             int j = 0;
             for (StampOrderBy ob : orderBy) {
-                orderBySql.append(this.getColumnName(wrapper, select, ob.column));
+                orderBySql.append(this.reference.getColumnName(wrapper, select, ob.column));
                 if (ob.sortType == KeySortType.ASC)
                     orderBySql.append(" ASC");
                 else
@@ -86,14 +89,14 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
                 }
                 if (join.on != null) {
                     sb.append(" ON ");
-                    this.buildWhere(wrapper, placeholders, select, join.on, sb);
+                    this.share.buildWhere(wrapper, placeholders, select, join.on, sb);
                 }
             }
         }
 
         if (select.where != null) {
             sb.append(" WHERE ");
-            this.buildWhere(wrapper, placeholders, select, select.where, sb);
+            this.share.buildWhere(wrapper, placeholders, select, select.where, sb);
         }
 
         if (select.groupBy != null && select.groupBy.length > 0) {
@@ -102,7 +105,7 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
             if (groupBy != null) {
                 int j = 0;
                 for (StampColumn gb : groupBy) {
-                    sb.append(this.getColumnName(wrapper, select, gb));
+                    sb.append(this.reference.getColumnName(wrapper, select, gb));
                     j++;
                     if (j != groupBy.length) sb.append(",");
                 }
@@ -111,7 +114,7 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
 
         if (select.having != null) {
             sb.append(" HAVING ");
-            this.buildWhere(wrapper, placeholders, select, select.having, sb);
+            this.share.buildWhere(wrapper, placeholders, select, select.having, sb);
         }
 
         if (select.orderBy != null && select.orderBy.length > 0 && select.limit == null) {
@@ -145,22 +148,22 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
 
         if (field.fieldType == KeyFieldType.ALL) {
             if (StringTools.isNotEmpty(tableAliasName)) {
-                sb.append(RS + tableAliasName + RE + ".");
+                sb.append(this.reference.getWrapStart() + tableAliasName + this.reference.getWrapEnd() + ".");
             }
             sb.append("*");
         } else if (field.fieldType == KeyFieldType.COLUMN) {
             if (StringTools.isNotEmpty(tableAliasName)) {
-                sb.append(RS + tableAliasName + RE + ".");
+                sb.append(this.reference.getWrapStart() + tableAliasName + this.reference.getWrapEnd() + ".");
             }
-            sb.append(this.getColumnName(wrapper, select, column));
+            sb.append(this.reference.getColumnName(wrapper, select, column));
             if (StringTools.isNotEmpty(aliasName)) {
-                sb.append(" AS " + RS + aliasName + RE);
+                sb.append(" AS " + this.reference.getWrapStart() + aliasName + this.reference.getWrapEnd());
             }
         } else if (field.fieldType == KeyFieldType.FUN) {
-            this.buildSelectFieldFun(wrapper, select, fun, sb);
+            this.share.buildSelectFieldFun(wrapper, select, fun, sb);
 
             if (StringTools.isNotEmpty(aliasName)) {
-                sb.append(" AS " + RS + aliasName + RE);
+                sb.append(" AS " + this.reference.getWrapStart() + aliasName + this.reference.getWrapEnd());
             }
         }
     }
@@ -178,7 +181,7 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
                 this.buildSelect(wrapper, from.builder, sb, placeholders);
                 sb.append(")");
             } else {
-                sb.append(this.getTableName(wrapper, from.table, from.name));
+                sb.append(this.reference.getTableName(wrapper, from.table, from.name));
             }
         } else if (join != null) {
             if (join.builder != null) {
@@ -186,7 +189,7 @@ public class DB2StampSelect extends DB2StampCommonality implements StampCombineB
                 this.buildSelect(wrapper, select, sb, placeholders);
                 sb.append(")");
             } else {
-                sb.append(" " + this.getTableName(wrapper, join.tableClass, join.tableName));
+                sb.append(" " + this.reference.getTableName(wrapper, join.tableClass, join.tableName));
             }
         }
     }
