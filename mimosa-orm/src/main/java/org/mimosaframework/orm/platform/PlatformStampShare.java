@@ -232,7 +232,7 @@ public class PlatformStampShare {
         }
     }
 
-    protected String getColumnType(KeyColumnType columnType, int len, int scale) {
+    public String getColumnType(KeyColumnType columnType, int len, int scale) {
         ColumnType ct = this.commonality.getDialect().getColumnType(columnType);
         if (ct.getCompareType() == ColumnCompareType.NONE) {
             return ct.getTypeName();
