@@ -179,24 +179,8 @@ public abstract class PlatformStampSelect extends PlatformStampCommonality {
         if (stamp != null && stamp instanceof StampFrom) {
             StampFrom from = (StampFrom) stamp;
             if (from.builder != null) {
-                // 复制新的查询条件，只保留inner join影响查询结果的联合查询
-                // 查询的结果去重后作为子查询然后继续使用join联合查询
-                StampSelect stampSelect = from.builder.clone();
-                StampSelectJoin[] joins = stampSelect.joins;
-                if (joins != null) {
-                    List<StampSelectJoin> list = null;
-                    for (StampSelectJoin join : joins) {
-                        if (join.joinType == KeyJoinType.INNER) {
-                            if (list == null) list = new ArrayList<>();
-                            list.add(join);
-                        }
-                    }
-                    if (list != null) {
-                        stampSelect.joins = list.toArray(new StampSelectJoin[]{});
-                    }
-                }
                 sb.append("(");
-                this.buildSelect(wrapper, stampSelect, sb, placeholders);
+                this.buildSelect(wrapper, from.builder, sb, placeholders);
                 sb.append(")");
             } else {
                 sb.append(this.reference.getTableName(wrapper, from.table, from.name));

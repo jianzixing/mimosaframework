@@ -585,10 +585,16 @@ public class PlatformExecutor {
             }
         }
 
+        // 判断是否需要组合子查询，以解决join和limit的数量问题
+        boolean isChildSelect = false;
+        if (limit != null && joins != null && joins.size() > 0) {
+            isChildSelect = true;
+        }
+
         DefaultSQLSelectBuilder select = new DefaultSQLSelectBuilder();
         select.select();
 
-        if (limit != null && joins != null && joins.size() > 0) {
+        if (isChildSelect) {
             select.distinctByAlias("T", "*");
         } else {
             if (hasJoin) {
@@ -605,7 +611,8 @@ public class PlatformExecutor {
             }
         }
         select.from().table(queryTable.getMappingTableName(), "T");
-        this.buildJoinQuery(select, alias, joins, false);
+        // 如果是子查询语句，则子查询语句只需要包含inner join的联合条件
+        this.buildJoinQuery(select, alias, joins, isChildSelect ? true : false);
         if (logicWraps != null) select.where();
         this.buildWraps(select, queryTable, logicWraps, hasJoin);
 
@@ -615,13 +622,14 @@ public class PlatformExecutor {
             select.limit(limit.getStart(), limit.getLimit());
         }
 
-        if (limit != null && joins != null && joins.size() > 0) {
+        // 如果符合条件则包装select的子查询查询出符合的去重的主键列表
+        if (isChildSelect) {
             DefaultSQLSelectBuilder selectWrap = new DefaultSQLSelectBuilder();
             selectWrap.select();
             this.buildSelectField(selectWrap, alias, fieldAlias);
             selectWrap.from().table(select, "T");
             this.buildJoinQuery(selectWrap, alias, joins, false);
-            this.buildOrderBy(select, orders, queryTable, joins != null && joins.size() > 0);
+            this.buildOrderBy(selectWrap, orders, queryTable, joins != null && joins.size() > 0);
 
             select = selectWrap;
         }
