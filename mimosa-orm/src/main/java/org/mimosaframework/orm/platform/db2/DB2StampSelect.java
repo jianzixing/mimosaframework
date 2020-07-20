@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DB2StampSelect extends PlatformStampSelect {
-    public DB2StampSelect(PlatformStampSection section, PlatformStampReference reference, PlatformDialect dialect, PlatformStampShare share) {
+    public DB2StampSelect(PlatformStampSection section,
+                          PlatformStampReference reference,
+                          PlatformDialect dialect,
+                          PlatformStampShare share) {
         super(section, reference, dialect, share);
     }
 

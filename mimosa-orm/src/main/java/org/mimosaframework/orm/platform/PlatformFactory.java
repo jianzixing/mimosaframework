@@ -11,8 +11,22 @@ import org.mimosaframework.orm.utils.DatabaseType;
 
 public class PlatformFactory {
     public static StampCombineBuilder getStampBuilder(DatabaseType databaseTypes, StampAction stampAction) {
+        PlatformStampBuilder builder = null;
         if (databaseTypes == DatabaseType.DB2) {
-            DB2StampBuilder builder = new DB2StampBuilder();
+            builder = new DB2StampBuilder();
+        } else if (databaseTypes == DatabaseType.MYSQL) {
+            builder = new MysqlStampBuilder();
+        } else if (databaseTypes == DatabaseType.ORACLE) { // 没有schema概念
+            builder = new OracleStampBuilder();
+        } else if (databaseTypes == DatabaseType.POSTGRESQL) {
+            builder = new PostgreSQLStampBuilder();
+        } else if (databaseTypes == DatabaseType.SQLITE) {
+            builder = new SqliteStampBuilder();
+        } else if (databaseTypes == DatabaseType.SQL_SERVER) {
+            builder = new SQLServerStampBuilder();
+        }
+
+        if (builder != null) {
             if (stampAction instanceof StampAlter) return builder.alter();
             if (stampAction instanceof StampRename) return builder.rename();
             if (stampAction instanceof StampCreate) return builder.create();
@@ -22,56 +36,6 @@ public class PlatformFactory {
             if (stampAction instanceof StampSelect) return builder.select();
             if (stampAction instanceof StampUpdate) return builder.update();
             if (stampAction instanceof StampStructure) return builder.structure();
-        } else if (databaseTypes == DatabaseType.MYSQL) {
-            if (stampAction instanceof StampAlter) return new MysqlStampAlter();
-            if (stampAction instanceof StampRename) return new MysqlStampRename();
-            if (stampAction instanceof StampCreate) return new MysqlStampCreate();
-            if (stampAction instanceof StampDelete) return new MysqlStampDelete();
-            if (stampAction instanceof StampDrop) return new MysqlStampDrop();
-            if (stampAction instanceof StampInsert) return new MysqlStampInsert();
-            if (stampAction instanceof StampSelect) return new MysqlStampSelect();
-            if (stampAction instanceof StampUpdate) return new MysqlStampUpdate();
-            if (stampAction instanceof StampStructure) return new MysqlStampStructure();
-        } else if (databaseTypes == DatabaseType.ORACLE) { // 没有schema概念
-            if (stampAction instanceof StampAlter) return new OracleStampAlter();
-            if (stampAction instanceof StampRename) return new OracleStampRename();
-            if (stampAction instanceof StampCreate) return new OracleStampCreate();
-            if (stampAction instanceof StampDelete) return new OracleStampDelete();
-            if (stampAction instanceof StampDrop) return new OracleStampDrop();
-            if (stampAction instanceof StampInsert) return new OracleStampInsert();
-            if (stampAction instanceof StampSelect) return new OracleStampSelect();
-            if (stampAction instanceof StampUpdate) return new OracleStampUpdate();
-            if (stampAction instanceof StampStructure) return new OracleStampStructure();
-        } else if (databaseTypes == DatabaseType.POSTGRESQL) {
-            if (stampAction instanceof StampAlter) return new PostgreSQLStampAlter();
-            if (stampAction instanceof StampRename) return new PostgreSQLStampRename();
-            if (stampAction instanceof StampCreate) return new PostgreSQLStampCreate();
-            if (stampAction instanceof StampDelete) return new PostgreSQLStampDelete();
-            if (stampAction instanceof StampDrop) return new PostgreSQLStampDrop();
-            if (stampAction instanceof StampInsert) return new PostgreSQLStampInsert();
-            if (stampAction instanceof StampSelect) return new PostgreSQLStampSelect();
-            if (stampAction instanceof StampUpdate) return new PostgreSQLStampUpdate();
-            if (stampAction instanceof StampStructure) return new PostgreSQLStampStructure();
-        } else if (databaseTypes == DatabaseType.SQLITE) {
-            if (stampAction instanceof StampAlter) return new SqliteStampAlter();
-            if (stampAction instanceof StampRename) return new SqliteStampRename();
-            if (stampAction instanceof StampCreate) return new SqliteStampCreate();
-            if (stampAction instanceof StampDelete) return new SqliteStampDelete();
-            if (stampAction instanceof StampDrop) return new SqliteStampDrop();
-            if (stampAction instanceof StampInsert) return new SqliteStampInsert();
-            if (stampAction instanceof StampSelect) return new SqliteStampSelect();
-            if (stampAction instanceof StampUpdate) return new SqliteStampUpdate();
-            if (stampAction instanceof StampStructure) return new SqliteStampStructure();
-        } else if (databaseTypes == DatabaseType.SQL_SERVER) {
-            if (stampAction instanceof StampAlter) return new SQLServerStampAlter();
-            if (stampAction instanceof StampRename) return new SQLServerStampRename();
-            if (stampAction instanceof StampCreate) return new SQLServerStampCreate();
-            if (stampAction instanceof StampDelete) return new SQLServerStampDelete();
-            if (stampAction instanceof StampDrop) return new SQLServerStampDrop();
-            if (stampAction instanceof StampInsert) return new SQLServerStampInsert();
-            if (stampAction instanceof StampSelect) return new SQLServerStampSelect();
-            if (stampAction instanceof StampUpdate) return new SQLServerStampUpdate();
-            if (stampAction instanceof StampStructure) return new SQLServerStampStructure();
         }
         return null;
     }

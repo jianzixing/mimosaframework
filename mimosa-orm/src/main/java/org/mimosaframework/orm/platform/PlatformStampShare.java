@@ -23,6 +23,15 @@ public class PlatformStampShare {
                               int type) {
     }
 
+    public void addCommentSQL(MappingGlobalWrapper wrapper,
+                              StampAction action,
+                              Object param,
+                              String commentStr,
+                              int type,
+                              boolean isCheckHasTable) {
+
+    }
+
     public void buildWhere(MappingGlobalWrapper wrapper,
                            List<SQLDataPlaceholder> placeholders,
                            StampAction stampTables,

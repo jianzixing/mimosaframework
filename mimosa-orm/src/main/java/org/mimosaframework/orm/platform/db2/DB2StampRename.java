@@ -7,7 +7,10 @@ import org.mimosaframework.orm.sql.stamp.*;
 
 public class DB2StampRename extends PlatformStampRename {
 
-    public DB2StampRename(PlatformStampSection section, PlatformStampReference reference, PlatformDialect dialect, PlatformStampShare share) {
+    public DB2StampRename(PlatformStampSection section,
+                          PlatformStampReference reference,
+                          PlatformDialect dialect,
+                          PlatformStampShare share) {
         super(section, reference, dialect, share);
     }
 

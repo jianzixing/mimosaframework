@@ -6,7 +6,7 @@ import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 public class PostgreSQLStampBuilder implements PlatformStampBuilder {
     @Override
     public PlatformStampAlter alter() {
-        return new PostgreSQLStampAlter(new PlatformStampSection(),
+        return new PostgreSQLStampAlter(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
                 new PostgreSQLStampShare());
@@ -14,7 +14,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampCreate create() {
-        return new PostgreSQLStampCreate(new PlatformStampSection(),
+        return new PostgreSQLStampCreate(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
                 new PostgreSQLStampShare());
@@ -22,7 +22,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampDrop drop() {
-        return new PostgreSQLStampDrop(new PlatformStampSection(),
+        return new PostgreSQLStampDrop(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
                 new PostgreSQLStampShare());
@@ -30,7 +30,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampRename rename() {
-        return new PostgreSQLStampRename(new PlatformStampSection(),
+        return new PostgreSQLStampRename(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
                 new PostgreSQLStampShare());
@@ -38,7 +38,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampInsert insert() {
-        return new PostgreSQLStampInsert(new PlatformStampSection(),
+        return new PostgreSQLStampInsert(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
                 new PostgreSQLStampShare());
@@ -46,7 +46,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampDelete delete() {
-        return new PostgreSQLStampDelete(new PlatformStampSection(),
+        return new PostgreSQLStampDelete(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
                 new PostgreSQLStampShare());
@@ -54,7 +54,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampSelect select() {
-        return new PostgreSQLStampSelect(new PlatformStampSection(),
+        return new PostgreSQLStampSelect(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
                 new PostgreSQLStampShare());
@@ -62,7 +62,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampUpdate update() {
-        return new PostgreSQLStampUpdate(new PlatformStampSection(),
+        return new PostgreSQLStampUpdate(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
                 new PostgreSQLStampShare());

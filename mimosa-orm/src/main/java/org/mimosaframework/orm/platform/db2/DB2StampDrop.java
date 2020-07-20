@@ -12,7 +12,10 @@ import org.mimosaframework.orm.sql.stamp.StampDrop;
 public class DB2StampDrop extends PlatformStampDrop {
     private static final Log logger = LogFactory.getLog(DB2StampDrop.class);
 
-    public DB2StampDrop(PlatformStampSection section, PlatformStampReference reference, PlatformDialect dialect, PlatformStampShare share) {
+    public DB2StampDrop(PlatformStampSection section,
+                        PlatformStampReference reference,
+                        PlatformDialect dialect,
+                        PlatformStampShare share) {
         super(section, reference, dialect, share);
     }
 

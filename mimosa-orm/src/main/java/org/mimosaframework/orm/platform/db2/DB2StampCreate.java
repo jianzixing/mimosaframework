@@ -19,7 +19,6 @@ public class DB2StampCreate extends PlatformStampCreate {
                           PlatformDialect dialect,
                           PlatformStampShare share) {
         super(section, reference, dialect, share);
-        section.setDeclareInBegin(true);
     }
 
 

@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DB2StampDelete extends PlatformStampDelete {
-    public DB2StampDelete(PlatformStampSection section, PlatformStampReference reference, PlatformDialect dialect, PlatformStampShare share) {
+    public DB2StampDelete(PlatformStampSection section,
+                          PlatformStampReference reference,
+                          PlatformDialect dialect,
+                          PlatformStampShare share) {
         super(section, reference, dialect, share);
     }
 

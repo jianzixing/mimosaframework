@@ -21,7 +21,6 @@ public class DB2StampAlter extends PlatformStampAlter {
                          PlatformDialect dialect,
                          PlatformStampShare share) {
         super(section, reference, dialect, share);
-        section.setDeclareInBegin(true);
     }
 
     @Override

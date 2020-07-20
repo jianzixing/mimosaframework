@@ -6,7 +6,7 @@ import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 public class SQLServerStampBuilder implements PlatformStampBuilder {
     @Override
     public PlatformStampAlter alter() {
-        return new SQLServerStampAlter(new PlatformStampSection(),
+        return new SQLServerStampAlter(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
                 new SQLServerStampShare());
@@ -14,7 +14,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampCreate create() {
-        return new SQLServerStampCreate(new PlatformStampSection(),
+        return new SQLServerStampCreate(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
                 new SQLServerStampShare());
@@ -22,7 +22,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampDrop drop() {
-        return new SQLServerStampDrop(new PlatformStampSection(),
+        return new SQLServerStampDrop(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
                 new SQLServerStampShare());
@@ -30,7 +30,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampRename rename() {
-        return new SQLServerStampRename(new PlatformStampSection(),
+        return new SQLServerStampRename(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
                 new SQLServerStampShare());
@@ -38,7 +38,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampInsert insert() {
-        return new SQLServerStampInsert(new PlatformStampSection(),
+        return new SQLServerStampInsert(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
                 new SQLServerStampShare());
@@ -46,7 +46,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampDelete delete() {
-        return new SQLServerStampDelete(new PlatformStampSection(),
+        return new SQLServerStampDelete(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
                 new SQLServerStampShare());
@@ -54,7 +54,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampSelect select() {
-        return new SQLServerStampSelect(new PlatformStampSection(),
+        return new SQLServerStampSelect(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
                 new SQLServerStampShare());
@@ -62,7 +62,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampUpdate update() {
-        return new SQLServerStampUpdate(new PlatformStampSection(),
+        return new SQLServerStampUpdate(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
                 new SQLServerStampShare());

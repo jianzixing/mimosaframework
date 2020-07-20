@@ -10,7 +10,7 @@ import org.mimosaframework.orm.sql.stamp.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLServerStampCreate extends PlatformStampAlter {
+public class SQLServerStampCreate extends PlatformStampCreate {
     private static final Log logger = LogFactory.getLog(SQLServerStampCreate.class);
 
     public SQLServerStampCreate(PlatformStampSection section,

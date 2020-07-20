@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.Set;
 
 public class DB2StampInsert extends PlatformStampInsert {
-    public DB2StampInsert(PlatformStampSection section, PlatformStampReference reference, PlatformDialect dialect, PlatformStampShare share) {
+    public DB2StampInsert(PlatformStampSection section,
+                          PlatformStampReference reference,
+                          PlatformDialect dialect,
+                          PlatformStampShare share) {
         super(section, reference, dialect, share);
     }
 
@@ -65,7 +68,7 @@ public class DB2StampInsert extends PlatformStampInsert {
 
         if (insert.select != null) {
             sb.append(" ");
-            SQLBuilderCombine combine = new DB2StampSelect().getSqlBuilder(wrapper, insert.select);
+            SQLBuilderCombine combine = (new DB2StampBuilder().select()).getSqlBuilder(wrapper, insert.select);
             sb.append(combine.getSql());
             if (combine.getPlaceholders() != null) {
                 placeholders.addAll(combine.getPlaceholders());

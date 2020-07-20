@@ -6,7 +6,7 @@ import org.mimosaframework.orm.sql.stamp.*;
 public class DB2StampBuilder implements PlatformStampBuilder {
     @Override
     public PlatformStampAlter alter() {
-        return new DB2StampAlter(new PlatformStampSection(),
+        return new DB2StampAlter(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
                 new DB2StampShare());
@@ -14,7 +14,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampCreate create() {
-        return new DB2StampCreate(new PlatformStampSection(),
+        return new DB2StampCreate(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
                 new DB2StampShare());
@@ -22,7 +22,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampDrop drop() {
-        return new DB2StampDrop(new PlatformStampSection(),
+        return new DB2StampDrop(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
                 new DB2StampShare());
@@ -30,7 +30,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampRename rename() {
-        return new DB2StampRename(new PlatformStampSection(),
+        return new DB2StampRename(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
                 new DB2StampShare());
@@ -38,7 +38,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampInsert insert() {
-        return new DB2StampInsert(new PlatformStampSection(),
+        return new DB2StampInsert(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
                 new DB2StampShare());
@@ -46,7 +46,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampDelete delete() {
-        return new DB2StampDelete(new PlatformStampSection(),
+        return new DB2StampDelete(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
                 new DB2StampShare());
@@ -54,7 +54,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampSelect select() {
-        return new DB2StampSelect(new PlatformStampSection(),
+        return new DB2StampSelect(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
                 new DB2StampShare());
@@ -62,7 +62,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
 
     @Override
     public PlatformStampUpdate update() {
-        return new DB2StampUpdate(new PlatformStampSection(),
+        return new DB2StampUpdate(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
                 new DB2StampShare());
