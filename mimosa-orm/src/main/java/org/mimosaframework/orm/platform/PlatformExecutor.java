@@ -914,8 +914,11 @@ public class PlatformExecutor {
         if (joins != null && joins.size() > 0) {
             for (Join j : joins) {
                 DefaultJoin join = (DefaultJoin) j;
+                if (onlyInnerJoin && join.getJoinType() != 1) {
+                    continue;
+                }
                 List<JoinOnFilter> ons = join.getOns();
-                if (ons != null && ons.size() > 0 && !(onlyInnerJoin && join.getJoinType() == 1)) {
+                if (ons != null && ons.size() > 0) {
                     Class<?> table = join.getTable();
                     Class<?> mainTable = join.getMainTable();
                     String aliasName = alias.get(j);
