@@ -46,24 +46,4 @@ public class SQLServerStampUpdate extends PlatformStampUpdate {
 
         return new SQLBuilderCombine(sb.toString(), placeholders);
     }
-
-    private void buildUpdateItem(MappingGlobalWrapper wrapper,
-                                 StampUpdate update,
-                                 StampUpdateItem item,
-                                 StringBuilder sb,
-                                 List<SQLDataPlaceholder> placeholders) {
-        item.column.table = null;
-        item.column.tableAliasName = null;
-        String name = this.reference.getColumnName(wrapper, update, item.column);
-        sb.append(name);
-        sb.append(" = ");
-
-        if (item.value instanceof StampColumn) {
-            StampColumn column = (StampColumn) item.value;
-            sb.append(this.reference.getColumnName(wrapper, update, column));
-        } else {
-            sb.append("?");
-            placeholders.add(new SQLDataPlaceholder(name, item.value));
-        }
-    }
 }

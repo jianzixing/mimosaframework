@@ -443,8 +443,10 @@ public class PlatformExecutor {
 
     public Integer update(MappingTable table, DefaultUpdate update) throws SQLException {
         PlatformDialect dialect = this.getDialect();
+
         Wraps<Filter> wraps = update.getLogicWraps();
         Map<Object, Object> sets = update.getValues();
+
         DefaultSQLUpdateBuilder updateBuilder = new DefaultSQLUpdateBuilder();
         updateBuilder.update().table(table.getMappingTableName());
         Iterator<Map.Entry<Object, Object>> iterator = sets.entrySet().iterator();
@@ -454,10 +456,24 @@ public class PlatformExecutor {
             MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
             if (field != null) {
                 Object value = entry.getValue();
+                String fieldName = field.getMappingColumnName();
                 if (value instanceof UpdateSetValue) {
-                    updateBuilder.set();
+                    StampFormula formula = new StampFormula();
+                    StampFormula.Formula f1 = new StampFormula.Formula();
+                    f1.column = new StampColumn(fieldName);
+                    StampFormula.Formula f2 = new StampFormula.Formula();
+                    if (((UpdateSetValue) value).getType() == UpdateSpecialType.ADD_SELF) {
+                        f2.express = StampFormula.Express.ADD;
+                    } else if (((UpdateSetValue) value).getType() == UpdateSpecialType.SUB_SELF) {
+                        f2.express = StampFormula.Express.MINUS;
+                    } else {
+                        f2.express = StampFormula.Express.ADD;
+                    }
+                    f2.value = ((UpdateSetValue) value).getStep();
+                    formula.formulas = new StampFormula.Formula[]{f1, f2};
+                    updateBuilder.set(fieldName, formula);
                 } else {
-                    updateBuilder.set(field.getMappingColumnName(), value);
+                    updateBuilder.set(fieldName, value);
                 }
             }
         }

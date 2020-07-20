@@ -79,7 +79,7 @@ public class DefaultUpdate implements LogicUpdate {
     @Override
     public LogicUpdate addSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
-        v.setObject(UpdateSpecialType.ADD_SELF);
+        v.setType(UpdateSpecialType.ADD_SELF);
         values.put(key, v);
         return this;
     }
@@ -87,7 +87,7 @@ public class DefaultUpdate implements LogicUpdate {
     @Override
     public LogicUpdate subSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
-        v.setObject(UpdateSpecialType.SUB_SELF);
+        v.setType(UpdateSpecialType.SUB_SELF);
         values.put(key, v);
         return this;
     }
@@ -95,7 +95,7 @@ public class DefaultUpdate implements LogicUpdate {
     @Override
     public LogicUpdate addSelf(Object key, Integer step) {
         UpdateSetValue v = new UpdateSetValue();
-        v.setObject(UpdateSpecialType.ADD_SELF);
+        v.setType(UpdateSpecialType.ADD_SELF);
         v.setStep(step);
         values.put(key, v);
         return this;
@@ -104,7 +104,7 @@ public class DefaultUpdate implements LogicUpdate {
     @Override
     public LogicUpdate subSelf(Object key, Integer step) {
         UpdateSetValue v = new UpdateSetValue();
-        v.setObject(UpdateSpecialType.SUB_SELF);
+        v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
         values.put(key, v);
         return this;
@@ -113,7 +113,7 @@ public class DefaultUpdate implements LogicUpdate {
     @Override
     public LogicUpdate addSelf(Object key, String step) {
         UpdateSetValue v = new UpdateSetValue();
-        v.setObject(UpdateSpecialType.ADD_SELF);
+        v.setType(UpdateSpecialType.ADD_SELF);
         v.setStep(step);
         values.put(key, v);
         return this;
@@ -122,7 +122,7 @@ public class DefaultUpdate implements LogicUpdate {
     @Override
     public LogicUpdate subSelf(Object key, String step) {
         UpdateSetValue v = new UpdateSetValue();
-        v.setObject(UpdateSpecialType.SUB_SELF);
+        v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
         values.put(key, v);
         return this;
