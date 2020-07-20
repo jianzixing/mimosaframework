@@ -4,6 +4,7 @@ import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.platform.db2.DB2StampBuilder;
 import org.mimosaframework.orm.platform.db2.DB2StampSelect;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.sql.stamp.StampColumn;
@@ -111,13 +112,7 @@ public class OracleStampInsert extends PlatformStampInsert {
         }
 
         if (insert.select != null) {
-            sb.append(" ");
-
-            SQLBuilderCombine combine = (new OracleStampBuilder().select()).getSqlBuilder(wrapper, insert.select);
-            sb.append(combine.getSql());
-            if (combine.getPlaceholders() != null) {
-                placeholders.addAll(combine.getPlaceholders());
-            }
+            this.buildInsertSelect(wrapper, insert, sb, placeholders, new OracleStampBuilder());
         }
 
         if (values != null && values.length > 1) {

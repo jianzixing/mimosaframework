@@ -35,31 +35,13 @@ public class SQLServerStampSelect extends PlatformStampSelect {
         return new SQLBuilderCombine(sb.toString(), placeholders);
     }
 
-    private void buildSelect(MappingGlobalWrapper wrapper,
-                             StampSelect select,
-                             StringBuilder sb,
-                             List<SQLDataPlaceholder> placeholders) {
+    public void buildSelect(MappingGlobalWrapper wrapper,
+                            StampSelect select,
+                            StringBuilder sb,
+                            List<SQLDataPlaceholder> placeholders) {
 
-        StringBuilder orderBySql = null;
-        if (select.orderBy != null && select.orderBy.length > 0) {
-            orderBySql = new StringBuilder();
-            StampOrderBy[] orderBy = select.orderBy;
-            orderBySql.append("ORDER BY ");
-            int j = 0;
-            for (StampOrderBy ob : orderBy) {
-                StampColumn copyColumn = new StampColumn();
-                copyColumn.column = ob.column.column;
-                copyColumn.table = ob.column.table;
-                copyColumn.tableAliasName = "RN_TABLE_ALIAS";
-                orderBySql.append(this.reference.getColumnName(wrapper, select, copyColumn));
-                if (ob.sortType == KeySortType.ASC)
-                    orderBySql.append(" ASC");
-                else
-                    orderBySql.append(" DESC");
-                j++;
-                if (j != orderBy.length) orderBySql.append(",");
-            }
-        }
+        StringBuilder orderBySql = new StringBuilder();
+        this.buildSelectOrderBy(wrapper, select, orderBySql);
 
         if (select.limit != null) {
             sb.append("SELECT * FROM (");
@@ -71,72 +53,17 @@ public class SQLServerStampSelect extends PlatformStampSelect {
         }
 
         sb.append("SELECT ");
-        StampSelectField[] columns = select.columns;
-        int m = 0;
-        for (StampSelectField column : columns) {
-            this.buildSelectField(wrapper, select, column, sb, placeholders);
-            m++;
-            if (m != columns.length) sb.append(",");
-        }
+        this.buildFields(wrapper, select, sb, false);
 
         sb.append(" FROM ");
-
-        StampFrom[] froms = select.froms;
-        int i = 0;
-        for (StampFrom from : froms) {
-            this.buildFrom(wrapper, sb, select, placeholders, from, null);
-            if (StringTools.isNotEmpty(from.aliasName)) {
-                sb.append(" AS " + this.reference.getWrapStart() + from.aliasName + this.reference.getWrapEnd());
-            }
-            i++;
-            if (i != froms.length) sb.append(",");
-        }
-
-        StampSelectJoin[] joins = select.joins;
-        if (joins != null) {
-            for (StampSelectJoin join : joins) {
-                if (join.joinType == KeyJoinType.LEFT) {
-                    sb.append(" LEFT JOIN");
-                }
-                if (join.joinType == KeyJoinType.INNER) {
-                    sb.append(" INNER JOIN");
-                }
-                this.buildFrom(wrapper, sb, select, placeholders, null, join);
-                if (StringTools.isNotEmpty(join.tableAliasName)) {
-                    sb.append(" AS " + this.reference.getWrapStart() + join.tableAliasName + this.reference.getWrapEnd());
-                }
-                if (join.on != null) {
-                    sb.append(" ON ");
-                    this.share.buildWhere(wrapper, placeholders, select, join.on, sb);
-                }
-            }
-        }
-
-        if (select.where != null) {
-            sb.append(" WHERE ");
-            this.share.buildWhere(wrapper, placeholders, select, select.where, sb);
-        }
-
-        if (select.groupBy != null && select.groupBy.length > 0) {
-            sb.append(" GROUP BY ");
-            StampColumn[] groupBy = select.groupBy;
-            if (groupBy != null) {
-                int j = 0;
-                for (StampColumn gb : groupBy) {
-                    sb.append(this.reference.getColumnName(wrapper, select, gb));
-                    j++;
-                    if (j != groupBy.length) sb.append(",");
-                }
-            }
-        }
-
-        if (select.having != null) {
-            sb.append(" HAVING ");
-            this.share.buildWhere(wrapper, placeholders, select, select.having, sb);
-        }
+        this.buildSelectForms(wrapper, select, sb, placeholders);
+        this.buildSelectJoins(wrapper, select, sb, placeholders);
+        this.buildSelectWhere(wrapper, select, sb, placeholders);
+        this.buildSelectGroupBy(wrapper, select, sb);
+        this.buildSelectHaving(wrapper, select, sb, placeholders);
 
         if (select.orderBy != null && select.orderBy.length > 0 && select.limit == null) {
-            sb.append(" " + orderBySql);
+            sb.append(orderBySql);
         }
 
         if (select.limit != null) {
@@ -150,64 +77,24 @@ public class SQLServerStampSelect extends PlatformStampSelect {
         }
     }
 
-    private void buildSelectField(MappingGlobalWrapper wrapper,
-                                  StampSelect select,
-                                  StampSelectField field,
-                                  StringBuilder sb,
-                                  List<SQLDataPlaceholder> placeholders) {
-        StampColumn column = field.column;
-        StampFieldFun fun = field.fun;
-        String aliasName = field.aliasName;
-        String tableAliasName = field.tableAliasName;
-
-        if (field.distinct) {
-            sb.append("DISTINCT ");
-        }
-
-        if (field.fieldType == KeyFieldType.ALL) {
-            if (StringTools.isNotEmpty(tableAliasName)) {
-                sb.append(this.reference.getWrapStart() + tableAliasName + this.reference.getWrapEnd() + ".");
-            }
-            sb.append("*");
-        } else if (field.fieldType == KeyFieldType.COLUMN) {
-            if (StringTools.isNotEmpty(tableAliasName)) {
-                sb.append(this.reference.getWrapStart() + tableAliasName + this.reference.getWrapEnd() + ".");
-            }
-            sb.append(this.reference.getColumnName(wrapper, select, column));
-            if (StringTools.isNotEmpty(aliasName)) {
-                sb.append(" AS " + this.reference.getWrapStart() + aliasName + this.reference.getWrapEnd());
-            }
-        } else if (field.fieldType == KeyFieldType.FUN) {
-            this.share.buildSelectFieldFun(wrapper, select, fun, sb);
-
-            if (StringTools.isNotEmpty(aliasName)) {
-                sb.append(" AS " + this.reference.getWrapStart() + aliasName + this.reference.getWrapEnd());
-            }
-        }
-    }
-
-    private void buildFrom(MappingGlobalWrapper wrapper,
-                           StringBuilder sb,
-                           StampSelect select,
-                           List<SQLDataPlaceholder> placeholders,
-
-                           StampFrom from,
-                           StampSelectJoin join) {
-        if (from != null) {
-            if (from.builder != null) {
-                sb.append("(");
-                this.buildSelect(wrapper, from.builder, sb, placeholders);
-                sb.append(")");
-            } else {
-                sb.append(this.reference.getTableName(wrapper, from.table, from.name));
-            }
-        } else if (join != null) {
-            if (join.builder != null) {
-                sb.append(" (");
-                this.buildSelect(wrapper, select, sb, placeholders);
-                sb.append(")");
-            } else {
-                sb.append(" " + this.reference.getTableName(wrapper, join.tableClass, join.tableName));
+    @Override
+    protected void buildSelectOrderBy(MappingGlobalWrapper wrapper, StampSelect select, StringBuilder sb) {
+        if (select.orderBy != null && select.orderBy.length > 0) {
+            StampOrderBy[] orderBy = select.orderBy;
+            sb.append(" ORDER BY ");
+            int j = 0;
+            for (StampOrderBy ob : orderBy) {
+                StampColumn copyColumn = new StampColumn();
+                copyColumn.column = ob.column.column;
+                copyColumn.table = ob.column.table;
+                copyColumn.tableAliasName = "RN_TABLE_ALIAS";
+                sb.append(this.reference.getColumnName(wrapper, select, copyColumn));
+                if (ob.sortType == KeySortType.ASC)
+                    sb.append(" ASC");
+                else
+                    sb.append(" DESC");
+                j++;
+                if (j != orderBy.length) sb.append(",");
             }
         }
     }

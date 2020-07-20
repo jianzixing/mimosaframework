@@ -35,4 +35,19 @@ public class StampSelect implements StampAction {
         }
         return items;
     }
+
+    @Override
+    public StampSelect clone() {
+        StampSelect stampSelect = new StampSelect();
+        stampSelect.columns = this.columns;
+        stampSelect.froms = this.froms;
+        stampSelect.joins = this.joins;
+        stampSelect.where = this.where;
+        stampSelect.groupBy = this.groupBy;
+        stampSelect.having = this.having;
+        stampSelect.orderBy = this.orderBy;
+        stampSelect.limit = this.limit;
+        stampSelect.forUpdate = this.forUpdate;
+        return stampSelect;
+    }
 }

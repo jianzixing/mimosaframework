@@ -1,17 +1,65 @@
 package org.mimosaframework.orm.platform;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.sql.stamp.StampColumn;
-import org.mimosaframework.orm.sql.stamp.StampFormula;
-import org.mimosaframework.orm.sql.stamp.StampUpdate;
-import org.mimosaframework.orm.sql.stamp.StampUpdateItem;
+import org.mimosaframework.orm.sql.stamp.*;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PlatformStampUpdate extends PlatformStampCommonality {
     public PlatformStampUpdate(PlatformStampSection section, PlatformStampReference reference, PlatformDialect dialect, PlatformStampShare share) {
         super(section, reference, dialect, share);
+    }
+
+    @Override
+    public SQLBuilderCombine getSqlBuilder(MappingGlobalWrapper wrapper, StampAction action) {
+        StampUpdate update = (StampUpdate) action;
+        StringBuilder sb = new StringBuilder();
+        List<SQLDataPlaceholder> placeholders = new ArrayList<>();
+        sb.append("UPDATE ");
+        this.buildUpdateFrom(wrapper, update, sb);
+
+        sb.append(" SET ");
+        this.buildUpdateSet(wrapper, update, sb, placeholders);
+        this.buildUpdateWhere(wrapper, update, sb, placeholders);
+
+        return new SQLBuilderCombine(sb.toString(), placeholders);
+    }
+
+    protected void buildUpdateFrom(MappingGlobalWrapper wrapper,
+                                   StampUpdate update,
+                                   StringBuilder sb) {
+        StampFrom fromTarget = update.table;
+        if (fromTarget != null) {
+            sb.append(this.reference.getTableName(wrapper, fromTarget.table, fromTarget.name));
+            if (StringTools.isNotEmpty(fromTarget.aliasName)) {
+                sb.append(" AS " + this.reference.getWrapStart() + fromTarget.aliasName + this.reference.getWrapEnd());
+            }
+        }
+    }
+
+    protected void buildUpdateSet(MappingGlobalWrapper wrapper,
+                                  StampUpdate update,
+                                  StringBuilder sb,
+                                  List<SQLDataPlaceholder> placeholders) {
+        StampUpdateItem[] items = update.items;
+        int k = 0;
+        for (StampUpdateItem item : items) {
+            this.buildUpdateItem(wrapper, update, item, sb, placeholders);
+            k++;
+            if (k != items.length) sb.append(",");
+        }
+    }
+
+    protected void buildUpdateWhere(MappingGlobalWrapper wrapper,
+                                    StampUpdate update,
+                                    StringBuilder sb,
+                                    List<SQLDataPlaceholder> placeholders) {
+        if (update.where != null) {
+            sb.append(" WHERE ");
+            this.share.buildWhere(wrapper, placeholders, update, update.where, sb);
+        }
     }
 
     protected void buildUpdateItem(MappingGlobalWrapper wrapper,

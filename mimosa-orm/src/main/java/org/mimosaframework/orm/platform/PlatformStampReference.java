@@ -41,7 +41,7 @@ public class PlatformStampReference {
             }
         } else if (StringTools.isNotEmpty(tableName)) {
             if (isUpperCase) {
-                return tableName.toUpperCase();
+                return (hasRes ? RS : "") + tableName.toUpperCase() + (hasRes ? RE : "");
             } else {
                 return RS + tableName + RE;
             }
