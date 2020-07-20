@@ -5,7 +5,7 @@ public class UpdateSetValue {
     /**
      * 只有在自增或者自减操作是使用
      */
-    private Number step = 1;
+    private Object step = 1;
 
     public UpdateSpecialType getType() {
         return type;
@@ -15,11 +15,11 @@ public class UpdateSetValue {
         this.type = type;
     }
 
-    public Number getStep() {
+    public Object getStep() {
         return step;
     }
 
-    public void setStep(Number step) {
+    public void setStep(Object step) {
         this.step = step;
     }
 }

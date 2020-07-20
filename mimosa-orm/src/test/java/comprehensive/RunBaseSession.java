@@ -153,6 +153,16 @@ public class RunBaseSession {
     }
 
     @Test
+    public void subSelf() {
+        template.update(Criteria.update(TableUser.class)
+                .addSelf(TableUser.age)
+                .eq(TableUser.id, 1));
+        template.update(Criteria.update(TableUser.class)
+                .subSelf(TableUser.age)
+                .eq(TableUser.id, 1));
+    }
+
+    @Test
     public void close() throws IOException {
 
     }

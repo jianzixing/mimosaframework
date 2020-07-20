@@ -11,7 +11,7 @@ public class StampFormula {
         public Express express;
         // StampColumn or Number
         public StampColumn column;
-        public Number value;
+        public Object value;
     }
 
     public enum Express {

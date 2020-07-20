@@ -37,19 +37,24 @@ public abstract class PlatformStampUpdate extends PlatformStampCommonality {
                 boolean hasFirst = false;
                 for (int i = 0; i < formulas.length; i++) {
                     StampFormula.Formula fml = formulas[i];
-                    if (fml.express != null && (fml.column != null || fml.value != null)) {
-                        if (hasFirst) {
+                    if (fml.column != null || fml.value != null) {
+                        if (hasFirst && fml.express != null) {
                             if (fml.express == StampFormula.Express.ADD) sb.append(" + ");
                             if (fml.express == StampFormula.Express.MINUS) sb.append(" - ");
                         }
                         if (fml.column != null) {
                             sb.append(this.reference.getColumnName(wrapper, update, fml.column));
                         } else {
-                            if (fml.value instanceof Float) sb.append(fml.value.floatValue());
-                            else if (fml.value instanceof Double) sb.append(fml.value.doubleValue());
-                            else if (fml.value instanceof Integer) sb.append(fml.value.intValue());
-                            else if (fml.value instanceof Long) sb.append(fml.value.longValue());
-                            else sb.append(fml.value.intValue());
+                            if (fml.value instanceof Number) {
+                                Number fmlValue = (Number) fml.value;
+                                if (fml.value instanceof Float) sb.append(fmlValue.floatValue());
+                                else if (fml.value instanceof Double) sb.append(fmlValue.doubleValue());
+                                else if (fml.value instanceof Integer) sb.append(fmlValue.intValue());
+                                else if (fml.value instanceof Long) sb.append(fmlValue.longValue());
+                                else sb.append(fmlValue.intValue());
+                            } else if (fml.value instanceof String) {
+                                sb.append(fml.value);
+                            }
                         }
                         hasFirst = true;
                     }
