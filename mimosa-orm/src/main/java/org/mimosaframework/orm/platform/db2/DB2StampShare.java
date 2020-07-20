@@ -2,8 +2,6 @@ package org.mimosaframework.orm.platform.db2;
 
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.platform.ColumnCompareType;
-import org.mimosaframework.orm.platform.ColumnType;
 import org.mimosaframework.orm.platform.ExecuteImmediate;
 import org.mimosaframework.orm.platform.PlatformStampShare;
 import org.mimosaframework.orm.sql.stamp.*;
@@ -43,20 +41,5 @@ public class DB2StampShare extends PlatformStampShare {
         comment.append(" IS ");
         comment.append("''" + commentStr + "''");
         this.commonality.getSection().getBuilders().add(new ExecuteImmediate(comment));
-    }
-
-    public String getColumnType(KeyColumnType columnType, int len, int scale) {
-        ColumnType ct = this.commonality.getDialect().getColumnType(columnType);
-        if (ct.getCompareType() == ColumnCompareType.NONE) {
-            return ct.getTypeName();
-        } else if (ct.getCompareType() == ColumnCompareType.JAVA) {
-            if (columnType == KeyColumnType.DECIMAL) {
-                return ct.getTypeName() + "(" + len + "," + scale + ")";
-            }
-            return ct.getTypeName() + "(" + len + ")";
-        } else if (ct.getCompareType() == ColumnCompareType.SELF) {
-            return ct.getTypeName() + "(" + ct.getLength() + ")";
-        }
-        return null;
     }
 }
