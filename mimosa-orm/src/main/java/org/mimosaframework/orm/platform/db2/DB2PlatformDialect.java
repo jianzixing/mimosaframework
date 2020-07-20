@@ -2,7 +2,10 @@ package org.mimosaframework.orm.platform.db2;
 
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.platform.ColumnCompareType;
+import org.mimosaframework.orm.platform.PlatformDialect;
+import org.mimosaframework.orm.platform.SQLBuilderCombine;
+import org.mimosaframework.orm.platform.TableStructure;
 import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 

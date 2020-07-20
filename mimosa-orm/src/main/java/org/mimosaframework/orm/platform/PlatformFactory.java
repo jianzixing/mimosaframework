@@ -1,11 +1,17 @@
 package org.mimosaframework.orm.platform;
 
-import org.mimosaframework.orm.platform.db2.*;
-import org.mimosaframework.orm.platform.mysql.*;
-import org.mimosaframework.orm.platform.oracle.*;
-import org.mimosaframework.orm.platform.postgresql.*;
-import org.mimosaframework.orm.platform.sqlite.*;
-import org.mimosaframework.orm.platform.sqlserver.*;
+import org.mimosaframework.orm.platform.db2.DB2PlatformDialect;
+import org.mimosaframework.orm.platform.db2.DB2StampBuilder;
+import org.mimosaframework.orm.platform.mysql.MysqlPlatformDialect;
+import org.mimosaframework.orm.platform.mysql.MysqlStampBuilder;
+import org.mimosaframework.orm.platform.oracle.OraclePlatformDialect;
+import org.mimosaframework.orm.platform.oracle.OracleStampBuilder;
+import org.mimosaframework.orm.platform.postgresql.PostgreSQLPlatformDialect;
+import org.mimosaframework.orm.platform.postgresql.PostgreSQLStampBuilder;
+import org.mimosaframework.orm.platform.sqlite.SqlitePlatformDialect;
+import org.mimosaframework.orm.platform.sqlite.SqliteStampBuilder;
+import org.mimosaframework.orm.platform.sqlserver.SQLServerPlatformDialect;
+import org.mimosaframework.orm.platform.sqlserver.SQLServerStampBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.utils.DatabaseType;
 

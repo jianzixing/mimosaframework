@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.platform;
 
-import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 
 public interface PlatformStampBuilder {
     PlatformStampAlter alter();

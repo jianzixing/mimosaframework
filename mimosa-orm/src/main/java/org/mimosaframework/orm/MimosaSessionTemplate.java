@@ -2,8 +2,7 @@ package org.mimosaframework.orm;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
-import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.auxiliary.*;
+import org.mimosaframework.orm.auxiliary.AuxiliaryClient;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
@@ -18,8 +17,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
 

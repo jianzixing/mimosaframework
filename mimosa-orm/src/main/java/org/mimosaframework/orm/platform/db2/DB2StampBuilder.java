@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.platform.db2;
 
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 
 public class DB2StampBuilder implements PlatformStampBuilder {
     @Override

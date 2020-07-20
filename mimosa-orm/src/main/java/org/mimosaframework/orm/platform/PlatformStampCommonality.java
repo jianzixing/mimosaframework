@@ -1,11 +1,6 @@
 package org.mimosaframework.orm.platform;
 
-import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.sql.stamp.*;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 
 public abstract class PlatformStampCommonality implements StampCombineBuilder {
     protected PlatformStampSection section = null;

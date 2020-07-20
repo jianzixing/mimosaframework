@@ -3,13 +3,11 @@ package org.mimosaframework.orm.platform.sqlserver;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class SQLServerPlatformDialect extends PlatformDialect {
     private SQLServerStampBuilder builder = new SQLServerStampBuilder();

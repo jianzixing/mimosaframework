@@ -1,9 +1,9 @@
 package org.mimosaframework.orm.platform.postgresql;
 
-import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.stamp.StampAction;
+import org.mimosaframework.orm.sql.stamp.StampSelect;
 
 import java.util.ArrayList;
 import java.util.List;

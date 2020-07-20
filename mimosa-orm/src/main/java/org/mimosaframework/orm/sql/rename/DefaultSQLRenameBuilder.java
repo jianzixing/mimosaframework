@@ -4,8 +4,6 @@ import org.mimosaframework.orm.sql.AbstractSQLBuilder;
 import org.mimosaframework.orm.sql.stamp.KeyRenameType;
 import org.mimosaframework.orm.sql.stamp.StampRename;
 
-import java.io.Serializable;
-
 public class DefaultSQLRenameBuilder
         extends
         AbstractSQLBuilder

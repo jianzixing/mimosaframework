@@ -2,7 +2,9 @@ package org.mimosaframework.orm.platform.postgresql;
 
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.platform.ColumnCompareType;
+import org.mimosaframework.orm.platform.PlatformDialect;
+import org.mimosaframework.orm.platform.SQLBuilderCombine;
 import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;

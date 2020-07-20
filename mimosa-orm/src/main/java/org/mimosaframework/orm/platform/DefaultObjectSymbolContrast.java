@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.platform.ObjectSymbolContrast;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;

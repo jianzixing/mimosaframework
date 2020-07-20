@@ -3,7 +3,10 @@ package org.mimosaframework.orm.platform.db2;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.sql.stamp.KeyRenameType;
+import org.mimosaframework.orm.sql.stamp.StampAction;
+import org.mimosaframework.orm.sql.stamp.StampColumn;
+import org.mimosaframework.orm.sql.stamp.StampRename;
 
 public class DB2StampRename extends PlatformStampRename {
 

@@ -3,7 +3,6 @@ package org.mimosaframework.orm.platform.sqlite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;

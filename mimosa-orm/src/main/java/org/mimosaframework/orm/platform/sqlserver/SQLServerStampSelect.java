@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.platform.sqlserver;
 
-import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;

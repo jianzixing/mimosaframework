@@ -4,7 +4,6 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.KeyTarget;
 import org.mimosaframework.orm.sql.stamp.StampAction;
-import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 import org.mimosaframework.orm.sql.stamp.StampDrop;
 
 public class PostgreSQLStampDrop extends PlatformStampDrop {

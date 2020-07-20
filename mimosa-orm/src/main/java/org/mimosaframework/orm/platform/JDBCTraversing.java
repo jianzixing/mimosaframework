@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.platform;
 
 import java.util.List;
-import java.util.Map;
 
 public class JDBCTraversing {
     private TypeForRunner typeForRunner;

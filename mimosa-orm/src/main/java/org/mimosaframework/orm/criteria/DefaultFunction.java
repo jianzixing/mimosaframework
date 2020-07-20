@@ -2,9 +2,7 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.BasicFunction;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 public class DefaultFunction implements LogicFunction {

@@ -8,9 +8,6 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.sql.stamp.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class OracleStampAlter extends PlatformStampAlter {
     private static final Log logger = LogFactory.getLog(OracleStampAlter.class);
     protected int totalAction = 0;

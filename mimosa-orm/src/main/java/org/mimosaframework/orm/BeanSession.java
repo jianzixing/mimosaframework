@@ -8,7 +8,6 @@ import org.mimosaframework.orm.criteria.Update;
 import java.io.Closeable;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 public interface BeanSession extends Closeable {
 

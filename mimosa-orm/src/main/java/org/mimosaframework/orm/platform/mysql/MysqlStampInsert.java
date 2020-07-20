@@ -1,20 +1,12 @@
 package org.mimosaframework.orm.platform.mysql;
 
-import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.platform.db2.DB2StampBuilder;
-import org.mimosaframework.orm.platform.db2.DB2StampSelect;
 import org.mimosaframework.orm.sql.stamp.StampAction;
-import org.mimosaframework.orm.sql.stamp.StampColumn;
-import org.mimosaframework.orm.sql.stamp.StampCombineBuilder;
 import org.mimosaframework.orm.sql.stamp.StampInsert;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class MysqlStampInsert extends PlatformStampInsert {
     public MysqlStampInsert(PlatformStampSection section,

@@ -4,8 +4,6 @@ import org.mimosaframework.orm.sql.AbstractSQLBuilder;
 import org.mimosaframework.orm.sql.stamp.KeyTarget;
 import org.mimosaframework.orm.sql.stamp.StampDrop;
 
-import java.io.Serializable;
-
 public class DefaultSQLDropBuilder
         extends
         AbstractSQLBuilder
