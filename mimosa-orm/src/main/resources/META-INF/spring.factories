@@ -1,1 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.mimosaframework.orm.spring.AutoConfigurationLoader

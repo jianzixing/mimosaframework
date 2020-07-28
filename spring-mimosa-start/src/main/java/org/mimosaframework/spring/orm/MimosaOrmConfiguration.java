@@ -1,5 +1,7 @@
-package org.mimosaframework.orm.spring;
+package org.mimosaframework.spring.orm;
 
+import org.mimosaframework.orm.spring.SpringMimosaSessionFactory;
+import org.mimosaframework.orm.spring.SpringMimosaSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -11,17 +13,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 @Configuration
 @ConditionalOnClass({SpringMimosaSessionFactory.class, SpringMimosaSessionTemplate.class})
 @ConditionalOnBean({DataSource.class})
-@EnableConfigurationProperties({AutoConfigurationProperties.class})
+@EnableConfigurationProperties({MimosaOrmProperties.class})
 @AutoConfigureAfter({DataSourceAutoConfiguration.class})
-public class AutoConfigurationLoader {
+public class MimosaOrmConfiguration {
 
     @Autowired
-    private AutoConfigurationProperties autoConfigurationProperties;
+    private MimosaOrmProperties mimosaOrmProperties;
 
     @Bean
     @ConditionalOnMissingBean
@@ -29,12 +30,12 @@ public class AutoConfigurationLoader {
         SpringMimosaSessionFactory springMimosaSessionFactory = new SpringMimosaSessionFactory();
         // 将autoConfigurationProperties中的值添加到这里
         springMimosaSessionFactory.setDataSource(dataSource);
-        springMimosaSessionFactory.setApplicationName(autoConfigurationProperties.getApplicationName());
-        springMimosaSessionFactory.setScanPackage(autoConfigurationProperties.getScanPackage());
-        springMimosaSessionFactory.setMapper(autoConfigurationProperties.getMapper());
-        springMimosaSessionFactory.setConvertType(autoConfigurationProperties.getConvertType());
-        springMimosaSessionFactory.setMappingLevel(autoConfigurationProperties.getMappingLevel());
-        springMimosaSessionFactory.setShowSQL(autoConfigurationProperties.isShowSQL());
+        springMimosaSessionFactory.setApplicationName(mimosaOrmProperties.getApplicationName());
+        springMimosaSessionFactory.setScanPackage(mimosaOrmProperties.getScanPackage());
+        springMimosaSessionFactory.setMapper(mimosaOrmProperties.getMapper());
+        springMimosaSessionFactory.setConvertType(mimosaOrmProperties.getConvertType());
+        springMimosaSessionFactory.setMappingLevel(mimosaOrmProperties.getMappingLevel());
+        springMimosaSessionFactory.setShowSQL(mimosaOrmProperties.isShowSQL());
 
         return springMimosaSessionFactory;
     }

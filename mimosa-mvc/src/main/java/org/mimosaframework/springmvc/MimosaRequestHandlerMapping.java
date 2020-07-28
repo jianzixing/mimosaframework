@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.AnnotatedElement;
@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class MimosaRequestHandlerMapping extends RequestMappingInfoHandlerMapping
+public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         implements EmbeddedValueResolverAware {
 
     private boolean useSuffixPatternMatch = true;

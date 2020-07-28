@@ -6,7 +6,6 @@ import org.mimosaframework.springmvc.utils.ResponsePageMessage;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +28,7 @@ import java.io.IOException;
  * </property>
  * </bean>
  */
-public class MimosaHandlerExceptionResolver extends SimpleMappingExceptionResolver {
+public class MimosaHandlerMethodExceptionResolver extends ExceptionHandlerExceptionResolver {
     private static final String DEFAULT_CONTENT_TYPE = "application/json;charset=UTF-8";
     private String contentType = null;
 
@@ -42,7 +41,7 @@ public class MimosaHandlerExceptionResolver extends SimpleMappingExceptionResolv
     }
 
     @Override
-    protected ModelAndView doResolveException(HttpServletRequest httpServletRequest, HttpServletResponse response, Object handler, Exception e) {
+    protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handler, Exception e) {
         if (handler instanceof HandlerMethod && e != null) {
             HandlerMethod methodHandler = (HandlerMethod) handler;
             Printer printer = methodHandler.getMethodAnnotation(Printer.class);
@@ -69,6 +68,6 @@ public class MimosaHandlerExceptionResolver extends SimpleMappingExceptionResolv
                 return null;
             }
         }
-        return super.doResolveException(httpServletRequest, response, handler, e);
+        return super.doResolveHandlerMethodException(request, response, handler, e);
     }
 }

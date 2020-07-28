@@ -1,10 +1,10 @@
-package org.mimosaframework.orm.spring;
+package org.mimosaframework.spring.orm;
 
 import org.mimosaframework.orm.MappingLevel;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("mimosa")
-public class AutoConfigurationProperties {
+@ConfigurationProperties("mimosa.orm")
+public class MimosaOrmProperties {
     private String applicationName = "mimosa";
     private String scanPackage;
     private String mapper;
