@@ -17,21 +17,18 @@
             <groupId>org.mimosaframework.core</groupId>
             <artifactId>mimosa-core</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mimosaframework.orm</groupId>
             <artifactId>mimosa-orm</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mimosaframework.mvc</groupId>
             <artifactId>mimosa-mvc</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
