@@ -10,7 +10,7 @@
         <module>mimosa-core</module>
         <module>mimosa-mvc</module>
         <module>mimosa-orm</module>
-        <module>spring-mimosa-start</module>
+        <module>spring-mimosa-starter</module>
     </modules>
 
     <parent>
