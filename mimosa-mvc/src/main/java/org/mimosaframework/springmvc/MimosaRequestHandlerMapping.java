@@ -95,7 +95,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
     @Override
     public void afterPropertiesSet() {
         this.config = new RequestMappingInfo.BuilderConfiguration();
-        this.config.setPathHelper(getUrlPathHelper());
+        this.config.setUrlPathHelper(getUrlPathHelper());
         this.config.setPathMatcher(getPathMatcher());
         this.config.setSuffixPatternMatch(this.useSuffixPatternMatch);
         this.config.setTrailingSlashMatch(this.useTrailingSlashMatch);
