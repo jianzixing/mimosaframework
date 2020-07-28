@@ -5,7 +5,7 @@
     <parent>
         <artifactId>mimosa</artifactId>
         <groupId>org.mimosaframework</groupId>
-        <version>3.6.0</version>
+        <version>3.6.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,6 +13,12 @@
     <artifactId>spring-mimosa-starter</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+            <version>2.3.2.RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>org.mimosaframework.core</groupId>
             <artifactId>mimosa-core</artifactId>
