@@ -505,7 +505,7 @@ public class PlatformExecutor {
         PlatformDialect dialect = this.getDialect();
         Wraps<Filter> logicWraps = query.getLogicWraps();
         Set<Join> joins = query.getJoins();
-        Set<Order> orders = query.getOrders();
+        Set<OrderBy> orders = query.getOrderBy();
 
         Map<Class, List<String>> fields = query.getFields();
         Map<Class, List<String>> excludes = query.getExcludes();
@@ -517,13 +517,15 @@ public class PlatformExecutor {
 
 
         MappingTable queryTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
-        if ((orders == null || orders.size() == 0) && limit != null && dialect.isSelectLimitMustOrderBy()) {
-            // 如果排序是空的且分页查询必须排序字段则默认添加主键升序
+        if ((orders == null || orders.size() == 0) && (
+                (limit != null && dialect.isSelectLimitMustOrderBy()) || query.isWithoutOrderBy() == false)) {
+            // 第一种情况  如果排序是空的且分页查询必须排序字段则默认添加主键升序
+            // 第二种情况  如果没有排序则添加一个默认的排序
             List<MappingField> pks = queryTable.getMappingPrimaryKeyFields();
-            orders = new LinkedHashSet<>();
+            if (orders == null) orders = new LinkedHashSet<>();
             if (pks != null && pks.size() > 0) {
                 for (MappingField field : pks) {
-                    orders.add(new Order(true, field.getMappingFieldName()));
+                    orders.add(new OrderBy(true, field.getMappingFieldName()));
                 }
             }
         }
@@ -713,7 +715,7 @@ public class PlatformExecutor {
         Class tableClass = f.getTableClass();
         Wraps<Filter> logicWraps = f.getLogicWraps();
         Set groups = f.getGroupBy();
-        Set<Order> orders = f.getOrderBy();
+        Set<OrderBy> orders = f.getOrderBy();
         Set<HavingField> havingFields = f.getHavingFields();
 
         boolean isMaster = f.isMaster();
@@ -992,11 +994,11 @@ public class PlatformExecutor {
     }
 
     private void buildOrderBy(DefaultSQLSelectBuilder select,
-                              Set<Order> orders,
+                              Set<OrderBy> orders,
                               MappingTable mappingTable,
                               boolean isInnerSelect) {
         if (orders != null) {
-            for (Order order : orders) {
+            for (OrderBy order : orders) {
                 boolean isAsc = order.isAsc();
                 Object field = order.getField();
                 MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field));

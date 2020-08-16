@@ -13,9 +13,11 @@ public interface Query<T extends Query> extends Filter<T> {
 
     T subjoin(Join join);
 
-    T order(Order order);
+    T orderBy(OrderBy order);
 
-    T order(Object field, boolean isAsc);
+    T orderBy(Object field, boolean isAsc);
+
+    T withoutOrderBy();
 
     T limit(Limit limit);
 

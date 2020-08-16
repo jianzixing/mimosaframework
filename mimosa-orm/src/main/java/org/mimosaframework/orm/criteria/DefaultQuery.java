@@ -21,7 +21,7 @@ public class DefaultQuery implements LogicQuery {
      * 用于查询时数据包装。
      */
     private Set<Join> joins = new LinkedHashSet<>();
-    private Set<Order> orders = new LinkedHashSet<>();
+    private Set<OrderBy> orderBy = new LinkedHashSet<>();
     private Map<Class, List<String>> fields = new HashMap<>();
     private Map<Class, List<String>> excludes = new HashMap<>();
 
@@ -35,6 +35,7 @@ public class DefaultQuery implements LogicQuery {
      * 查询数据方式
      */
     private QueryType type;
+    private boolean withoutOrderBy = false;
 
     public DefaultQuery(Class<?> tableClass) {
         this.tableClass = tableClass;
@@ -71,7 +72,7 @@ public class DefaultQuery implements LogicQuery {
         DefaultQuery query = new DefaultQuery(tableClass);
         query.logicWraps = logicWraps;
         query.joins = joins;
-        query.orders = orders;
+        query.orderBy = orderBy;
         query.fields = fields;
         query.limit = limit;
         query.tableClass = tableClass;
@@ -193,8 +194,8 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery order(Order order) {
-        this.orders.add(order);
+    public LogicQuery orderBy(OrderBy order) {
+        if (withoutOrderBy == false) this.orderBy.add(order);
         return this;
     }
 
@@ -248,8 +249,12 @@ public class DefaultQuery implements LogicQuery {
         this.joins = joins;
     }
 
-    public Set<Order> getOrders() {
-        return orders;
+    public Set<OrderBy> getOrderBy() {
+        return orderBy;
+    }
+
+    public boolean isWithoutOrderBy() {
+        return withoutOrderBy;
     }
 
     @Override
@@ -515,8 +520,16 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery order(Object field, boolean isAsc) {
-        return this.order(new Order(isAsc, field));
+    public LogicQuery orderBy(Object field, boolean isAsc) {
+        if (withoutOrderBy == false) return this.orderBy(new OrderBy(isAsc, field));
+        return null;
+    }
+
+    @Override
+    public LogicQuery withoutOrderBy() {
+        this.orderBy.clear();
+        this.withoutOrderBy = true;
+        return this;
     }
 
     public void clearLeftJoin() {

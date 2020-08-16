@@ -359,7 +359,7 @@ public class DefaultSession implements Session {
             if (joins != null && joins.size() > 0) {
                 throw new IllegalArgumentException(I18n.print("for_update_join_fail"));
             }
-            Set<Order> orders = dq.getOrders();
+            Set<OrderBy> orders = dq.getOrderBy();
             if (orders != null && orders.size() > 0) {
                 throw new IllegalArgumentException(I18n.print("for_update_order_fail"));
             }

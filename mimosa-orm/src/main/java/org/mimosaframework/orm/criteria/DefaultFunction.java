@@ -13,7 +13,7 @@ public class DefaultFunction implements LogicFunction {
     private String slaveName;
     private Wraps<Filter> logicWraps;
     private Set groupBy = null;
-    private Set<Order> orderBy = null;
+    private Set<OrderBy> orderBy = null;
 
     public DefaultFunction() {
     }
@@ -121,7 +121,7 @@ public class DefaultFunction implements LogicFunction {
             orderBy = new LinkedHashSet<>();
         }
         if (field != null) {
-            orderBy.add(new Order(isAsc, field));
+            orderBy.add(new OrderBy(isAsc, field));
         }
         return this;
     }
@@ -263,7 +263,7 @@ public class DefaultFunction implements LogicFunction {
         return groupBy;
     }
 
-    public Set<Order> getOrderBy() {
+    public Set<OrderBy> getOrderBy() {
         return orderBy;
     }
 
@@ -292,7 +292,7 @@ public class DefaultFunction implements LogicFunction {
         this.groupBy = groupBy;
     }
 
-    public void setOrderBy(Set<Order> orderBy) {
+    public void setOrderBy(Set<OrderBy> orderBy) {
         this.orderBy = orderBy;
     }
 

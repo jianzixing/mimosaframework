@@ -1,13 +1,13 @@
 package org.mimosaframework.orm.criteria;
 
-public class Order {
+public class OrderBy {
     private boolean isAsc;
     private Object field;
 
-    public Order() {
+    public OrderBy() {
     }
 
-    public Order(boolean isAsc, Object field) {
+    public OrderBy(boolean isAsc, Object field) {
         this.isAsc = isAsc;
         this.field = field;
     }
