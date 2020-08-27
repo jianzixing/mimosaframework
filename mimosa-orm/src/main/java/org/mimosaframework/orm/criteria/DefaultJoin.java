@@ -115,7 +115,7 @@ public class DefaultJoin implements Join {
 
     @Override
     public Join on(Object self, Object mainField) {
-        return this.oneq(mainField, self);
+        return this.oneq(self, mainField);
     }
 
     @Override

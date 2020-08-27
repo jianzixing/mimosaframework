@@ -951,7 +951,16 @@ public class PlatformExecutor {
                             OnField field = filter.getOnField();
                             MappingField mainMappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(field.getKey()));
                             MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field.getValue()));
-
+                            if (mainMappingField == null) {
+                                throw new IllegalArgumentException(I18n
+                                        .print("miss_executor_mapping_field", String.valueOf(field.getKey()),
+                                                mainMappingTable.getMappingClass().getSimpleName()));
+                            }
+                            if (mappingField == null) {
+                                throw new IllegalArgumentException(I18n
+                                        .print("miss_executor_mapping_field", String.valueOf(field.getValue()),
+                                                mappingTable.getMappingClass().getSimpleName()));
+                            }
                             String columnName = mainMappingField.getMappingColumnName();
                             String value = mappingField.getMappingColumnName();
                             String symbol = field.getSymbol();
