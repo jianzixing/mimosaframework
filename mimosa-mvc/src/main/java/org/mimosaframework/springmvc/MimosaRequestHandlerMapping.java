@@ -20,6 +20,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.AnnotatedElement;
@@ -95,7 +96,12 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
     @Override
     public void afterPropertiesSet() {
         this.config = new RequestMappingInfo.BuilderConfiguration();
-        this.config.setUrlPathHelper(getUrlPathHelper());
+        try {
+            this.config.getClass().getMethod("setPathHelper", UrlPathHelper.class);
+            this.config.setPathHelper(getUrlPathHelper());
+        } catch (NoSuchMethodException e) {
+            this.config.setUrlPathHelper(getUrlPathHelper());
+        }
         this.config.setPathMatcher(getPathMatcher());
         this.config.setSuffixPatternMatch(this.useSuffixPatternMatch);
         this.config.setTrailingSlashMatch(this.useTrailingSlashMatch);
