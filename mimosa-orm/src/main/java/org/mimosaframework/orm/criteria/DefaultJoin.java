@@ -28,6 +28,7 @@ public class DefaultJoin implements Join {
      * join 类型 0 left join   1 inner join
      */
     private int joinType;
+    private Set<OrderBy> sorts;
 
     public DefaultJoin() {
     }
@@ -178,6 +179,18 @@ public class DefaultJoin implements Join {
         return this;
     }
 
+    @Override
+    public Join sort(OrderBy order) {
+        if (this.sorts == null) this.sorts = new LinkedHashSet<>();
+        this.sorts.add(order);
+        return this;
+    }
+
+    @Override
+    public Join sort(Object field, boolean isAsc) {
+        return this.sort(new OrderBy(isAsc, field));
+    }
+
     public boolean isMulti() {
         return isMulti;
     }
@@ -190,6 +203,10 @@ public class DefaultJoin implements Join {
     @Override
     public Class getMainClass() {
         return this.mainTable;
+    }
+
+    public Set<OrderBy> getSorts() {
+        return sorts;
     }
 
     public void createSetChildJoin(Join join) {

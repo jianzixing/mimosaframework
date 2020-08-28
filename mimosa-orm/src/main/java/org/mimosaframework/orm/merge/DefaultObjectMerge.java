@@ -2,7 +2,12 @@ package org.mimosaframework.orm.merge;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.ModelObjectConvertKey;
+import org.mimosaframework.orm.criteria.DefaultJoin;
+import org.mimosaframework.orm.criteria.OrderBy;
 import org.mimosaframework.orm.criteria.Query;
+import org.mimosaframework.orm.mapping.MappingField;
+import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SelectFieldAliasReference;
 
 import java.util.*;
@@ -39,6 +44,12 @@ public class DefaultObjectMerge implements ObjectMerge {
      * 一次查询时所有的select的字段集合
      */
     private List<SelectFieldAliasReference> mapperSelectFields;
+
+    private MappingGlobalWrapper mappingGlobalWrapper;
+
+    public void setMappingGlobalWrapper(MappingGlobalWrapper mappingGlobalWrapper) {
+        this.mappingGlobalWrapper = mappingGlobalWrapper;
+    }
 
     /**
      * 通过一系列的结果集转换整合得到一个带父子关系的对象集合
@@ -152,7 +163,7 @@ public class DefaultObjectMerge implements ObjectMerge {
      * 把一个包含父子关系的结果集进行去重合并
      * 将数据库中一一对应的数据进行关系合并
      * 比如
-     *
+     * <p>
      * A,B
      * A,C --> A(B,C,D)
      * A,D
@@ -193,11 +204,85 @@ public class DefaultObjectMerge implements ObjectMerge {
             }
             if (children.size() > 0) {
                 for (Map.Entry<Object, Object> entry : children.entrySet()) {
-                    object.putAny(entry.getKey(), entry.getValue());
+                    Object key = entry.getKey();
+                    Object value = entry.getValue();
+                    if (key instanceof MergeTree && value instanceof List) {
+                        // sort list by primary key or join order by
+                        this.sortList((MergeTree) key, (List) value);
+                    }
+                    object.putAny(key, entry.getValue());
                 }
             }
         }
         return result;
+    }
+
+    private void sortList(MergeTree mergeTree, List list) {
+        DefaultJoin join = (DefaultJoin) mergeTree.getJoin();
+        Set<OrderBy> orders = join.getSorts();
+        if (orders != null && orders.size() > 0) {
+            for (OrderBy orderBy : orders) {
+                this.sortListByKey(list, "" + orderBy.getField(), orderBy.isAsc());
+            }
+        } else {
+            Class table = join.getTable();
+            MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
+            if (mappingTable != null) {
+                List<MappingField> primaryKeyFields = mappingTable.getMappingPrimaryKeyFields();
+                if (primaryKeyFields != null) {
+                    for (final MappingField mappingField : primaryKeyFields) {
+                        this.sortListByKey(list, mappingField.getMappingFieldName(), true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void sortListByKey(List list, final String key, final boolean isAsc) {
+        Collections.sort(list, new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                if (o1 instanceof ModelObject && o2 instanceof ModelObject) {
+                    Object a1 = ((ModelObject) o1).getAny(key);
+                    Object a2 = ((ModelObject) o2).getAny(key);
+                    if (a1 instanceof Integer && a2 instanceof Integer) {
+                        int number = isAsc ? (int) a1 - (int) a2 : (int) a2 - (int) a1;
+                        return number > 0 ? 1 : number == 0 ? 0 : -1;
+                    }
+                    if (a1 instanceof Byte && a2 instanceof Byte) {
+                        int number = isAsc ? (byte) a1 - (byte) a2 : (byte) a2 - (byte) a1;
+                        return number > 0 ? 1 : number == 0 ? 0 : -1;
+                    }
+                    if (a1 instanceof Long && a2 instanceof Long) {
+                        long number = isAsc ? (long) a1 - (long) a2 : (long) a2 - (long) a1;
+                        return number > 0 ? 1 : number == 0 ? 0 : -1;
+                    }
+                    if (a1 instanceof Double && a2 instanceof Double) {
+                        double number = isAsc ? (double) a1 - (double) a2 : (double) a2 - (double) a1;
+                        return number > 0 ? 1 : number == 0 ? 0 : -1;
+                    }
+                    if (a1 instanceof Float && a2 instanceof Float) {
+                        float number = isAsc ? (float) a1 - (float) a2 : (float) a2 - (float) a1;
+                        return number > 0 ? 1 : number == 0 ? 0 : -1;
+                    }
+                    if (a1 instanceof Short && a2 instanceof Short) {
+                        int number = isAsc ? (short) a1 - (short) a2 : (short) a2 - (short) a1;
+                        return number > 0 ? 1 : number == 0 ? 0 : -1;
+                    }
+                    if (a1 instanceof Boolean && a2 instanceof Boolean) {
+                        return a1 == a2 ? 0 : isAsc ? 1 : -1;
+                    }
+                    if (a1 instanceof String && a2 instanceof String) {
+                        return ((String) a1).compareTo((String) a2);
+                    }
+                    if (a1 instanceof Character && a2 instanceof Character) {
+                        return ((Character) a1).compareTo((Character) a2);
+                    }
+                }
+                return 0;
+            }
+        });
     }
 
     /**

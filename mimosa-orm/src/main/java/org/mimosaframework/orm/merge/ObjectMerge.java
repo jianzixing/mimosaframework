@@ -2,6 +2,7 @@ package org.mimosaframework.orm.merge;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.ModelObjectConvertKey;
+import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.SelectFieldAliasReference;
 
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.List;
  * @author yangankang
  */
 public interface ObjectMerge {
+
+    void setMappingGlobalWrapper(MappingGlobalWrapper mappingGlobalWrapper);
 
     /**
      * 通过数据库查询后的结果获得一个整合后的结果

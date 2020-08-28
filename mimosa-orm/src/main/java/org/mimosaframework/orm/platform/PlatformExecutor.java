@@ -1092,6 +1092,7 @@ public class PlatformExecutor {
         modelMerge.setMergeTree(top);
         modelMerge.setMapperSelectFields(selectFields);
         modelMerge.setMappingNamedConvert(convert);
+        modelMerge.setMappingGlobalWrapper(mappingGlobalWrapper);
         return modelMerge.getMergeAfterObjects(os, query.getTableClass());
     }
 

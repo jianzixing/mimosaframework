@@ -28,6 +28,10 @@ public interface Join extends Filter<Join> {
 
     Join multiple();
 
+    Join sort(OrderBy order);
+
+    Join sort(Object field, boolean isAsc);
+
     Class getTableClass();
 
     Class getMainClass();
