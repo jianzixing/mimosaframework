@@ -15,8 +15,6 @@ MimosaFramework是一组框架组合，主要功能是提供数据库读写的�
 [issues](https://github.com/jianzixing/mimosaframework/issues)
 里提出，我们会在未来版本中更正或者修改增加功能。**
 
-_感谢您使用我们的框架，如果有任何商业需求可以[联系我们(北京简子行科技有限公司)](https://www.jianzixing.com.cn)我们将竭诚为您服务。_
-
 ## 二、开始使用 mimosa-orm 框架
 
 ##### 第一步、创建一个maven项目，并且引用jar包
@@ -168,7 +166,7 @@ public class Start {
         object.put(TableUser.id, 20);
         object.put(TableUser.userName, "yangankang_test_save_n_2");
         object.put(TableUser.password, "123456");
-        object.put(TableUser.realName, "北京简子行科技有限公司");
+        object.put(TableUser.realName, "北京xxx科技有限公司");
         object.put(TableUser.address, "北京朝阳区");
         object.put(TableUser.age, 25);
         object.put(TableUser.level, 10);
@@ -386,4 +384,4 @@ Spring可以使用属性setInterceptSession，xml可以使用标签interceptSess
 
 
 ##
-Copyright © 2018-2019 [北京简子行科技有限公司](https://www.jianzixing.com.cn)
+Copyright © 2018-2020 杨安康 邮箱 yak1992@foxmail.com

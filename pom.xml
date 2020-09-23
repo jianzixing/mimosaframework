@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <name>mimosaframework</name>
-    <description>Java编写的MVC、ORM框架(北京简子行科技有限公司,https://www.jianzixing.com.cn)</description>
+    <description>Java编写的MVC、ORM框架(杨安康编写)</description>
 
     <modules>
         <module>mimosa-core</module>
