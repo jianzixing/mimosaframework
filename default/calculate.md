@@ -28,4 +28,4 @@ Double avg = cal.getDoubleValue("avg");
 或者使用[使用Mybatis的Mapper](./index.html#mapper.md)的方式。
 
 ## 
-Copyright © 2018-2019 [北京简子行科技有限公司](https://www.jianzixing.com.cn)
+Copyright © 2018-2019 杨安康(yak1992@foxmail.com)

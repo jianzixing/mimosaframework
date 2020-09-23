@@ -11,4 +11,4 @@ mimosa-mvc是在spring mvc的基础上扩展的工具，是为了方便ajax操�
 
 
 ## 
-Copyright © 2018-2019 [北京简子行科技有限公司](https://www.jianzixing.com.cn)
+Copyright © 2018-2019 杨安康(yak1992@foxmail.com)

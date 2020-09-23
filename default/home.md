@@ -1,8 +1,6 @@
 # 开始使用
 <img src="https://repository-images.githubusercontent.com/207211209/39fc7180-d94f-11e9-8866-d05f91f10f31" width="600" align="center"/>
 
-_感谢您使用我们的框架，如果有任何商业需求可以[联系我们(北京简子行科技有限公司)](https://www.jianzixing.com.cn)我们将竭诚为您服务。_
-
 ## 一、开始使用 mimosa-orm 框架
 
 ##### 第一步、创建一个maven项目，并且引用jar包
@@ -154,7 +152,7 @@ public class Start {
         object.put(TableUser.id, 20);
         object.put(TableUser.userName, "yangankang_test_save_n_2");
         object.put(TableUser.password, "123456");
-        object.put(TableUser.realName, "北京简子行科技有限公司");
+        object.put(TableUser.realName, "北京xxx科技有限公司");
         object.put(TableUser.address, "北京朝阳区");
         object.put(TableUser.age, 25);
         object.put(TableUser.level, 10);
@@ -246,7 +244,7 @@ public class SpringContextTesting {
         ModelObject object = new ModelObject(TableUser.class);
         object.put(TableUser.userName, "yangankang2");
         object.put(TableUser.password, "1234562");
-        object.put(TableUser.realName, "北京简子行科技");
+        object.put(TableUser.realName, "北京xxx科技");
         object.put(TableUser.address, "北京朝阳区");
         object.put(TableUser.age, 25);
         object.put(TableUser.level, 10);
@@ -350,4 +348,4 @@ replaces：将url前缀的某些单词替换成想要的单词，比如 Web;w �
 * 可以使用Mybatis的Mapper配置支持，通过ognl表达式和Mybatis的xml处理来执行SQL语句
 
 ## 
-Copyright © 2018-2019 [北京简子行科技有限公司](https://www.jianzixing.com.cn)
+Copyright © 2018-2019 杨安康(yak1992@foxmail.com)

@@ -15,4 +15,4 @@ long count = paging.getCount();
 其中getObjects可以获取当前查询的数据，getCount获取当前查询条件的总条数。
 
 ## 
-Copyright © 2018-2019 [北京简子行科技有限公司](https://www.jianzixing.com.cn)
+Copyright © 2018-2019 杨安康(yak1992@foxmail.com)
