@@ -8,6 +8,7 @@ public class SimpleCommonWhereBuilder
         extends
         CommonOperatorSQLBuilder
         implements
+        CommonSymbolBuilder,
         AboutChildBuilder,
         WrapperBuilder,
         LogicBuilder,
@@ -28,6 +29,7 @@ public class SimpleCommonWhereBuilder
         } else {
             StampWhere where = new StampWhere();
             where.leftColumn = new StampColumn(field);
+            if (this.lastWhere != null) this.lastWhere.next = where;
             this.lastWhere = where;
             if (this.where == null) this.where = where;
         }
@@ -43,6 +45,7 @@ public class SimpleCommonWhereBuilder
         } else {
             StampWhere where = new StampWhere();
             where.leftColumn = new StampColumn(table, field);
+            if (this.lastWhere != null) this.lastWhere.next = where;
             this.lastWhere = where;
             if (this.where == null) this.where = where;
         }
@@ -58,6 +61,7 @@ public class SimpleCommonWhereBuilder
         } else {
             StampWhere where = new StampWhere();
             where.leftColumn = new StampColumn(aliasName, field);
+            if (this.lastWhere != null) this.lastWhere.next = where;
             this.lastWhere = where;
             if (this.where == null) this.where = where;
         }
@@ -79,7 +83,7 @@ public class SimpleCommonWhereBuilder
     @Override
     public Object or() {
         this.gammars.add("or");
-        this.lastWhere.nextLogic = KeyLogic.AND;
+        this.lastWhere.nextLogic = KeyLogic.OR;
         return this;
     }
 

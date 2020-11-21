@@ -15,10 +15,7 @@ import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.merge.DefaultObjectMerge;
 import org.mimosaframework.orm.merge.MergeTree;
 import org.mimosaframework.orm.merge.ObjectMerge;
-import org.mimosaframework.orm.sql.AndBuilder;
-import org.mimosaframework.orm.sql.CommonSymbolBuilder;
-import org.mimosaframework.orm.sql.FieldItem;
-import org.mimosaframework.orm.sql.OrBuilder;
+import org.mimosaframework.orm.sql.*;
 import org.mimosaframework.orm.sql.delete.DefaultSQLDeleteBuilder;
 import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
 import org.mimosaframework.orm.sql.select.DefaultSQLSelectBuilder;
@@ -1111,7 +1108,9 @@ public class PlatformExecutor {
                 if (where != null) {
                     this.setSymbol(builder, where, hasJoins ? "T" : null, table, 0);
                 } else if (link != null) {
-                    this.buildWraps(builder, table, link, hasJoins);
+                    SimpleCommonWhereBuilder builderWraps = new SimpleCommonWhereBuilder();
+                    this.buildWraps(builderWraps, table, link, hasJoins);
+                    ((DefaultSQLSelectBuilder) builder).wrapper(builderWraps);
                 }
 
                 if (wrapsIterator.hasNext()) {

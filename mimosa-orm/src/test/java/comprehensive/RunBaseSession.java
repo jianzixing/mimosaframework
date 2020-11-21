@@ -104,6 +104,19 @@ public class RunBaseSession {
     }
 
     @Test
+    public void queryOr() {
+        template.list(Criteria.query(TableUser.class)
+                .linked(
+                        Criteria.linked().eq(TableUser.userName, "1").or().eq(TableUser.userName, "2")
+                )
+                .or()
+                .linked(
+                        Criteria.linked().eq(TableUser.userName, "3").or().eq(TableUser.userName, "4")
+                )
+        );
+    }
+
+    @Test
     public void count() {
         long count = template.count(Criteria.query(TableUser.class)
                 .limit(0, 10));
