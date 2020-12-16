@@ -3,7 +3,6 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.orm.criteria.*;
-import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.*;
 
@@ -12,6 +11,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.List;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
@@ -184,7 +184,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public Transaction beginTransaction() throws TransactionException {
+    public Transaction beginTransaction() throws SQLException {
         return sessionFactory.beginTransaction();
     }
 
@@ -193,45 +193,28 @@ public class MimosaSessionTemplate implements SessionTemplate {
         return sessionFactory.createTransaction();
     }
 
-    private <T> T execute(TransactionCallback<T> callback, Transaction transaction) throws TransactionException {
+    private <T> T execute(TransactionCallback<T> callback, Transaction transaction) throws Exception {
         try {
-            if (transaction instanceof TransactionManager) {
-                ((TransactionManager) transaction).setSessionHolder(this.sessionHolder);
+            if (transaction instanceof JDBCTransaction) {
+                ((JDBCTransaction) transaction).setSessionHolder(this.sessionHolder);
             }
             T t = callback.invoke(transaction);
             transaction.commit();
             return t;
-        } catch (Exception e) {
+        } finally {
             transaction.rollback();
-            if (e instanceof TransactionException) {
-                throw (TransactionException) e;
-            } else {
-                throw new TransactionException(I18n.print("fail_rollback"), e);
-            }
         }
     }
 
     @Override
-    public <T> T execute(TransactionCallback<T> callback) throws TransactionException {
+    public <T> T execute(TransactionCallback<T> callback) throws Exception {
         Transaction transaction = sessionFactory.beginTransaction();
         return this.execute(callback, transaction);
     }
 
     @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt) throws TransactionException {
-        Transaction transaction = sessionFactory.beginTransaction(pt);
-        return this.execute(callback, transaction);
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws TransactionException {
+    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws Exception {
         Transaction transaction = sessionFactory.beginTransaction(it);
-        return this.execute(callback, transaction);
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt, TransactionIsolationType it) throws TransactionException {
-        Transaction transaction = sessionFactory.beginTransaction(pt, it);
         return this.execute(callback, transaction);
     }
 

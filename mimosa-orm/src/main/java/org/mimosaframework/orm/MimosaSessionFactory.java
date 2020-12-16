@@ -4,8 +4,9 @@ import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
-import org.mimosaframework.orm.transaction.TransactionManager;
-import org.mimosaframework.orm.transaction.TransactionPropagationType;
+import org.mimosaframework.orm.transaction.JDBCTransaction;
+
+import java.sql.SQLException;
 
 public class MimosaSessionFactory implements SessionFactory {
     private ContextContainer context;
@@ -28,70 +29,28 @@ public class MimosaSessionFactory implements SessionFactory {
     }
 
     @Override
-    public Transaction beginTransaction() throws TransactionException {
-        TransactionManager manager = new TransactionManager(TransactionPropagationType.PROPAGATION_REQUIRED,
-                null,
-                this.context);
+    public Transaction beginTransaction() throws SQLException {
+        JDBCTransaction manager = new JDBCTransaction(null, this.context);
         manager.begin();
         return manager;
     }
 
     @Override
-    public Transaction beginTransaction(TransactionPropagationType pt) throws TransactionException {
-        TransactionManager manager = new TransactionManager(pt,
-                null,
-                this.context);
-        manager.begin();
-        return manager;
-    }
-
-    @Override
-    public Transaction beginTransaction(TransactionIsolationType it) throws TransactionException {
-        TransactionManager manager = new TransactionManager(TransactionPropagationType.PROPAGATION_REQUIRED,
-                it,
-                this.context);
-        manager.begin();
-        return manager;
-    }
-
-    @Override
-    public Transaction beginTransaction(TransactionPropagationType pt, TransactionIsolationType it) throws TransactionException {
-        TransactionManager manager = new TransactionManager(pt,
-                it,
-                this.context);
+    public Transaction beginTransaction(TransactionIsolationType it) throws SQLException {
+        JDBCTransaction manager = new JDBCTransaction(it, this.context);
         manager.begin();
         return manager;
     }
 
     @Override
     public Transaction createTransaction() {
-        TransactionManager manager = new TransactionManager(TransactionPropagationType.PROPAGATION_REQUIRED,
-                null,
-                this.context);
-        return manager;
-    }
-
-    @Override
-    public Transaction createTransaction(TransactionPropagationType pt) {
-        TransactionManager manager = new TransactionManager(pt,
-                null,
-                this.context);
+        JDBCTransaction manager = new JDBCTransaction(null, this.context);
         return manager;
     }
 
     @Override
     public Transaction createTransaction(TransactionIsolationType it) {
-        TransactionManager manager = new TransactionManager(TransactionPropagationType.PROPAGATION_REQUIRED,
-                it,
-                this.context);
-        return manager;
-    }
-
-    @Override
-    public Transaction createTransaction(TransactionPropagationType pt, TransactionIsolationType it) {
-        TransactionManager manager = new TransactionManager(pt,
-                it,
-                this.context);
+        JDBCTransaction manager = new JDBCTransaction(it, this.context);
         return manager;
     }
 }

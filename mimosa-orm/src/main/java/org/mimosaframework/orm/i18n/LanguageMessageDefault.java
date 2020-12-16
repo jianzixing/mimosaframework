@@ -136,9 +136,6 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("rollback_trans_db_close", "回滚事物时数据库连接被关闭");
         words.put("db_close_fail", "关闭数据库连接失败");
 
-        // TransactionManager
-        words.put("check_db_size", "检测到数据库链接个数(%s)个");
-
         // SessionUtils
         words.put("not_set_mapping_table", "没有设置要操作的映射类");
         words.put("not_found_mapping_table", "没有找到对应的关系映射[%s]");

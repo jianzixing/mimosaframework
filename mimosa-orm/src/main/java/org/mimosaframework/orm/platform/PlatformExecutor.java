@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class PlatformExecutor {
     private static final Log logger = LogFactory.getLog(PlatformExecutor.class);
-    private DBRunner runner = null;
+    private DBRunner runner;
     private MappingGlobalWrapper mappingGlobalWrapper;
     private DataSourceWrapper dswrapper;
 

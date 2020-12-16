@@ -6,6 +6,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.io.IOException;
 
+/**
+ * 注册给springtx的适配器，在事务状态变化时回调对应各种操作
+ */
 public class SpringSynchronizationAdapter extends TransactionSynchronizationAdapter {
 
     private final SpringSessionHolder.SessionHolderResource holder;
@@ -36,7 +39,7 @@ public class SpringSynchronizationAdapter extends TransactionSynchronizationAdap
     @Override
     public void beforeCommit(boolean readOnly) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
-            // 提交事务
+            // 提交事务,如果自己需要更改状态的话,真正的事务是spring来做提交的
             // this.holder.getSession().commit();
         }
     }

@@ -32,6 +32,7 @@ import java.util.*;
 
 public class DefaultSession implements Session {
     private static final Log logger = LogFactory.getLog(DefaultSession.class);
+    private PlatformExecutor executor;
     private UpdateSkipReset updateSkipReset = new UpdateSkiptResetEmpty();
     private ContextContainer context;
     private DataSourceWrapper wrapper;
@@ -44,9 +45,9 @@ public class DefaultSession implements Session {
         this.mappingGlobalWrapper = this.context.getMappingGlobalWrapper();
         this.convert = this.context.getModelObjectConvertKey();
         convert.setMappingGlobalWrapper(mappingGlobalWrapper);
+        executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
     }
-
-
+    
     @Override
     public ModelObject save(ModelObject objSource) {
         if (objSource == null || objSource.size() == 0) {
@@ -72,7 +73,6 @@ public class DefaultSession implements Session {
                 throw new IllegalArgumentException(I18n.print("id_strategy_error"), e.getCause());
             }
 
-            PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
             // 添加后如果有自增列，则返回如果没有就不返回
             Long id = null;
             try {
@@ -176,7 +176,6 @@ public class DefaultSession implements Session {
             }
         }
 
-        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         // 添加后如果有自增列，则返回如果没有就不返回
         List<Long> ids = null;
         try {
@@ -214,7 +213,6 @@ public class DefaultSession implements Session {
 
         // 开始类型矫正
         TypeCorrectUtils.correct(obj, mappingTable);
-        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         try {
             Update update = SessionUtils.buildUpdateByModel(mappingTable, obj);
             executor.update(mappingTable, (DefaultUpdate) update);
@@ -240,7 +238,6 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
-        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         int count = 0;
         try {
             count = executor.update(mappingTable, u);
@@ -262,7 +259,6 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException(I18n.print("delete_id"));
         }
 
-        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         try {
             Delete delete = SessionUtils.buildDeleteByModel(mappingTable, obj);
             executor.delete(mappingTable, (DefaultDelete) delete);
@@ -289,7 +285,6 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
-        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         try {
             return executor.delete(mappingTable, d);
         } catch (SQLException e) {
@@ -369,7 +364,6 @@ public class DefaultSession implements Session {
             }
         }
 
-        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         List<ModelObject> objects = null;
         try {
             objects = executor.select(dq, convert);
@@ -387,7 +381,6 @@ public class DefaultSession implements Session {
         wrapper.setMaster(dq.isMaster());
         wrapper.setSlaveName(dq.getSlaveName());
 
-        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         long count = 0;
         try {
             count = executor.count(dq);
@@ -449,7 +442,6 @@ public class DefaultSession implements Session {
         }
         wrapper.setMaster(f.isMaster());
         wrapper.setSlaveName(f.getSlaveName());
-        PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
         try {
             List<ModelObject> objects = executor.function(f);
             if (objects != null) {
@@ -498,7 +490,6 @@ public class DefaultSession implements Session {
         if (StringTools.isNotEmpty(sql) || builder != null) {
             wrapper.setMaster(isMaster);
             wrapper.setSlaveName(slaveName);
-            PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
             if (builder != null) {
                 Object r = executor.dialect(builder.compile());
                 return new AutoResult(r);
@@ -516,7 +507,6 @@ public class DefaultSession implements Session {
     public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
         SQLDefinedLoader definedLoader = this.context.getDefinedLoader();
         if (definedLoader != null) {
-            PlatformExecutor executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
             JDBCTraversing structure = AutonomouslyUtils.parseStructure(definedLoader,
                     autonomously.getName(), autonomously.getParameter());
             if (structure != null) {

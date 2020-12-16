@@ -4,7 +4,8 @@ import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
-import org.mimosaframework.orm.transaction.TransactionPropagationType;
+
+import java.sql.SQLException;
 
 public interface SessionFactory {
 
@@ -12,19 +13,11 @@ public interface SessionFactory {
 
     Session getCurrentSession() throws MimosaException;
 
-    Transaction beginTransaction() throws TransactionException;
+    Transaction beginTransaction() throws SQLException;
 
-    Transaction beginTransaction(TransactionPropagationType pt) throws TransactionException;
-
-    Transaction beginTransaction(TransactionIsolationType it) throws TransactionException;
-
-    Transaction beginTransaction(TransactionPropagationType pt, TransactionIsolationType it) throws TransactionException;
+    Transaction beginTransaction(TransactionIsolationType it) throws SQLException;
 
     Transaction createTransaction();
 
-    Transaction createTransaction(TransactionPropagationType pt);
-
     Transaction createTransaction(TransactionIsolationType it);
-
-    Transaction createTransaction(TransactionPropagationType pt, TransactionIsolationType it);
 }

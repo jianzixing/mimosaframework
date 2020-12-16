@@ -38,11 +38,7 @@ public class SpringTransaction implements Transaction {
         return this.connection;
     }
 
-    @Override
-    public Connection getConnection(MimosaDataSource dataSource) throws TransactionException {
-        return null;
-    }
-
+    
     @Override
     public void begin() throws TransactionException {
 

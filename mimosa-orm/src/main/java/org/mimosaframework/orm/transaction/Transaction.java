@@ -1,19 +1,17 @@
 package org.mimosaframework.orm.transaction;
 
-import org.mimosaframework.orm.MimosaDataSource;
-import org.mimosaframework.orm.exception.TransactionException;
-
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public interface Transaction {
 
-    Connection getConnection(MimosaDataSource dataSource) throws TransactionException;
+    Connection getConnection() throws SQLException;
 
-    void begin() throws TransactionException;
+    void begin() throws SQLException;
 
-    void commit() throws TransactionException;
+    void commit() throws SQLException;
 
-    void rollback() throws TransactionException;
+    void rollback() throws SQLException;
 
-    void close() throws TransactionException;
+    void close() throws SQLException;
 }

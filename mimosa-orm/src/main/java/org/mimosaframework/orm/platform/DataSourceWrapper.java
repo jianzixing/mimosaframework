@@ -3,7 +3,7 @@ package org.mimosaframework.orm.platform;
 import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.transaction.Transaction;
-import org.mimosaframework.orm.transaction.TransactionManager;
+import org.mimosaframework.orm.transaction.JDBCTransaction;
 import org.mimosaframework.orm.utils.DatabaseType;
 
 import java.sql.Connection;
@@ -33,7 +33,7 @@ public class DataSourceWrapper {
             if (isAutoCloseConnection) {
                 connection = this.dataSource.getConnection(isMaster, slaveName, contextValues.isIgnoreEmptySlave());
             } else {
-                Transaction transaction = TransactionManager.getLastTransaction(contextValues);
+                Transaction transaction = JDBCTransaction.getLastTransaction(contextValues);
                 if (transaction == null) {
                     connection = this.dataSource.getConnection(isMaster, slaveName, contextValues.isIgnoreEmptySlave());
                 } else {
@@ -47,7 +47,7 @@ public class DataSourceWrapper {
 
     public void close() throws SQLException {
         if (this.connection != null) {
-            Transaction transaction = TransactionManager.getLastTransaction(contextValues);
+            Transaction transaction = JDBCTransaction.getLastTransaction(contextValues);
             if (transaction != null && transaction.getConnection(dataSource) == this.connection) {
                 return;
             }
