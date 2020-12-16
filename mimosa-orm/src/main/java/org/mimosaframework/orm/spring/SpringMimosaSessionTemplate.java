@@ -22,7 +22,7 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
 
     public void setFactory(SpringMimosaSessionFactory factory) {
         this.factory = factory;
-        this.sessionTemplate = new MimosaSessionTemplate();
+        this.sessionTemplate = new MimosaSessionTemplate(new SpringSessionHolder());
         this.sessionTemplate.setSessionFactory(factory);
     }
 

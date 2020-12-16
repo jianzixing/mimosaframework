@@ -23,6 +23,11 @@ public class NormalContextContainer implements ContextContainer {
     private static final Log logger = LogFactory.getLog(NormalContextContainer.class);
     protected ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
     protected List<MimosaDataSource> globalDataSource = new CopyOnWriteArrayList<>();
+
+    /**
+     * 可以通过配置文件制定自定义的session实现,比如要
+     * 实现一个分库分表的session，或者分布式的实现等等
+     */
     protected AbstractInterceptSession interceptSession;
 
     protected String applicationName;

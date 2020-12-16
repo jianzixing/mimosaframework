@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.orm.ContextContainer;
 import org.mimosaframework.orm.MimosaDataSource;
+import org.mimosaframework.orm.SessionHolder;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
 
@@ -21,6 +22,7 @@ public class TransactionManager implements Transaction {
     private Map<MimosaDataSource, TransactionPropagation> props;
     private ContextContainer context;
     private TransactionManager previousTransaction;
+    private SessionHolder sessionHolder;
 
     private boolean isRollback = false;
     private boolean isCommit = false;
@@ -32,6 +34,10 @@ public class TransactionManager implements Transaction {
         if (CURRENT_TRANS.get() == null) {
             CURRENT_TRANS.set(new LinkedHashMap<ContextContainer, TransactionManager>());
         }
+    }
+
+    public void setSessionHolder(SessionHolder sessionHolder) {
+        this.sessionHolder = sessionHolder;
     }
 
     public static Transaction getLastTransaction(ContextContainer contextValues) {
@@ -60,6 +66,9 @@ public class TransactionManager implements Transaction {
 
     @Override
     public void begin() throws TransactionException {
+        if (this.sessionHolder != null) {
+            this.sessionHolder.begin();
+        }
         // 设置最后一个Trans是自己，如果有的话就把上一个指向自己
         TransactionManager previous = CURRENT_TRANS.get().get(context);
         if (previous != null) {
@@ -94,38 +103,56 @@ public class TransactionManager implements Transaction {
 
     @Override
     public void commit() throws TransactionException {
-        if (!this.isRollback) {
-            this.isCommit = true;
-            Iterator<Map.Entry<MimosaDataSource, TransactionPropagation>> iterator = props.entrySet().iterator();
-            while (iterator.hasNext()) {
-                TransactionPropagation propagation = iterator.next().getValue();
-                if (propagation != null) {
-                    propagation.commit();
+        try {
+            if (!this.isRollback) {
+                this.isCommit = true;
+                Iterator<Map.Entry<MimosaDataSource, TransactionPropagation>> iterator = props.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    TransactionPropagation propagation = iterator.next().getValue();
+                    if (propagation != null) {
+                        propagation.commit();
+                    }
                 }
             }
+            this.resetLastTransaction();
+        } finally {
+            if (this.sessionHolder != null) {
+                this.sessionHolder.end();
+            }
         }
-        this.resetLastTransaction();
     }
 
     @Override
     public void rollback() throws TransactionException {
-        this.isRollback = true;
+        try {
+            this.isRollback = true;
 
-        if (!this.isCommit) {
-            Iterator<Map.Entry<MimosaDataSource, TransactionPropagation>> iterator = props.entrySet().iterator();
-            while (iterator.hasNext()) {
-                TransactionPropagation propagation = iterator.next().getValue();
-                if (propagation != null) {
-                    propagation.rollback();
+            if (!this.isCommit) {
+                Iterator<Map.Entry<MimosaDataSource, TransactionPropagation>> iterator = props.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    TransactionPropagation propagation = iterator.next().getValue();
+                    if (propagation != null) {
+                        propagation.rollback();
+                    }
                 }
             }
+            this.resetLastTransaction();
+        } finally {
+            if (this.sessionHolder != null) {
+                this.sessionHolder.end();
+            }
         }
-        this.resetLastTransaction();
     }
 
     @Override
     public void close() throws TransactionException {
-        this.resetLastTransaction();
+        try {
+            this.resetLastTransaction();
+        } finally {
+            if (this.sessionHolder != null) {
+                this.sessionHolder.end();
+            }
+        }
     }
 
     @Override

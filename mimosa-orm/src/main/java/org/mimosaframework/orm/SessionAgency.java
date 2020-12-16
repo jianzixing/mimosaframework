@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 作为一个中间过渡的Session实现，这里会转发Session请求或者
+ * 处理一些需要中间处理的事情
+ */
 public class SessionAgency implements Session {
     private ContextContainer context;
     private Session session;
@@ -25,233 +29,158 @@ public class SessionAgency implements Session {
 
     @Override
     public ModelObject save(ModelObject obj) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.save(obj);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.save(obj);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.save(obj);
     }
 
     @Override
     public ModelObject saveAndUpdate(ModelObject obj) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.saveAndUpdate(obj);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.saveAndUpdate(obj);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.saveAndUpdate(obj);
     }
 
     @Override
     public void save(List<ModelObject> objects) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                session.save(objects);
-            } else {
-                session.save(objects);
-            }
-        } finally {
-            SessionBrevityBuilder.release();
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            session.save(objects);
+        } else {
+            session.save(objects);
         }
     }
 
     @Override
     public void update(ModelObject obj) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                session.update(obj);
-            } else {
-                session.update(obj);
-            }
-        } finally {
-            SessionBrevityBuilder.release();
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            session.update(obj);
+        } else {
+            session.update(obj);
         }
     }
 
     @Override
     public void update(List<ModelObject> objects) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                session.update(objects);
-            } else {
-                session.update(objects);
-            }
-        } finally {
-            SessionBrevityBuilder.release();
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            session.update(objects);
+        } else {
+            session.update(objects);
         }
     }
 
     @Override
     public long update(Update update) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.update(update);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.update(update);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.update(update);
     }
 
     @Override
     public void delete(ModelObject obj) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                session.delete(obj);
-            } else {
-                session.delete(obj);
-            }
-        } finally {
-            SessionBrevityBuilder.release();
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            session.delete(obj);
+        } else {
+            session.delete(obj);
         }
     }
 
     @Override
     public void delete(List<ModelObject> objects) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                session.delete(objects);
-            } else {
-                session.delete(objects);
-            }
-        } finally {
-            SessionBrevityBuilder.release();
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            session.delete(objects);
+        } else {
+            session.delete(objects);
         }
     }
 
     @Override
     public long delete(Delete delete) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.delete(delete);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.delete(delete);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.delete(delete);
     }
 
     @Override
     public void delete(Class c, Serializable id) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                session.delete(c, id);
-            } else {
-                session.delete(c, id);
-            }
-        } finally {
-            SessionBrevityBuilder.release();
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
+            session.delete(c, id);
+        } else {
+            session.delete(c, id);
         }
     }
 
     @Override
     public ModelObject get(Class c, Serializable id) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.get(c, id);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.get(c, id);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.get(c, id);
     }
 
     @Override
     public ModelObject get(Query query) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.get(query);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.get(query);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.get(query);
     }
 
     @Override
     public List<ModelObject> list(Query query) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.list(query);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.list(query);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.list(query);
     }
 
     @Override
     public long count(Query query) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.count(query);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.count(query);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.count(query);
     }
 
     @Override
     public Paging<ModelObject> paging(Query query) {
-        SessionBrevityBuilder brevityBuilder = SessionBrevityBuilder.getBuildBrevity();
-        try {
-            if (this.context.getInterceptSession() != null) {
-                AbstractInterceptSession session = this.context.getInterceptSession();
-                session.setSession(this.session);
-                return session.paging(query);
-            }
+        if (this.context.getInterceptSession() != null) {
+            AbstractInterceptSession session = this.context.getInterceptSession();
+            session.setSession(this.session);
             return session.paging(query);
-        } finally {
-            SessionBrevityBuilder.release();
         }
+        return session.paging(query);
     }
 
     @Override
