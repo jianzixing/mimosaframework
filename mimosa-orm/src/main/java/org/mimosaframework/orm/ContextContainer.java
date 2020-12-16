@@ -5,6 +5,7 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.DataSourceWrapper;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
+import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.mimosaframework.orm.utils.DatabaseType;
 
 import java.util.List;
@@ -52,6 +53,8 @@ public interface ContextContainer {
     void clearMimosaDataSources();
 
     AbstractInterceptSession getInterceptSession();
+
+    TransactionFactory getTransactionFactory();
 
     Session buildSession();
 }

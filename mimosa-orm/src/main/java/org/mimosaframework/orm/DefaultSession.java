@@ -18,6 +18,8 @@ import org.mimosaframework.orm.platform.PlatformExecutorFactory;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
+import org.mimosaframework.orm.transaction.Transaction;
+import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.mimosaframework.orm.utils.AutonomouslyUtils;
 import org.mimosaframework.orm.utils.Clone;
 import org.mimosaframework.orm.utils.SessionUtils;
@@ -38,6 +40,7 @@ public class DefaultSession implements Session {
     private DataSourceWrapper wrapper;
     private MappingGlobalWrapper mappingGlobalWrapper;
     private ModelObjectConvertKey convert;
+    private Transaction transaction;
 
     public DefaultSession(ContextContainer context) {
         this.context = context;
@@ -45,9 +48,11 @@ public class DefaultSession implements Session {
         this.mappingGlobalWrapper = this.context.getMappingGlobalWrapper();
         this.convert = this.context.getModelObjectConvertKey();
         convert.setMappingGlobalWrapper(mappingGlobalWrapper);
+        TransactionFactory transactionFactory = this.context.getTransactionFactory();
+        transactionFactory.newTransaction()
         executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
     }
-    
+
     @Override
     public ModelObject save(ModelObject objSource) {
         if (objSource == null || objSource.size() == 0) {

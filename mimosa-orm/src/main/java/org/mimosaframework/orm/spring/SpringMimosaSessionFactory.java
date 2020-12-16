@@ -12,7 +12,6 @@ import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
-import org.mimosaframework.orm.transaction.TransactionPropagationType;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -182,23 +181,13 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
 
     @Override
-    public Transaction beginTransaction() throws TransactionException {
+    public Transaction beginTransaction() throws SQLException {
         return this.sessionFactory.beginTransaction();
     }
 
     @Override
-    public Transaction beginTransaction(TransactionPropagationType pt) throws TransactionException {
-        return this.sessionFactory.beginTransaction(pt);
-    }
-
-    @Override
-    public Transaction beginTransaction(TransactionIsolationType it) throws TransactionException {
+    public Transaction beginTransaction(TransactionIsolationType it) throws SQLException {
         return this.sessionFactory.beginTransaction(it);
-    }
-
-    @Override
-    public Transaction beginTransaction(TransactionPropagationType pt, TransactionIsolationType it) throws TransactionException {
-        return this.sessionFactory.beginTransaction(pt, it);
     }
 
     @Override
@@ -207,18 +196,8 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     }
 
     @Override
-    public Transaction createTransaction(TransactionPropagationType pt) {
-        return this.sessionFactory.createTransaction(pt);
-    }
-
-    @Override
     public Transaction createTransaction(TransactionIsolationType it) {
         return this.sessionFactory.createTransaction(it);
-    }
-
-    @Override
-    public Transaction createTransaction(TransactionPropagationType pt, TransactionIsolationType it) {
-        return this.sessionFactory.createTransaction(pt, it);
     }
 
     @Override

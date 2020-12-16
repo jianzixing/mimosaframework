@@ -10,10 +10,10 @@ import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionCallback;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
-import org.mimosaframework.orm.transaction.TransactionPropagationType;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.List;
 
 public class SpringMimosaSessionTemplate implements SessionTemplate {
@@ -27,7 +27,7 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public Transaction beginTransaction() throws TransactionException {
+    public Transaction beginTransaction() throws SQLException {
         return sessionTemplate.beginTransaction();
     }
 
@@ -37,23 +37,13 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public <T> T execute(TransactionCallback<T> callback) throws TransactionException {
+    public <T> T execute(TransactionCallback<T> callback) throws Exception {
         return sessionTemplate.execute(callback);
     }
 
     @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt) throws TransactionException {
-        return sessionTemplate.execute(callback, pt);
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws TransactionException {
+    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws Exception {
         return sessionTemplate.execute(callback, it);
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt, TransactionIsolationType it) throws TransactionException {
-        return sessionTemplate.execute(callback, pt, it);
     }
 
     @Override

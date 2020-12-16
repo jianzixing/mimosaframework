@@ -13,6 +13,7 @@ import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.DataSourceWrapper;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
+import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.mimosaframework.orm.utils.DatabaseType;
 
 import java.io.IOException;
@@ -328,6 +329,16 @@ public class NormalContextContainer implements ContextContainer {
     @Override
     public AbstractInterceptSession getInterceptSession() {
         return this.interceptSession;
+    }
+
+    /**
+     * 不同的事务工厂创建不同的的事务实现
+     *
+     * @return
+     */
+    @Override
+    public TransactionFactory getTransactionFactory() {
+        return null;
     }
 
     @Override
