@@ -6,8 +6,6 @@ import org.mimosaframework.orm.AbstractInterceptSession;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.MappingLevel;
 import org.mimosaframework.orm.MimosaDataSource;
-import org.mimosaframework.orm.auxiliary.FactoryBuilder;
-import org.mimosaframework.orm.auxiliary.FactoryBuilderConfig;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
@@ -734,39 +732,5 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
             }
         }
         return null;
-    }
-
-    @Override
-    public List<FactoryBuilder> getAuxFactoryBuilder() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        List<FactoryBuilder> mps = new ArrayList<>();
-        for (int i = 0; i < root.getLength(); i++) {
-            Node mimosaNode = root.item(i);
-            if (mimosaNode != null) {
-                NodeList list = mimosaNode.getChildNodes();
-                for (int j = 0; j <= list.getLength(); j++) {
-                    Node node = list.item(j);
-                    if (node != null && node.getNodeName().equalsIgnoreCase("AuxBuilder")) {
-                        FactoryBuilderConfig config = new FactoryBuilderConfig();
-                        NodeList properties = node.getChildNodes();
-                        if (properties != null) {
-                            for (int k = 0; k < properties.getLength(); k++) {
-                                Node np = properties.item(k);
-                                if (np.getNodeType() == Node.ELEMENT_NODE) {
-                                    String name = this.getAttrByName(np, "name");
-                                    config.addValue(name, this.getXmlNodeAny(np, "value"));
-                                }
-                            }
-                        }
-
-                        String className = this.getXmlNodeAny(node, "value");
-                        Class c = Class.forName(className);
-                        FactoryBuilder factoryBuilder = (FactoryBuilder) c.newInstance();
-                        factoryBuilder.loadConfig(config);
-                        mps.add(factoryBuilder);
-                    }
-                }
-            }
-        }
-        return mps;
     }
 }

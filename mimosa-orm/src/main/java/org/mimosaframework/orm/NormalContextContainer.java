@@ -3,7 +3,6 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.i18n.I18n;
@@ -24,7 +23,6 @@ public class NormalContextContainer implements ContextContainer {
     private static final Log logger = LogFactory.getLog(NormalContextContainer.class);
     protected ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
     protected List<MimosaDataSource> globalDataSource = new CopyOnWriteArrayList<>();
-    protected List<FactoryBuilder> factoryBuilderList = new CopyOnWriteArrayList<>();
     protected AbstractInterceptSession interceptSession;
 
     protected String applicationName;
@@ -231,23 +229,12 @@ public class NormalContextContainer implements ContextContainer {
         }
     }
 
-    public void setFactoryBuilderList(List<FactoryBuilder> factoryBuilderList) {
-        this.factoryBuilderList = factoryBuilderList;
-    }
-
     public List<? extends IDStrategy> getIdStrategies() {
         return idStrategies;
     }
 
     public void setIdStrategies(List<? extends IDStrategy> idStrategies) {
         this.idStrategies = idStrategies;
-    }
-
-    public List<FactoryBuilder> getAuxFactoryBuilder() {
-        if (this.factoryBuilderList != null) {
-            return this.factoryBuilderList;
-        }
-        return null;
     }
 
     public SQLDefinedLoader getDefinedLoader() {

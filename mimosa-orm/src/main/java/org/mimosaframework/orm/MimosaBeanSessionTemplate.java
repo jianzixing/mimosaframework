@@ -19,7 +19,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
-public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate implements BeanSessionTemplate {
+public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     private MimosaSessionTemplate modelSession = new MimosaSessionTemplate();
     private Model2BeanFactory model2BeanFactory = new ModelObjectToBean();
     private SessionFactory sessionFactory;
@@ -33,7 +33,6 @@ public class MimosaBeanSessionTemplate extends AbstractAuxiliaryTemplate impleme
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
-        super.setSessionFactory(sessionFactory);
         this.sessionFactory = sessionFactory;
         modelSession.setSessionFactory(sessionFactory);
     }

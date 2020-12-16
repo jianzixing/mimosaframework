@@ -2,7 +2,6 @@ package org.mimosaframework.orm.builder;
 
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.MimosaDataSource;
-import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.exception.ContextException;
 
 import java.sql.SQLException;
@@ -23,6 +22,4 @@ public interface ConfigBuilder {
     BasicSetting getBasicInfo() throws ContextException;
 
     List<String> getMappers();
-
-    List<FactoryBuilder> getAuxFactoryBuilder() throws ClassNotFoundException, IllegalAccessException, InstantiationException;
 }

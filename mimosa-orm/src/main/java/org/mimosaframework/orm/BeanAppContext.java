@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.*;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
@@ -109,16 +108,6 @@ public class BeanAppContext implements Context {
         {
             List<String> mappers = this.configBuilder.getMappers();
             contextValues.setMappers(mappers);
-        }
-
-        {
-            List<FactoryBuilder> factoryBuilder = null;
-            try {
-                factoryBuilder = this.configBuilder.getAuxFactoryBuilder();
-            } catch (Exception e) {
-                throw new ContextException(I18n.print("init_tool_error"), e);
-            }
-            contextValues.setFactoryBuilderList(factoryBuilder);
         }
 
         this.checkDBMapping();

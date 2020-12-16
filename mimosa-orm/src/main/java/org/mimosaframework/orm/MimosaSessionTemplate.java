@@ -2,7 +2,6 @@ package org.mimosaframework.orm;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
-import org.mimosaframework.orm.auxiliary.AuxiliaryClient;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
@@ -20,7 +19,7 @@ import java.util.List;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
 
-public class MimosaSessionTemplate extends AbstractAuxiliaryTemplate implements SessionTemplate {
+public class MimosaSessionTemplate implements SessionTemplate {
     private SessionFactory sessionFactory;
     private final Session sessionAgency;
 
@@ -29,7 +28,6 @@ public class MimosaSessionTemplate extends AbstractAuxiliaryTemplate implements 
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
-        super.setSessionFactory(sessionFactory);
         this.sessionFactory = sessionFactory;
     }
 
@@ -170,13 +168,7 @@ public class MimosaSessionTemplate extends AbstractAuxiliaryTemplate implements 
     public void close() throws IOException {
 
     }
-
-    private <T> T setSelf(AuxiliaryClient client) {
-        client.setSession(this);
-        return (T) client;
-    }
-
-
+    
     @Override
     public Transaction beginTransaction() throws TransactionException {
         return sessionFactory.beginTransaction();

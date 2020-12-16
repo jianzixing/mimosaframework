@@ -1,6 +1,5 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
@@ -29,8 +28,6 @@ public interface ContextContainer {
     MimosaDataSource getDefaultDataSource();
 
     MimosaDataSource getAnyDataSource();
-
-    List<FactoryBuilder> getAuxFactoryBuilder();
 
     MappingLevel getMappingLevel();
 

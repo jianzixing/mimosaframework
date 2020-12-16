@@ -1,14 +1,11 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionManager;
 import org.mimosaframework.orm.transaction.TransactionPropagationType;
-
-import java.util.List;
 
 public class MimosaSessionFactory implements SessionFactory {
     private ContextContainer context;
@@ -96,10 +93,5 @@ public class MimosaSessionFactory implements SessionFactory {
                 it,
                 this.context);
         return manager;
-    }
-
-    @Override
-    public List<FactoryBuilder> getAuxFactoryBuilder() {
-        return this.context.getAuxFactoryBuilder();
     }
 }

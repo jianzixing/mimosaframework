@@ -1,7 +1,6 @@
 package org.mimosaframework.orm.spring;
 
 import org.mimosaframework.orm.*;
-import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.builder.AbstractConfigBuilder;
 import org.mimosaframework.orm.builder.ApplicationSetting;
 import org.mimosaframework.orm.builder.BasicSetting;
@@ -59,7 +58,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     protected String mapper;
     protected List<String> mappers;
-    protected List<FactoryBuilder> auxFactoryBuilder;
     protected List<? extends IDStrategy> strategies;
 
     public void setApplicationName(String applicationName) {
@@ -114,10 +112,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     public void setMappers(List<String> mappers) {
         this.mappers = mappers;
-    }
-
-    public void setAuxFactoryBuilder(List<FactoryBuilder> auxFactoryBuilder) {
-        this.auxFactoryBuilder = auxFactoryBuilder;
     }
 
     public void setStrategies(List<? extends IDStrategy> strategies) {
@@ -322,10 +316,5 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         if (this.mappers != null) mps.addAll(this.mappers);
         if (this.mapper != null) mps.add(this.mapper);
         return mps;
-    }
-
-    @Override
-    public List<FactoryBuilder> getAuxFactoryBuilder() {
-        return this.auxFactoryBuilder;
     }
 }

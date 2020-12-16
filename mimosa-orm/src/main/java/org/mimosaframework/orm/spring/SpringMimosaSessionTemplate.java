@@ -2,7 +2,6 @@ package org.mimosaframework.orm.spring;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.*;
-import org.mimosaframework.orm.auxiliary.*;
 import org.mimosaframework.orm.criteria.Delete;
 import org.mimosaframework.orm.criteria.Function;
 import org.mimosaframework.orm.criteria.Query;
@@ -55,96 +54,6 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     @Override
     public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt, TransactionIsolationType it) throws TransactionException {
         return sessionTemplate.execute(callback, pt, it);
-    }
-
-    @Override
-    public CacheClient getCacheClient(String group) {
-        return sessionTemplate.getCacheClient(group);
-    }
-
-    @Override
-    public CacheClient getCacheClient(String name, String group) {
-        return sessionTemplate.getCacheClient(name, group);
-    }
-
-    @Override
-    public MQProducer getMQProducer(String group) {
-        return sessionTemplate.getMQProducer(group);
-    }
-
-    @Override
-    public MQProducer getMQProducer(String name, String group) {
-        return sessionTemplate.getMQProducer(name, group);
-    }
-
-    @Override
-    public void registerMQConsumer(MQConsumer consumer) {
-        sessionTemplate.registerMQConsumer(consumer);
-    }
-
-    @Override
-    public void registerMQConsumer(String name, MQConsumer consumer) {
-        sessionTemplate.registerMQConsumer(name, consumer);
-    }
-
-    @Override
-    public SearchEngineClient getSearchEngineClient(String group) {
-        return sessionTemplate.getSearchEngineClient(group);
-    }
-
-    @Override
-    public SearchEngineClient getSearchEngineClient(String name, String group) {
-        return sessionTemplate.getSearchEngineClient(name, group);
-    }
-
-    @Override
-    public <T> T getRPCObject(Class<T> tClass) {
-        return sessionTemplate.getRPCObject(tClass);
-    }
-
-    @Override
-    public <T> T getRPCObject(String name, Class<T> tClass) {
-        return sessionTemplate.getRPCObject(name, tClass);
-    }
-
-    @Override
-    public void registerRPCObject(String name, Object o) {
-        sessionTemplate.registerRPCObject(name, o);
-    }
-
-    @Override
-    public void registerRPCObject(Object o) {
-        sessionTemplate.registerRPCObject(o);
-    }
-
-    @Override
-    public Monitoring getMonitoring(String group) {
-        return sessionTemplate.getMonitoring(group);
-    }
-
-    @Override
-    public Monitoring getMonitoring(String name, String group) {
-        return sessionTemplate.getMonitoring(name, group);
-    }
-
-    @Override
-    public Switch getSwitch(String group) {
-        return sessionTemplate.getSwitch(group);
-    }
-
-    @Override
-    public Switch getSwitch(String name, String group) {
-        return sessionTemplate.getSwitch(name, group);
-    }
-
-    @Override
-    public void notifyChangedSwitch(SwitchChangedListener listener) {
-        sessionTemplate.notifyChangedSwitch(listener);
-    }
-
-    @Override
-    public void notifyChangedSwitch(String name, SwitchChangedListener listener) {
-        sessionTemplate.notifyChangedSwitch(name, listener);
     }
 
     @Override

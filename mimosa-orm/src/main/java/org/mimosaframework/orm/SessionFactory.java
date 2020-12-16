@@ -1,13 +1,10 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.orm.auxiliary.FactoryBuilder;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionPropagationType;
-
-import java.util.List;
 
 public interface SessionFactory {
 
@@ -30,6 +27,4 @@ public interface SessionFactory {
     Transaction createTransaction(TransactionIsolationType it);
 
     Transaction createTransaction(TransactionPropagationType pt, TransactionIsolationType it);
-
-    List<FactoryBuilder> getAuxFactoryBuilder();
 }
