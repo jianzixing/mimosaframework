@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class BeanAppContext implements Context {
     private static final Log logger = LogFactory.getLog("init");
-    protected final NormalContextContainer contextValues;
+    protected final NormalConfiguration contextValues;
     private SessionFactoryBuilder sessionFactoryBuilder = null;
     private ConfigBuilder configBuilder = null;
 
@@ -25,10 +25,10 @@ public class BeanAppContext implements Context {
     }
 
     public BeanAppContext() {
-        this.contextValues = new NormalContextContainer();
+        this.contextValues = new NormalConfiguration();
     }
 
-    public BeanAppContext(NormalContextContainer contextValues) {
+    public BeanAppContext(NormalConfiguration contextValues) {
         this.contextValues = contextValues;
     }
 
@@ -124,7 +124,7 @@ public class BeanAppContext implements Context {
             StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
                     contextValues.getMappingLevel(),
                     contextValues.mappingGlobalWrapper,
-                    contextValues.getDefaultDataSourceWrapper(false)
+                    contextValues.newSessionContext(MimosaDataSource.DEFAULT_DS_NAME, false)
             );
             compareMapping.doMapping();
         } catch (SQLException e) {

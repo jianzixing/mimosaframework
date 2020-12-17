@@ -3,12 +3,10 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.annotation.JoinName;
 import org.mimosaframework.orm.criteria.*;
-import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionCallback;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
-import org.mimosaframework.orm.transaction.TransactionPropagationType;
 import org.mimosaframework.orm.utils.Model2BeanFactory;
 import org.mimosaframework.orm.utils.ModelObjectToBean;
 
@@ -17,6 +15,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.sql.SQLException;
 import java.util.*;
 
 public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
@@ -388,7 +387,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public Transaction beginTransaction() throws TransactionException {
+    public Transaction beginTransaction() throws SQLException {
         return modelSession.beginTransaction();
     }
 
@@ -398,22 +397,12 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T execute(TransactionCallback<T> callback) throws TransactionException {
+    public <T> T execute(TransactionCallback<T> callback) throws Exception {
         return modelSession.execute(callback);
     }
 
     @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt) throws TransactionException {
-        return modelSession.execute(callback, pt);
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws TransactionException {
+    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws Exception {
         return modelSession.execute(callback, it);
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionPropagationType pt, TransactionIsolationType it) throws TransactionException {
-        return modelSession.execute(callback, pt, it);
     }
 }

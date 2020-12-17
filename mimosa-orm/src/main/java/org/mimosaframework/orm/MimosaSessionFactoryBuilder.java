@@ -4,9 +4,9 @@ import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
 
 public class MimosaSessionFactoryBuilder implements SessionFactoryBuilder {
-    private ContextContainer contextValues;
+    private Configuration contextValues;
 
-    public MimosaSessionFactoryBuilder(ContextContainer contextValues) {
+    public MimosaSessionFactoryBuilder(Configuration contextValues) {
         this.contextValues = contextValues;
     }
 

@@ -46,35 +46,35 @@ public class PlatformFactory {
         return null;
     }
 
-    public static PlatformDialect getDialect(DataSourceWrapper dataSourceWrapper) {
-        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.MYSQL)) {
+    public static PlatformDialect getDialect(SessionContext sessionContext) {
+        if (sessionContext.getDatabaseTypeEnum().equals(DatabaseType.MYSQL)) {
             PlatformDialect dialect = new MysqlPlatformDialect();
-            dialect.setDataSourceWrapper(dataSourceWrapper);
+            dialect.setSessionContext(sessionContext);
             return dialect;
         }
-        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.ORACLE)) {
+        if (sessionContext.getDatabaseTypeEnum().equals(DatabaseType.ORACLE)) {
             PlatformDialect dialect = new OraclePlatformDialect();
-            dialect.setDataSourceWrapper(dataSourceWrapper);
+            dialect.setSessionContext(sessionContext);
             return dialect;
         }
-        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.SQL_SERVER)) {
+        if (sessionContext.getDatabaseTypeEnum().equals(DatabaseType.SQL_SERVER)) {
             PlatformDialect dialect = new SQLServerPlatformDialect();
-            dialect.setDataSourceWrapper(dataSourceWrapper);
+            dialect.setSessionContext(sessionContext);
             return dialect;
         }
-        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.POSTGRESQL)) {
+        if (sessionContext.getDatabaseTypeEnum().equals(DatabaseType.POSTGRESQL)) {
             PlatformDialect dialect = new PostgreSQLPlatformDialect();
-            dialect.setDataSourceWrapper(dataSourceWrapper);
+            dialect.setSessionContext(sessionContext);
             return dialect;
         }
-        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.DB2)) {
+        if (sessionContext.getDatabaseTypeEnum().equals(DatabaseType.DB2)) {
             PlatformDialect dialect = new DB2PlatformDialect();
-            dialect.setDataSourceWrapper(dataSourceWrapper);
+            dialect.setSessionContext(sessionContext);
             return dialect;
         }
-        if (dataSourceWrapper.getDatabaseTypeEnum().equals(DatabaseType.SQLITE)) {
+        if (sessionContext.getDatabaseTypeEnum().equals(DatabaseType.SQLITE)) {
             PlatformDialect dialect = new SqlitePlatformDialect();
-            dialect.setDataSourceWrapper(dataSourceWrapper);
+            dialect.setSessionContext(sessionContext);
             return dialect;
         }
         return null;

@@ -11,7 +11,7 @@ import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.DataSourceWrapper;
+import org.mimosaframework.orm.platform.SessionContext;
 import org.mimosaframework.orm.platform.JDBCTraversing;
 import org.mimosaframework.orm.platform.PlatformExecutor;
 import org.mimosaframework.orm.platform.PlatformExecutorFactory;
@@ -19,7 +19,6 @@ import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
 import org.mimosaframework.orm.transaction.Transaction;
-import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.mimosaframework.orm.utils.AutonomouslyUtils;
 import org.mimosaframework.orm.utils.Clone;
 import org.mimosaframework.orm.utils.SessionUtils;
@@ -36,21 +35,18 @@ public class DefaultSession implements Session {
     private static final Log logger = LogFactory.getLog(DefaultSession.class);
     private PlatformExecutor executor;
     private UpdateSkipReset updateSkipReset = new UpdateSkiptResetEmpty();
-    private ContextContainer context;
-    private DataSourceWrapper wrapper;
+    private Configuration context;
+    private SessionContext sessionContext;
     private MappingGlobalWrapper mappingGlobalWrapper;
     private ModelObjectConvertKey convert;
-    private Transaction transaction;
 
-    public DefaultSession(ContextContainer context) {
+    public DefaultSession(Configuration context) throws SQLException {
         this.context = context;
-        this.wrapper = this.context.getDefaultDataSourceWrapper(true);
+        this.sessionContext = this.context.newSessionContext(MimosaDataSource.DEFAULT_DS_NAME, true);
         this.mappingGlobalWrapper = this.context.getMappingGlobalWrapper();
         this.convert = this.context.getModelObjectConvertKey();
         convert.setMappingGlobalWrapper(mappingGlobalWrapper);
-        TransactionFactory transactionFactory = this.context.getTransactionFactory();
-        transactionFactory.newTransaction()
-        executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, wrapper);
+        executor = PlatformExecutorFactory.getExecutor(mappingGlobalWrapper, sessionContext);
     }
 
     @Override
@@ -352,8 +348,8 @@ public class DefaultSession implements Session {
     public List<ModelObject> list(Query query) {
         DefaultQuery dq = (DefaultQuery) query;
         dq.checkQuery();
-        wrapper.setMaster(dq.isMaster());
-        wrapper.setSlaveName(dq.getSlaveName());
+        sessionContext.setMaster(dq.isMaster());
+        sessionContext.setSlaveName(dq.getSlaveName());
         if (dq.isForUpdate()) {
             Set<Join> joins = dq.getJoins();
             if (joins != null && joins.size() > 0) {
@@ -383,8 +379,8 @@ public class DefaultSession implements Session {
     public long count(Query query) {
         DefaultQuery dq = (DefaultQuery) query;
         dq.checkQuery();
-        wrapper.setMaster(dq.isMaster());
-        wrapper.setSlaveName(dq.getSlaveName());
+        sessionContext.setMaster(dq.isMaster());
+        sessionContext.setSlaveName(dq.getSlaveName());
 
         long count = 0;
         try {
@@ -411,7 +407,7 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
-        MimosaDataSource ds = this.wrapper.getDataSource();
+        MimosaDataSource ds = this.sessionContext.getDataSource();
         return new SingleZipperTable<ModelObject>(context, c, ds, mappingTable.getMappingTableName());
     }
 
@@ -445,8 +441,8 @@ public class DefaultSession implements Session {
                 throw new IllegalArgumentException(I18n.print("include_not_exist"));
             }
         }
-        wrapper.setMaster(f.isMaster());
-        wrapper.setSlaveName(f.getSlaveName());
+        sessionContext.setMaster(f.isMaster());
+        sessionContext.setSlaveName(f.getSlaveName());
         try {
             List<ModelObject> objects = executor.function(f);
             if (objects != null) {
@@ -493,8 +489,8 @@ public class DefaultSession implements Session {
             }
         }
         if (StringTools.isNotEmpty(sql) || builder != null) {
-            wrapper.setMaster(isMaster);
-            wrapper.setSlaveName(slaveName);
+            sessionContext.setMaster(isMaster);
+            sessionContext.setSlaveName(slaveName);
             if (builder != null) {
                 Object r = executor.dialect(builder.compile());
                 return new AutoResult(r);
@@ -528,9 +524,7 @@ public class DefaultSession implements Session {
 
     @Override
     public List<DataSourceTableName> getDataSourceNames(Class c) {
-        DataSourceWrapper wrapper = this.context.getDefaultDataSourceWrapper(false);
-        MimosaDataSource mimosaDataSource = wrapper.getDataSource();
-
+        MimosaDataSource mimosaDataSource = this.sessionContext.getDataSource();
         List<DataSourceTableName> names = new ArrayList<>();
 
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
@@ -553,7 +547,10 @@ public class DefaultSession implements Session {
     @Override
     public void close() throws IOException {
         try {
-            this.wrapper.close();
+            Transaction transaction = this.sessionContext.getTransaction();
+            if (transaction != null) {
+                transaction.close();
+            }
         } catch (SQLException e) {
             throw new IOException(I18n.print("close_db_fail"), e);
         }

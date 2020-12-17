@@ -228,6 +228,9 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("not_scan_class", "没有扫描到表映射类");
         words.put("please_set_ds", "请设置一个默认数据源");
         words.put("must_ds_name", "数据源必须设置一个名称");
+        words.put("miss_df_datasource", "缺少默认的数据源配置");
+        words.put("miss_byname_datasource", "没有找到数据源 %s 的配置");
+        words.put("found_ds_same_name", "已经有一个数据源为 %s 的配置");
 
         // SingleZipperTable
         words.put("get_ds_fail", "获得数据量连接失败");
@@ -282,6 +285,9 @@ public class LanguageMessageDefault implements MessagesRegister {
 
         // MimosaBeanSessionTemplate
         words.put("model_to_bean_error", "Map转换成JavaBean出错");
+
+        // MimosaSessionFactory
+        words.put("create_new_session_error", "创建一个新的Session对象出错");
 
         messageWords.add(new MessageWords(PROJECT, words));
     }

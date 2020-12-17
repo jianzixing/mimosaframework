@@ -2,6 +2,7 @@ package org.mimosaframework.orm.platform;
 
 import org.mimosaframework.core.json.ModelException;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.orm.transaction.Transaction;
 
 import java.io.Reader;
 import java.sql.Clob;
@@ -11,10 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class DBRunner {
-    protected DataSourceWrapper dswrapper;
+    protected SessionContext sessionContext;
 
-    public DBRunner(DataSourceWrapper dswrapper) {
-        this.dswrapper = dswrapper;
+    public DBRunner(SessionContext sessionContext) {
+        this.sessionContext = sessionContext;
     }
 
     public abstract Object doHandler(JDBCTraversing structure) throws SQLException;

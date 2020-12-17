@@ -3,8 +3,10 @@ package org.mimosaframework.orm.platform;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.criteria.Keyword;
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.utils.SQLUtils;
 
 import java.sql.*;
@@ -15,15 +17,17 @@ import java.util.List;
 
 public class DefaultJDBCExecutor implements JDBCExecutor {
     private static final Log logger = LogFactory.getLog(DefaultJDBCExecutor.class);
-    private DataSourceWrapper actionDataSourceWrapper;
-    private boolean isIgnoreEmptySlave = true;
-    private boolean isShowSql = false;
+    private SessionContext sessionContext;
+    private boolean isIgnoreEmptySlave;
+    private boolean isMaster;
+    private boolean isShowSql;
     private DatabaseExecutorCallback callback;
 
-    public DefaultJDBCExecutor(DataSourceWrapper wrapper) {
-        this.isShowSql = wrapper.isShowSql();
-        this.isIgnoreEmptySlave = wrapper.isIgnoreEmptySlave();
-        this.actionDataSourceWrapper = wrapper;
+    public DefaultJDBCExecutor(SessionContext sessionContext) {
+        this.sessionContext = sessionContext;
+        this.isShowSql = sessionContext.isShowSql();
+        this.isIgnoreEmptySlave = sessionContext.isIgnoreEmptySlave();
+        this.isMaster = sessionContext.isMaster();
     }
 
     @Override
@@ -39,24 +43,31 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
                 e.printStackTrace();
             }
         }
-        if (this.actionDataSourceWrapper.isAutoCloseConnection() && connection != null) {
+        Transaction transaction = this.sessionContext.getTransaction();
+        if (transaction != null && this.isMaster) {
+            // 如果是从事务对象中获取到的则不需要做任何事，关闭操作交给了DefaultSession
+            // 从事务对象中获取连接并不代表已经开启了事务，而是资源统一交给Transaction管理
+        } else {
+            // 如果事务为空或者使用的是从数据库链接则直接关闭
             try {
                 connection.close();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
     private Connection getConnection() throws SQLException {
-        if (this.actionDataSourceWrapper.isAutoCloseConnection()) {
-            return this.actionDataSourceWrapper.getDataSource().getConnection(
-                    this.actionDataSourceWrapper.isMaster(),
-                    this.actionDataSourceWrapper.getSlaveName(),
-                    this.isIgnoreEmptySlave
-            );
+        if (this.isMaster) {
+            Transaction transaction = this.sessionContext.getTransaction();
+            if (transaction != null) {
+                return transaction.getConnection();
+            } else {
+                throw new NullPointerException("execute sql but can't get connection with miss transaction object");
+            }
         } else {
-            return this.actionDataSourceWrapper.getConnection();
+            MimosaDataSource dataSource = sessionContext.getDataSource();
+            return dataSource.getConnection(false, sessionContext.getSlaveName(), this.isIgnoreEmptySlave);
         }
     }
 
@@ -217,7 +228,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
             statement = replacePlaceholder(connection, structure, true);
             statement.executeUpdate();
 
-            PlatformDialect dialect = PlatformFactory.getDialect(actionDataSourceWrapper);
+            PlatformDialect dialect = PlatformFactory.getDialect(sessionContext);
 
             if (dialect.isSupportGeneratedKeys()) {
                 ResultSet rs = statement.getGeneratedKeys();

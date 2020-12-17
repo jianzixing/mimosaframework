@@ -45,7 +45,7 @@ public class DB2PlatformDialect extends PlatformDialect {
     protected String getCatalogAndSchema() throws SQLException {
         Connection connection = null;
         try {
-            connection = dataSourceWrapper.getConnection();
+            connection = getConnection();
             DatabaseMetaData metaData = connection.getMetaData();
             ResultSet resultSet = metaData.getSchemas();
             String schema = null;
@@ -58,7 +58,7 @@ public class DB2PlatformDialect extends PlatformDialect {
             resultSet.close();
             return schema;
         } finally {
-            dataSourceWrapper.close();
+            close(connection);
         }
     }
 

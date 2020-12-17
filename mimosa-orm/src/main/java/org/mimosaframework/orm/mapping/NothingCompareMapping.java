@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.orm.MappingLevel;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.platform.*;
+import org.mimosaframework.orm.transaction.JDBCTransaction;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -12,15 +13,15 @@ import java.util.*;
 public class NothingCompareMapping implements StartCompareMapping {
     private static final Log logger = LogFactory.getLog(NothingCompareMapping.class);
     protected MappingGlobalWrapper mappingGlobalWrapper;
-    protected DataSourceWrapper dataSourceWrapper;
+    protected SessionContext sessionContext;
     protected PlatformExecutor executor = null;
 
     protected MappingLevel mappingLevel = MappingLevel.NOTHING;
 
-    public NothingCompareMapping(MappingGlobalWrapper mappingGlobalWrapper, DataSourceWrapper dataSourceWrapper) {
+    public NothingCompareMapping(MappingGlobalWrapper mappingGlobalWrapper, SessionContext sessionContext) {
         this.mappingGlobalWrapper = mappingGlobalWrapper;
-        this.dataSourceWrapper = dataSourceWrapper;
-        this.executor = new PlatformExecutor(mappingGlobalWrapper, dataSourceWrapper);
+        this.sessionContext = sessionContext;
+        this.executor = new PlatformExecutor(mappingGlobalWrapper, sessionContext);
     }
 
     @Override

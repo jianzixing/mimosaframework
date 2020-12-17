@@ -185,12 +185,14 @@ public class MimosaSessionTemplate implements SessionTemplate {
 
     @Override
     public Transaction beginTransaction() throws SQLException {
-        return sessionFactory.beginTransaction();
+//        return sessionFactory.beginTransaction();
+        return null;
     }
 
     @Override
     public Transaction createTransaction() {
-        return sessionFactory.createTransaction();
+//        return sessionFactory.createTransaction();
+        return null;
     }
 
     private <T> T execute(TransactionCallback<T> callback, Transaction transaction) throws Exception {
@@ -208,14 +210,16 @@ public class MimosaSessionTemplate implements SessionTemplate {
 
     @Override
     public <T> T execute(TransactionCallback<T> callback) throws Exception {
-        Transaction transaction = sessionFactory.beginTransaction();
-        return this.execute(callback, transaction);
+//        Transaction transaction = sessionFactory.beginTransaction();
+//        return this.execute(callback, transaction);
+        return null;
     }
 
     @Override
     public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws Exception {
-        Transaction transaction = sessionFactory.beginTransaction(it);
-        return this.execute(callback, transaction);
+//        Transaction transaction = sessionFactory.beginTransaction(it);
+//        return this.execute(callback, transaction);
+        return null;
     }
 
     private class SessionInterceptor implements InvocationHandler {

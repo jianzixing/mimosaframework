@@ -2,13 +2,13 @@ package org.mimosaframework.orm.mapping;
 
 import org.mimosaframework.orm.MappingLevel;
 import org.mimosaframework.orm.i18n.I18n;
-import org.mimosaframework.orm.platform.DataSourceWrapper;
+import org.mimosaframework.orm.platform.SessionContext;
 
 public class CompareMappingFactory {
 
     public static StartCompareMapping getCompareMapping(MappingLevel level,
                                                         MappingGlobalWrapper mappingGlobalWrapper,
-                                                        DataSourceWrapper dataSourceWrapper) {
+                                                        SessionContext dataSourceWrapper) {
 
 
         if (level == MappingLevel.NOTHING || level == null) {

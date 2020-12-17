@@ -2,30 +2,32 @@ package org.mimosaframework.orm.transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.orm.ContextContainer;
-import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.SessionHolder;
-import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.i18n.I18n;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public class JDBCTransaction implements Transaction {
     private static final Log logger = LogFactory.getLog(JDBCTransaction.class);
     private TransactionIsolationType it;
-    private ContextContainer context;
+    private DataSource dataSource;
     private SessionHolder sessionHolder;
     private Connection connection;
-    private int callCount = 0;
+    private boolean support = true;
 
-    public JDBCTransaction(TransactionIsolationType it, ContextContainer context) {
+    public JDBCTransaction(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public JDBCTransaction(DataSource dataSource, boolean support) {
+        this.dataSource = dataSource;
+        this.support = support;
+    }
+
+    public JDBCTransaction(TransactionIsolationType it, DataSource dataSource) {
         this.it = it;
-        this.context = context;
+        this.dataSource = dataSource;
     }
 
     public void setSessionHolder(SessionHolder sessionHolder) {
@@ -35,68 +37,61 @@ public class JDBCTransaction implements Transaction {
     @Override
     public Connection getConnection() throws SQLException {
         if (connection == null) {
-            MimosaDataSource dataSource = this.context.getAnyDataSource();
-            connection = dataSource.getConnection(true, null, true);
+            connection = dataSource.getConnection();
         }
         return connection;
     }
 
     @Override
     public void begin() throws SQLException {
-        if (this.sessionHolder != null) {
-            this.sessionHolder.begin();
+        if (support) {
+            if (this.sessionHolder != null) {
+                this.sessionHolder.begin();
+            }
+            Connection connection = this.getConnection();
+            if (connection != null) {
+                connection.setAutoCommit(false);
+                if (it != null) connection.setTransactionIsolation(it.getCode());
+            }
         }
-        Connection connection = this.getConnection();
-        if (connection != null) {
-            connection.setAutoCommit(false);
-            if (it != null) connection.setTransactionIsolation(it.getCode());
-        }
-        callCount++;
     }
 
     @Override
     public void commit() throws SQLException {
-        try {
-            if (this.callCount == 1) {
-                if (this.sessionHolder != null) {
-                    this.sessionHolder.end();
-                }
-                if (this.connection != null && !connection.getAutoCommit()) {
-                    this.connection.commit();
-                }
+        if (support) {
+            if (this.sessionHolder != null) {
+                this.sessionHolder.end();
             }
-        } finally {
-            callCount--;
+            if (this.connection != null && !connection.getAutoCommit()) {
+                this.connection.commit();
+            }
         }
     }
 
     @Override
     public void rollback() throws SQLException {
-        try {
-            if (this.callCount == 1) {
-                if (this.sessionHolder != null) {
-                    this.sessionHolder.end();
-                }
-                if (this.connection != null && !connection.getAutoCommit()) {
-                    this.connection.rollback();
-                }
+        if (support) {
+            if (this.sessionHolder != null) {
+                this.sessionHolder.end();
             }
-        } finally {
-            callCount--;
+            if (this.connection != null && !connection.getAutoCommit()) {
+                this.connection.rollback();
+            }
         }
     }
 
     @Override
     public void close() throws SQLException {
         try {
-            this.callCount = 0;
-            if (this.connection != null && !connection.getAutoCommit()) {
-                this.connection.setAutoCommit(true);
+            if (support) {
+                if (this.connection != null && !connection.getAutoCommit()) {
+                    this.connection.setAutoCommit(true);
+                }
             }
         } finally {
             this.connection.close();
         }
-        if (this.sessionHolder != null) {
+        if (this.sessionHolder != null && support) {
             this.sessionHolder.close();
         }
     }

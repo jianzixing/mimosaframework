@@ -8,6 +8,7 @@ import org.mimosaframework.orm.criteria.Update;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -15,15 +16,15 @@ import java.util.List;
  * 处理一些需要中间处理的事情
  */
 public class SessionAgency implements Session {
-    private ContextContainer context;
+    private Configuration context;
     private Session session;
 
-    public SessionAgency(ContextContainer context) {
+    public SessionAgency(Configuration context) throws SQLException {
         this.context = context;
         this.session = this.buildRealSession(this.context);
     }
 
-    private Session buildRealSession(ContextContainer context) {
+    private Session buildRealSession(Configuration context) throws SQLException {
         return context.buildSession();
     }
 

@@ -10,20 +10,25 @@ import org.mimosaframework.orm.mapping.DefaultDisassembleMappingClass;
 import org.mimosaframework.orm.mapping.DisassembleMappingClass;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.DataSourceWrapper;
+import org.mimosaframework.orm.platform.SessionContext;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
+import org.mimosaframework.orm.transaction.DefaultTransactionFactory;
+import org.mimosaframework.orm.transaction.JDBCTransaction;
+import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.mimosaframework.orm.utils.DatabaseType;
 
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class NormalContextContainer implements ContextContainer {
-    private static final Log logger = LogFactory.getLog(NormalContextContainer.class);
+public class NormalConfiguration implements Configuration {
+    private static final Log logger = LogFactory.getLog(NormalConfiguration.class);
     protected ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
-    protected List<MimosaDataSource> globalDataSource = new CopyOnWriteArrayList<>();
+    protected Map<String, MimosaDataSource> globalDataSource = new ConcurrentHashMap<>();
 
     /**
      * 可以通过配置文件制定自定义的session实现,比如要
@@ -42,7 +47,9 @@ public class NormalContextContainer implements ContextContainer {
     // 数据库表名前缀
     protected String tablePrefix;
 
-    protected DataSourceWrapper defaultDataSource;
+    protected SessionContext defaultSessionContext;
+    protected MimosaDataSource defaultDataSource;
+    protected TransactionFactory transactionFactory;
 
     protected List<? extends IDStrategy> idStrategies;
     protected boolean isShowSQL = false;
@@ -121,7 +128,7 @@ public class NormalContextContainer implements ContextContainer {
     }
 
     @Override
-    public List<MimosaDataSource> getGlobalDataSource() {
+    public Map<String, MimosaDataSource> getGlobalDataSource() {
         return this.globalDataSource;
     }
 
@@ -172,15 +179,35 @@ public class NormalContextContainer implements ContextContainer {
         this.convert = convert;
     }
 
-    public DataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew) {
-        if (defaultDataSource == null) {
+    public SessionContext newSessionContext(String dataSourceName, boolean supportTrans) throws SQLException {
+        if (defaultSessionContext == null) {
             throw new IllegalArgumentException(I18n.print("please_set_ds"));
         }
-        if (isCreateNew) {
-            return this.defaultDataSource.newDataSourceWrapper();
+        MimosaDataSource mimosaDataSource = null;
+        if (dataSourceName == null || dataSourceName == MimosaDataSource.DEFAULT_DS_NAME) {
+            if (this.defaultDataSource == null) {
+                throw new NullPointerException(I18n.print("miss_df_datasource"));
+            }
+            mimosaDataSource = this.defaultDataSource;
         } else {
-            return defaultDataSource;
+            mimosaDataSource = this.globalDataSource.get(dataSourceName);
+            if (mimosaDataSource == null) {
+                throw new NullPointerException(I18n.print("miss_byname_datasource", dataSourceName));
+            }
         }
+        SessionContext context = this.defaultSessionContext.newSessionContext();
+        TransactionFactory transactionFactory = this.getTransactionFactory();
+        context.setDataSource(mimosaDataSource);
+        DataSource dataSource = mimosaDataSource.getMaster();
+        Transaction transaction = null;
+        if (supportTrans) {
+            transaction = transactionFactory.newTransaction(dataSource);
+        } else {
+            // 如果不支持事务默认使用JDBCTransaction
+            transaction = new JDBCTransaction(dataSource, false);
+        }
+        context.setTransaction(transaction);
+        return context;
     }
 
     public ModelObjectConvertKey getModelObjectConvertKey() {
@@ -219,11 +246,20 @@ public class NormalContextContainer implements ContextContainer {
         if (StringTools.isEmpty(dataSource.getName())) {
             throw new IllegalArgumentException(I18n.print("must_ds_name"));
         }
-        globalDataSource.add(dataSource);
+        if (globalDataSource.size() == 0) {
+            // 首先设置第一个为默认连接
+            this.defaultDataSource = dataSource;
+        }
+        if (globalDataSource.get(dataSource.getName()) != null) {
+            throw new IllegalStateException(I18n.print("found_ds_same_name", dataSource.getName()));
+        }
+        globalDataSource.put(dataSource.getName(), dataSource);
 
         if (dataSource.getName().equals(MimosaDataSource.DEFAULT_DS_NAME)) {
-            this.defaultDataSource = new DataSourceWrapper(this);
-            this.defaultDataSource.setDataSource(dataSource);
+            // 如果有默认连接配置则重置默认连接
+            this.defaultDataSource = dataSource;
+            this.defaultSessionContext = new SessionContext(this);
+            this.defaultSessionContext.setDataSource(dataSource);
         }
     }
 
@@ -249,13 +285,7 @@ public class NormalContextContainer implements ContextContainer {
 
     @Override
     public MimosaDataSource getDefaultDataSource() {
-        for (MimosaDataSource mimosaDataSource : globalDataSource) {
-            if (mimosaDataSource.getName() != null
-                    && mimosaDataSource.getName().equals(MimosaDataSource.DEFAULT_DS_NAME)) {
-                return mimosaDataSource;
-            }
-        }
-        return null;
+        return this.defaultDataSource;
     }
 
     @Override
@@ -269,31 +299,8 @@ public class NormalContextContainer implements ContextContainer {
         return null;
     }
 
-    public DataSourceWrapper getNewDataSourceWrapper() {
-        return new DataSourceWrapper(this);
-    }
-
-    public Set<MimosaDataSource> getCurrentDataSources() {
-        Set<MimosaDataSource> ds = new LinkedHashSet<MimosaDataSource>();
-        MimosaDataSource dataSource = defaultDataSource.getDataSource();
-        if (dataSource != null) {
-            ds.add(dataSource);
-        }
-
-        if (ds.size() > 0) {
-            return ds;
-        } else {
-            return null;
-        }
-    }
-
     public MimosaDataSource getDataSourceByName(String dsName) {
-        for (MimosaDataSource mimosaDataSource : this.globalDataSource) {
-            if (mimosaDataSource.getName() != null && mimosaDataSource.getName().equals(dsName)) {
-                return mimosaDataSource;
-            }
-        }
-        return null;
+        return this.globalDataSource.get(dsName);
     }
 
     public Set<MappingTable> getMappingTables() {
@@ -316,9 +323,11 @@ public class NormalContextContainer implements ContextContainer {
     @Override
     public void clearMimosaDataSources() {
         if (this.globalDataSource != null) {
-            for (MimosaDataSource mimosaDataSource : this.globalDataSource) {
+            for (Map.Entry<String, MimosaDataSource> entry : this.globalDataSource.entrySet()) {
                 try {
-                    mimosaDataSource.close();
+                    if (entry != null && entry.getValue() != null) {
+                        entry.getValue().close();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -338,11 +347,22 @@ public class NormalContextContainer implements ContextContainer {
      */
     @Override
     public TransactionFactory getTransactionFactory() {
-        return null;
+        if (this.transactionFactory == null) {
+            synchronized (this) {
+                if (this.transactionFactory == null) {
+                    this.transactionFactory = new DefaultTransactionFactory();
+                }
+            }
+        }
+        return this.transactionFactory;
+    }
+
+    public void setTransactionFactory(TransactionFactory transactionFactory) {
+        this.transactionFactory = transactionFactory;
     }
 
     @Override
-    public Session buildSession() {
+    public Session buildSession() throws SQLException {
         return new DefaultSession(this);
     }
 

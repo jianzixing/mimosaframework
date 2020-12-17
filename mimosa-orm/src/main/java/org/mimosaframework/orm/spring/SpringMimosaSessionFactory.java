@@ -179,27 +179,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         return this.sessionFactory.getCurrentSession();
     }
 
-
-    @Override
-    public Transaction beginTransaction() throws SQLException {
-        return this.sessionFactory.beginTransaction();
-    }
-
-    @Override
-    public Transaction beginTransaction(TransactionIsolationType it) throws SQLException {
-        return this.sessionFactory.beginTransaction(it);
-    }
-
-    @Override
-    public Transaction createTransaction() {
-        return this.sessionFactory.createTransaction();
-    }
-
-    @Override
-    public Transaction createTransaction(TransactionIsolationType it) {
-        return this.sessionFactory.createTransaction(it);
-    }
-
     @Override
     public ApplicationContext getSpringContext() {
         return this.applicationContext;

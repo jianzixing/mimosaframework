@@ -16,6 +16,7 @@ import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
 import org.mimosaframework.orm.sql.rename.DefaultSQLRenameBuilder;
 import org.mimosaframework.orm.sql.select.DefaultSQLSelectBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
+import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.utils.LOBLoader;
 
 import java.sql.Clob;
@@ -28,7 +29,7 @@ public abstract class PlatformDialect implements Dialect {
     private static final Log logger = LogFactory.getLog(PlatformDialect.class);
     private Map<KeyColumnType, ColumnType> columnTypes = new HashMap<>();
     private DBRunner runner = null;
-    protected DataSourceWrapper dataSourceWrapper;
+    protected SessionContext sessionContext;
     protected MappingGlobalWrapper mappingGlobalWrapper;
 
     protected void registerColumnType(KeyColumnType type, String typeName) {
@@ -57,9 +58,23 @@ public abstract class PlatformDialect implements Dialect {
                 length, -1, columnCompareType));
     }
 
-    public void setDataSourceWrapper(DataSourceWrapper dswrapper) {
-        this.dataSourceWrapper = dswrapper;
-        this.runner = new DefaultDBRunner(dswrapper);
+    public void setSessionContext(SessionContext sessionContext) {
+        this.sessionContext = sessionContext;
+        this.runner = new DefaultDBRunner(sessionContext);
+    }
+
+    protected Connection getConnection() throws SQLException {
+        Transaction transaction = this.sessionContext.getTransaction();
+        if (transaction != null) {
+            return transaction.getConnection();
+        }
+        return null;
+    }
+
+    protected void close(Connection connection) throws SQLException {
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     public void setMappingGlobalWrapper(MappingGlobalWrapper mappingGlobalWrapper) {
@@ -209,7 +224,7 @@ public abstract class PlatformDialect implements Dialect {
 
     protected Object runner(StampAction action) throws SQLException {
         StampCombineBuilder combineBuilder = PlatformFactory
-                .getStampBuilder(this.dataSourceWrapper.getDatabaseTypeEnum(), action);
+                .getStampBuilder(this.sessionContext.getDatabaseTypeEnum(), action);
         SQLBuilderCombine builderCombine = combineBuilder.getSqlBuilder(this.mappingGlobalWrapper, action);
         String sql = builderCombine.getSql();
         if (StringTools.isNotEmpty(sql)) {
@@ -242,7 +257,7 @@ public abstract class PlatformDialect implements Dialect {
     protected String getCatalogAndSchema() throws SQLException {
         Connection connection = null;
         try {
-            connection = dataSourceWrapper.getConnection();
+            connection = getConnection();
             String catalog = null;
             try {
                 catalog = connection.getCatalog();
@@ -258,7 +273,7 @@ public abstract class PlatformDialect implements Dialect {
             return (StringTools.isNotEmpty(catalog) ? catalog : "") +
                     (StringTools.isNotEmpty(schema) ? (StringTools.isNotEmpty(catalog) ? "." : "") + schema : "");
         } finally {
-            dataSourceWrapper.close();
+            close(connection);
         }
     }
 

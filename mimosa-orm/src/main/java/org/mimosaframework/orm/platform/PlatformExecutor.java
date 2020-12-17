@@ -21,6 +21,7 @@ import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
 import org.mimosaframework.orm.sql.select.DefaultSQLSelectBuilder;
 import org.mimosaframework.orm.sql.stamp.*;
 import org.mimosaframework.orm.sql.update.DefaultSQLUpdateBuilder;
+import org.mimosaframework.orm.transaction.Transaction;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -34,12 +35,13 @@ public class PlatformExecutor {
     private static final Log logger = LogFactory.getLog(PlatformExecutor.class);
     private DBRunner runner;
     private MappingGlobalWrapper mappingGlobalWrapper;
-    private DataSourceWrapper dswrapper;
+    private SessionContext sessionContext;
 
-    public PlatformExecutor(MappingGlobalWrapper mappingGlobalWrapper, DataSourceWrapper dswrapper) {
+    public PlatformExecutor(MappingGlobalWrapper mappingGlobalWrapper,
+                            SessionContext sessionContext) {
         this.mappingGlobalWrapper = mappingGlobalWrapper;
-        this.dswrapper = dswrapper;
-        this.runner = new DefaultDBRunner(dswrapper);
+        this.sessionContext = sessionContext;
+        this.runner = new DefaultDBRunner(sessionContext);
     }
 
     public void compareTableStructure(PlatformCompare compare) throws SQLException {
@@ -307,7 +309,7 @@ public class PlatformExecutor {
     }
 
     private PlatformDialect getDialect() {
-        PlatformDialect dialect = PlatformFactory.getDialect(dswrapper);
+        PlatformDialect dialect = PlatformFactory.getDialect(sessionContext);
         dialect.setMappingGlobalWrapper(this.mappingGlobalWrapper);
         return dialect;
     }
@@ -527,8 +529,8 @@ public class PlatformExecutor {
             }
         }
 
-        dswrapper.setMaster(isMaster);
-        dswrapper.setSlaveName(slaveName);
+        sessionContext.setMaster(isMaster);
+        sessionContext.setSlaveName(slaveName);
 
         Map<Object, String> alias = null;
         Map<Object, List<SelectFieldAliasReference>> fieldAlias = null;
@@ -653,8 +655,8 @@ public class PlatformExecutor {
         boolean isMaster = query.isMaster();
         String slaveName = query.getSlaveName();
 
-        dswrapper.setMaster(isMaster);
-        dswrapper.setSlaveName(slaveName);
+        sessionContext.setMaster(isMaster);
+        sessionContext.setSlaveName(slaveName);
 
         Map<Object, String> alias = null;
         int i = 1;
@@ -717,8 +719,8 @@ public class PlatformExecutor {
 
         boolean isMaster = f.isMaster();
         String slaveName = f.getSlaveName();
-        dswrapper.setMaster(isMaster);
-        dswrapper.setSlaveName(slaveName);
+        sessionContext.setMaster(isMaster);
+        sessionContext.setSlaveName(slaveName);
 
         MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(tableClass);
 
@@ -1236,7 +1238,8 @@ public class PlatformExecutor {
         }
 
         if (combine != null) {
-            return new DefaultDBRunner(dswrapper).doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
+            return new DefaultDBRunner(sessionContext)
+                    .doHandler(new JDBCTraversing(combine.getSql(), combine.getPlaceholders()));
         }
         return null;
     }

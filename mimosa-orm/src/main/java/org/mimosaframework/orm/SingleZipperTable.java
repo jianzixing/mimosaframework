@@ -17,13 +17,13 @@ import java.util.List;
 public class SingleZipperTable<T> implements ZipperTable<T> {
     private static final Log logger = LogFactory.getLog(SingleZipperTable.class);
     private List<Connection> connections = new ArrayList<>();
-    private ContextContainer context;
+    private Configuration context;
     private MimosaDataSource ds;
     private String dbTableName;
     private Class c;
     private int fetchSize = Integer.MIN_VALUE;
 
-    public SingleZipperTable(ContextContainer context, Class c, MimosaDataSource ds, String dbTableName) {
+    public SingleZipperTable(Configuration context, Class c, MimosaDataSource ds, String dbTableName) {
         this.c = c;
         this.ds = ds;
         this.context = context;

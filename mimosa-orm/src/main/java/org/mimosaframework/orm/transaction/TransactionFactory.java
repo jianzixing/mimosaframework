@@ -1,9 +1,7 @@
 package org.mimosaframework.orm.transaction;
 
-import org.mimosaframework.orm.transaction.Transaction;
-
-import java.sql.Connection;
+import javax.sql.DataSource;
 
 public interface TransactionFactory {
-    Transaction newTransaction(Connection connection);
+    Transaction newTransaction(DataSource dataSource);
 }

@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.mapping.*;
-import org.mimosaframework.orm.platform.DataSourceWrapper;
+import org.mimosaframework.orm.platform.SessionContext;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -30,10 +30,10 @@ public class RunCompareTesting {
         mappingTables.add(mappingTable);
         mappingGlobalWrapper.setMappingTables(mappingTables);
 
-        NormalContextContainer contextContainer = new NormalContextContainer();
+        NormalConfiguration contextContainer = new NormalConfiguration();
         contextContainer.setIgnoreEmptySlave(true);
         contextContainer.setShowSQL(true);
-        DataSourceWrapper dataSourceWrapper = new DataSourceWrapper(contextContainer);
+        SessionContext dataSourceWrapper = new SessionContext(contextContainer);
         dataSourceWrapper.setDataSource(this.mimosaDataSource);
 
         StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(

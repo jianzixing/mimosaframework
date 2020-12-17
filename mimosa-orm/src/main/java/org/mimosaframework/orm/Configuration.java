@@ -3,22 +3,24 @@ package org.mimosaframework.orm;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.DataSourceWrapper;
+import org.mimosaframework.orm.platform.SessionContext;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.mimosaframework.orm.utils.DatabaseType;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public interface ContextContainer {
+public interface Configuration {
     List<? extends IDStrategy> getIdStrategies();
 
     MimosaDataSource getDataSourceByName(String dataSourceName);
 
     MappingGlobalWrapper getMappingGlobalWrapper();
 
-    DataSourceWrapper getDefaultDataSourceWrapper(boolean isCreateNew);
+    SessionContext newSessionContext(String dataSourceName, boolean supportTrans) throws SQLException;
 
     ModelObjectConvertKey getModelObjectConvertKey();
 
@@ -40,7 +42,7 @@ public interface ContextContainer {
 
     MappingTable getMappingTableByClassName(String tableClassName);
 
-    List<MimosaDataSource> getGlobalDataSource();
+    Map<String, MimosaDataSource> getGlobalDataSource();
 
     Set<MappingTable> getMappingTables();
 
@@ -56,5 +58,5 @@ public interface ContextContainer {
 
     TransactionFactory getTransactionFactory();
 
-    Session buildSession();
+    Session buildSession() throws SQLException;
 }
