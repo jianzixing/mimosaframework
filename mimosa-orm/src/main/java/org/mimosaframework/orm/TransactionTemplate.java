@@ -1,19 +1,9 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.orm.transaction.Transaction;
-import org.mimosaframework.orm.transaction.TransactionCallback;
-import org.mimosaframework.orm.transaction.TransactionIsolationType;
-
-import java.sql.SQLException;
+import org.mimosaframework.orm.transaction.TransactionManager;
 
 public interface TransactionTemplate {
-    Transaction beginTransaction() throws SQLException;
+    TransactionManager beginTransaction();
 
-    Transaction createTransaction();
-
-    <T> T execute(TransactionCallback<T> callback) throws Exception;
-
-    <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws Exception;
-
+    TransactionManager beginTransaction(Object config);
 }

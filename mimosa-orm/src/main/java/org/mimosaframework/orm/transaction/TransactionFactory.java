@@ -4,4 +4,6 @@ import javax.sql.DataSource;
 
 public interface TransactionFactory {
     Transaction newTransaction(DataSource dataSource);
+
+    TransactionManager newTransactionManager(Object config);
 }

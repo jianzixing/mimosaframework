@@ -7,4 +7,9 @@ public class DefaultTransactionFactory implements TransactionFactory {
     public JDBCTransaction newTransaction(DataSource dataSource) {
         return new JDBCTransaction(dataSource);
     }
+
+    @Override
+    public TransactionManager newTransactionManager(Object config) {
+        return new DefaultTransactionManager();
+    }
 }

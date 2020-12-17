@@ -7,4 +7,6 @@ public interface SessionFactory {
     Session openSession() throws MimosaException;
 
     Session getCurrentSession() throws MimosaException;
+
+    Configuration getConfiguration();
 }

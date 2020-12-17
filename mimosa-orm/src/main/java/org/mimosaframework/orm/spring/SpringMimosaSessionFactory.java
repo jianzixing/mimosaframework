@@ -14,7 +14,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -56,6 +58,16 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     protected String mapper;
     protected List<String> mappers;
     protected List<? extends IDStrategy> strategies;
+
+    /**
+     * 获取spring的事务管理器
+     */
+    private PlatformTransactionManager transactionManager;
+
+    @Resource
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
 
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
@@ -252,7 +264,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     @Override
     public TransactionFactory getTransactionFactory() {
-        return new SpringTransactionFactory();
+        return new SpringTransactionFactory(transactionManager);
     }
 
     @Override

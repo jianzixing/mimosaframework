@@ -184,42 +184,15 @@ public class MimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public Transaction beginTransaction() throws SQLException {
-//        return sessionFactory.beginTransaction();
-        return null;
+    public TransactionManager beginTransaction() {
+        return beginTransaction(null);
     }
 
     @Override
-    public Transaction createTransaction() {
-//        return sessionFactory.createTransaction();
-        return null;
-    }
-
-    private <T> T execute(TransactionCallback<T> callback, Transaction transaction) throws Exception {
-        try {
-            if (transaction instanceof JDBCTransaction) {
-                ((JDBCTransaction) transaction).setSessionHolder(this.sessionHolder);
-            }
-            T t = callback.invoke(transaction);
-            transaction.commit();
-            return t;
-        } finally {
-            transaction.rollback();
-        }
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback) throws Exception {
-//        Transaction transaction = sessionFactory.beginTransaction();
-//        return this.execute(callback, transaction);
-        return null;
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws Exception {
-//        Transaction transaction = sessionFactory.beginTransaction(it);
-//        return this.execute(callback, transaction);
-        return null;
+    public TransactionManager beginTransaction(Object config) {
+        Configuration configuration = sessionFactory.getConfiguration();
+        TransactionFactory transactionFactory = configuration.getTransactionFactory();
+        return transactionFactory.newTransactionManager(config);
     }
 
     private class SessionInterceptor implements InvocationHandler {

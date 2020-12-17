@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
@@ -16,6 +17,7 @@ public class SpringTransaction implements Transaction {
     private static final Log logger = LogFactory.getLog(SpringTransaction.class);
     private final DataSource dataSource;
     private Connection connection;
+    // 如果是SpringTX管理的事务则为true
     private boolean isConnectionTransactional;
     private boolean autoCommit;
 
@@ -56,6 +58,7 @@ public class SpringTransaction implements Transaction {
     }
 
     public void commit() {
+        // 非SpringTX管理的事务则自动提交
         if (this.connection != null && !this.isConnectionTransactional && !this.autoCommit) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Committing JDBC Connection [" + this.connection + "]");
