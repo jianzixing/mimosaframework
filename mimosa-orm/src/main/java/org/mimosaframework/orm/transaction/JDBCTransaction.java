@@ -25,7 +25,7 @@ public class JDBCTransaction implements Transaction {
         this.support = support;
     }
 
-    public JDBCTransaction(TransactionIsolationType it, DataSource dataSource) {
+    public JDBCTransaction(DataSource dataSource, TransactionIsolationType it) {
         this.it = it;
         this.dataSource = dataSource;
     }

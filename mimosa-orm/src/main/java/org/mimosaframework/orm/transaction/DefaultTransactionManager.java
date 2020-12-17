@@ -50,6 +50,8 @@ public class DefaultTransactionManager implements TransactionManager {
                         }
                     }
                 }
+                TransactionManagerUtils.clearMarkRollback();
+                TransactionManagerUtils.clearTransIsolation();
             }
         } finally {
             TransactionManagerUtils.release(this);
@@ -90,6 +92,7 @@ public class DefaultTransactionManager implements TransactionManager {
                     }
                 }
                 TransactionManagerUtils.clearMarkRollback();
+                TransactionManagerUtils.clearTransIsolation();
             }
         } finally {
             TransactionManagerUtils.release(this);

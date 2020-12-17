@@ -15,6 +15,7 @@ public class TransactionManagerUtils {
     // Session资源管理器
     private static final ThreadLocal<Map<SessionFactory, SessionHolder>> holders = new ThreadLocal<>();
     private static final ThreadLocal<Boolean> rollbackMark = new ThreadLocal<>();
+    private static final ThreadLocal<TransactionIsolationType> transIsolation = new ThreadLocal<>();
 
     public static void register(TransactionManager transactionManager) {
         List<TransactionManager> list = resources.get();
@@ -54,6 +55,20 @@ public class TransactionManagerUtils {
     public static boolean isTransactional() {
         if (resources.get() != null && resources.get().size() > 0) return true;
         return false;
+    }
+
+    public static void setTransIsolation(TransactionIsolationType iso) {
+        if (transIsolation.get() == null) {
+            transIsolation.set(iso);
+        }
+    }
+
+    public static TransactionIsolationType getTransIsolation() {
+        return transIsolation.get();
+    }
+
+    public static void clearTransIsolation() {
+        transIsolation.remove();
     }
 
     public static void bindIfTransactional(Transaction transaction) throws SQLException {
