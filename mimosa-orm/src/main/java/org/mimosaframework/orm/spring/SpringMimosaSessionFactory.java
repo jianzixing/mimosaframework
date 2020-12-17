@@ -39,7 +39,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     protected ApplicationSetting applicationSetting = new ApplicationSetting();
     protected BasicSetting basicSetting = new BasicSetting();
     protected CenterConfigSetting centerConfigSetting = null;
-    protected MimosaDataSource defaultDataSource = null;
+    protected MimosaDataSource defaultDataSourceBundle = null;
     protected Set<Class> resolvers = null;
     protected List<MimosaDataSource> dataSources = new ArrayList<>();
 
@@ -133,19 +133,23 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         this.basicSetting.setMappingLevel(mappingLevel);
     }
 
-    public void setDefaultDataSource(MimosaDataSource defaultDataSource) throws SQLException {
+    public void setDefaultDataSourceBundle(MimosaDataSource defaultDataSource) throws SQLException {
         if (defaultDataSource != null) {
-            this.defaultDataSource = defaultDataSource;
-            this.defaultDataSource.setName(MimosaDataSource.DEFAULT_DS_NAME);
-            this.dataSources.add(this.defaultDataSource);
+            this.defaultDataSourceBundle = defaultDataSource;
+            this.defaultDataSourceBundle.setName(MimosaDataSource.DEFAULT_DS_NAME);
+            this.dataSources.add(this.defaultDataSourceBundle);
         }
+    }
+
+    public void addDataSourceBundle(MimosaDataSource defaultDataSource) {
+        
     }
 
     public void setDataSource(DataSource dataSource) throws SQLException {
         this.dataSource = dataSource;
-        if (this.defaultDataSource == null) {
-            this.defaultDataSource = new MimosaDataSource(dataSource, MimosaDataSource.DEFAULT_DS_NAME);
-            this.dataSources.add(this.defaultDataSource);
+        if (this.defaultDataSourceBundle == null) {
+            this.defaultDataSourceBundle = new MimosaDataSource(dataSource, MimosaDataSource.DEFAULT_DS_NAME);
+            this.dataSources.add(this.defaultDataSourceBundle);
         }
     }
 
@@ -187,6 +191,11 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     @Override
     public Session getCurrentSession() throws MimosaException {
         return this.sessionFactory.getCurrentSession();
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return this.sessionFactory.getConfiguration();
     }
 
     @Override

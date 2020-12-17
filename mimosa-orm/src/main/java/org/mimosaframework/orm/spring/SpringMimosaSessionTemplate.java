@@ -6,13 +6,10 @@ import org.mimosaframework.orm.criteria.Delete;
 import org.mimosaframework.orm.criteria.Function;
 import org.mimosaframework.orm.criteria.Query;
 import org.mimosaframework.orm.criteria.Update;
-import org.mimosaframework.orm.transaction.Transaction;
-import org.mimosaframework.orm.transaction.TransactionCallback;
-import org.mimosaframework.orm.transaction.TransactionIsolationType;
+import org.mimosaframework.orm.transaction.TransactionManager;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.List;
 
 public class SpringMimosaSessionTemplate implements SessionTemplate {
@@ -26,23 +23,13 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public Transaction beginTransaction() throws SQLException {
+    public TransactionManager beginTransaction() {
         return sessionTemplate.beginTransaction();
     }
 
     @Override
-    public Transaction createTransaction() {
-        return sessionTemplate.createTransaction();
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback) throws Exception {
-        return sessionTemplate.execute(callback);
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws Exception {
-        return sessionTemplate.execute(callback, it);
+    public TransactionManager beginTransaction(Object config) {
+        return sessionTemplate.beginTransaction(config);
     }
 
     @Override

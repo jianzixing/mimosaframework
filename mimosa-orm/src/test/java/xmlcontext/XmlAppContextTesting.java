@@ -19,8 +19,6 @@ public class XmlAppContextTesting {
         ModelObject user = new ModelObject(TableUser.class);
         user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
         template.save(user);
-
-        MimosaDataSource.clearAllDataSources();
     }
 
     @Test
@@ -32,8 +30,6 @@ public class XmlAppContextTesting {
         ModelObject user = new ModelObject(TableUser.class);
         user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
         template.save(user);
-
-        MimosaDataSource.clearAllDataSources();
     }
 
     @Test
@@ -49,8 +45,6 @@ public class XmlAppContextTesting {
         user = template.get(TableUser.class, user.getIntValue(TableUser.id));
 
         System.out.println(user);
-
-        MimosaDataSource.clearAllDataSources();
     }
 
     @Test
@@ -66,8 +60,6 @@ public class XmlAppContextTesting {
         user = template.get(TableUser.class, user.getIntValue(TableUser.id));
 
         System.out.println(user);
-
-        MimosaDataSource.clearAllDataSources();
     }
 
     @Test
@@ -94,8 +86,6 @@ public class XmlAppContextTesting {
         param.put(TableUser.id, user.getIntValue(TableUser.id));
         AutoResult result2 = template.getAutonomously(TAutonomously.newInstance("user2_mapper.getUserById", param));
         System.out.println(result2.getSingle());
-
-        MimosaDataSource.clearAllDataSources();
     }
 
     @Test
@@ -111,8 +101,6 @@ public class XmlAppContextTesting {
         user = template.get(TableAddition.class, user.getIntValue(TableAddition.id));
 
         System.out.println(user);
-
-        MimosaDataSource.clearAllDataSources();
     }
 
     @Test
@@ -128,8 +116,6 @@ public class XmlAppContextTesting {
         user = template.get(TableUser.class, user.getIntValue(TableUser.id));
 
         System.out.println(user);
-
-        MimosaDataSource.clearAllDataSources();
     }
 
     @Test
@@ -145,8 +131,6 @@ public class XmlAppContextTesting {
         user = template.get(TableUser.class, user.getIntValue(TableUser.id));
 
         System.out.println(user);
-
-        MimosaDataSource.clearAllDataSources();
     }
 
     @Test
@@ -162,7 +146,5 @@ public class XmlAppContextTesting {
         user = template.get(TableUser.class, user.getIntValue(TableUser.id));
 
         System.out.println(user);
-
-        MimosaDataSource.clearAllDataSources();
     }
 }

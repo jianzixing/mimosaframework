@@ -7,6 +7,7 @@ import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionCallback;
 import org.mimosaframework.orm.transaction.TransactionIsolationType;
+import org.mimosaframework.orm.transaction.TransactionManager;
 import org.mimosaframework.orm.utils.Model2BeanFactory;
 import org.mimosaframework.orm.utils.ModelObjectToBean;
 
@@ -387,22 +388,12 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public Transaction beginTransaction() throws SQLException {
+    public TransactionManager beginTransaction() {
         return modelSession.beginTransaction();
     }
 
     @Override
-    public Transaction createTransaction() {
-        return modelSession.createTransaction();
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback) throws Exception {
-        return modelSession.execute(callback);
-    }
-
-    @Override
-    public <T> T execute(TransactionCallback<T> callback, TransactionIsolationType it) throws Exception {
-        return modelSession.execute(callback, it);
+    public TransactionManager beginTransaction(Object config) {
+        return modelSession.beginTransaction(config);
     }
 }

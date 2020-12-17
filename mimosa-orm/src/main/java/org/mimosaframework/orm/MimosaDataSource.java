@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MimosaDataSource implements Closeable {
     private static final Log logger = LogFactory.getLog(MimosaDataSource.class);
-    private static final Map<DataSource, DatabaseType> dataSourceInfo = new ConcurrentHashMap<>();
     private String name;
     private DataSource master;
     private Map<String, DataSource> slaves;
@@ -27,50 +26,12 @@ public class MimosaDataSource implements Closeable {
 
     public static final String DEFAULT_DS_NAME = "default";
 
-
-    public static int getDataSourceSize() {
-        return dataSourceInfo.size();
-    }
-
-    public static Set<DataSource> getAllDataSources() {
-        Set<Map.Entry<DataSource, DatabaseType>> entries = dataSourceInfo.entrySet();
-        Set<DataSource> dataSources = new LinkedHashSet<>();
-        for (Map.Entry<DataSource, DatabaseType> entry : entries) {
-            dataSources.add(entry.getKey());
-        }
-        return dataSources;
-    }
-
     public MimosaDataSource() {
-    }
-
-    public static void clearAllDataSources() {
-        if (dataSourceInfo != null) {
-            Iterator<Map.Entry<DataSource, DatabaseType>> iterator = dataSourceInfo.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<DataSource, DatabaseType> entry = iterator.next();
-                DataSource dataSource = entry.getKey();
-                if (dataSource instanceof Closeable) {
-                    try {
-                        ((Closeable) dataSource).close();
-                    } catch (IOException e) {
-                        logger.error(I18n.print("close_ds_error"), e);
-                    }
-                }
-            }
-            dataSourceInfo.clear();
-        }
     }
 
     private void loadDatabaseType() throws SQLException {
         if (master != null) {
-            DatabaseType dte = dataSourceInfo.get(master);
-            if (dte == null) {
-                this.databaseTypeEnum = SQLUtils.getDatabaseType(master);
-                dataSourceInfo.put(master, databaseTypeEnum);
-            } else {
-                this.databaseTypeEnum = dte;
-            }
+            this.databaseTypeEnum = SQLUtils.getDatabaseType(master);
         }
     }
 
