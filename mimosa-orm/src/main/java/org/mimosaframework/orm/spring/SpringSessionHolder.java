@@ -29,7 +29,7 @@ public class SpringSessionHolder implements SessionHolder {
             resource.requested();
         }
 
-        return null;
+        return session;
     }
 
     @Override

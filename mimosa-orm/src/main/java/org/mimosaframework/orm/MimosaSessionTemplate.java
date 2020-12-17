@@ -234,14 +234,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
                 }
                 throw throwable;
             } finally {
-                if (session != null) {
-                    try {
-                        session.close();
-                    } finally {
-                        if (this.sessionHolder != null) {
-                            this.sessionHolder.close();
-                        }
-                    }
+                if (this.sessionHolder != null) {
+                    this.sessionHolder.close();
                 }
             }
             return object;

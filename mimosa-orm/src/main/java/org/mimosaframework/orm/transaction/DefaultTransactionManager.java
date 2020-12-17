@@ -1,8 +1,10 @@
 package org.mimosaframework.orm.transaction;
 
 import org.mimosaframework.orm.SessionFactory;
+import org.mimosaframework.orm.SessionHolder;
 import org.mimosaframework.orm.exception.TransactionException;
 
+import java.util.Collection;
 import java.util.List;
 
 public class DefaultTransactionManager implements TransactionManager {
@@ -15,31 +17,53 @@ public class DefaultTransactionManager implements TransactionManager {
 
     @Override
     public void commit() throws TransactionException {
-        List<Transaction> transactions = TransactionManagerUtils.getTransactions();
-        if (transactions != null) {
-            for (Transaction transaction : transactions) {
-                try {
-                    transaction.commit();
-                } catch (Exception e) {
-                    e.printStackTrace();
+        if (TransactionManagerUtils.countTransactionManager() == 1) {
+            List<Transaction> transactions = TransactionManagerUtils.getTransactions();
+            if (transactions != null) {
+                for (Transaction transaction : transactions) {
+                    try {
+                        transaction.commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            TransactionManagerUtils.remove(this);
+
+            Collection<SessionHolder> sessionHolders = TransactionManagerUtils.getSessionHolders();
+            if (sessionHolders != null) {
+                TransactionManagerUtils.clearSessionHolders();
+                for (SessionHolder sessionHolder : sessionHolders) {
+                    if (sessionHolder != null) {
+                        sessionHolder.close();
+                    }
                 }
             }
         }
-        TransactionManagerUtils.remove(this);
     }
 
     @Override
     public void rollback() throws TransactionException {
-        List<Transaction> transactions = TransactionManagerUtils.getTransactions();
-        if (transactions != null) {
-            for (Transaction transaction : transactions) {
-                try {
-                    transaction.rollback();
-                } catch (Exception e) {
-                    e.printStackTrace();
+        if (TransactionManagerUtils.countTransactionManager() == 1) {
+            List<Transaction> transactions = TransactionManagerUtils.getTransactions();
+            if (transactions != null) {
+                for (Transaction transaction : transactions) {
+                    try {
+                        transaction.rollback();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            TransactionManagerUtils.remove(this);
+
+            Collection<SessionHolder> sessionHolders = TransactionManagerUtils.getSessionHolders();
+            TransactionManagerUtils.clearSessionHolders();
+            for (SessionHolder sessionHolder : sessionHolders) {
+                if (sessionHolder != null) {
+                    sessionHolder.close();
                 }
             }
         }
-        TransactionManagerUtils.remove(this);
     }
 }

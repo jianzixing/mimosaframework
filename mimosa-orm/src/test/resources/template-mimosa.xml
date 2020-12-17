@@ -19,8 +19,8 @@
             <property name="password">12345</property>
             <!--初始化的连接数-->
             <property name="initialSize" value="5"/>
-            <property name="maxActive" value="10000"/>
-            <property name="maxWait" value="60000"/>
+            <property name="maxActive" value="10"/>
+            <property name="maxWait" value="10"/>
             <property name="validationQuery" value="select 1"/>
             <property name="testWhileIdle" value="true"/>
             <property name="timeBetweenEvictionRunsMillis" value="3600000"/>

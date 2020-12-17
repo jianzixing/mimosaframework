@@ -41,8 +41,8 @@ public class SpringContextTesting1 {
     @Test
     public void test2() {
         TransactionManager manager = template.beginTransaction();
+        ModelObject user = new ModelObject(TableUser.class);
         try {
-            ModelObject user = new ModelObject(TableUser.class);
             user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
             template.save(user);
             ModelObject object = template.get(TableUser.class, user.getLong(TableUser.id));
@@ -50,6 +50,31 @@ public class SpringContextTesting1 {
             manager.commit();
         } catch (Exception e) {
             manager.rollback();
+        }
+        user.remove(TableUser.id);
+        user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+        template.save(user);
+        ModelObject object = template.get(TableUser.class, user.getLong(TableUser.id));
+        System.out.println(object);
+    }
+
+    /**
+     * 测试数据链接
+     */
+    @Test
+    public void test3() {
+        for (int i = 0; i < 20; i++) {
+            TransactionManager manager = template.beginTransaction();
+            ModelObject user = new ModelObject(TableUser.class);
+            try {
+                user.put(TableUser.userName, RandomUtils.randomAlphanumericLetter(10));
+                template.save(user);
+                ModelObject object = template.get(TableUser.class, user.getLong(TableUser.id));
+                System.out.println(object);
+                manager.commit();
+            } catch (Exception e) {
+                manager.rollback();
+            }
         }
     }
 }
