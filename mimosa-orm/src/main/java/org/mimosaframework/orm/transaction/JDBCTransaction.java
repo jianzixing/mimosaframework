@@ -37,7 +37,11 @@ public class JDBCTransaction implements Transaction {
     @Override
     public Connection getConnection() throws SQLException {
         if (connection == null) {
-            connection = dataSource.getConnection();
+            synchronized (this) {
+                if (connection == null) {
+                    connection = dataSource.getConnection();
+                }
+            }
         }
         return connection;
     }
@@ -90,9 +94,15 @@ public class JDBCTransaction implements Transaction {
             }
         } finally {
             this.connection.close();
+            this.connection = null;
         }
         if (this.sessionHolder != null && support) {
             this.sessionHolder.close();
         }
+    }
+
+    @Override
+    public Integer getTimeout() throws SQLException {
+        return this.connection.getNetworkTimeout();
     }
 }

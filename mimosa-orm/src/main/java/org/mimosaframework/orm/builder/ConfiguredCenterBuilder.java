@@ -7,6 +7,7 @@ import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.external.ConfiguredCenterInterface;
 import org.mimosaframework.orm.platform.SessionContext;
+import org.mimosaframework.orm.transaction.TransactionFactory;
 
 import javax.sql.DataSource;
 import java.net.MalformedURLException;
@@ -113,6 +114,11 @@ public class ConfiguredCenterBuilder extends AbstractConfigBuilder {
 
     @Override
     public List<MimosaDataSource> getDataSources() {
+        return null;
+    }
+
+    @Override
+    public TransactionFactory getTransactionFactory() {
         return null;
     }
 

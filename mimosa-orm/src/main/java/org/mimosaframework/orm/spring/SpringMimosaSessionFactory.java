@@ -8,10 +8,8 @@ import org.mimosaframework.orm.builder.CenterConfigSetting;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.exception.MimosaException;
-import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.i18n.I18n;
-import org.mimosaframework.orm.transaction.Transaction;
-import org.mimosaframework.orm.transaction.TransactionIsolationType;
+import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -250,6 +248,11 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
             return dslist;
         }
         return null;
+    }
+
+    @Override
+    public TransactionFactory getTransactionFactory() {
+        return new SpringTransactionFactory();
     }
 
     @Override

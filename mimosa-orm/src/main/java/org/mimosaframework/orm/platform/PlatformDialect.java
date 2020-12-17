@@ -72,7 +72,10 @@ public abstract class PlatformDialect implements Dialect {
     }
 
     protected void close(Connection connection) throws SQLException {
-        if (connection != null) {
+        Transaction transaction = this.sessionContext.getTransaction();
+        if (transaction != null && transaction.getConnection() == connection) {
+            transaction.close();
+        } else {
             connection.close();
         }
     }

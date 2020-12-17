@@ -14,4 +14,6 @@ public interface Transaction {
     void rollback() throws SQLException;
 
     void close() throws SQLException;
+
+    Integer getTimeout() throws SQLException;
 }

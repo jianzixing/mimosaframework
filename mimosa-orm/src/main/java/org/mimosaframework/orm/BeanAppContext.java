@@ -9,6 +9,7 @@ import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.CompareMappingFactory;
 import org.mimosaframework.orm.mapping.StartCompareMapping;
+import org.mimosaframework.orm.transaction.TransactionFactory;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.Set;
 
 public class BeanAppContext implements Context {
     private static final Log logger = LogFactory.getLog("init");
-    protected final NormalConfiguration contextValues;
+    protected final NormalConfiguration configuration;
     private SessionFactoryBuilder sessionFactoryBuilder = null;
     private ConfigBuilder configBuilder = null;
 
@@ -25,11 +26,11 @@ public class BeanAppContext implements Context {
     }
 
     public BeanAppContext() {
-        this.contextValues = new NormalConfiguration();
+        this.configuration = new NormalConfiguration();
     }
 
-    public BeanAppContext(NormalConfiguration contextValues) {
-        this.contextValues = contextValues;
+    public BeanAppContext(NormalConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     public BeanAppContext(ConfigBuilder configBuilder) throws ContextException {
@@ -38,13 +39,13 @@ public class BeanAppContext implements Context {
     }
 
     public void setBeanAppContext(ConfigBuilder configBuilder) throws ContextException {
-        this.sessionFactoryBuilder = new MimosaSessionFactoryBuilder(contextValues);
+        this.sessionFactoryBuilder = new MimosaSessionFactoryBuilder(configuration);
         this.configBuilder = configBuilder;
         this.init();
     }
 
     protected void init() throws ContextException {
-        contextValues.setContext(this);
+        configuration.setContext(this);
 
         {
             CenterConfigSetting center = this.configBuilder.getCenterInfo();
@@ -56,11 +57,11 @@ public class BeanAppContext implements Context {
 
         {
             ApplicationSetting applicationInfo = this.configBuilder.getApplication();
-            contextValues.setApplicationName(applicationInfo.getApplicationName());
-            contextValues.setApplicationDetail(applicationInfo.getApplicationDetail());
+            configuration.setApplicationName(applicationInfo.getApplicationName());
+            configuration.setApplicationDetail(applicationInfo.getApplicationDetail());
 
             List<? extends IDStrategy> strategies = this.configBuilder.getStrategies();
-            contextValues.setIdStrategies(strategies);
+            configuration.setIdStrategies(strategies);
 
             System.out.println("" +
                     "------------------------------------------------------------------------------------------------------------\n" +
@@ -72,18 +73,18 @@ public class BeanAppContext implements Context {
         {
             BasicSetting basicInfo = this.configBuilder.getBasicInfo();
             if (basicInfo.getConvert() != null) {
-                contextValues.setConvert(basicInfo.getConvert());
+                configuration.setConvert(basicInfo.getConvert());
             }
-            contextValues.setShowSQL(basicInfo.isShowSQL());
-            contextValues.setMappingLevel(basicInfo.getMappingLevel());
+            configuration.setShowSQL(basicInfo.isShowSQL());
+            configuration.setMappingLevel(basicInfo.getMappingLevel());
             if (basicInfo.isIgnoreEmptySlave() != null) {
-                contextValues.setIgnoreEmptySlave(basicInfo.isIgnoreEmptySlave());
+                configuration.setIgnoreEmptySlave(basicInfo.isIgnoreEmptySlave());
             }
             if (StringTools.isNotEmpty(basicInfo.getTablePrefix())) {
-                contextValues.setTablePrefix(basicInfo.getTablePrefix());
+                configuration.setTablePrefix(basicInfo.getTablePrefix());
             }
 
-            contextValues.setInterceptSession(basicInfo.getInterceptSession());
+            configuration.setInterceptSession(basicInfo.getInterceptSession());
         }
 
         {
@@ -93,25 +94,29 @@ public class BeanAppContext implements Context {
             } catch (SQLException e) {
                 throw new ContextException(I18n.print("get_ds_list_fail"), e);
             }
+            TransactionFactory transactionFactory = this.configBuilder.getTransactionFactory();
+            if (transactionFactory != null) {
+                configuration.setTransactionFactory(transactionFactory);
+            }
             if (dslist != null) {
                 for (MimosaDataSource ds : dslist) {
-                    contextValues.addMimosaDataSource(ds);
+                    configuration.addMimosaDataSource(ds);
                 }
             }
         }
 
         {
             Set<Class> resolvers = this.configBuilder.getResolvers();
-            contextValues.setDisassembleResolvers(resolvers);
+            configuration.setDisassembleResolvers(resolvers);
         }
 
         {
             List<String> mappers = this.configBuilder.getMappers();
-            contextValues.setMappers(mappers);
+            configuration.setMappers(mappers);
         }
 
         this.checkDBMapping();
-        ModelObject.addChecker(new ModelMeasureChecker(contextValues.getMappingTables()));
+        ModelObject.addChecker(new ModelMeasureChecker(configuration.getMappingTables()));
     }
 
     @Override
@@ -122,9 +127,9 @@ public class BeanAppContext implements Context {
     protected void checkDBMapping() throws ContextException {
         try {
             StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
-                    contextValues.getMappingLevel(),
-                    contextValues.mappingGlobalWrapper,
-                    contextValues.newSessionContext(MimosaDataSource.DEFAULT_DS_NAME, false)
+                    configuration.getMappingLevel(),
+                    configuration.mappingGlobalWrapper,
+                    configuration.newSessionContext(MimosaDataSource.DEFAULT_DS_NAME, false)
             );
             compareMapping.doMapping();
         } catch (SQLException e) {

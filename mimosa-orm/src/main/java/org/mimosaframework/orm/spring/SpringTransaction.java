@@ -2,8 +2,6 @@ package org.mimosaframework.orm.spring;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mimosaframework.orm.MimosaDataSource;
-import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -38,9 +36,8 @@ public class SpringTransaction implements Transaction {
         return this.connection;
     }
 
-    
     @Override
-    public void begin() throws TransactionException {
+    public void begin() {
 
     }
 
@@ -58,7 +55,7 @@ public class SpringTransaction implements Transaction {
         }
     }
 
-    public void commit() throws TransactionException {
+    public void commit() {
         if (this.connection != null && !this.isConnectionTransactional && !this.autoCommit) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Committing JDBC Connection [" + this.connection + "]");
@@ -73,7 +70,7 @@ public class SpringTransaction implements Transaction {
 
     }
 
-    public void rollback() throws TransactionException {
+    public void rollback() {
         if (this.connection != null && !this.isConnectionTransactional && !this.autoCommit) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Rolling back JDBC Connection [" + this.connection + "]");
@@ -88,11 +85,11 @@ public class SpringTransaction implements Transaction {
 
     }
 
-    public void close() throws TransactionException {
+    public void close() {
         DataSourceUtils.releaseConnection(this.connection, this.dataSource);
     }
 
-    public Integer getTimeout() throws SQLException {
+    public Integer getTimeout() {
         ConnectionHolder holder = (ConnectionHolder) TransactionSynchronizationManager.getResource(this.dataSource);
         return holder != null && holder.hasTimeout() ? holder.getTimeToLiveInSeconds() : null;
     }

@@ -9,6 +9,7 @@ import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -574,6 +575,12 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
             dataSources.add(iterator.next().getValue());
         }
         return dataSources;
+    }
+
+    @Override
+    public TransactionFactory getTransactionFactory() {
+        // 不返回则使用默认的
+        return null;
     }
 
     @Override
