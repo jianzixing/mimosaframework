@@ -1,11 +1,10 @@
 package org.mimosaframework.orm.spring;
 
+import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.TransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-
-import java.sql.SQLException;
 
 public class SpringTransactionManager implements TransactionManager {
     private PlatformTransactionManager transactionManager;
@@ -20,12 +19,12 @@ public class SpringTransactionManager implements TransactionManager {
     }
 
     @Override
-    public void commit() throws SQLException {
+    public void commit() throws TransactionException {
         this.transactionManager.commit(status);
     }
 
     @Override
-    public void rollback() throws SQLException {
+    public void rollback() throws TransactionException {
         this.transactionManager.rollback(status);
     }
 }

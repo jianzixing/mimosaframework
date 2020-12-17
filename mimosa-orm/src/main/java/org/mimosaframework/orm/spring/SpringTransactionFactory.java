@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.spring;
 
+import org.mimosaframework.orm.SessionFactory;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.mimosaframework.orm.transaction.TransactionManager;
@@ -24,7 +25,7 @@ public class SpringTransactionFactory implements TransactionFactory {
     }
 
     @Override
-    public TransactionManager newTransactionManager(Object config) {
+    public TransactionManager newTransactionManager(SessionFactory sessionFactory, Object config) {
         if (config instanceof TransactionDefinition) {
             return new SpringTransactionManager(transactionManager, (TransactionDefinition) config);
         }

@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.transaction;
 
+import org.mimosaframework.orm.SessionFactory;
+
 import javax.sql.DataSource;
 
 public class DefaultTransactionFactory implements TransactionFactory {
@@ -9,7 +11,7 @@ public class DefaultTransactionFactory implements TransactionFactory {
     }
 
     @Override
-    public TransactionManager newTransactionManager(Object config) {
-        return new DefaultTransactionManager();
+    public TransactionManager newTransactionManager(SessionFactory sessionFactory, Object config) {
+        return new DefaultTransactionManager(sessionFactory);
     }
 }

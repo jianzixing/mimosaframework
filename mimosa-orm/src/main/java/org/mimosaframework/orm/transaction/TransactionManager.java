@@ -1,9 +1,9 @@
 package org.mimosaframework.orm.transaction;
 
-import java.sql.SQLException;
+import org.mimosaframework.orm.exception.TransactionException;
 
 public interface TransactionManager {
-    void commit() throws SQLException;
+    void commit() throws TransactionException;
 
-    void rollback() throws SQLException;
+    void rollback() throws TransactionException;
 }

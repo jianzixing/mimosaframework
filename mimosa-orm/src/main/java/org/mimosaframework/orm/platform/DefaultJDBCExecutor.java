@@ -7,6 +7,7 @@ import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.criteria.Keyword;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.Transaction;
+import org.mimosaframework.orm.transaction.TransactionManagerUtils;
 import org.mimosaframework.orm.utils.SQLUtils;
 
 import java.sql.*;
@@ -61,7 +62,10 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
         if (this.isMaster) {
             Transaction transaction = this.sessionContext.getTransaction();
             if (transaction != null) {
-                return transaction.getConnection();
+                Connection connection = transaction.getConnection();
+                // 如果存在事务则加入到mimosa实现的事务中去
+                TransactionManagerUtils.bindIfTransactional(transaction);
+                return connection;
             } else {
                 throw new NullPointerException("execute sql but can't get connection with miss transaction object");
             }

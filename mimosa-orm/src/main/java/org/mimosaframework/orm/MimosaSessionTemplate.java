@@ -192,7 +192,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
     public TransactionManager beginTransaction(Object config) {
         Configuration configuration = sessionFactory.getConfiguration();
         TransactionFactory transactionFactory = configuration.getTransactionFactory();
-        return transactionFactory.newTransactionManager(config);
+        return transactionFactory.newTransactionManager(sessionFactory, config);
     }
 
     private class SessionInterceptor implements InvocationHandler {
