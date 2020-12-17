@@ -292,6 +292,11 @@ public class LanguageMessageDefault implements MessagesRegister {
         // SpringTransactionManager
         words.put("spring_trans_manager_miss", "请先开启Spring事务后再使用事务");
 
+        // DefaultTransactionManager
+        words.put("trans_is_rollback", "事务已经回滚不允许再提交或者回滚");
+        words.put("trans_is_commit", "事务已经提交不允许再提交或者回滚");
+        words.put("trans_is_mark_rollback", "事务已被标记为回滚不允许再提交");
+
         messageWords.add(new MessageWords(PROJECT, words));
     }
 

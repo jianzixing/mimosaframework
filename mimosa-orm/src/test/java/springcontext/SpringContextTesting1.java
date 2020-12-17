@@ -77,4 +77,72 @@ public class SpringContextTesting1 {
             }
         }
     }
+
+
+    /**
+     * 测试Spring的编程试事务，事务嵌套
+     */
+    @Test
+    public void test4() {
+        TransactionManager transactionManager = template.beginTransaction();
+        ModelObject user = new ModelObject(TableUser.class);
+        ModelObject user2 = new ModelObject(TableUser.class);
+        try {
+            user.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+            user.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+            template.save(user);
+
+            TransactionManager transactionManager2 = template.beginTransaction();
+            try {
+                user2.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+                user2.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+                template.save(user2);
+                transactionManager2.commit();
+            } catch (Exception e) {
+                transactionManager2.rollback();
+            }
+            transactionManager.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            transactionManager.rollback();
+        }
+        user = template.get(TableUser.class, user.getLong(TableUser.id));
+        System.out.println(user);
+        user = template.get(TableUser.class, user2.getLong(TableUser.id));
+        System.out.println(user);
+    }
+
+    /**
+     * 多层事务测试回滚
+     */
+    @Test
+    public void test5() {
+        TransactionManager transactionManager = template.beginTransaction();
+        ModelObject user = new ModelObject(TableUser.class);
+        ModelObject user2 = new ModelObject(TableUser.class);
+        try {
+            user.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+            user.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+            template.save(user);
+
+            TransactionManager transactionManager2 = template.beginTransaction();
+            try {
+                user2.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+                user2.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+                template.save(user2);
+                if (true) throw new Exception("");
+                transactionManager2.commit();
+            } catch (Exception e) {
+                transactionManager2.rollback();
+            }
+            transactionManager.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            transactionManager.rollback();
+        }
+        user = template.get(TableUser.class, user.getLong(TableUser.id));
+        System.out.println(user);
+        user = template.get(TableUser.class, user2.getLong(TableUser.id));
+        System.out.println(user);
+    }
 }

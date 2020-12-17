@@ -6,10 +6,15 @@ import org.mimosaframework.orm.SessionHolder;
 import java.sql.SQLException;
 import java.util.*;
 
+// 事务资源管理器
 public class TransactionManagerUtils {
+    // 每个事务API管理器，只要新建了TransactionManager就视为开始了事务
     private static final ThreadLocal<List<TransactionManager>> resources = new ThreadLocal<>();
+    // 每个Session对应的事务资源管理器，其实和holders可以合并，前提是单机情况，如果有多数据源则必须这样
     private static final ThreadLocal<List<Transaction>> transactions = new ThreadLocal<>();
+    // Session资源管理器
     private static final ThreadLocal<Map<SessionFactory, SessionHolder>> holders = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> rollbackMark = new ThreadLocal<>();
 
     public static void register(TransactionManager transactionManager) {
         List<TransactionManager> list = resources.get();
@@ -20,7 +25,7 @@ public class TransactionManagerUtils {
         list.add(transactionManager);
     }
 
-    public static int remove(TransactionManager transactionManager) {
+    public static int release(TransactionManager transactionManager) {
         List<TransactionManager> list = resources.get();
         if (list != null) {
             list.remove(transactionManager);
@@ -31,6 +36,19 @@ public class TransactionManagerUtils {
             return size;
         }
         return 0;
+    }
+
+    public static void markRollback() {
+        rollbackMark.set(true);
+    }
+
+    public static boolean isMarkRollback() {
+        Boolean bool = rollbackMark.get();
+        return bool != null && bool ? true : false;
+    }
+
+    public static void clearMarkRollback() {
+        rollbackMark.remove();
     }
 
     public static boolean isTransactional() {
@@ -87,5 +105,13 @@ public class TransactionManagerUtils {
 
     public static int countTransactionManager() {
         return resources.get() != null ? resources.get().size() : 0;
+    }
+
+    public static boolean hasTransactionManager(DefaultTransactionManager transactionManager) {
+        List<TransactionManager> list = resources.get();
+        if (list != null) {
+            return list.indexOf(transactionManager) >= 0;
+        }
+        return false;
     }
 }
