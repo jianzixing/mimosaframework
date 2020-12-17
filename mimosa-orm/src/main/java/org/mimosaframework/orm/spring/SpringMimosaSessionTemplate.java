@@ -18,7 +18,7 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
 
     public void setFactory(SpringMimosaSessionFactory factory) {
         this.factory = factory;
-        this.sessionTemplate = new MimosaSessionTemplate(new SpringSessionHolder());
+        this.sessionTemplate = new MimosaSessionTemplate((SessionHolder) null);
         this.sessionTemplate.setSessionFactory(factory);
     }
 

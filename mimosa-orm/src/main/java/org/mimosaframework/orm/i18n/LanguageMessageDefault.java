@@ -289,6 +289,9 @@ public class LanguageMessageDefault implements MessagesRegister {
         // MimosaSessionFactory
         words.put("create_new_session_error", "创建一个新的Session对象出错");
 
+        // SpringTransactionManager
+        words.put("spring_trans_manager_miss", "请先开启Spring事务后再使用事务");
+
         messageWords.add(new MessageWords(PROJECT, words));
     }
 

@@ -19,7 +19,7 @@ public class SpringTransaction implements Transaction {
     private Connection connection;
     // 如果是SpringTX管理的事务则为true
     private boolean isConnectionTransactional;
-    private boolean autoCommit;
+    private boolean autoCommit = true;
 
     public SpringTransaction(DataSource dataSource) {
         Assert.notNull(dataSource, "No DataSource specified");
@@ -52,8 +52,7 @@ public class SpringTransaction implements Transaction {
         }
 
         if (!this.isConnectionTransactional) {
-            this.connection.setAutoCommit(false);
-            this.autoCommit = false;
+            // 如果Spring已经开启了事务则什么都不做
         }
     }
 

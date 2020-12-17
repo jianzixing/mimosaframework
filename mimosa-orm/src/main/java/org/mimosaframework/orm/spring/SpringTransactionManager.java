@@ -1,10 +1,12 @@
 package org.mimosaframework.orm.spring;
 
 import org.mimosaframework.orm.exception.TransactionException;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.TransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.util.Assert;
 
 public class SpringTransactionManager implements TransactionManager {
     private PlatformTransactionManager transactionManager;
@@ -13,6 +15,7 @@ public class SpringTransactionManager implements TransactionManager {
 
     public SpringTransactionManager(PlatformTransactionManager transactionManager,
                                     TransactionDefinition transactionDefinition) {
+        Assert.notNull(transactionManager, I18n.print("spring_trans_manager_miss"));
         this.transactionManager = transactionManager;
         this.transactionDefinition = transactionDefinition;
         status = transactionManager.getTransaction(transactionDefinition);

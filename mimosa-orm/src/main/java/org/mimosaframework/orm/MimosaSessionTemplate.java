@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.List;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
@@ -204,7 +203,13 @@ public class MimosaSessionTemplate implements SessionTemplate {
 
         public synchronized SessionHolder getSessionHolder() {
             if (this.sessionHolder == null) {
-                this.sessionHolder = new SimpleSessionHolder();
+                Configuration configuration = sessionFactory.getConfiguration();
+                TransactionFactory transactionFactory = configuration.getTransactionFactory();
+                if (transactionFactory != null) {
+                    this.sessionHolder = transactionFactory.newSessionHolder();
+                } else {
+                    this.sessionHolder = new SimpleSessionHolder();
+                }
             }
             return sessionHolder;
         }

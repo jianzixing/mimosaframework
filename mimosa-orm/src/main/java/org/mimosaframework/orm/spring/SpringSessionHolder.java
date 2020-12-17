@@ -19,9 +19,8 @@ public class SpringSessionHolder implements SessionHolder {
         }
 
         Session session = factory.openSession();
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-
-            // todo:是否创建一个SpringManagedTransactionFactory管理Transaction需要的话这里判断配置文件
+        if (TransactionSynchronizationManager.isSynchronizationActive()
+                && factory.getConfiguration().getTransactionFactory() instanceof SpringTransactionFactory) {
             resource = new SessionHolderResource(session);
             TransactionSynchronizationManager.bindResource(factory, resource);
             TransactionSynchronizationManager

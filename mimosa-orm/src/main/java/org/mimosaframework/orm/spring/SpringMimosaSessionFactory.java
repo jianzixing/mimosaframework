@@ -12,6 +12,7 @@ import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -64,7 +65,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
      */
     private PlatformTransactionManager transactionManager;
 
-    @Resource
+    @Autowired(required = false)
     public void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
@@ -142,7 +143,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     }
 
     public void addDataSourceBundle(MimosaDataSource defaultDataSource) {
-        
+
     }
 
     public void setDataSource(DataSource dataSource) throws SQLException {
