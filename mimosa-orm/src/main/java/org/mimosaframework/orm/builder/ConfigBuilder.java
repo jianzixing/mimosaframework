@@ -12,8 +12,6 @@ import java.util.Set;
 public interface ConfigBuilder {
     ApplicationSetting getApplication();
 
-    CenterConfigSetting getCenterInfo() throws ContextException;
-
     List<MimosaDataSource> getDataSources() throws SQLException;
 
     TransactionFactory getTransactionFactory();

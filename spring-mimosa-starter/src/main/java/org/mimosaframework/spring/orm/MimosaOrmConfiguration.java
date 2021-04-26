@@ -2,11 +2,10 @@ package org.mimosaframework.spring.orm;
 
 import org.mimosaframework.orm.spring.SpringMimosaSessionFactory;
 import org.mimosaframework.orm.spring.SpringMimosaSessionTemplate;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,12 +13,16 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
+/**
+ * 由于使用了@ConditionalOnSingleCandidate(DataSource.class)这个注解
+ * 需要引用spring-boot-starter-jdbc启动器才可以成功
+ */
 @Configuration
 @ConditionalOnClass({SpringMimosaSessionFactory.class, SpringMimosaSessionTemplate.class})
-@ConditionalOnBean({DataSource.class})
+@ConditionalOnSingleCandidate(DataSource.class)
 @EnableConfigurationProperties({MimosaOrmProperties.class})
 @AutoConfigureAfter({DataSourceAutoConfiguration.class})
-public class MimosaOrmConfiguration {
+public class MimosaOrmConfiguration implements InitializingBean {
 
     @Autowired
     private MimosaOrmProperties mimosaOrmProperties;
@@ -46,5 +49,10 @@ public class MimosaOrmConfiguration {
         SpringMimosaSessionTemplate springMimosaSessionTemplate = new SpringMimosaSessionTemplate();
         springMimosaSessionTemplate.setFactory(mimosaSessionFactory);
         return springMimosaSessionTemplate;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
     }
 }

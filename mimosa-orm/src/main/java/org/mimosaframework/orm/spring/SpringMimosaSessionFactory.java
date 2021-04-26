@@ -237,11 +237,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         return this.applicationSetting;
     }
 
-    @Override
-    public CenterConfigSetting getCenterInfo() throws ContextException {
-        return this.centerConfigSetting;
-    }
-
     public void setDataSources(List<MimosaDataSource> dataSources) {
         if (dataSources != null) {
             this.dataSources.addAll(dataSources);

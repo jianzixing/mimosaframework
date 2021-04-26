@@ -46,15 +46,7 @@ public class BeanAppContext implements Context {
 
     protected void init() throws ContextException {
         configuration.setContext(this);
-
-        {
-            CenterConfigSetting center = this.configBuilder.getCenterInfo();
-            if (center != null && center.valid()) {
-                // 从配置中心拉取配置
-                this.configBuilder = new ConfiguredCenterBuilder();
-            }
-        }
-
+        
         {
             ApplicationSetting applicationInfo = this.configBuilder.getApplication();
             configuration.setApplicationName(applicationInfo.getApplicationName());

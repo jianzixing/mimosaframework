@@ -531,43 +531,6 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     }
 
     @Override
-    public CenterConfigSetting getCenterInfo() throws ContextException {
-        if (this.configCenterInfo != null) {
-            return this.configCenterInfo;
-        }
-        for (int i = 0; i < root.getLength(); i++) {
-            Node node = root.item(i);
-            NodeList levelOneList = node.getChildNodes();
-
-            configCenterInfo = new CenterConfigSetting();
-            for (int j = 0; j < levelOneList.getLength(); j++) {
-                Node item = levelOneList.item(j);
-                if (item.getNodeName().equalsIgnoreCase("center")) {
-                    String centerHost = this.getXmlNodeAny(item, "server");
-                    String centerPort = this.getXmlNodeAny(item, "port");
-                    String centerClientName = this.getXmlNodeAny(item, "clientName");
-
-                    if (StringTools.isEmpty(centerHost)
-                            || StringTools.isEmpty(centerPort)
-                            || StringTools.isEmpty(centerClientName)) {
-                        throw new ContextException(I18n.print("must_center_info"));
-                    }
-
-                    if (!StringTools.isNumber(centerPort)) {
-                        throw new ContextException(I18n.print("must_center_info_port"));
-                    }
-
-                    configCenterInfo.setCenterHost(centerHost);
-                    configCenterInfo.setCenterPort(Integer.parseInt(centerPort));
-                    configCenterInfo.setClientName(centerClientName);
-                }
-
-            }
-        }
-        return configCenterInfo;
-    }
-
-    @Override
     public List<MimosaDataSource> getDataSources() {
         List<MimosaDataSource> dataSources = new ArrayList<>();
         Iterator<Map.Entry<String, MimosaDataSource>> iterator = this.wrappers.entrySet().iterator();

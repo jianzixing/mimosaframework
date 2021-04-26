@@ -223,7 +223,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         }
 
         mappingField.setMappingColumnName(columnName);
-        if (column.pk() && column.strategy() == AutoIncrementStrategy.class) {
+        if (column.pk() && column.type() == String.class && column.length() == 255) {
+            // 如果是主键且没有配置
             mappingField.setMappingFieldType(long.class);
         } else {
             mappingField.setMappingFieldType(column.type());
