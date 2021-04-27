@@ -28,6 +28,10 @@ public interface Join extends Filter<Join> {
 
     Join multiple();
 
+    Join ignore();
+
+    Join ignore(boolean is);
+
     Join sort(OrderBy order);
 
     Join sort(Object field, boolean isAsc);

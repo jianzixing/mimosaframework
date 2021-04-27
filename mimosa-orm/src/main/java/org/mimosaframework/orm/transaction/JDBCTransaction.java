@@ -93,8 +93,10 @@ public class JDBCTransaction implements Transaction {
                 }
             }
         } finally {
-            this.connection.close();
-            this.connection = null;
+            if (this.connection != null) {
+                this.connection.close();
+                this.connection = null;
+            }
         }
         if (this.sessionHolder != null && support) {
             this.sessionHolder.close();
@@ -103,6 +105,9 @@ public class JDBCTransaction implements Transaction {
 
     @Override
     public Integer getTimeout() throws SQLException {
-        return this.connection.getNetworkTimeout();
+        if (this.connection != null) {
+            return this.connection.getNetworkTimeout();
+        }
+        return null;
     }
 }

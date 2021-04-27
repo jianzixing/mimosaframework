@@ -42,6 +42,11 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         return sessionFactory;
     }
 
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+        modelSession.setSessionFactory(sessionFactory);
+    }
+
     @Override
     public <T> T save(T obj) {
         Object json = ModelObject.toJSON(obj);

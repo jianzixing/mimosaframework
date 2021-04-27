@@ -1,9 +1,7 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.criteria.Criteria;
-import org.mimosaframework.orm.criteria.Delete;
-import org.mimosaframework.orm.criteria.Update;
+import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;

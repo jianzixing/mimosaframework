@@ -21,6 +21,10 @@ public class DefaultJoin implements Join {
      * a:{} 和 a:[{}]
      */
     private boolean isMulti = true;
+    /**
+     * 是否忽略，如果忽略则会将其所有的子join的值全部移动到父join中
+     */
+    private boolean ignore = false;
     private Join parentJoin;
     private Set<Join> childJoin;
 
@@ -87,6 +91,10 @@ public class DefaultJoin implements Join {
 
     public void setJoinType(int joinType) {
         this.joinType = joinType;
+    }
+
+    public boolean isIgnore() {
+        return ignore;
     }
 
     @Override
@@ -176,6 +184,18 @@ public class DefaultJoin implements Join {
     @Override
     public Join multiple() {
         this.isMulti = true;
+        return this;
+    }
+
+    @Override
+    public Join ignore() {
+        this.ignore = true;
+        return this;
+    }
+
+    @Override
+    public Join ignore(boolean is) {
+        this.ignore = is;
         return this;
     }
 
