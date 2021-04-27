@@ -1,4 +1,4 @@
-package org.mimosaframework.core.monitor.jvm;
+package org.mimosaframework.core.utils.jvm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

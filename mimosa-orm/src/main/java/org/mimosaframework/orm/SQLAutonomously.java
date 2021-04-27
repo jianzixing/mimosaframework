@@ -118,19 +118,19 @@ public class SQLAutonomously implements Serializable {
     }
 
     public void add(String dataSourceName, String sql) {
-        AssistUtils.notNull(dataSourceName, I18n.print("not_empty"));
+        AssistUtils.isNull(dataSourceName, I18n.print("not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql));
     }
 
     public void add(String dataSourceName, String sql, boolean isMaster) {
-        AssistUtils.notNull(dataSourceName, I18n.print("not_empty"));
+        AssistUtils.isNull(dataSourceName, I18n.print("not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql, isMaster));
     }
 
     public void add(String dataSourceName, String sql, String slaveName) {
-        AssistUtils.notNull(dataSourceName, I18n.print("not_empty"));
+        AssistUtils.isNull(dataSourceName, I18n.print("not_empty"));
         if (dataSourceLinks == null) dataSourceLinks = new ArrayList<>();
         dataSourceLinks.add(new LinkAutonomously(dataSourceName, sql, slaveName));
     }

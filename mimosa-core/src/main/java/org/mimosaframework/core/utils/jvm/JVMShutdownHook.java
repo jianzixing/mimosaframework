@@ -1,4 +1,4 @@
-package org.mimosaframework.core.monitor.jvm;
+package org.mimosaframework.core.utils.jvm;
 
 public interface JVMShutdownHook {
     String getName();

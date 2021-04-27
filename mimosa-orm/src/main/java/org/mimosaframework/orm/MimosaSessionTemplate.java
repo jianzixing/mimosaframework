@@ -219,7 +219,7 @@ public class MimosaSessionTemplate implements SessionTemplate {
             if (this.sessionHolder == null) {
                 this.getSessionHolder();
             }
-            AssistUtils.notNull(sessionFactory, I18n.print("must_set_factory"));
+            AssistUtils.isNull(sessionFactory, I18n.print("must_set_factory"));
             Session session = this.sessionHolder.getSession(sessionFactory);
             Object object = null;
             try {

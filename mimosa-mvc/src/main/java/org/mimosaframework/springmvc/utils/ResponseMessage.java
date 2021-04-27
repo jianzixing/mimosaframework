@@ -2,10 +2,9 @@ package org.mimosaframework.springmvc.utils;
 
 import org.mimosaframework.core.exception.ModelCheckerException;
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.utils.i18n.Messages;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.springmvc.exception.ModuleException;
+import org.mimosaframework.core.exception.ModuleException;
 import org.mimosaframework.springmvc.exception.StockCode;
 import org.mimosaframework.springmvc.i18n.I18n;
 
@@ -68,7 +67,7 @@ public class ResponseMessage {
 
     public ResponseMessage(Object data) {
         if (data instanceof ModuleException) {
-            this.code = ((ModuleException) data).getCode().getCode();
+            this.code = ((ModuleException) data).getCode();
             this.msg = ((ModuleException) data).getMessage();
             ((ModuleException) data).printStackTrace();
         } else if (data instanceof ModelCheckerException) {
@@ -85,12 +84,12 @@ public class ResponseMessage {
                 c++;
                 if (c > 10) break;
                 causedBy = causedBy.getCause();
+                if (causedBy == null) break;
                 if (causedBy instanceof IllegalStateException) {
                     continue;
                 }
                 String msg = causedBy.getMessage();
                 if (StringTools.isNotEmpty(msg)) break;
-                if (causedBy == null) break;
             }
             if (!this.setMatchMessage(causedBy)) {
                 this.msg = I18n.print("access_fail") + "," + causedBy.getClass().getSimpleName() +

@@ -65,7 +65,7 @@ public class MimosaHandlerMethodExceptionResolver extends ExceptionHandlerExcept
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                return null;
+                return new ModelAndView();
             }
         }
         return super.doResolveHandlerMethodException(request, response, handler, e);

@@ -17,6 +17,15 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.annotation.Resource;
 
+/**
+ * 使用方法，直接在SpringBootApplication的同级目录下编写类
+ * <p>
+ * \@Configuration
+ * public class MimosaAPIConfig extends MimosaMvcConfiguration {
+ * }
+ * <p>
+ * 即可
+ */
 @Configuration
 @ConditionalOnClass({RequestMappingHandlerMapping.class, RequestMappingHandlerAdapter.class})
 @ConditionalOnBean({MimosaSessionTemplate.class})

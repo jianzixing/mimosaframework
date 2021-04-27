@@ -66,7 +66,7 @@ public class MimosaHandlerExceptionResolver extends SimpleMappingExceptionResolv
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                return null;
+                return new ModelAndView();
             }
         }
         return super.doResolveException(httpServletRequest, response, handler, e);

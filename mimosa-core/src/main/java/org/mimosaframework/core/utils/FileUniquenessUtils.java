@@ -16,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.zip.CRC32;
 
 /**
+ * 获取文件的md5或者sha1的值
+ *
  * @author yangankang
  */
 public class FileUniquenessUtils {

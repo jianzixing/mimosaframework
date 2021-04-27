@@ -62,7 +62,7 @@ public class DefaultSession implements Session {
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, obj);
         SessionUtils.clearPkZeroModelObject(this.mappingGlobalWrapper, c, obj);
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         // 开始类型矫正
         TypeCorrectUtils.correct(obj, mappingTable);
@@ -101,7 +101,7 @@ public class DefaultSession implements Session {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         Query query = Criteria.query(c);
@@ -162,7 +162,7 @@ public class DefaultSession implements Session {
             if (mappingTable == null) {
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
             }
-            AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+            AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
             try {
                 StrategyFactory.applyStrategy(this.context, mappingTable, object, this);
@@ -198,7 +198,7 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException(I18n.print("miss_table_class"));
         }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         updateSkipReset.skip(obj, mappingTable);
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, obj.getObjectClass(), obj);
@@ -237,7 +237,7 @@ public class DefaultSession implements Session {
         }
         Class c = u.getTableClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         int count = 0;
         try {
@@ -254,7 +254,7 @@ public class DefaultSession implements Session {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         if (!SessionUtils.checkPrimaryKey(mappingTable.getMappingPrimaryKeyFields(), obj)) {
             throw new IllegalArgumentException(I18n.print("delete_id"));
@@ -284,7 +284,7 @@ public class DefaultSession implements Session {
 
         Class c = d.getTableClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         try {
             return executor.delete(mappingTable, d);
@@ -296,7 +296,7 @@ public class DefaultSession implements Session {
     @Override
     public void delete(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
 
@@ -312,7 +312,7 @@ public class DefaultSession implements Session {
     @Override
     public ModelObject get(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         if (pks.size() != 1) {
@@ -405,7 +405,7 @@ public class DefaultSession implements Session {
     @Override
     public ZipperTable<ModelObject> getZipperTable(Class c) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         MimosaDataSource ds = this.sessionContext.getDataSource();
         return new SingleZipperTable<ModelObject>(context, c, ds, mappingTable.getMappingTableName());
@@ -422,7 +422,7 @@ public class DefaultSession implements Session {
             throw new IllegalArgumentException(I18n.print("not_found_query"));
         }
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(f.getTableClass());
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", f.getTableClass().getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", f.getTableClass().getName()));
 
         Set<MappingField> fields = mappingTable.getMappingFields();
         Iterator<FunctionField> iterator = f.getFuns().iterator();
@@ -528,7 +528,7 @@ public class DefaultSession implements Session {
         List<DataSourceTableName> names = new ArrayList<>();
 
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
-        AssistUtils.notNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+        AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         DataSourceTableName dataSourceTableName = new DataSourceTableName(mimosaDataSource.getName(), mappingTable.getMappingTableName());
         if (mimosaDataSource.getSlaves() != null) {
