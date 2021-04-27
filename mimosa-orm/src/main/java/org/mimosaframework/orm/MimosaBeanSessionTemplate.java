@@ -24,17 +24,22 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     private Model2BeanFactory model2BeanFactory = new ModelObjectToBean();
     private SessionFactory sessionFactory;
 
-    public SessionFactory getSessionFactory() {
-        return sessionFactory;
+    public MimosaBeanSessionTemplate() {
     }
 
-    public void setModel2BeanFactory(Model2BeanFactory model2BeanFactory) {
-        this.model2BeanFactory = model2BeanFactory;
-    }
-
-    public void setSessionFactory(SessionFactory sessionFactory) {
+    public MimosaBeanSessionTemplate(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
         modelSession.setSessionFactory(sessionFactory);
+    }
+
+    public MimosaBeanSessionTemplate(SessionFactory sessionFactory, Model2BeanFactory model2BeanFactory) {
+        this.model2BeanFactory = model2BeanFactory;
+        this.sessionFactory = sessionFactory;
+        modelSession.setSessionFactory(sessionFactory);
+    }
+
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 
     @Override

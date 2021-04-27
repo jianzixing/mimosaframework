@@ -1,5 +1,6 @@
 package org.mimosaframework.spring.orm;
 
+import org.mimosaframework.orm.spring.SpringBeanSessionTemplate;
 import org.mimosaframework.orm.spring.SpringMimosaSessionFactory;
 import org.mimosaframework.orm.spring.SpringMimosaSessionTemplate;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,6 +48,14 @@ public class MimosaOrmConfiguration implements InitializingBean {
     @ConditionalOnMissingBean
     public SpringMimosaSessionTemplate mimosaSessionTemplate(SpringMimosaSessionFactory mimosaSessionFactory) {
         SpringMimosaSessionTemplate springMimosaSessionTemplate = new SpringMimosaSessionTemplate();
+        springMimosaSessionTemplate.setFactory(mimosaSessionFactory);
+        return springMimosaSessionTemplate;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringBeanSessionTemplate mimosaBeanSessionTemplate(SpringMimosaSessionFactory mimosaSessionFactory) {
+        SpringBeanSessionTemplate springMimosaSessionTemplate = new SpringBeanSessionTemplate();
         springMimosaSessionTemplate.setFactory(mimosaSessionFactory);
         return springMimosaSessionTemplate;
     }
