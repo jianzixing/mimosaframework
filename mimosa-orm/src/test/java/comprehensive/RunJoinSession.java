@@ -57,8 +57,8 @@ public class RunJoinSession {
         List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
                 .subjoin(
                         Criteria.inner(TablePay.class)
-                                .subjoin(Criteria.left(TableOrder.class).on(TablePay.userId, TableOrder.userId).aliasName("orders"))
-                                .on(TableUser.id, TablePay.userId).single().aliasName("pays")
+                                .subjoin(Criteria.left(TableOrder.class).on(TableOrder.userId, TablePay.userId).aliasName("orders"))
+                                .on(TablePay.userId, TableUser.id).single().aliasName("pays")
                 )
                 .limit(0, 20));
         System.out.println(objects);
@@ -67,9 +67,21 @@ public class RunJoinSession {
     @Test
     public void testInnerJoinNoLimit() {
         List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
-                .subjoin(Criteria.inner(TablePay.class).on(TableUser.id, TablePay.userId).single().aliasName("pays"))
+                .subjoin(Criteria.inner(TablePay.class).on(TablePay.userId, TableUser.id).single().aliasName("pays"))
                 .gte(TableUser.id, 1).lte(TableUser.id, 20));
         System.out.println(objects.size());
+        System.out.println(objects);
+    }
+
+    @Test
+    public void testIgnore() {
+        List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
+                .subjoin(
+                        Criteria.inner(TablePay.class)
+                                .subjoin(Criteria.left(TableOrder.class).on(TablePay.userId, TableOrder.userId).aliasName("orders"))
+                                .on(TablePay.userId, TableUser.id).ignore().single().aliasName("pays")
+                )
+                .limit(0, 3));
         System.out.println(objects);
     }
 }

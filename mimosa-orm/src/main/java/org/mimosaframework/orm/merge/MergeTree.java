@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.merge;
 
+import org.mimosaframework.orm.criteria.DefaultJoin;
 import org.mimosaframework.orm.criteria.Join;
 import org.mimosaframework.orm.platform.SelectFieldAliasReference;
 
@@ -114,6 +115,10 @@ public class MergeTree {
 
     public void setMulti(boolean multi) {
         isMulti = multi;
+    }
+
+    public boolean isIgnore() {
+        return join != null && ((DefaultJoin) join).isIgnore();
     }
 
     public void setChildren(List<MergeTree> children) {

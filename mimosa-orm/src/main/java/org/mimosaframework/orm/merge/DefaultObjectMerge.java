@@ -87,8 +87,49 @@ public class DefaultObjectMerge implements ObjectMerge {
             objects = null;
             return ol;
         } else {
+            this.recombineMergeTree(this.mergeTree);
             List<ModelObject> list = this.merge(objects, this.mergeTree);
             return list;
+        }
+    }
+
+    /**
+     * 重组树结构，去除ignore的节点
+     *
+     * @param mergeTree
+     */
+    private void recombineMergeTree(MergeTree mergeTree) {
+        if (mergeTree.isIgnore()) {
+            MergeTree parent = mergeTree.getParent();
+            while (parent != null && parent.isIgnore()) {
+                parent = mergeTree.getParent();
+            }
+            if (parent != null) {
+                List<MergeTree> children = parent.getChildren();
+                if (children != null) {
+                    List<MergeTree> selfChild = mergeTree.getChildren();
+                    if (selfChild != null) {
+                        children.addAll(selfChild);
+                        for (MergeTree mt : selfChild) {
+                            mt.setParent(parent);
+                        }
+                    }
+                }
+                MergeTree selfParent = mergeTree.getParent();
+                if (selfParent != null) {
+                    List<MergeTree> mergeTrees = selfParent.getChildren();
+                    if (mergeTrees.indexOf(mergeTree) >= 0) {
+                        mergeTrees.remove(mergeTree);
+                    }
+                }
+            }
+        }
+        List<MergeTree> children = mergeTree.getChildren();
+        if (children != null) {
+            List<MergeTree> copyChild = new ArrayList<>(children);
+            for (MergeTree mt : copyChild) {
+                this.recombineMergeTree(mt);
+            }
         }
     }
 
@@ -122,8 +163,11 @@ public class DefaultObjectMerge implements ObjectMerge {
         if (o == null) {
             for (SelectFieldAliasReference mapperSelectField : fields) {
                 if (mapperSelectField.getJavaFieldName() != null) {
-                    if (o == null) o = new ModelObject();
-                    o.put(mapperSelectField.getJavaFieldName(), object.get(mapperSelectField.getFieldAliasName()));
+                    Object v = object.get(mapperSelectField.getFieldAliasName());
+                    if (v != null) {
+                        if (o == null) o = new ModelObject();
+                        o.put(mapperSelectField.getJavaFieldName(), v);
+                    }
                 }
             }
             if (o != null) {
@@ -140,13 +184,15 @@ public class DefaultObjectMerge implements ObjectMerge {
                 Object children = o.getAny(aliasName);
 
                 if (mt.isMulti()) {
-                    if (children == null) children = new ArrayList<>();
-                    if (children instanceof List) {
+                    if (children instanceof List || children == null) {
                         ModelObject childItem = this.mergeItem(object, mt, (List<ModelObject>) children);
-                        if (((List<ModelObject>) children).indexOf(childItem) == -1) {
-                            ((List<ModelObject>) children).add(childItem);
+                        if (childItem != null) {
+                            if (children == null) children = new ArrayList<>();
+                            if (((List<ModelObject>) children).indexOf(childItem) == -1) {
+                                ((List<ModelObject>) children).add(childItem);
+                            }
+                            o.put(aliasName, children);
                         }
-                        o.put(aliasName, children);
                     }
                 } else {
                     if (children == null) {
