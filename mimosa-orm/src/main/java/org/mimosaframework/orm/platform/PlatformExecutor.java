@@ -481,7 +481,7 @@ public class PlatformExecutor {
         }
 
         if (wraps != null) updateBuilder.where();
-        this.buildWraps(updateBuilder, table, wraps, false);
+        this.buildWraps(updateBuilder, table, wraps, false, null);
         SQLBuilderCombine combine = dialect.update(updateBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.UPDATE,
                 combine.getSql(), combine.getPlaceholders()));
@@ -494,7 +494,7 @@ public class PlatformExecutor {
         deleteBuilder.delete().from().table(table.getMappingTableName());
 
         if (wraps != null) deleteBuilder.where();
-        this.buildWraps(deleteBuilder, table, wraps, false);
+        this.buildWraps(deleteBuilder, table, wraps, false, null);
         SQLBuilderCombine combine = dialect.delete(deleteBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.DELETE,
                 combine.getSql(), combine.getPlaceholders()));
@@ -618,7 +618,7 @@ public class PlatformExecutor {
         // 如果是子查询语句，则子查询语句只需要包含inner join的联合条件
         this.buildJoinQuery(select, alias, joins, isChildSelect ? true : false);
         if (logicWraps != null) select.where();
-        this.buildWraps(select, queryTable, logicWraps, hasJoin);
+        this.buildWraps(select, queryTable, logicWraps, hasJoin, query);
 
         this.buildOrderBy(select, orders, queryTable, joins != null && joins.size() > 0);
 
@@ -701,7 +701,7 @@ public class PlatformExecutor {
         }
         this.buildJoinQuery(select, alias, joins, true);
         if (logicWraps != null) select.where();
-        this.buildWraps(select, mappingTable, logicWraps, hasJoins);
+        this.buildWraps(select, mappingTable, logicWraps, hasJoins, query);
 
         SQLBuilderCombine combine = dialect.select(select.compile());
         Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
@@ -785,7 +785,7 @@ public class PlatformExecutor {
         }
         select.from().table(mappingTable.getMappingTableName());
         if (logicWraps != null) select.where();
-        this.buildWraps(select, mappingTable, logicWraps, false);
+        this.buildWraps(select, mappingTable, logicWraps, false, null);
 
         // 如果having要求必须传入group by那么就传入主键
         if (havingFields != null && havingFields.size() > 0
@@ -863,7 +863,7 @@ public class PlatformExecutor {
                     }
                 }
 
-                this.setSymbol(select, filter, null, mappingTable, 1);
+                this.setSymbol(select, filter, null, mappingTable, 1, null);
             }
         }
 
@@ -996,7 +996,7 @@ public class PlatformExecutor {
                             }
                         } else {
                             DefaultFilter f = (DefaultFilter) filter.getFilter();
-                            this.setSymbol(select, f, aliasName, mappingTable, 0);
+                            this.setSymbol(select, f, aliasName, mappingTable, 0, null);
                         }
                         if (iterator.hasNext()) {
                             select.and();
@@ -1104,7 +1104,8 @@ public class PlatformExecutor {
     private void buildWraps(CommonSymbolBuilder builder,
                             MappingTable table,
                             Wraps<Filter> wraps,
-                            boolean hasJoins) {
+                            boolean hasJoins,
+                            DefaultQuery query) {
         if (wraps != null) {
             Iterator<WrapsObject<Filter>> wrapsIterator = wraps.iterator();
             while (wrapsIterator.hasNext()) {
@@ -1114,10 +1115,10 @@ public class PlatformExecutor {
                 CriteriaLogic logic = filter.getLogic();
 
                 if (where != null) {
-                    this.setSymbol(builder, where, hasJoins ? "T" : null, table, 0);
+                    this.setSymbol(builder, where, hasJoins ? "T" : null, table, 0, query);
                 } else if (link != null) {
                     SimpleCommonWhereBuilder builderWraps = new SimpleCommonWhereBuilder();
-                    this.buildWraps(builderWraps, table, link, hasJoins);
+                    this.buildWraps(builderWraps, table, link, hasJoins, query);
                     ((DefaultSQLSelectBuilder) builder).wrapper(builderWraps);
                 }
 
@@ -1137,16 +1138,48 @@ public class PlatformExecutor {
                               DefaultFilter filter,
                               String aliasName,
                               MappingTable table,
-                              int type) {
+                              int type,
+                              DefaultQuery query) {
         Object key = filter.getKey();
-        MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
-        if (field == null) {
-            throw new IllegalArgumentException(I18n.print("miss_symbol_field",
-                    table.getMappingTableName(), "" + key));
-        }
-        String columnName = field.getMappingColumnName();
-
         String as = filter.getAs();
+
+        MappingField field = null;
+        String columnName = null;
+        if (StringTools.isEmpty(as)) {
+            field = table.getMappingFieldByJavaName(String.valueOf(key));
+            if (field == null) {
+                throw new IllegalArgumentException(I18n.print("miss_symbol_field",
+                        table.getMappingTableName(), "" + key));
+            }
+            columnName = field.getMappingColumnName();
+        } else {
+            if (query != null) {
+                Set<Join> joins = query.getJoins();
+                MappingTable asTable = null;
+                if (joins != null) {
+                    for (Join j : joins) {
+                        DefaultJoin dj = (DefaultJoin) j;
+                        if (dj.getAs().equals(as)) {
+                            asTable = mappingGlobalWrapper.getMappingTable(dj.getTableClass());
+                            field = asTable.getMappingFieldByJavaName(String.valueOf(key));
+                            break;
+                        }
+                    }
+                }
+                if (asTable == null) {
+                    throw new IllegalArgumentException(I18n.print("miss_symbol_as_table",
+                            as, "" + key));
+                }
+                if (field == null) {
+                    throw new IllegalArgumentException(I18n.print("miss_symbol_field",
+                            asTable.getMappingTableName(), "" + key));
+                }
+                columnName = field.getMappingColumnName();
+            } else {
+                columnName = String.valueOf(filter.getKey());
+            }
+        }
+
         Object value = filter.getValue();
         Object startValue = filter.getStartValue();
         Object endValue = filter.getEndValue();

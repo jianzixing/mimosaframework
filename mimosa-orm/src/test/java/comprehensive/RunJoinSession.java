@@ -96,7 +96,10 @@ public class RunJoinSession {
                                                 .aliasName("orders").as("order")
                                 ).on(TablePay.userId, TableUser.id).aliasName("pays").as("pay")
                 )
-                .filter(Criteria.filter().eq("id", "1").as("pay"))
+                .filter(Criteria.filter()
+                        .eq("status", "10")
+//                        .eq("id", "1")
+                        .as("pays"))
                 .limit(0, 3));
         System.out.println(objects);
     }
