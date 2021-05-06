@@ -11,11 +11,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 使用方法，直接在SpringBootApplication的同级目录下编写类
@@ -55,7 +58,17 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
     @Override
     public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
         MimosaRequestHandlerAdapter requestMappingHandlerAdapter = new MimosaRequestHandlerAdapter();
+        requestMappingHandlerAdapter.setBeforeArgumentResolvers(this.getArgsResolver());
+        requestMappingHandlerAdapter.setBeforeReturnValueHandlers(this.getReturnHandler());
         return requestMappingHandlerAdapter;
+    }
+
+    protected List<HandlerMethodReturnValueHandler> getReturnHandler() {
+        return null;
+    }
+
+    protected List<HandlerMethodArgumentResolver> getArgsResolver() {
+        return null;
     }
 
     @Override
