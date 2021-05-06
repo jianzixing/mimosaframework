@@ -233,6 +233,7 @@ public abstract class PlatformDialect implements Dialect {
         if (StringTools.isNotEmpty(sql)) {
             JDBCTraversing jdbcTraversing = new JDBCTraversing(sql, builderCombine.getPlaceholders());
             jdbcTraversing.setTypeForRunner(TypeForRunner.SELECT);
+            jdbcTraversing.setShowSQL(false);
             return this.runner(jdbcTraversing);
         }
         return null;

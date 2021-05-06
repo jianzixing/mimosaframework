@@ -84,4 +84,20 @@ public class RunJoinSession {
                 .limit(0, 3));
         System.out.println(objects);
     }
+
+    @Test
+    public void testCustomTableAlias() {
+        List<ModelObject> objects = template.list(Criteria.query(TableUser.class)
+                .subjoin(
+                        Criteria.inner(TablePay.class)
+                                .subjoin(
+                                        Criteria.left(TableOrder.class)
+                                                .on(TablePay.userId, TableOrder.userId)
+                                                .aliasName("orders").as("order")
+                                ).on(TablePay.userId, TableUser.id).aliasName("pays").as("pay")
+                )
+                .filter(Criteria.filter().eq("id", "1").as("pay"))
+                .limit(0, 3));
+        System.out.println(objects);
+    }
 }

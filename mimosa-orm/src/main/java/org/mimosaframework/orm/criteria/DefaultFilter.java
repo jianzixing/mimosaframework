@@ -2,10 +2,13 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.i18n.I18n;
 
+import java.io.Serializable;
+
 /**
  * @author yangankang
  */
 public class DefaultFilter implements Filter {
+    private String as;
     private Object key;
     private Object value;
     private Object startValue;
@@ -21,6 +24,14 @@ public class DefaultFilter implements Filter {
         if (symbol != null) {
             this.symbol = symbol.trim();
         }
+    }
+
+    public String getAs() {
+        return as;
+    }
+
+    public void setAs(String as) {
+        this.as = as;
     }
 
     public Object getKey() {
@@ -63,8 +74,13 @@ public class DefaultFilter implements Filter {
         this.symbol = symbol;
     }
 
+    public DefaultFilter as(Serializable as) {
+        this.as = as.toString();
+        return this;
+    }
+
     @Override
-    public Filter eq(Object key, Object value) {
+    public DefaultFilter eq(Object key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "=";
@@ -78,7 +94,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter in(Object key, Iterable values) {
+    public DefaultFilter in(Object key, Iterable values) {
         this.key = key;
         this.value = values;
         this.symbol = "in";
@@ -92,7 +108,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter in(Object key, Object... values) {
+    public DefaultFilter in(Object key, Object... values) {
         this.key = key;
         this.value = values;
         this.symbol = "in";
@@ -106,7 +122,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter nin(Object key, Iterable values) {
+    public DefaultFilter nin(Object key, Iterable values) {
         this.key = key;
         this.value = values;
         this.symbol = "notIn";
@@ -120,7 +136,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter nin(Object key, Object... values) {
+    public DefaultFilter nin(Object key, Object... values) {
         this.key = key;
         this.value = values;
         this.symbol = "notIn";
@@ -134,7 +150,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter like(Object key, Object value) {
+    public DefaultFilter like(Object key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "like";
@@ -148,7 +164,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter ne(Object key, Object value) {
+    public DefaultFilter ne(Object key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "!=";
@@ -162,7 +178,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter gt(Object key, Object value) {
+    public DefaultFilter gt(Object key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = ">";
@@ -176,7 +192,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter gte(Object key, Object value) {
+    public DefaultFilter gte(Object key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = ">=";
@@ -190,7 +206,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter lt(Object key, Object value) {
+    public DefaultFilter lt(Object key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "<";
@@ -204,7 +220,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter lte(Object key, Object value) {
+    public DefaultFilter lte(Object key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "<=";
@@ -218,7 +234,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter between(Object key, Object start, Object end) {
+    public DefaultFilter between(Object key, Object start, Object end) {
         this.key = key;
         this.startValue = start;
         this.endValue = end;
@@ -233,7 +249,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter isNull(Object key) {
+    public DefaultFilter isNull(Object key) {
         this.key = key;
         this.symbol = "isNull";
         if (key == null) {
@@ -243,7 +259,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public Filter isNotNull(Object key) {
+    public DefaultFilter isNotNull(Object key) {
         this.key = key;
         this.symbol = "notNull";
         if (key == null) {

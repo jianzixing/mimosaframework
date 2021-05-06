@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
+import java.io.Serializable;
+
 /**
  * @author yangankang
  */
@@ -23,6 +25,8 @@ public interface Join extends Filter<Join> {
     Join onle(Object self, Object mainField);
 
     Join aliasName(Object s);
+
+    Join as(Serializable s);
 
     Join single();
 

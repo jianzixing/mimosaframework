@@ -74,6 +74,7 @@ public class XMLSQLDefiner implements SQLDefiner {
                     String actionName = node.getNodeName().toLowerCase();
                     String id = this.getStringAttribute(node, "id");
                     if (ACTION_NAMES.contains(actionName)) {
+                        // todo:这里解析mapper中配置的其他功能
                         xMapper.addAction(id, new MixedSqlNode(this.parseDynamicTags(node), node.getNodeName().toLowerCase()));
                     }
                 }

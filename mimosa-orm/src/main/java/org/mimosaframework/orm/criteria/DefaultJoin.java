@@ -3,6 +3,7 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.i18n.I18n;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,6 +17,7 @@ public class DefaultJoin implements Join {
     private String aliasName;
     private Class<?> table;
     private Class<?> mainTable;
+    private String as;
     /**
      * 查询结果是以单独对象保存还是List方式保存
      * a:{} 和 a:[{}]
@@ -91,6 +93,10 @@ public class DefaultJoin implements Join {
 
     public void setJoinType(int joinType) {
         this.joinType = joinType;
+    }
+
+    public String getAs() {
+        return as;
     }
 
     public boolean isIgnore() {
@@ -172,6 +178,12 @@ public class DefaultJoin implements Join {
     @Override
     public Join aliasName(Object s) {
         this.aliasName = String.valueOf(s);
+        return this;
+    }
+
+    @Override
+    public Join as(Serializable s) {
+        this.as = s.toString();
         return this;
     }
 

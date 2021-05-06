@@ -77,7 +77,7 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
 
 
     private void logger(JDBCTraversing structure) {
-        if (isShowSql) {
+        if (isShowSql && structure.isShowSQL()) {
             SQLBuilder sqlBuilder = structure.getSqlBuilder();
             String sqlStr = structure.getSql();
 

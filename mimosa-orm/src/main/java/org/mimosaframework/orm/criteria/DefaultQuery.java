@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.Paging;
 import org.mimosaframework.orm.SessionTemplate;
@@ -132,6 +133,12 @@ public class DefaultQuery implements LogicQuery {
 
     public Limit getLimit() {
         return limit;
+    }
+
+    @Override
+    public LogicQuery filter(DefaultFilter as) {
+        this.addFilterInLinked(as);
+        return this;
     }
 
     @Override
@@ -545,12 +552,18 @@ public class DefaultQuery implements LogicQuery {
     }
 
     private void checkJoinHasOnFilter(Set<Join> joins) {
-        if (joins != null
-                && joins.size() > 0) {
+        if (joins != null && joins.size() > 0) {
+            List<String> list = new ArrayList<>(joins.size());
             for (Join join : joins) {
                 DefaultJoin dj = (DefaultJoin) join;
                 if (dj.getOns() == null || dj.getOns().size() == 0) {
                     throw new IllegalArgumentException(I18n.print("join_not_have_filter", dj.getTable().getSimpleName()));
+                }
+                if (StringTools.isNotEmpty(dj.getAs())) {
+                    if (list.contains(dj.getAs())) {
+                        throw new IllegalArgumentException(I18n.print("join_as_repeat", dj.getAs()));
+                    }
+                    list.add(dj.getAs());
                 }
             }
         }

@@ -13,7 +13,7 @@ public final class Criteria {
         return new DefaultQuery(c);
     }
 
-    public static final Filter filter() {
+    public static final DefaultFilter filter() {
         return new DefaultFilter();
     }
 

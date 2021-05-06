@@ -16,6 +16,8 @@ public class JDBCTraversing {
      */
     private List<SQLDataPlaceholder> sqlDataPlaceholders;
 
+    private boolean showSQL = true;
+
     public JDBCTraversing(String sql) {
         sql = sql.trim();
         this.sql = sql;
@@ -108,5 +110,13 @@ public class JDBCTraversing {
 
     public void setSqlDataPlaceholders(List<SQLDataPlaceholder> sqlDataPlaceholders) {
         this.sqlDataPlaceholders = sqlDataPlaceholders;
+    }
+
+    public boolean isShowSQL() {
+        return showSQL;
+    }
+
+    public void setShowSQL(boolean showSQL) {
+        this.showSQL = showSQL;
     }
 }

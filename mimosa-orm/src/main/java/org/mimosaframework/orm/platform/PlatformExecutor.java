@@ -564,7 +564,10 @@ public class PlatformExecutor {
                 Class table = defaultJoin.getTable();
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
                 if (fieldAlias == null) fieldAlias = new HashMap<>();
-                String joinAliasName = "T" + i;
+                String joinAliasName = ((DefaultJoin) join).getAs();
+                if (StringTools.isEmpty(joinAliasName)) {
+                    joinAliasName = "T" + i;
+                }
                 alias.put(join, joinAliasName);
 
                 mappingFields = this.getSelectFields(fields, excludes, mappingTable);
@@ -666,7 +669,10 @@ public class PlatformExecutor {
             if (alias == null) alias = new HashMap<>();
             alias.put(query, "T");
             for (Join join : joins) {
-                String joinAliasName = "T" + i;
+                String joinAliasName = ((DefaultJoin) join).getAs();
+                if (StringTools.isEmpty(joinAliasName)) {
+                    joinAliasName = "T" + i;
+                }
                 alias.put(join, joinAliasName);
                 i++;
             }
@@ -1140,10 +1146,15 @@ public class PlatformExecutor {
         }
         String columnName = field.getMappingColumnName();
 
+        String as = filter.getAs();
         Object value = filter.getValue();
         Object startValue = filter.getStartValue();
         Object endValue = filter.getEndValue();
         String symbol = filter.getSymbol();
+
+        if (StringTools.isNotEmpty(as)) {
+            aliasName = as;
+        }
 
         if (!symbol.equalsIgnoreCase("isNull")
                 && !symbol.equalsIgnoreCase("notNull")) {
