@@ -11,6 +11,7 @@ public class MimosaOrmProperties {
     private String convertType = "H2U";
     private MappingLevel mappingLevel = MappingLevel.CREATE;
     private boolean showSQL = false;
+    private String prefix;
 
     public String getApplicationName() {
         return applicationName;
@@ -58,5 +59,13 @@ public class MimosaOrmProperties {
 
     public void setShowSQL(boolean showSQL) {
         this.showSQL = showSQL;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 }

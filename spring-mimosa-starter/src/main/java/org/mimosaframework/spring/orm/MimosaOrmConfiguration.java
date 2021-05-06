@@ -40,6 +40,7 @@ public class MimosaOrmConfiguration implements InitializingBean {
         springMimosaSessionFactory.setConvertType(mimosaOrmProperties.getConvertType());
         springMimosaSessionFactory.setMappingLevel(mimosaOrmProperties.getMappingLevel());
         springMimosaSessionFactory.setShowSQL(mimosaOrmProperties.isShowSQL());
+        springMimosaSessionFactory.setTablePrefix(mimosaOrmProperties.getPrefix());
 
         return springMimosaSessionFactory;
     }
