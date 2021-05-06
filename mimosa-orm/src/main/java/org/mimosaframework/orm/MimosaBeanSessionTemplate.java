@@ -53,6 +53,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         if (json instanceof ModelObject) {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
+            model.clearNull();
             modelSession.save(model);
 
             model2BeanFactory.toJavaObject(model, obj);
@@ -68,6 +69,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         if (json instanceof ModelObject) {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
+            model.clearNull();
             modelSession.saveAndUpdate(model);
             return (T) model2BeanFactory.toJavaObject(model, obj.getClass());
         } else {
@@ -85,6 +87,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 if (json instanceof ModelObject) {
                     ModelObject model = (ModelObject) json;
                     model.setObjectClass(object.getClass());
+                    model.clearNull();
                     saves.add(model);
                 } else {
                     throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
@@ -100,6 +103,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         if (json instanceof ModelObject) {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
+            model.clearNull();
             modelSession.update(model);
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
@@ -116,6 +120,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 if (json instanceof ModelObject) {
                     ModelObject model = (ModelObject) json;
                     model.setObjectClass(object.getClass());
+                    model.clearNull();
                     updates.add(model);
                 } else {
                     throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
