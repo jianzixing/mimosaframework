@@ -7,6 +7,7 @@ import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.criteria.Query;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -100,7 +101,7 @@ public abstract class ModelUtils {
         }
     }
 
-    public static void setEqSearch(ModelObject search, String key, Object tableKey, Query query) {
+    public static void setEqSearch(ModelObject search, String key, Serializable tableKey, Query query) {
         if (search != null && search.containsKey(key) && !search.isEmpty(key) && query != null) {
             query.eq(tableKey, search.get(key));
         }
@@ -120,7 +121,7 @@ public abstract class ModelUtils {
                                    SessionTemplate sessionTemplate,
                                    ModelObject search,
                                    Query query,
-                                   Object key) {
+                                   Serializable key) {
         boolean runDefault = false;
         if (search != null) {
             search.clearEmpty();
@@ -149,7 +150,7 @@ public abstract class ModelUtils {
                                                     SessionTemplate sessionTemplate,
                                                     ModelObject search,
                                                     Query query,
-                                                    Object key) {
+                                                    Serializable key) {
         boolean runDefault = false;
         if (search != null) {
             search.clearEmpty();
@@ -184,7 +185,7 @@ public abstract class ModelUtils {
                                        SessionTemplate sessionTemplate,
                                        ModelObject search,
                                        Query query,
-                                       Object key) {
+                                       Serializable key) {
         boolean runDefault = false;
         if (search != null) {
             search.clearEmpty();
@@ -214,7 +215,7 @@ public abstract class ModelUtils {
                                                         SessionTemplate sessionTemplate,
                                                         ModelObject search,
                                                         Query query,
-                                                        Object key) {
+                                                        Serializable key) {
         boolean runDefault = false;
         if (search != null) {
             search.clearEmpty();
@@ -250,7 +251,7 @@ public abstract class ModelUtils {
         }
     }
 
-    public static ModelObject queryModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Object keyQuery) {
+    public static ModelObject queryModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Serializable keyQuery) {
         if (sessionTemplate != null && object != null && keyFrom != null && c != null && keyQuery != null) {
             return sessionTemplate.get(Criteria.query(c).eq(keyQuery, object.get(keyFrom)));
         }
@@ -274,7 +275,7 @@ public abstract class ModelUtils {
      * @param keyQuery
      * @return
      */
-    public static boolean hasModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Object keyQuery) {
+    public static boolean hasModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Serializable keyQuery) {
         ModelObject o = queryModelObject(sessionTemplate, object, keyFrom, c, keyQuery);
         if (o == null) {
             return false;

@@ -6,6 +6,7 @@ import org.mimosaframework.orm.Paging;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.i18n.I18n;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -265,14 +266,14 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery eq(Object key, Object value) {
+    public LogicQuery eq(Serializable key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery in(Object key, Iterable values) {
+    public LogicQuery in(Serializable key, Iterable values) {
         if (values == null) {
             throw new IllegalArgumentException(I18n.print("must_value"));
         }
@@ -282,7 +283,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery in(Object key, Object... values) {
+    public LogicQuery in(Serializable key, Object... values) {
         if (key == null || values == null || values.length == 0) {
             throw new IllegalArgumentException(I18n.print("in_must_key_value"));
         }
@@ -292,7 +293,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery nin(Object key, Iterable values) {
+    public LogicQuery nin(Serializable key, Iterable values) {
         if (values == null) {
             throw new IllegalArgumentException(I18n.print("not_in_must_value"));
         }
@@ -302,7 +303,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery nin(Object key, Object... values) {
+    public LogicQuery nin(Serializable key, Object... values) {
         if (key == null || values == null || values.length == 0) {
             throw new IllegalArgumentException(I18n.print("not_in_must_key_value"));
         }
@@ -312,63 +313,63 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery like(Object key, Object value) {
+    public LogicQuery like(Serializable key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery ne(Object key, Object value) {
+    public LogicQuery ne(Serializable key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery gt(Object key, Object value) {
+    public LogicQuery gt(Serializable key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery gte(Object key, Object value) {
+    public LogicQuery gte(Serializable key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery lt(Object key, Object value) {
+    public LogicQuery lt(Serializable key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery lte(Object key, Object value) {
+    public LogicQuery lte(Serializable key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery between(Object key, Object start, Object end) {
+    public LogicQuery between(Serializable key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery isNull(Object key) {
+    public LogicQuery isNull(Serializable key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicQuery isNotNull(Object key) {
+    public LogicQuery isNotNull(Serializable key) {
         Filter filter = new DefaultFilter().isNotNull(key);
         this.addFilterInLinked(filter);
         return this;
@@ -403,17 +404,17 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery fields(Object... fields) {
+    public LogicQuery fields(Serializable... fields) {
         return this.fields(Arrays.asList(fields));
     }
 
     @Override
-    public LogicQuery fields(Class tableClass, Object... fields) {
+    public LogicQuery fields(Class tableClass, Serializable... fields) {
         return this.fields(tableClass, Arrays.asList(fields));
     }
 
     @Override
-    public LogicQuery fields(List fields) {
+    public LogicQuery fields(List<Serializable> fields) {
         if (tableClass == null) {
             throw new IllegalArgumentException(I18n.print("not_found_table"));
         }
@@ -421,7 +422,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery fields(Class tableClass, List fields) {
+    public LogicQuery fields(Class tableClass, List<Serializable> fields) {
         if (fields != null) {
             List<String> nf = new ArrayList<>();
             for (Object field : fields) {
@@ -435,17 +436,17 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery excludes(Object... fields) {
+    public LogicQuery excludes(Serializable... fields) {
         return this.excludes(Arrays.asList(fields));
     }
 
     @Override
-    public LogicQuery excludes(Class tableClass, Object... fields) {
+    public LogicQuery excludes(Class tableClass, Serializable... fields) {
         return this.excludes(tableClass, Arrays.asList(fields));
     }
 
     @Override
-    public LogicQuery excludes(List fields) {
+    public LogicQuery excludes(List<Serializable> fields) {
         if (tableClass == null) {
             throw new IllegalArgumentException(I18n.print("not_found_table"));
         }
@@ -453,7 +454,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery excludes(Class tableClass, List fields) {
+    public LogicQuery excludes(Class tableClass, List<Serializable> fields) {
         if (fields != null) {
             List<String> nf = new ArrayList<>();
             for (Object field : fields) {
@@ -527,7 +528,7 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
-    public LogicQuery orderBy(Object field, boolean isAsc) {
+    public LogicQuery orderBy(Serializable field, boolean isAsc) {
         if (withoutOrderBy == false) return this.orderBy(new OrderBy(isAsc, field));
         return null;
     }

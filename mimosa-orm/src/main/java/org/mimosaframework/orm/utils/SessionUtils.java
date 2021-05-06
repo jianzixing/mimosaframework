@@ -110,7 +110,7 @@ public final class SessionUtils {
             for (MappingField field : pks) {
                 if (field.getMappingFieldName().equals(key)) {
                     isPk = true;
-                    update.eq(key, entry.getValue());
+                    update.eq(String.valueOf(key), entry.getValue());
                     break;
                 }
             }

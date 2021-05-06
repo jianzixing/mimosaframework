@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 public class DefaultFilter implements Filter {
     private String as;
-    private Object key;
+    private Serializable key;
     private Object value;
     private Object startValue;
     private Object endValue;
@@ -18,7 +18,7 @@ public class DefaultFilter implements Filter {
     public DefaultFilter() {
     }
 
-    public DefaultFilter(Object key, Object value, String symbol) {
+    public DefaultFilter(Serializable key, Object value, String symbol) {
         this.key = key;
         this.value = value;
         if (symbol != null) {
@@ -34,7 +34,7 @@ public class DefaultFilter implements Filter {
         this.as = as;
     }
 
-    public Object getKey() {
+    public Serializable getKey() {
         return key;
     }
 
@@ -54,7 +54,7 @@ public class DefaultFilter implements Filter {
         return symbol;
     }
 
-    public void setKey(Object key) {
+    public void setKey(Serializable key) {
         this.key = key;
     }
 
@@ -80,7 +80,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter eq(Object key, Object value) {
+    public DefaultFilter eq(Serializable key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "=";
@@ -94,7 +94,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter in(Object key, Iterable values) {
+    public DefaultFilter in(Serializable key, Iterable values) {
         this.key = key;
         this.value = values;
         this.symbol = "in";
@@ -108,7 +108,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter in(Object key, Object... values) {
+    public DefaultFilter in(Serializable key, Object... values) {
         this.key = key;
         this.value = values;
         this.symbol = "in";
@@ -122,7 +122,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter nin(Object key, Iterable values) {
+    public DefaultFilter nin(Serializable key, Iterable values) {
         this.key = key;
         this.value = values;
         this.symbol = "notIn";
@@ -136,7 +136,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter nin(Object key, Object... values) {
+    public DefaultFilter nin(Serializable key, Object... values) {
         this.key = key;
         this.value = values;
         this.symbol = "notIn";
@@ -150,7 +150,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter like(Object key, Object value) {
+    public DefaultFilter like(Serializable key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "like";
@@ -164,7 +164,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter ne(Object key, Object value) {
+    public DefaultFilter ne(Serializable key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "!=";
@@ -178,7 +178,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter gt(Object key, Object value) {
+    public DefaultFilter gt(Serializable key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = ">";
@@ -192,7 +192,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter gte(Object key, Object value) {
+    public DefaultFilter gte(Serializable key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = ">=";
@@ -206,7 +206,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter lt(Object key, Object value) {
+    public DefaultFilter lt(Serializable key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "<";
@@ -220,7 +220,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter lte(Object key, Object value) {
+    public DefaultFilter lte(Serializable key, Object value) {
         this.key = key;
         this.value = value;
         this.symbol = "<=";
@@ -234,7 +234,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter between(Object key, Object start, Object end) {
+    public DefaultFilter between(Serializable key, Object start, Object end) {
         this.key = key;
         this.startValue = start;
         this.endValue = end;
@@ -249,7 +249,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter isNull(Object key) {
+    public DefaultFilter isNull(Serializable key) {
         this.key = key;
         this.symbol = "isNull";
         if (key == null) {
@@ -259,7 +259,7 @@ public class DefaultFilter implements Filter {
     }
 
     @Override
-    public DefaultFilter isNotNull(Object key) {
+    public DefaultFilter isNotNull(Serializable key) {
         this.key = key;
         this.symbol = "notNull";
         if (key == null) {

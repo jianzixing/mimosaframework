@@ -5,6 +5,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.Query;
 import org.mimosaframework.orm.i18n.I18n;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -43,7 +44,7 @@ public class AutoResult {
         return getAutoResult(name, template, null, 0, 0);
     }
 
-    public static boolean setQueryIn(String name, SessionTemplate template, ModelObject search, int start, int limit, Query query, Object key, Object rkey) {
+    public static boolean setQueryIn(String name, SessionTemplate template, ModelObject search, int start, int limit, Query query, Serializable key, Object rkey) {
         AutoResult result = null;
         if (template != null && search != null) {
             try {
@@ -79,15 +80,15 @@ public class AutoResult {
         return false;
     }
 
-    public static boolean setQueryIn(String name, SessionTemplate template, ModelObject search, int start, int limit, Query query, Object key) {
+    public static boolean setQueryIn(String name, SessionTemplate template, ModelObject search, int start, int limit, Query query, Serializable key) {
         return setQueryIn(name, template, search, start, limit, query, key, null);
     }
 
-    public static boolean setQueryIn(String name, SessionTemplate template, ModelObject search, Query query, Object key) {
+    public static boolean setQueryIn(String name, SessionTemplate template, ModelObject search, Query query, Serializable key) {
         return setQueryIn(name, template, search, 0, 0, query, key, null);
     }
 
-    public static boolean setQueryIn(String name, SessionTemplate template, Query query, Object key) {
+    public static boolean setQueryIn(String name, SessionTemplate template, Query query, Serializable key) {
         return setQueryIn(name, template, null, 0, 0, query, key, null);
     }
 
