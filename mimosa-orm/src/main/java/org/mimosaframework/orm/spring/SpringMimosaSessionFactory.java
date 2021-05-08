@@ -35,7 +35,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     protected ApplicationContext applicationContext;
     protected SessionFactoryBuilder sessionFactoryBuilder;
     protected SessionFactory sessionFactory = null;
-    protected AbstractInterceptSession interceptSession;
 
     protected ApplicationSetting applicationSetting = new ApplicationSetting();
     protected BasicSetting basicSetting = new BasicSetting();
@@ -110,10 +109,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         if (!this.centerConfigSetting.valid()) {
             throw new ContextException(I18n.print("center_config_fail"));
         }
-    }
-
-    public void setInterceptSession(AbstractInterceptSession interceptSession) {
-        this.interceptSession = interceptSession;
     }
 
     public void setMapper(String mapper) {
@@ -284,7 +279,6 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
 
     @Override
     public BasicSetting getBasicInfo() throws ContextException {
-        this.basicSetting.setInterceptSession(interceptSession);
         return this.basicSetting;
     }
 

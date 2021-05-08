@@ -75,8 +75,6 @@ public class BeanAppContext implements Context {
             if (StringTools.isNotEmpty(basicInfo.getTablePrefix())) {
                 configuration.setTablePrefix(basicInfo.getTablePrefix());
             }
-
-            configuration.setInterceptSession(basicInfo.getInterceptSession());
         }
 
         {

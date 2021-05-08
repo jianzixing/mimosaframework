@@ -30,12 +30,6 @@ public class NormalConfiguration implements Configuration {
     protected ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
     protected Map<String, MimosaDataSource> globalDataSource = new ConcurrentHashMap<>();
 
-    /**
-     * 可以通过配置文件制定自定义的session实现,比如要
-     * 实现一个分库分表的session，或者分布式的实现等等
-     */
-    protected AbstractInterceptSession interceptSession;
-
     protected String applicationName;
     protected String applicationDetail;
     protected MappingLevel mappingLevel;
@@ -335,11 +329,6 @@ public class NormalConfiguration implements Configuration {
         }
     }
 
-    @Override
-    public AbstractInterceptSession getInterceptSession() {
-        return this.interceptSession;
-    }
-
     /**
      * 不同的事务工厂创建不同的的事务实现
      *
@@ -364,9 +353,5 @@ public class NormalConfiguration implements Configuration {
     @Override
     public Session buildSession() throws SQLException {
         return new DefaultSession(this);
-    }
-
-    public void setInterceptSession(AbstractInterceptSession interceptSession) {
-        this.interceptSession = interceptSession;
     }
 }

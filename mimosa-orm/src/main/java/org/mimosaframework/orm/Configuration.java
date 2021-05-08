@@ -54,8 +54,6 @@ public interface Configuration {
 
     void clearMimosaDataSources();
 
-    AbstractInterceptSession getInterceptSession();
-
     TransactionFactory getTransactionFactory();
 
     Session buildSession() throws SQLException;

@@ -2,7 +2,6 @@ package org.mimosaframework.orm.builder;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.AbstractInterceptSession;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.MappingLevel;
 import org.mimosaframework.orm.MimosaDataSource;
@@ -635,17 +634,6 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                         Node ies = attributes.getNamedItem("ignoreEmptySlave");
                         if (ies != null) {
                             ignoreEmptySlave = super.isStringTrue(ies.getNodeValue());
-                        }
-                    }
-
-                    if (node.getNodeName().equalsIgnoreCase("interceptSession")) {
-                        String sessionClass = this.getXmlNodeAny(node, "value");
-                        try {
-                            Class c = Class.forName(sessionClass);
-                            AbstractInterceptSession session = (AbstractInterceptSession) c.newInstance();
-                            this.basicInfo.setInterceptSession(session);
-                        } catch (Exception e) {
-                            throw new ContextException(I18n.print("init_intercept_session_error"), e);
                         }
                     }
                 }
