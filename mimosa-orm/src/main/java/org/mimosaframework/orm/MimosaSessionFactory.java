@@ -17,7 +17,7 @@ public class MimosaSessionFactory implements SessionFactory {
     public Session openSession() throws MimosaException {
         Session session = null;
         try {
-            session = new SessionAgency(this.configuration);
+            session = new DefaultSession(this.configuration);
         } catch (SQLException e) {
             throw new MimosaException(I18n.print("create_new_session_error"), e);
         }

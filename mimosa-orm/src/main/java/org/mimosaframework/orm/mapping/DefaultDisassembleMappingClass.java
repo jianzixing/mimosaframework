@@ -162,7 +162,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
 
 
                     fieldObject = o;
-                    MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject);
+                    MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject, true);
                     if (lastField != null) {
                         newField.setPrevious(lastField);
                     }
@@ -186,7 +186,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                     // todo:校验一下column配置的类型是否和bean类型一致
 
                     fieldObject = field;
-                    MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject);
+                    MappingField newField = this.disassembleFieldItem(mappingTable, fieldName, column, fieldObject, false);
                     if (lastField != null) {
                         newField.setPrevious(lastField);
                     }
@@ -212,7 +212,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
     private MappingField disassembleFieldItem(SpecificMappingTable mappingTable,
                                               String fieldName,
                                               Column column,
-                                              Object fieldObject) {
+                                              Object fieldObject,
+                                              boolean isEnum) {
         SpecificMappingField mappingField = new SpecificMappingField(mappingTable);
         mappingField.setMappingField(fieldObject);
         mappingField.setMappingFieldAnnotation(column);
@@ -227,8 +228,13 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             // 如果是主键且没有配置
             mappingField.setMappingFieldType(long.class);
         } else {
-            mappingField.setMappingFieldType(column.type());
+            if (isEnum == false) {
+                mappingField.setMappingFieldType(((Field) fieldObject).getType());
+            } else {
+                mappingField.setMappingFieldType(column.type());
+            }
         }
+
         mappingField.setMappingFieldLength(column.length());
         mappingField.setMappingFieldDecimalDigits(column.scale());
         mappingField.setMappingFieldNullable(column.nullable());
@@ -247,7 +253,10 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             mappingField.setMappingFieldAutoIncrement(true);
             if (mappingField.getMappingFieldType() != short.class
                     && mappingField.getMappingFieldType() != int.class
-                    && mappingField.getMappingFieldType() != long.class) {
+                    && mappingField.getMappingFieldType() != long.class
+                    && mappingField.getMappingFieldType() != Short.class
+                    && mappingField.getMappingFieldType() != Integer.class
+                    && mappingField.getMappingFieldType() != Long.class) {
                 throw new IllegalArgumentException(I18n.print("auto_field_type_error"));
             }
         }

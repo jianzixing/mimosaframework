@@ -7,8 +7,11 @@ import org.mimosaframework.orm.exception.MimosaException;
 import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.io.IOException;
+
 public class SpringSessionHolder implements SessionHolder {
     private SessionFactory factory;
+    private Session session;
 
     @Override
     public Session getSession(SessionFactory factory) throws MimosaException {
@@ -28,6 +31,7 @@ public class SpringSessionHolder implements SessionHolder {
             resource.setSynchronizedWithTransaction(true);
             resource.requested();
         }
+        this.session = session;
 
         return session;
     }
@@ -52,7 +56,15 @@ public class SpringSessionHolder implements SessionHolder {
     public boolean close() {
         SessionHolderResource resource = (SessionHolderResource) TransactionSynchronizationManager.getResource(factory);
         if (resource != null) {
+            // 释放spring的事务资源
             resource.released();
+        } else if (this.session != null && !this.isSessionTransactional(this.session)) {
+            // 如果没有加入到spring的事务中则自己主动关闭session
+            try {
+                this.session.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
