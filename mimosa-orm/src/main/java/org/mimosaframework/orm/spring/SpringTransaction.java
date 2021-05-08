@@ -45,6 +45,7 @@ public class SpringTransaction implements Transaction {
 
     private void openConnection() throws SQLException {
         this.connection = DataSourceUtils.getConnection(this.dataSource);
+        System.out.println("Open " + this + "   " + this.connection);
         this.autoCommit = this.connection.getAutoCommit();
         this.isConnectionTransactional = DataSourceUtils.isConnectionTransactional(this.connection, this.dataSource);
         if (logger.isDebugEnabled()) {
@@ -88,6 +89,7 @@ public class SpringTransaction implements Transaction {
     }
 
     public void close() {
+        System.out.println("Close " + this + "   " + this.connection);
         DataSourceUtils.releaseConnection(this.connection, this.dataSource);
     }
 

@@ -36,6 +36,11 @@ public class DefaultSession implements Session {
     private PlatformExecutor executor;
     private UpdateSkipReset updateSkipReset = new UpdateSkiptResetEmpty();
     private Configuration context;
+    /**
+     * 每个Session有且只有一个transaction，每一个transaction有且只有一个
+     * Connection，Connection的获取是从transaction中获取的，transaction
+     * 的实现有多种，每一种实现了不同的Connection的管理机制
+     */
     private SessionContext sessionContext;
     private MappingGlobalWrapper mappingGlobalWrapper;
     private ModelObjectConvertKey convert;

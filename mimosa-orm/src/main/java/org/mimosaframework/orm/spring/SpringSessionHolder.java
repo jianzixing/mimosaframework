@@ -16,11 +16,21 @@ public class SpringSessionHolder implements SessionHolder {
     @Override
     public Session getSession(SessionFactory factory) throws MimosaException {
         this.factory = factory;
+        /**
+         * 判断spring的事务中是否已经注册了事务，如果已经注册了事务
+         * 则拿出之前注册好的资源来直接使用，以免重复创建Session
+         *
+         * 在spring的事务周期中，只会存在一个session这样可以提高事务效率
+         */
         SessionHolderResource resource = (SessionHolderResource) TransactionSynchronizationManager.getResource(factory);
         if (resource != null) {
             return resource.session;
         }
 
+        /**
+         * 判断spring是否已经开启了事务，如果没开启则直接返回Session，如果
+         * 开启了则注册资源
+         */
         Session session = factory.openSession();
         if (TransactionSynchronizationManager.isSynchronizationActive()
                 && factory.getConfiguration().getTransactionFactory() instanceof SpringTransactionFactory) {
@@ -54,6 +64,11 @@ public class SpringSessionHolder implements SessionHolder {
 
     @Override
     public boolean close() {
+        /**
+         * 如果Spring中已经注册了资源则释放Spring中的事务资源，当spring中的状态
+         * 为0时会自动提交，如果没有注册spring的资源则我们自己管理Session，直接
+         * 关闭即可，这里的session默认是不开启connection的事务的所以不需要做什么
+         */
         SessionHolderResource resource = (SessionHolderResource) TransactionSynchronizationManager.getResource(factory);
         if (resource != null) {
             // 释放spring的事务资源

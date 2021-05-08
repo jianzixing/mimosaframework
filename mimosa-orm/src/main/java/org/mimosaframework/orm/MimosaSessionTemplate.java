@@ -18,7 +18,6 @@ import static java.lang.reflect.Proxy.newProxyInstance;
 public class MimosaSessionTemplate implements SessionTemplate {
     private SessionFactory sessionFactory;
     private final Session sessionAgency;
-    private SessionHolder sessionHolder;
 
     public SessionFactory getSessionFactory() {
         return sessionFactory;
@@ -33,26 +32,10 @@ public class MimosaSessionTemplate implements SessionTemplate {
         this.sessionAgency = (Session) newProxyInstance(
                 Session.class.getClassLoader(),
                 new Class[]{Session.class}, sessionInterceptor);
-        if (this.sessionHolder != null) {
-            sessionInterceptor.setSessionHolder(this.sessionHolder);
-        }
     }
 
     public MimosaSessionTemplate(SessionFactory sessionFactory) {
         this();
-        this.sessionFactory = sessionFactory;
-        this.setSessionFactory(sessionFactory);
-    }
-
-    public MimosaSessionTemplate(SessionHolder sessionHolder) {
-        this();
-        this.sessionHolder = sessionHolder;
-        this.setSessionFactory(sessionFactory);
-    }
-
-    public MimosaSessionTemplate(SessionFactory sessionFactory, SessionHolder sessionHolder) {
-        this();
-        this.sessionHolder = sessionHolder;
         this.sessionFactory = sessionFactory;
         this.setSessionFactory(sessionFactory);
     }
@@ -195,36 +178,28 @@ public class MimosaSessionTemplate implements SessionTemplate {
     }
 
     private class SessionInterceptor implements InvocationHandler {
-        private SessionHolder sessionHolder;
-
-        public synchronized void setSessionHolder(SessionHolder sessionHolder) {
-            this.sessionHolder = sessionHolder;
-        }
 
         public synchronized SessionHolder getSessionHolder() {
-            if (this.sessionHolder == null) {
-                Configuration configuration = sessionFactory.getConfiguration();
-                TransactionFactory transactionFactory = configuration.getTransactionFactory();
-                if (transactionFactory != null) {
-                    this.sessionHolder = transactionFactory.newSessionHolder();
-                } else {
-                    this.sessionHolder = new SimpleSessionHolder();
-                }
+            SessionHolder sessionHolder = null;
+            Configuration configuration = sessionFactory.getConfiguration();
+            TransactionFactory transactionFactory = configuration.getTransactionFactory();
+            if (transactionFactory != null) {
+                sessionHolder = transactionFactory.newSessionHolder();
+            } else {
+                sessionHolder = new SimpleSessionHolder();
             }
             return sessionHolder;
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (this.sessionHolder == null) {
-                this.getSessionHolder();
-            }
+            SessionHolder sessionHolder = this.getSessionHolder();
             AssistUtils.isNull(sessionFactory, I18n.print("must_set_factory"));
-            Session session = this.sessionHolder.getSession(sessionFactory);
+            Session session = sessionHolder.getSession(sessionFactory);
             Object object = null;
             try {
                 object = method.invoke(session, args);
-                if (this.sessionHolder == null || !this.sessionHolder.isSessionTransactional(session)) {
+                if (sessionHolder == null || !sessionHolder.isSessionTransactional(session)) {
                     // 现在是Session内部没有设置autocommit的状态，以后如果改的话则这里需要重置设置
                     // session.commit(true);
                 }
@@ -234,8 +209,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
                 }
                 throw throwable;
             } finally {
-                if (this.sessionHolder != null) {
-                    this.sessionHolder.close();
+                if (sessionHolder != null) {
+                    sessionHolder.close();
                 }
             }
             return object;
