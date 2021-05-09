@@ -15,7 +15,7 @@ public class CompareMappingFactory {
             return new NothingCompareMapping(mappingGlobalWrapper, dataSourceWrapper);
         }
         if (level == MappingLevel.CREATE) {
-            return new AddCompareMapping(mappingGlobalWrapper, dataSourceWrapper);
+            return new CreateCompareMapping(mappingGlobalWrapper, dataSourceWrapper);
         }
         if (level == MappingLevel.UPDATE) {
             return new UpdateCompareMapping(mappingGlobalWrapper, dataSourceWrapper);
