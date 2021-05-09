@@ -10,6 +10,7 @@ public class ModuleException extends RuntimeException {
     public ModuleException(ModelCheckerException e) {
         super(e.getMessage());
         this.code = -100;
+        e.printStackTrace();
     }
 
     public ModuleException(String code) {
@@ -25,6 +26,7 @@ public class ModuleException extends RuntimeException {
     public ModuleException(String code, String message, Throwable throwable) {
         super(message, throwable);
         this.code = code;
+        throwable.printStackTrace();
     }
 
     public ModuleException(int code) {
@@ -40,6 +42,7 @@ public class ModuleException extends RuntimeException {
     public ModuleException(int code, String message, Throwable throwable) {
         super(message, throwable);
         this.code = code;
+        throwable.printStackTrace();
     }
 
     public Object getCode() {

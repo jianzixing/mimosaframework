@@ -73,6 +73,7 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
 
     @Override
     public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
-        return new MimosaHandlerMethodExceptionResolver();
+        MimosaHandlerMethodExceptionResolver resolver = new MimosaHandlerMethodExceptionResolver();
+        return resolver;
     }
 }

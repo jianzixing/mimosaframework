@@ -69,7 +69,6 @@ public class ResponseMessage {
         if (data instanceof ModuleException) {
             this.code = ((ModuleException) data).getCode();
             this.msg = ((ModuleException) data).getMessage();
-            ((ModuleException) data).printStackTrace();
         } else if (data instanceof ModelCheckerException) {
             Object code = ((ModelCheckerException) data).getCode();
             if (code == null) code = -100;
