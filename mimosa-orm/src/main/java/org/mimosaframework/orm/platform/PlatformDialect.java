@@ -10,8 +10,11 @@ import org.mimosaframework.orm.sql.StructureBuilder;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.sql.alter.DefaultSQLAlterBuilder;
 import org.mimosaframework.orm.sql.create.ColumnTypeBuilder;
+import org.mimosaframework.orm.sql.create.CreateAnyBuilder;
+import org.mimosaframework.orm.sql.create.CreateFactory;
 import org.mimosaframework.orm.sql.create.DefaultSQLCreateBuilder;
 import org.mimosaframework.orm.sql.drop.DefaultSQLDropBuilder;
+import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.insert.DefaultSQLInsertBuilder;
 import org.mimosaframework.orm.sql.rename.DefaultSQLRenameBuilder;
 import org.mimosaframework.orm.sql.select.DefaultSQLSelectBuilder;
@@ -450,9 +453,10 @@ public abstract class PlatformDialect implements Dialect {
                     && mappingField.isMappingFieldUnique() != unique) {
                 if (mappingField.isMappingFieldUnique()) {
                     this.createIndex(mappingTable, mappingField, true);
-                }
-                if (unique) {
-                    this.dropIndex(mappingTable, mappingField);
+
+                    if (unique) {
+                        this.dropIndex(mappingTable, mappingField, true);
+                    }
                 }
             }
 
@@ -465,7 +469,7 @@ public abstract class PlatformDialect implements Dialect {
 
             if (((pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey()) && (unique || index))
                     || (mappingField.isMappingFieldUnique() && index)) {
-                this.dropIndex(mappingTable, mappingField);
+                this.dropIndex(mappingTable, mappingField, false);
             }
         }
     }
@@ -478,7 +482,13 @@ public abstract class PlatformDialect implements Dialect {
      * @param unique
      */
     protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) throws SQLException {
-
+        String tableName = mappingTable.getMappingTableName();
+        String indexName = (unique ? "uk_" : "idx_") + mappingField.getMappingColumnName();
+        CreateAnyBuilder builder = CreateFactory.create();
+        if (unique) builder.unique();
+        StampAction stampAction = builder.index().name(indexName).on().table(tableName)
+                .columns(mappingField.getMappingColumnName()).compile();
+        this.runner(stampAction);
     }
 
     /**
@@ -487,8 +497,12 @@ public abstract class PlatformDialect implements Dialect {
      * @param mappingTable
      * @param mappingField
      */
-    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) throws SQLException {
-
+    protected void dropIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) throws SQLException {
+        String tableName = mappingTable.getMappingTableName();
+        String indexName = (unique ? "uk_" : "idx_") + mappingField.getMappingColumnName();
+        StampAction stampAction = DropFactory.drop().index()
+                .name(indexName).on().table(tableName).compile();
+        this.runner(stampAction);
     }
 
     /**

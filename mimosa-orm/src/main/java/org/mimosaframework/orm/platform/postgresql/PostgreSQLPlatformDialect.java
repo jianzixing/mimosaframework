@@ -1,12 +1,8 @@
 package org.mimosaframework.orm.platform.postgresql;
 
-import org.mimosaframework.orm.mapping.MappingField;
-import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.ColumnCompareType;
 import org.mimosaframework.orm.platform.PlatformDialect;
 import org.mimosaframework.orm.platform.SQLBuilderCombine;
-import org.mimosaframework.orm.sql.create.CreateFactory;
-import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.Connection;
@@ -131,24 +127,5 @@ public class PostgreSQLPlatformDialect extends PlatformDialect {
     @Override
     public boolean isSupportGeneratedKeys() {
         return true;
-    }
-
-    @Override
-    protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) throws SQLException {
-        String tableName = mappingTable.getMappingTableName();
-        String indexName = "idx_" + mappingField.getMappingColumnName();
-        StampAction stampAction = CreateFactory.create()
-                .index().name(indexName).on().table(tableName)
-                .columns(mappingField.getMappingColumnName()).compile();
-        this.runner(stampAction);
-    }
-
-    @Override
-    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) throws SQLException {
-        String tableName = mappingTable.getMappingTableName();
-        String indexName = "idx_" + mappingField.getMappingColumnName();
-        StampAction stampAction = DropFactory.drop().index()
-                .name(indexName).on().table(tableName).compile();
-        this.runner(stampAction);
     }
 }

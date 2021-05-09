@@ -3,11 +3,7 @@ package org.mimosaframework.orm.platform.oracle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.orm.mapping.MappingField;
-import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
-import org.mimosaframework.orm.sql.create.CreateFactory;
-import org.mimosaframework.orm.sql.drop.DropFactory;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.sql.SQLException;
@@ -167,24 +163,5 @@ public class OraclePlatformDialect extends PlatformDialect {
     @Override
     public boolean isSupportGeneratedKeys() {
         return false;
-    }
-
-    @Override
-    protected void createIndex(MappingTable mappingTable, MappingField mappingField, boolean unique) throws SQLException {
-        String tableName = mappingTable.getMappingTableName();
-        String indexName = "idx_" + mappingField.getMappingColumnName();
-        StampAction stampAction = CreateFactory.create()
-                .index().name(indexName).on().table(tableName)
-                .columns(mappingField.getMappingColumnName()).compile();
-        this.runner(stampAction);
-    }
-
-    @Override
-    protected void dropIndex(MappingTable mappingTable, MappingField mappingField) throws SQLException {
-        String tableName = mappingTable.getMappingTableName();
-        String indexName = "idx_" + mappingField.getMappingColumnName();
-        StampAction stampAction = DropFactory.drop().index()
-                .name(indexName).on().table(tableName).compile();
-        this.runner(stampAction);
     }
 }
