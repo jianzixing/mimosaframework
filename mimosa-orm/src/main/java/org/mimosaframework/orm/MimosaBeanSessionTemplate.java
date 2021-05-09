@@ -185,9 +185,11 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     @Override
     public <T> T get(Query query) {
         ModelObject result = modelSession.get(query);
-        List list = this.model2JavaObject(query, Arrays.asList(result));
-        if (list != null && list.size() > 0) {
-            return (T) list.get(0);
+        if (result != null) {
+            List list = this.model2JavaObject(query, Arrays.asList(result));
+            if (list != null && list.size() > 0) {
+                return (T) list.get(0);
+            }
         }
         return null;
     }
