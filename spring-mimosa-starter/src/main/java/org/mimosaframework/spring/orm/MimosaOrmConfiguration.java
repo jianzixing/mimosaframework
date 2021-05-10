@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * 由于使用了@ConditionalOnSingleCandidate(DataSource.class)这个注解
@@ -30,10 +31,16 @@ public class MimosaOrmConfiguration implements InitializingBean {
 
     @Bean
     @ConditionalOnMissingBean
-    public SpringMimosaSessionFactory mimosaSessionFactory(DataSource dataSource) throws Exception {
+    public MimosaOrmDataSources mimosaOrmDataSources(DataSource dataSource) throws SQLException {
+        return new MimosaOrmDataSources(dataSource);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringMimosaSessionFactory mimosaSessionFactory(MimosaOrmDataSources mimosaOrmDataSources) throws Exception {
         SpringMimosaSessionFactory springMimosaSessionFactory = new SpringMimosaSessionFactory();
         // 将autoConfigurationProperties中的值添加到这里
-        springMimosaSessionFactory.setDataSource(dataSource);
+        springMimosaSessionFactory.setDataSources(mimosaOrmDataSources.getDataSources());
         springMimosaSessionFactory.setApplicationName(mimosaOrmProperties.getApplicationName());
         springMimosaSessionFactory.setScanPackage(mimosaOrmProperties.getScanPackage());
         springMimosaSessionFactory.setMapper(mimosaOrmProperties.getMapper());
