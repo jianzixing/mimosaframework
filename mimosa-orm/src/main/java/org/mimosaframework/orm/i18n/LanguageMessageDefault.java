@@ -287,6 +287,7 @@ public class LanguageMessageDefault implements MessagesRegister {
 
         // MimosaBeanSessionTemplate
         words.put("model_to_bean_error", "Map转换成JavaBean出错,无法设置字段 %s 的值为 %s");
+        words.put("model_to_bean_error_2", "Map转换成JavaBean出错");
 
         // MimosaSessionFactory
         words.put("create_new_session_error", "创建一个新的Session对象出错");
