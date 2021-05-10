@@ -4,22 +4,24 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.DefaultFilterPackageClass;
 import org.mimosaframework.core.utils.FilterPackageClass;
 import org.mimosaframework.core.utils.StringTools;
-import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 
 import javax.sql.DataSource;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class BuilderUtils {
-    public static Set<Class> getMappingClass(String mappingClassPackage, Set<String> additionClasses) throws ContextException {
+    public static Set<Class> getMappingClass(Class<? extends Annotation> annotation,
+                                             String mappingClassPackage,
+                                             Set<String> additionClasses) throws ContextException {
         FilterPackageClass filterPackageClass = new DefaultFilterPackageClass();
         filterPackageClass.setPackagePath(Arrays.asList(new String[]{mappingClassPackage}));
-        Set<Class> classes = filterPackageClass.getScanClass(Table.class);
+        Set<Class> classes = filterPackageClass.getScanClass(annotation);
         if (classes == null && additionClasses != null && additionClasses.size() > 0) {
             classes = new LinkedHashSet<>();
         }

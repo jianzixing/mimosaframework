@@ -1,5 +1,6 @@
 package org.mimosaframework.springmvc;
 
+import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.springmvc.i18n.I18n;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
@@ -12,6 +13,7 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
     private List<HandlerMethodArgumentResolver> beforeArgumentResolvers;
     private List<HandlerMethodReturnValueHandler> beforeReturnValueHandlers;
     private String defaultContentType = null;
+    private ModelObjectArgumentResolver resolver = new ModelObjectArgumentResolver();
 
     static {
         I18n.register();
@@ -21,13 +23,17 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
         this.defaultContentType = defaultContentType;
     }
 
+    public void setPackages(String[] packages) throws ContextException {
+        resolver.setPackages(packages);
+    }
+
     @Override
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
 
         List<HandlerMethodArgumentResolver> fixResolvers = this.getArgumentResolvers();
         List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>(fixResolvers);
-        resolvers.add(0, new ModelObjectArgumentResolver());
+        resolvers.add(0, resolver);
         if (beforeArgumentResolvers != null) {
             for (HandlerMethodArgumentResolver resolver : beforeArgumentResolvers) {
                 resolvers.add(1, resolver);

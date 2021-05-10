@@ -1,6 +1,7 @@
 package org.mimosaframework.spring.mvc;
 
 import org.mimosaframework.orm.MimosaSessionTemplate;
+import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.spring.SpringMimosaSessionTemplate;
 import org.mimosaframework.springmvc.MimosaHandlerMethodExceptionResolver;
 import org.mimosaframework.springmvc.MimosaRequestHandlerAdapter;
@@ -60,6 +61,11 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
         MimosaRequestHandlerAdapter requestMappingHandlerAdapter = new MimosaRequestHandlerAdapter();
         requestMappingHandlerAdapter.setBeforeArgumentResolvers(this.getArgsResolver());
         requestMappingHandlerAdapter.setBeforeReturnValueHandlers(this.getReturnHandler());
+        try {
+            requestMappingHandlerAdapter.setPackages(this.getPackages());
+        } catch (ContextException e) {
+            e.printStackTrace();
+        }
         return requestMappingHandlerAdapter;
     }
 
@@ -68,6 +74,10 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
     }
 
     protected List<HandlerMethodArgumentResolver> getArgsResolver() {
+        return null;
+    }
+
+    protected String[] getPackages() {
         return null;
     }
 

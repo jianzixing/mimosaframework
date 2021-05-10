@@ -2,6 +2,7 @@ package org.mimosaframework.orm.builder;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
@@ -15,7 +16,7 @@ public abstract class AbstractConfigBuilder implements ConfigBuilder {
     protected Set<Class> getMappingClass() throws ContextException {
         String mappingClassPackage = this.getMappingClassPackage();
         Set<String> additionClasses = this.getAdditionMappingClass();
-        return BuilderUtils.getMappingClass(mappingClassPackage, additionClasses);
+        return BuilderUtils.getMappingClass(Table.class, mappingClassPackage, additionClasses);
     }
 
     protected NamingConvert getConvert(String convertClass, String convertName, Map properties) throws ContextException {
