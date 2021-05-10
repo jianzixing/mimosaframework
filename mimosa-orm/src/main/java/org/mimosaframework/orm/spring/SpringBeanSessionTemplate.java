@@ -31,6 +31,11 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
+    public <T> T execute(TransactionExecutor<T> executor) {
+        return sessionTemplate.execute(executor);
+    }
+
+    @Override
     public <T> T save(T obj) {
         return sessionTemplate.save(obj);
     }

@@ -413,4 +413,9 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     public TransactionManager beginTransaction(Object config) {
         return modelSession.beginTransaction(config);
     }
+
+    @Override
+    public <T> T execute(TransactionExecutor<T> executor) {
+        return modelSession.execute(executor);
+    }
 }

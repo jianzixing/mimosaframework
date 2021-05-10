@@ -33,6 +33,11 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
+    public <T> T execute(TransactionExecutor<T> executor) {
+        return sessionTemplate.execute(executor);
+    }
+
+    @Override
     public ModelObject save(ModelObject obj) {
         return sessionTemplate.save(obj);
     }

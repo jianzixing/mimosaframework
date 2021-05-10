@@ -6,4 +6,6 @@ public interface TransactionTemplate {
     TransactionManager beginTransaction();
 
     TransactionManager beginTransaction(Object config);
+
+    <T> T execute(TransactionExecutor<T> executor);
 }

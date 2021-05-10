@@ -177,6 +177,22 @@ public class MimosaSessionTemplate implements SessionTemplate {
         return transactionFactory.newTransactionManager(sessionFactory, config);
     }
 
+    @Override
+    public <T> T execute(TransactionExecutor<T> executor) {
+        TransactionManager manager = null;
+        try {
+            manager = this.beginTransaction();
+            T t = executor.execute(manager);
+            manager.commit();
+            return t;
+        } catch (Throwable e) {
+            if (manager != null) {
+                manager.rollback();
+            }
+            throw new TransactionException(I18n.print("fail_rollback"), e);
+        }
+    }
+
     private class SessionInterceptor implements InvocationHandler {
 
         public synchronized SessionHolder getSessionHolder() {
