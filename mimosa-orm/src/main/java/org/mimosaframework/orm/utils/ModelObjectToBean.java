@@ -22,6 +22,8 @@ public class ModelObjectToBean implements Model2BeanFactory {
 
     public <T> void toJavaObject(ModelObject object, T obj) {
         if (object != null) {
+            String fieldName = null;
+            Object value = null;
             try {
                 Class c = obj.getClass();
                 Field[] fields = c.getDeclaredFields();
@@ -38,8 +40,9 @@ public class ModelObjectToBean implements Model2BeanFactory {
 
                     Object param = object.get(keyName);
                     Object r = type2type(param, field.getType());
+                    value = r;
 
-                    String fieldName = field.getName();
+                    fieldName = field.getName();
                     String setName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                     Method method = c.getMethod("set" + setName, field.getType());
                     if (method != null) {
@@ -60,7 +63,8 @@ public class ModelObjectToBean implements Model2BeanFactory {
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException(I18n.print("model_to_bean_error"), e);
+                throw new RuntimeException(I18n.print("model_to_bean_error",
+                        fieldName, "" + value), e);
             }
         }
     }
