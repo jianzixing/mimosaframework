@@ -30,7 +30,7 @@ public final class StringTools {
     }
 
     public static boolean isNumber(String str) {
-        NumberType type = NumberUtils.getNumberType(str);
+        NumberUtils.NumberType type = NumberUtils.getNumberType(str);
         return type == null ? false : true;
     }
 

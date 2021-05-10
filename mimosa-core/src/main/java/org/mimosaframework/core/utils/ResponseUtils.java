@@ -279,7 +279,7 @@ public class ResponseUtils {
         contentTypes.put("tg4", "application/x-tg4");
         contentTypes.put("tga", "application/x-tga");
         contentTypes.put("tif", "image/tiff");
-        contentTypes.put("tif", "application/x-tif");
+        // contentTypes.put("tif", "application/x-tif");
         contentTypes.put("tiff", "image/tiff");
         contentTypes.put("tld", "text/xml");
         contentTypes.put("top", "drawing/x-top");
