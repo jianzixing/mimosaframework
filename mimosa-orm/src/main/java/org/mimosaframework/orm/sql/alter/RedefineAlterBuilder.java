@@ -16,7 +16,6 @@ public interface RedefineAlterBuilder
         ColumnBuilder,
         ColumnTypeBuilder,
         AutoIncrementBuilder,
-        AfterBuilder,
         AbsColumnBuilder,
         CommentBuilder,
         AlterDropBuilder,
@@ -26,5 +25,8 @@ public interface RedefineAlterBuilder
         ToBuilder,
         AbsIntBuilder,
         AbsColumnsBuilder,
+        AfterBuilder,
+        FirstBuilder,
+        BeforeBuilder,
         ColumnAssistBuilder {
 }

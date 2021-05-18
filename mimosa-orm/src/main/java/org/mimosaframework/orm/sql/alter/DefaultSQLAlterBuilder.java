@@ -75,6 +75,8 @@ public class DefaultSQLAlterBuilder
         StampAlterItem item = this.getLastItem();
         if (this.previous("after")) {
             item.after = new StampColumn(field);
+        } else if (this.previous("before")) {
+            item.before = new StampColumn(field);
         } else if (this.getPointNext(1).equals("index")
                 || this.getPointNext(1).equals("fullText")
                 || this.getPointNext(1).equals("unique")
@@ -117,6 +119,19 @@ public class DefaultSQLAlterBuilder
     public DefaultSQLAlterBuilder after() {
         this.gammars.add("after");
         return this;
+    }
+
+    @Override
+    public DefaultSQLAlterBuilder before() {
+        this.gammars.add("before");
+        return this;
+    }
+
+    @Override
+    public void first() {
+        StampAlterItem item = this.getLastItem();
+        item.first = true;
+        this.gammars.add("first");
     }
 
     @Override

@@ -72,13 +72,13 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public Update set(Object key, Object value) {
+    public Update set(Serializable key, Object value) {
         values.put(key, value);
         return this;
     }
 
     @Override
-    public LogicUpdate addSelf(Object key) {
+    public LogicUpdate addSelf(Serializable key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.ADD_SELF);
         values.put(key, v);
@@ -86,7 +86,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate subSelf(Object key) {
+    public LogicUpdate subSelf(Serializable key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         values.put(key, v);
@@ -94,7 +94,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate addSelf(Object key, Integer step) {
+    public LogicUpdate addSelf(Serializable key, Integer step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.ADD_SELF);
         v.setStep(step);
@@ -103,7 +103,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate subSelf(Object key, Integer step) {
+    public LogicUpdate subSelf(Serializable key, Integer step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
@@ -112,7 +112,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate addSelf(Object key, String step) {
+    public LogicUpdate addSelf(Serializable key, String step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.ADD_SELF);
         v.setStep(step);
@@ -121,7 +121,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate subSelf(Object key, String step) {
+    public LogicUpdate subSelf(Serializable key, String step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);

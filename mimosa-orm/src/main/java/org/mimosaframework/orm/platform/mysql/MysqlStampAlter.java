@@ -151,9 +151,8 @@ public class MysqlStampAlter extends PlatformStampAlter {
         }
         if (column.after != null) {
             sb.append(" AFTER " + this.reference.getColumnName(wrapper, alter, column.after));
-        }
-        if (column.before != null) {
-            sb.append(" BEFORE " + this.reference.getColumnName(wrapper, alter, column.before));
+        } else if (column.first) {
+            sb.append(" FIRST");
         }
     }
 }

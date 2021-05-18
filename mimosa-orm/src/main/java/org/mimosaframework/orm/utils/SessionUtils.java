@@ -117,7 +117,7 @@ public final class SessionUtils {
             if (!isPk) {
                 MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(key));
                 if (mappingField != null) {
-                    update.set(key, entry.getValue());
+                    update.set(String.valueOf(key), entry.getValue());
                 }
             }
         }

@@ -6,6 +6,7 @@ public class StampAlterItem extends StampTableColumn {
 
     public StampColumn after;
     public StampColumn before;
+    public boolean first;
 
     // primary key name
     public String indexName;

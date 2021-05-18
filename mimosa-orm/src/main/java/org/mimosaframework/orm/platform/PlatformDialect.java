@@ -388,7 +388,33 @@ public abstract class PlatformDialect implements Dialect {
             }
         }
 
+        Set<MappingField> fields = mappingTable.getMappingFields();
+        MappingField after = null, before = null;
+        Iterator<MappingField> iterator = fields.iterator();
+        while (iterator.hasNext()) {
+            MappingField f = iterator.next();
+            if (f == mappingField) {
+                break;
+            }
+            after = f;
+        }
+        before = iterator.hasNext() ? iterator.next() : null;
+
+        this.commonAddColumnAfter(sql, after, before);
+
         return sql.compile();
+    }
+
+    protected void commonAddColumnAfter(DefaultSQLAlterBuilder sql, MappingField after, MappingField before) {
+        if (after == null) {
+            sql.first();
+        }
+        if (after != null) {
+            sql.after().column(after.getMappingColumnName());
+        }
+        if (before != null) {
+            sql.before().column(before.getMappingColumnName());
+        }
     }
 
     protected StampAlter commonDropColumn(MappingTable mappingTable, TableColumnStructure structure) {
