@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ResponsePageMessage extends ResponseMessage {
     private long total;
-    private List<ModelObject> records;
+    private List<ModelObject> data;
     private ModelObject page;
 
     public ResponsePageMessage(Object data) {
@@ -23,8 +23,8 @@ public class ResponsePageMessage extends ResponseMessage {
         super(code, msg);
     }
 
-    public ResponsePageMessage(List<ModelObject> records) {
-        this.records = records;
+    public ResponsePageMessage(List<ModelObject> data) {
+        this.data = data;
         this.setCode(100);
     }
 
@@ -40,14 +40,14 @@ public class ResponsePageMessage extends ResponseMessage {
     public ResponsePageMessage(Paging paging) {
         if (paging != null) {
             this.total = paging.getCount();
-            this.records = paging.getObjects();
+            this.data = paging.getObjects();
         }
         this.setCode(100);
     }
 
-    public ResponsePageMessage(long total, List<ModelObject> records) {
+    public ResponsePageMessage(long total, List<ModelObject> data) {
         this.total = total;
-        this.records = records;
+        this.data = data;
         this.setCode(100);
     }
 
@@ -64,12 +64,13 @@ public class ResponsePageMessage extends ResponseMessage {
         this.total = total;
     }
 
-    public List<ModelObject> getRecords() {
-        return records;
+    @Override
+    public List<ModelObject> getData() {
+        return data;
     }
 
-    public void setRecords(List<ModelObject> records) {
-        this.records = records;
+    public void setData(List<ModelObject> data) {
+        this.data = data;
     }
 
     public ModelObject getPage() {
