@@ -1,5 +1,6 @@
 package org.mimosaframework.core.utils;
 
+import org.mimosaframework.core.exception.ModuleException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -19,6 +20,15 @@ public class UploadManager {
     private String path;
     private List<String> allowFile;
     private String url;
+    private Map<String, Long> maxSize;
+
+    public Map<String, Long> getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(Map<String, Long> maxSize) {
+        this.maxSize = maxSize;
+    }
 
     public String getUrl() {
         return url;
@@ -51,21 +61,32 @@ public class UploadManager {
                 Iterator<Map.Entry<String, MultipartFile>> iterator = fileMap.entrySet().iterator();
                 List<FileItem> lists = new ArrayList<>();
                 while (iterator.hasNext()) {
+                    MultipartFile file = iterator.next().getValue();
+                    String fileName = file.getOriginalFilename().toLowerCase();
+                    String fileType = null;
+                    if (fileName.indexOf(".") >= 0) {
+                        fileType = fileName.split("\\.")[1];
+                    }
+                    long size = file.getSize();
+                    if (this.maxSize != null) {
+                        Long max = this.maxSize.get(fileType);
+                        if (max != null && size > max) {
+                            throw new ModuleException("file_size_max", "文件太大禁止上传");
+                        }
+                    }
+
                     FileItem fileItem = new FileItem();
                     lists.add(fileItem);
                     fileItem.setUrl(this.url);
-                    MultipartFile file = iterator.next().getValue();
                     fileItem.setMultipartFile(file);
-                    String fileName = file.getOriginalFilename().toLowerCase();
                     fileItem.setOldFileName(file.getOriginalFilename());
-                    if (fileName.indexOf(".") >= 0) {
-                        String type = fileName.split("\\.")[1];
-                        fileItem.setType(type);
-                        if (!this.allowFile.contains(type.toLowerCase())) {
+                    if (fileType != null) {
+                        fileItem.setType(fileType);
+                        if (!this.allowFile.contains(fileType.toLowerCase())) {
                             fileItem.setErrorCode(-100);
                             continue;
                         }
-                        String newFileName = UUID.randomUUID().toString().replaceAll("-", "") + "." + type;
+                        String newFileName = UUID.randomUUID().toString().replaceAll("-", "") + "." + fileType;
                         String filePath = path;
                         File dest = new File(filePath + File.separator + newFileName);
                         if (!dest.getParentFile().exists()) {
