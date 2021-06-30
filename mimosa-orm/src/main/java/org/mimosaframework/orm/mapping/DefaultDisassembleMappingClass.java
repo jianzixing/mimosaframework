@@ -229,7 +229,12 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             mappingField.setMappingFieldType(long.class);
         } else {
             if (isEnum == false) {
-                mappingField.setMappingFieldType(((Field) fieldObject).getType());
+                Class type = ((Field) fieldObject).getType();
+                if (column.type() != String.class && column.type() != type) {
+                    // 如果注解里使用了自定义的类型则注解优先
+                    type = column.type();
+                }
+                mappingField.setMappingFieldType(type);
             } else {
                 mappingField.setMappingFieldType(column.type());
             }

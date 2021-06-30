@@ -21,6 +21,15 @@ public class UploadManager {
     private List<String> allowFile;
     private String url;
     private Map<String, Long> maxSize;
+    private boolean throwOutError = true;
+
+    public boolean isThrowOutError() {
+        return throwOutError;
+    }
+
+    public void setThrowOutError(boolean throwOutError) {
+        this.throwOutError = throwOutError;
+    }
 
     public Map<String, Long> getMaxSize() {
         return maxSize;
@@ -63,6 +72,7 @@ public class UploadManager {
                 while (iterator.hasNext()) {
                     MultipartFile file = iterator.next().getValue();
                     String fileName = file.getOriginalFilename().toLowerCase();
+                    FileItem fileItem = new FileItem();
                     String fileType = null;
                     if (fileName.indexOf(".") >= 0) {
                         fileType = fileName.split("\\.")[1];
@@ -71,11 +81,15 @@ public class UploadManager {
                     if (this.maxSize != null) {
                         Long max = this.maxSize.get(fileType);
                         if (max != null && size > max) {
-                            throw new ModuleException("file_size_max", "文件太大禁止上传");
+                            if (this.throwOutError) {
+                                throw new ModuleException("file_size_max", "文件太大禁止上传");
+                            } else {
+                                fileItem.setErrorCode(-150);
+                                continue;
+                            }
                         }
                     }
 
-                    FileItem fileItem = new FileItem();
                     lists.add(fileItem);
                     fileItem.setUrl(this.url);
                     fileItem.setMultipartFile(file);
@@ -83,8 +97,12 @@ public class UploadManager {
                     if (fileType != null) {
                         fileItem.setType(fileType);
                         if (!this.allowFile.contains(fileType.toLowerCase())) {
-                            fileItem.setErrorCode(-100);
-                            continue;
+                            if (this.throwOutError) {
+                                throw new ModuleException("file_not_allow", "文件" + fileType + "格式不允许上传");
+                            } else {
+                                fileItem.setErrorCode(-100);
+                                continue;
+                            }
                         }
                         String newFileName = UUID.randomUUID().toString().replaceAll("-", "") + "." + fileType;
                         String filePath = path;
@@ -97,14 +115,22 @@ public class UploadManager {
                         try {
                             file.transferTo(dest);
                         } catch (IOException e) {
-                            e.printStackTrace();
-                            fileItem.setErrorCode(-110);
-                            fileItem.setThrowable(e);
-                            continue;
+                            if (this.throwOutError) {
+                                throw new ModuleException("file_write_error", "文件写入出错", e);
+                            } else {
+                                e.printStackTrace();
+                                fileItem.setErrorCode(-110);
+                                fileItem.setThrowable(e);
+                                continue;
+                            }
                         }
                     } else {
-                        fileItem.setErrorCode(-120);
-                        continue;
+                        if (this.throwOutError) {
+                            throw new ModuleException("file_not_type", "文件必须包含格式后缀名");
+                        } else {
+                            fileItem.setErrorCode(-120);
+                            continue;
+                        }
                     }
                 }
                 return lists;
