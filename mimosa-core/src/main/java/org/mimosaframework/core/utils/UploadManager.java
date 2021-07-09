@@ -75,7 +75,8 @@ public class UploadManager {
                     FileItem fileItem = new FileItem();
                     String fileType = null;
                     if (fileName.indexOf(".") >= 0) {
-                        fileType = fileName.split("\\.")[1];
+                        String[] s1 = fileName.split("\\.");
+                        fileType = s1[s1.length - 1];
                     }
                     long size = file.getSize();
                     if (this.maxSize != null) {
@@ -134,6 +135,39 @@ public class UploadManager {
                     }
                 }
                 return lists;
+            }
+        }
+        return null;
+    }
+
+    public int uploadFileCount(HttpServletRequest request) {
+        if (request instanceof MultipartHttpServletRequest) {
+            int c = 0;
+            if (((MultipartHttpServletRequest) request).getMultiFileMap() != null) {
+                Set<Map.Entry<String, List<MultipartFile>>> set = ((MultipartHttpServletRequest) request).getMultiFileMap().entrySet();
+                if (set != null) {
+                    for (Map.Entry<String, List<MultipartFile>> entry : set) {
+                        if (entry.getValue() != null) {
+                            c += entry.getValue().size();
+                        }
+                    }
+                }
+            }
+            return c;
+        }
+        return 0;
+    }
+
+    public String getUploadFileType(HttpServletRequest request) {
+        if (request instanceof MultipartHttpServletRequest) {
+            if (((MultipartHttpServletRequest) request).getMultiFileMap() != null) {
+                List<MultipartFile> list = ((MultipartHttpServletRequest) request).getMultiFileMap().entrySet().iterator().next().getValue();
+                if (list != null && list.size() > 0) {
+                    MultipartFile file = list.get(0);
+                    String name = file.getOriginalFilename();
+                    String[] s1 = name.split("\\.");
+                    return s1.length > 1 ? s1[s1.length - 1] : null;
+                }
             }
         }
         return null;
