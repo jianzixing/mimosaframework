@@ -17,6 +17,7 @@ public abstract class CommonOperatorSQLBuilder<T extends CommonOperatorSQLBuilde
         AbsValueBuilder,
         OperatorFunctionBuilder {
 
+    protected StampWhere where = null;
     protected StampWhere lastWhere = null;
 
     @Override
@@ -24,7 +25,12 @@ public abstract class CommonOperatorSQLBuilder<T extends CommonOperatorSQLBuilde
         this.gammars.add("wrapper");
         if (builder instanceof AboutChildBuilder) {
             StampWhere where = new StampWhere();
-            this.lastWhere.next = where;
+            if (this.lastWhere == null && this.where == null) {
+                this.where = where;
+            }
+            if (this.lastWhere != null) {
+                this.lastWhere.next = where;
+            }
             this.lastWhere = where;
             this.lastWhere.whereType = KeyWhereType.WRAP;
             this.lastWhere.wrapWhere = ((AboutChildBuilder) builder).getStampWhere();

@@ -22,7 +22,6 @@ public class DefaultSQLSelectBuilder
     protected List<StampSelectJoin> joins = new ArrayList<>();
     protected StampSelectJoin lastJoin = null;
 
-    protected StampWhere where = null;
     protected StampWhere having = null;
     protected List<StampOrderBy> orderBys = new ArrayList<>();
     protected StampOrderBy lastOrderBy = null;

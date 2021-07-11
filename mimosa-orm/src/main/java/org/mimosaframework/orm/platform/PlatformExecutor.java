@@ -1119,7 +1119,11 @@ public class PlatformExecutor {
                 } else if (link != null) {
                     SimpleCommonWhereBuilder builderWraps = new SimpleCommonWhereBuilder();
                     this.buildWraps(builderWraps, table, link, hasJoins, query);
-                    ((DefaultSQLSelectBuilder) builder).wrapper(builderWraps);
+                    if (builder instanceof SimpleCommonWhereBuilder) {
+                        ((SimpleCommonWhereBuilder) builder).wrapper(builderWraps);
+                    } else {
+                        ((DefaultSQLSelectBuilder) builder).wrapper(builderWraps);
+                    }
                 }
 
                 if (wrapsIterator.hasNext()) {

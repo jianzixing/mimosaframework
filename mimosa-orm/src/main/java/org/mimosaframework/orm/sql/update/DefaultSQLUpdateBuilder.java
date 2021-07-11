@@ -16,7 +16,6 @@ public class DefaultSQLUpdateBuilder
 
     protected StampUpdate stampUpdate = new StampUpdate();
 
-    protected StampWhere where = null;
     protected List<StampOrderBy> orderBys = new ArrayList<>();
     protected StampOrderBy lastOrderBy = null;
     protected List<StampUpdateItem> items = new ArrayList<>();

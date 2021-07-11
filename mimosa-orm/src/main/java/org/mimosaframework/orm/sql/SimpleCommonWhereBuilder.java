@@ -18,8 +18,6 @@ public class SimpleCommonWhereBuilder
         BetweenValueBuilder,
         AbsValueBuilder {
 
-    protected StampWhere where = null;
-
     @Override
     public Object column(Serializable field) {
         this.gammars.add("column");

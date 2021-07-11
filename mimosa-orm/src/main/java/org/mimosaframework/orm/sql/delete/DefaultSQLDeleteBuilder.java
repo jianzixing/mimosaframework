@@ -16,7 +16,6 @@ public class DefaultSQLDeleteBuilder
 
     protected StampDelete stampDelete = new StampDelete();
     protected StampFrom stampFrom;
-    protected StampWhere where = null;
     protected List<StampOrderBy> orderBys = new ArrayList<>();
     protected StampOrderBy lastOrderBy = null;
 
