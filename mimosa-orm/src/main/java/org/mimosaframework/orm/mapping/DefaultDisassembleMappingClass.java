@@ -254,6 +254,17 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             mappingField.setMappingFieldDefaultValue(column.defaultValue());
         }
 
+        Class c = mappingField.getMappingFieldType();
+        if (Boolean.class == c || boolean.class == c) {
+            String df = mappingField.getMappingFieldDefaultValue();
+            if ("false".equalsIgnoreCase(df)) {
+                mappingField.setMappingFieldDefaultValue("0");
+            }
+            if ("true".equalsIgnoreCase(df)) {
+                mappingField.setMappingFieldDefaultValue("1");
+            }
+        }
+
         if (column.strategy().equals(AutoIncrementStrategy.class)) {
             mappingField.setMappingFieldAutoIncrement(true);
             if (mappingField.getMappingFieldType() != short.class
