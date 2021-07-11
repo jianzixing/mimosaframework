@@ -45,7 +45,7 @@ public final class Criteria {
         return new DefaultWrapsLinked();
     }
 
-    public static final WrapsLinked<LogicWrapsLinked> linked(WrapsLinked<LogicWrapsLinked> l) {
+    public static final LogicWrapsLinked linked(WrapsLinked<LogicWrapsLinked> l) {
         DefaultWrapsLinked linked = new DefaultWrapsLinked();
         linked.linked(l);
         return linked;
