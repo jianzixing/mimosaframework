@@ -98,12 +98,26 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> void update(T obj) {
+    public <T> void update(T update) {
+        Object obj = update;
+        if (update instanceof UpdateObject) {
+            obj = ((UpdateObject) obj).get();
+        }
         Object json = ModelObject.toJSON(obj);
         if (json instanceof ModelObject) {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
             model.clearNull();
+            if (update instanceof UpdateObject) {
+                Serializable[] fields = ((UpdateObject) update).getNullFields();
+                if (fields != null) {
+                    for (Serializable f : fields) {
+                        if (f != null) {
+                            model.put(f.toString(), null);
+                        }
+                    }
+                }
+            }
             modelSession.update(model);
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
@@ -114,13 +128,27 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     public <T> void update(List<T> objects) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
-            for (T object : objects) {
+            for (T update : objects) {
                 if (updates == null) updates = new ArrayList<>();
+                Object object = update;
+                if (update instanceof UpdateObject) {
+                    object = ((UpdateObject) object).get();
+                }
                 Object json = ModelObject.toJSON(object);
                 if (json instanceof ModelObject) {
                     ModelObject model = (ModelObject) json;
                     model.setObjectClass(object.getClass());
                     model.clearNull();
+                    if (update instanceof UpdateObject) {
+                        Serializable[] fields = ((UpdateObject) update).getNullFields();
+                        if (fields != null) {
+                            for (Serializable f : fields) {
+                                if (f != null) {
+                                    model.put(f.toString(), null);
+                                }
+                            }
+                        }
+                    }
                     updates.add(model);
                 } else {
                     throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
