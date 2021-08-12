@@ -8,6 +8,7 @@ import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.mapping.TableCompare;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -679,6 +680,27 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
             }
         }
         return mps;
+    }
+
+    @Override
+    public TableCompare getTableCompare() throws Exception {
+        for (int i = 0; i < root.getLength(); i++) {
+            Node mimosaNode = root.item(i);
+            if (mimosaNode != null) {
+                NodeList list = mimosaNode.getChildNodes();
+                for (int j = 0; j <= list.getLength(); j++) {
+                    Node node = list.item(j);
+                    if (node != null && node.getNodeName().equalsIgnoreCase("compare")) {
+                        String compare = this.getXmlNodeAny(node, "value");
+                        if (StringTools.isNotEmpty(compare)) {
+                            Class c = Class.forName(compare);
+                            return (TableCompare) c.newInstance();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     protected String getAttrByName(Node node, String name) {

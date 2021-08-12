@@ -9,6 +9,7 @@ import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.mapping.TableCompare;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -53,6 +54,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     protected Set<String> mappingClasses;
     protected DataSource dataSource;
     protected MappingLevel mappingLevel;
+    protected TableCompare tableCompare;
     protected Boolean ignoreEmptySlave;
 
     protected String mapper;
@@ -127,6 +129,10 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public void setMappingLevel(MappingLevel mappingLevel) {
         this.mappingLevel = mappingLevel;
         this.basicSetting.setMappingLevel(mappingLevel);
+    }
+
+    public void setTableCompare(TableCompare tableCompare) {
+        this.tableCompare = tableCompare;
     }
 
     public void setDefaultDataSourceBundle(MimosaDataSource defaultDataSource) throws SQLException {
@@ -288,5 +294,10 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
         if (this.mappers != null) mps.addAll(this.mappers);
         if (this.mapper != null) mps.add(this.mapper);
         return mps;
+    }
+
+    @Override
+    public TableCompare getTableCompare() {
+        return this.tableCompare;
     }
 }

@@ -3,6 +3,7 @@ package org.mimosaframework.orm.builder;
 import org.mimosaframework.orm.IDStrategy;
 import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.mapping.TableCompare;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 
 import java.sql.SQLException;
@@ -23,4 +24,6 @@ public interface ConfigBuilder {
     BasicSetting getBasicInfo() throws ContextException;
 
     List<String> getMappers();
+
+    TableCompare getTableCompare() throws Exception;
 }

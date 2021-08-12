@@ -2,6 +2,6 @@ package org.mimosaframework.orm.mapping;
 
 import java.sql.SQLException;
 
-public interface StartCompareMapping {
+public interface CompareMapping {
     void doMapping() throws SQLException;
 }

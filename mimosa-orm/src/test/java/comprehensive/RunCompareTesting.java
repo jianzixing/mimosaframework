@@ -24,19 +24,19 @@ public class RunCompareTesting {
         this.test8();
     }
 
-    public StartCompareMapping getMapping(MappingLevel level, MappingTable mappingTable) {
+    public CompareMapping getMapping(MappingLevel level, MappingTable mappingTable) {
         MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
         Set<MappingTable> mappingTables = new LinkedHashSet<>();
         mappingTables.add(mappingTable);
         mappingGlobalWrapper.setMappingTables(mappingTables);
 
-        NormalConfiguration contextContainer = new NormalConfiguration();
+        DefaultConfiguration contextContainer = new DefaultConfiguration();
         contextContainer.setIgnoreEmptySlave(true);
         contextContainer.setShowSQL(true);
         SessionContext dataSourceWrapper = new SessionContext(contextContainer);
         dataSourceWrapper.setDataSource(this.mimosaDataSource);
 
-        StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
+        CompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
                 level,
                 mappingGlobalWrapper,
                 dataSourceWrapper
@@ -70,10 +70,10 @@ public class RunCompareTesting {
 
         mappingTable.setMappingFields(mappingFields);
 
-        StartCompareMapping compareMapping = this.getMapping(MappingLevel.NOTHING, mappingTable);
+        CompareMapping compareMapping = this.getMapping(MappingLevel.NOTHING, mappingTable);
         compareMapping.doMapping();
 
-        StartCompareMapping compareMapping2 = this.getMapping(MappingLevel.CREATE, mappingTable);
+        CompareMapping compareMapping2 = this.getMapping(MappingLevel.CREATE, mappingTable);
         compareMapping2.doMapping();
     }
 
@@ -111,7 +111,7 @@ public class RunCompareTesting {
 
         mappingTable.setMappingFields(mappingFields);
 
-        StartCompareMapping compareMapping = this.getMapping(MappingLevel.CREATE, mappingTable);
+        CompareMapping compareMapping = this.getMapping(MappingLevel.CREATE, mappingTable);
         compareMapping.doMapping();
     }
 
@@ -150,7 +150,7 @@ public class RunCompareTesting {
 
         mappingTable.setMappingFields(mappingFields);
 
-        StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        CompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
         compareMapping.doMapping();
     }
 
@@ -190,7 +190,7 @@ public class RunCompareTesting {
 
         mappingTable.setMappingFields(mappingFields);
 
-        StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        CompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
         compareMapping.doMapping();
     }
 
@@ -220,7 +220,7 @@ public class RunCompareTesting {
 
         mappingTable.setMappingFields(mappingFields);
 
-        StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        CompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
         compareMapping.doMapping();
     }
 
@@ -263,7 +263,7 @@ public class RunCompareTesting {
 
         mappingTable.setMappingFields(mappingFields);
 
-        StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        CompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
         compareMapping.doMapping();
     }
 
@@ -273,7 +273,7 @@ public class RunCompareTesting {
     // 测试删除A时移除删除索引B的数据
     // PlatformExecutor的212行
     public void test7() throws SQLException {
-        StartCompareMapping compareMapping = null;
+        CompareMapping compareMapping = null;
         SpecificMappingTable mappingTable = null;
 
         mappingTable = new SpecificMappingTable();
@@ -329,7 +329,7 @@ public class RunCompareTesting {
 
         mappingTable.setMappingFields(mappingFields);
 
-        StartCompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
+        CompareMapping compareMapping = this.getMapping(MappingLevel.UPDATE, mappingTable);
         compareMapping.doMapping();
 
         SpecificMappingField mappingField2 = new SpecificMappingField();

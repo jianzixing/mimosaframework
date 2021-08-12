@@ -8,7 +8,7 @@ import org.mimosaframework.orm.platform.*;
 import java.sql.SQLException;
 import java.util.*;
 
-public abstract class AbstractCompareMapping implements StartCompareMapping {
+public abstract class AbstractCompareMapping implements CompareMapping {
     private static final Log logger = LogFactory.getLog(AbstractCompareMapping.class);
     protected MappingGlobalWrapper mappingGlobalWrapper;
     protected SessionContext sessionContext;

@@ -8,7 +8,8 @@ import org.mimosaframework.orm.builder.*;
 import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.CompareMappingFactory;
-import org.mimosaframework.orm.mapping.StartCompareMapping;
+import org.mimosaframework.orm.mapping.CompareMapping;
+import org.mimosaframework.orm.mapping.TableCompare;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 
 import java.sql.SQLException;
@@ -17,7 +18,7 @@ import java.util.Set;
 
 public class BeanAppContext implements Context {
     private static final Log logger = LogFactory.getLog("init");
-    protected final NormalConfiguration configuration;
+    protected final DefaultConfiguration configuration;
     private SessionFactoryBuilder sessionFactoryBuilder = null;
     private ConfigBuilder configBuilder = null;
 
@@ -26,10 +27,10 @@ public class BeanAppContext implements Context {
     }
 
     public BeanAppContext() {
-        this.configuration = new NormalConfiguration();
+        this.configuration = new DefaultConfiguration();
     }
 
-    public BeanAppContext(NormalConfiguration configuration) {
+    public BeanAppContext(DefaultConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -46,7 +47,7 @@ public class BeanAppContext implements Context {
 
     protected void init() throws ContextException {
         configuration.setContext(this);
-        
+
         {
             ApplicationSetting applicationInfo = this.configBuilder.getApplication();
             configuration.setApplicationName(applicationInfo.getApplicationName());
@@ -105,6 +106,16 @@ public class BeanAppContext implements Context {
             configuration.setMappers(mappers);
         }
 
+        {
+            TableCompare tableCompare = null;
+            try {
+                tableCompare = this.configBuilder.getTableCompare();
+            } catch (Exception e) {
+                throw new ContextException(I18n.print("instance_table_compare_fail"), e);
+            }
+            configuration.setTableCompare(tableCompare);
+        }
+
         this.checkDBMapping();
         ModelObject.addChecker(new ModelMeasureChecker(configuration.getMappingTables()));
     }
@@ -116,12 +127,21 @@ public class BeanAppContext implements Context {
 
     protected void checkDBMapping() throws ContextException {
         try {
-            StartCompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
-                    configuration.getMappingLevel(),
-                    configuration.mappingGlobalWrapper,
-                    configuration.newSessionContext(MimosaDataSource.DEFAULT_DS_NAME, false)
-            );
-            compareMapping.doMapping();
+            if (configuration.getTableCompare() != null) {
+                CompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
+                        MappingLevel.UPDATE,
+                        configuration.mappingGlobalWrapper,
+                        configuration.newSessionContext(MimosaDataSource.DEFAULT_DS_NAME, false)
+                );
+                configuration.getTableCompare().doMapping(configuration.clone(), compareMapping);
+            } else {
+                CompareMapping compareMapping = CompareMappingFactory.getCompareMapping(
+                        configuration.getMappingLevel(),
+                        configuration.mappingGlobalWrapper,
+                        configuration.newSessionContext(MimosaDataSource.DEFAULT_DS_NAME, false)
+                );
+                compareMapping.doMapping();
+            }
         } catch (SQLException e) {
             throw new ContextException(I18n.print("compare_db_error"), e);
         }

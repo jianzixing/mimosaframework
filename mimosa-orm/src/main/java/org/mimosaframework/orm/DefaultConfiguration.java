@@ -6,10 +6,7 @@ import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.i18n.I18n;
-import org.mimosaframework.orm.mapping.DefaultDisassembleMappingClass;
-import org.mimosaframework.orm.mapping.DisassembleMappingClass;
-import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
-import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.SessionContext;
 import org.mimosaframework.orm.scripting.DefinerConfigure;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
@@ -25,14 +22,15 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class NormalConfiguration implements Configuration {
-    private static final Log logger = LogFactory.getLog(NormalConfiguration.class);
+public class DefaultConfiguration implements Configuration {
+    private static final Log logger = LogFactory.getLog(DefaultConfiguration.class);
     protected ModelObjectConvertKey modelObjectConvertKey = new SimpleModelObjectConvertKey();
     protected Map<String, MimosaDataSource> globalDataSource = new ConcurrentHashMap<>();
 
     protected String applicationName;
     protected String applicationDetail;
     protected MappingLevel mappingLevel;
+    protected TableCompare tableCompare;
 
     protected Set<Class> resolvers;
     protected Set<MappingTable> mappingTables;
@@ -67,6 +65,14 @@ public class NormalConfiguration implements Configuration {
 
     public void setMappingLevel(MappingLevel mappingLevel) {
         this.mappingLevel = mappingLevel;
+    }
+
+    public TableCompare getTableCompare() {
+        return tableCompare;
+    }
+
+    public void setTableCompare(TableCompare tableCompare) {
+        this.tableCompare = tableCompare;
     }
 
     public String getApplicationName() {
@@ -353,5 +359,25 @@ public class NormalConfiguration implements Configuration {
     @Override
     public Session buildSession() throws SQLException {
         return new DefaultSession(this);
+    }
+
+    @Override
+    protected DefaultConfiguration clone() {
+        DefaultConfiguration configuration = new DefaultConfiguration();
+        configuration.globalDataSource = new ConcurrentHashMap<>(globalDataSource);
+        configuration.applicationName = applicationName;
+        configuration.applicationDetail = applicationDetail;
+        configuration.mappingLevel = mappingLevel;
+        configuration.tableCompare = tableCompare;
+        configuration.resolvers = new LinkedHashSet<>(resolvers);
+        configuration.mappingTables = new LinkedHashSet<>(mappingTables);
+        configuration.mappingGlobalWrapper = new MappingGlobalWrapper();
+        configuration.convert = convert;
+        configuration.tablePrefix = tablePrefix;
+        configuration.defaultDataSource = defaultDataSource;
+        configuration.idStrategies = new ArrayList<>(idStrategies);
+        configuration.isShowSQL = isShowSQL;
+        configuration.isIgnoreEmptySlave = isIgnoreEmptySlave;
+        return configuration;
     }
 }

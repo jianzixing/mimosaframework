@@ -1,6 +1,7 @@
 package org.mimosaframework.spring.orm;
 
 import org.mimosaframework.orm.MappingLevel;
+import org.mimosaframework.orm.mapping.TableCompare;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("mimosa.orm")
@@ -10,6 +11,7 @@ public class MimosaOrmProperties {
     private String mapper;
     private String convertType = "H2U";
     private MappingLevel mappingLevel = MappingLevel.CREATE;
+    private TableCompare tableCompare;
     private boolean showSQL = false;
     private String prefix;
 
@@ -51,6 +53,14 @@ public class MimosaOrmProperties {
 
     public void setMappingLevel(MappingLevel mappingLevel) {
         this.mappingLevel = mappingLevel;
+    }
+
+    public void setTableCompare(TableCompare tableCompare) {
+        this.tableCompare = tableCompare;
+    }
+
+    public TableCompare getTableCompare() {
+        return tableCompare;
     }
 
     public boolean isShowSQL() {

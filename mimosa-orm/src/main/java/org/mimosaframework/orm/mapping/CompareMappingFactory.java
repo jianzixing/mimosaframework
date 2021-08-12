@@ -6,9 +6,9 @@ import org.mimosaframework.orm.platform.SessionContext;
 
 public class CompareMappingFactory {
 
-    public static StartCompareMapping getCompareMapping(MappingLevel level,
-                                                        MappingGlobalWrapper mappingGlobalWrapper,
-                                                        SessionContext dataSourceWrapper) {
+    public static CompareMapping getCompareMapping(MappingLevel level,
+                                                   MappingGlobalWrapper mappingGlobalWrapper,
+                                                   SessionContext dataSourceWrapper) {
 
 
         if (level == MappingLevel.NOTHING || level == null) {
