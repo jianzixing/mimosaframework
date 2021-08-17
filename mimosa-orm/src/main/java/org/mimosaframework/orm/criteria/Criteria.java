@@ -50,4 +50,8 @@ public final class Criteria {
         linked.linked(l);
         return linked;
     }
+
+    public static final <T> UpdateObject wrapUpdate(T t) {
+        return new UpdateObject(t);
+    }
 }
