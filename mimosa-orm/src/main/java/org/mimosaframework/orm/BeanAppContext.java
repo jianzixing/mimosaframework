@@ -6,6 +6,7 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.builder.*;
 import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.CompareMappingFactory;
 import org.mimosaframework.orm.mapping.CompareMapping;
@@ -142,7 +143,8 @@ public class BeanAppContext implements Context {
                 );
                 compareMapping.doMapping();
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ContextException e) {
+            if (e instanceof ContextException) throw (ContextException) e;
             throw new ContextException(I18n.print("compare_db_error"), e);
         }
     }

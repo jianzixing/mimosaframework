@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.mapping;
 
-import java.sql.SQLException;
+import org.mimosaframework.orm.exception.ContextException;
 
 public interface CompareMapping {
-    void doMapping() throws SQLException;
+    void doMapping() throws ContextException;
 }

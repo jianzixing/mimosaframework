@@ -154,7 +154,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("get_ds_list_fail", "获得数据源列表出错");
         words.put("instance_table_compare_fail", "初始化TableCompare出错");
         words.put("init_tool_error", "初始化辅助工具配置类出错");
-        words.put("compare_db_error", "对比数据库映射出错");
+        words.put("compare_db_error", "对比数据库表%s映射信息时出错");
 
         // DefaultSession
         words.put("save_empty", "保存的对象不能为空");

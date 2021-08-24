@@ -58,6 +58,7 @@ public class PlatformExecutor {
         if (structures != null) {
             List<MappingTable> rmTab = new ArrayList<>();
             for (TableStructure structure : structures) {
+                compare.start(structure);
                 if (structure.getColumnStructures() != null) {
                     List<TableColumnStructure> columnStructures = new ArrayList<>(structure.getColumnStructures());
 

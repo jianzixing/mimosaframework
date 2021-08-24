@@ -3,6 +3,9 @@ package org.mimosaframework.orm.mapping;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.orm.MappingLevel;
+import org.mimosaframework.orm.exception.ContextException;
+import org.mimosaframework.orm.exception.MimosaException;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.platform.*;
 
 import java.sql.SQLException;
@@ -23,56 +26,66 @@ public abstract class AbstractCompareMapping implements CompareMapping {
     }
 
     @Override
-    public void doMapping() throws SQLException {
-        this.executor.compareTableStructure(
-                new PlatformCompare() {
-                    @Override
-                    public void checking(CompareUpdateTableMate tableMate) throws SQLException {
-                        boolean isRebuildTable = false;
+    public void doMapping() throws ContextException {
+        final TableStructure[] current = new TableStructure[1];
+        try {
+            this.executor.compareTableStructure(
+                    new PlatformCompare() {
+                        @Override
+                        public void checking(CompareUpdateTableMate tableMate) throws SQLException {
+                            boolean isRebuildTable = false;
 
-                        // create table
-                        if (tableMate.getCreateTable() != null) {
-                            isRebuildTable = createTable(tableMate);
+                            // create table
+                            if (tableMate.getCreateTable() != null) {
+                                isRebuildTable = createTable(tableMate);
+                            }
+
+
+                            // update fields
+                            if (!isRebuildTable && tableMate.getUpdateFields() != null && tableMate.getUpdateFields().size() > 0) {
+                                Map<MappingField, CompareUpdateMate> updateFields = tableMate.getUpdateFields();
+                                isRebuildTable = updateFields(tableMate, updateFields);
+                            }
+
+
+                            // create field
+                            if (!isRebuildTable && tableMate.getCreateFields() != null && tableMate.getCreateFields().size() > 0) {
+                                isRebuildTable = createFields(tableMate);
+                            }
+
+                            // del fields
+                            if (!isRebuildTable && tableMate.getDelColumns() != null && tableMate.getDelColumns().size() > 0) {
+                                isRebuildTable = deleteFields(tableMate);
+                            }
+
+                            // update index
+                            if (!isRebuildTable && tableMate.getUpdateIndexes() != null && tableMate.getUpdateIndexes().size() > 0) {
+                                isRebuildTable = updateIndices(tableMate);
+                            }
+
+                            // create index
+                            if (!isRebuildTable && tableMate.getNewIndexes() != null && tableMate.getNewIndexes().size() > 0) {
+                                isRebuildTable = createIndices(tableMate);
+                            }
+
+                            // drop index
+                            if (!isRebuildTable && tableMate.getDropIndexes() != null && tableMate.getDropIndexes().size() > 0) {
+                                isRebuildTable = dropIndices(tableMate);
+                            }
+
+                            if (isRebuildTable) {
+                                rebuildTable(tableMate);
+                            }
                         }
 
-
-                        // update fields
-                        if (!isRebuildTable && tableMate.getUpdateFields() != null && tableMate.getUpdateFields().size() > 0) {
-                            Map<MappingField, CompareUpdateMate> updateFields = tableMate.getUpdateFields();
-                            isRebuildTable = updateFields(tableMate, updateFields);
+                        @Override
+                        public void start(TableStructure structure) {
+                            current[0] = structure;
                         }
-
-
-                        // create field
-                        if (!isRebuildTable && tableMate.getCreateFields() != null && tableMate.getCreateFields().size() > 0) {
-                            isRebuildTable = createFields(tableMate);
-                        }
-
-                        // del fields
-                        if (!isRebuildTable && tableMate.getDelColumns() != null && tableMate.getDelColumns().size() > 0) {
-                            isRebuildTable = deleteFields(tableMate);
-                        }
-
-                        // update index
-                        if (!isRebuildTable && tableMate.getUpdateIndexes() != null && tableMate.getUpdateIndexes().size() > 0) {
-                            isRebuildTable = updateIndices(tableMate);
-                        }
-
-                        // create index
-                        if (!isRebuildTable && tableMate.getNewIndexes() != null && tableMate.getNewIndexes().size() > 0) {
-                            isRebuildTable = createIndices(tableMate);
-                        }
-
-                        // drop index
-                        if (!isRebuildTable && tableMate.getDropIndexes() != null && tableMate.getDropIndexes().size() > 0) {
-                            isRebuildTable = dropIndices(tableMate);
-                        }
-
-                        if (isRebuildTable) {
-                            rebuildTable(tableMate);
-                        }
-                    }
-                });
+                    });
+        } catch (SQLException e) {
+            throw new ContextException(I18n.print("compare_db_error", current[0] != null ? current[0].getTableName() : ""), e);
+        }
     }
 
     protected boolean createTable(CompareUpdateTableMate tableMate) throws SQLException {
