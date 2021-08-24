@@ -27,7 +27,7 @@ public abstract class AbstractCompareMapping implements CompareMapping {
 
     @Override
     public void doMapping() throws ContextException {
-        final TableStructure[] current = new TableStructure[1];
+        final MappingTable[] current = new MappingTable[1];
         try {
             this.executor.compareTableStructure(
                     new PlatformCompare() {
@@ -79,12 +79,12 @@ public abstract class AbstractCompareMapping implements CompareMapping {
                         }
 
                         @Override
-                        public void start(TableStructure structure) {
+                        public void start(MappingTable structure) {
                             current[0] = structure;
                         }
                     });
         } catch (SQLException e) {
-            throw new ContextException(I18n.print("compare_db_error", current[0] != null ? current[0].getTableName() : ""), e);
+            throw new ContextException(I18n.print("compare_db_error", current[0] != null ? current[0].getMappingTableName() : ""), e);
         }
     }
 

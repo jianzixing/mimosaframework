@@ -58,7 +58,6 @@ public class PlatformExecutor {
         if (structures != null) {
             List<MappingTable> rmTab = new ArrayList<>();
             for (TableStructure structure : structures) {
-                compare.start(structure);
                 if (structure.getColumnStructures() != null) {
                     List<TableColumnStructure> columnStructures = new ArrayList<>(structure.getColumnStructures());
 
@@ -73,6 +72,7 @@ public class PlatformExecutor {
                         }
                     }
 
+                    compare.start(currTable);
                     Map<MappingField, CompareUpdateMate> updateFields = new LinkedHashMap();
                     List<MappingField> createFields = new ArrayList<>();
                     List<TableColumnStructure> delColumns = new ArrayList<>();
@@ -296,6 +296,7 @@ public class PlatformExecutor {
                 // 需要新建数据库表
 
                 for (MappingTable mappingTable : mappingTables) {
+                    compare.start(mappingTable);
                     Set<MappingIndex> mappingIndex = mappingTable.getMappingIndexes();
                     CompareUpdateTableMate tableMate = new CompareUpdateTableMate();
                     if (mappingIndex != null && mappingIndex.size() > 0) {
