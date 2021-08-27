@@ -126,6 +126,7 @@ public class MysqlStampAlter extends PlatformStampAlter {
                                   StampAlter alter,
                                   StampAlterItem column) {
         if (column.timeForUpdate) {
+            sb.append(" " + this.reference.getColumnName(wrapper, alter, column.column));
             sb.append(" TIMESTAMP");
             sb.append(" NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         } else {

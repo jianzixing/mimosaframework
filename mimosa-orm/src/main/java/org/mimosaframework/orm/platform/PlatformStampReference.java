@@ -64,6 +64,7 @@ public class PlatformStampReference {
      * @param wrapper
      * @param stampTables
      * @param column
+     * @param hasRes      是否有引号或字符包装符合
      * @return
      */
     public String getColumnName(MappingGlobalWrapper wrapper,
