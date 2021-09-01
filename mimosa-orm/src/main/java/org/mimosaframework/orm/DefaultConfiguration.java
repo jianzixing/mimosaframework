@@ -45,6 +45,7 @@ public class DefaultConfiguration implements Configuration {
 
     protected List<? extends IDStrategy> idStrategies;
     protected boolean isShowSQL = false;
+    protected boolean allowInnerJoin = true;
     protected List<String> mappers;
     protected SQLDefinedLoader definedLoader;
 
@@ -362,6 +363,15 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
+    public boolean allowInnerJoin() {
+        return allowInnerJoin;
+    }
+
+    public void setAllowInnerJoin(boolean allowInnerJoin) {
+        this.allowInnerJoin = allowInnerJoin;
+    }
+
+    @Override
     protected DefaultConfiguration clone() {
         DefaultConfiguration configuration = new DefaultConfiguration();
         configuration.globalDataSource = new ConcurrentHashMap<>(globalDataSource);
@@ -372,11 +382,13 @@ public class DefaultConfiguration implements Configuration {
         configuration.resolvers = new LinkedHashSet<>(resolvers);
         configuration.mappingTables = new LinkedHashSet<>(mappingTables);
         configuration.mappingGlobalWrapper = new MappingGlobalWrapper();
+        configuration.mappingGlobalWrapper.setMappingTables(this.mappingTables);
         configuration.convert = convert;
         configuration.tablePrefix = tablePrefix;
         configuration.defaultDataSource = defaultDataSource;
         configuration.idStrategies = new ArrayList<>(idStrategies);
         configuration.isShowSQL = isShowSQL;
+        configuration.allowInnerJoin = allowInnerJoin;
         configuration.isIgnoreEmptySlave = isIgnoreEmptySlave;
         return configuration;
     }

@@ -213,6 +213,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("not_found_monitor", "没有找到监控实例实现");
         words.put("not_found_center", "没有找到配置中心实例实现");
         words.put("must_set_factory", "必须先设置SessionFactory");
+        words.put("not_allow_inner_join", "当前设置不允许使用 INNER JOIN 查询");
 
         // ModelMeasureChecker
         words.put("not_found_mapping_class", "映射类不存在或者ModelObject没有指定映射类");

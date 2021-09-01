@@ -13,6 +13,7 @@ public class MimosaOrmProperties {
     private MappingLevel mappingLevel = MappingLevel.CREATE;
     private TableCompare tableCompare;
     private boolean showSQL = false;
+    private boolean allowInnerJoin = true;
     private String prefix;
 
     public String getApplicationName() {
@@ -53,6 +54,14 @@ public class MimosaOrmProperties {
 
     public void setMappingLevel(MappingLevel mappingLevel) {
         this.mappingLevel = mappingLevel;
+    }
+
+    public boolean isAllowInnerJoin() {
+        return allowInnerJoin;
+    }
+
+    public void setAllowInnerJoin(boolean allowInnerJoin) {
+        this.allowInnerJoin = allowInnerJoin;
     }
 
     public void setTableCompare(TableCompare tableCompare) {

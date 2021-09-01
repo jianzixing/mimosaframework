@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
 
@@ -97,21 +98,25 @@ public class MimosaSessionTemplate implements SessionTemplate {
 
     @Override
     public ModelObject get(Query query) {
+        this.checkAllowInnerJoin(query);
         return this.sessionAgency.get(query);
     }
 
     @Override
     public List<ModelObject> list(Query query) {
+        this.checkAllowInnerJoin(query);
         return this.sessionAgency.list(query);
     }
 
     @Override
     public long count(Query query) {
+        this.checkAllowInnerJoin(query);
         return this.sessionAgency.count(query);
     }
 
     @Override
     public Paging<ModelObject> paging(Query query) {
+        this.checkAllowInnerJoin(query);
         return this.sessionAgency.paging(query);
     }
 
@@ -147,7 +152,6 @@ public class MimosaSessionTemplate implements SessionTemplate {
         return query;
     }
 
-
     @Override
     public Delete delete(Class clazz) {
         Delete delete = new DefaultDelete(this, clazz);
@@ -163,6 +167,20 @@ public class MimosaSessionTemplate implements SessionTemplate {
     @Override
     public void close() throws IOException {
 
+    }
+
+    protected void checkAllowInnerJoin(Query query) {
+        Configuration configuration = sessionFactory.getConfiguration();
+        if (configuration.allowInnerJoin() == false) {
+            Set<Join> joins = ((DefaultQuery) query).getJoins();
+            if (joins != null) {
+                for (Join j : joins) {
+                    if (j.getJoinType() == 1) {
+                        throw new IllegalArgumentException(I18n.print("not_allow_inner_join"));
+                    }
+                }
+            }
+        }
     }
 
     @Override

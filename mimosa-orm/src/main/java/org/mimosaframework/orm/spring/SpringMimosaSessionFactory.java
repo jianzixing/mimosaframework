@@ -47,6 +47,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     protected String applicationName;
     protected String applicationDetail;
     protected boolean isShowSQL;
+    protected boolean allowInnerJoin;
     protected NamingConvert convert;
     protected String convertType;
     protected String scanPackage;
@@ -84,6 +85,11 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public void setShowSQL(boolean showSQL) {
         isShowSQL = showSQL;
         this.basicSetting.setShowSQL(isShowSQL);
+    }
+
+    public void setAllowInnerJoin(boolean allowInnerJoin) {
+        this.allowInnerJoin = allowInnerJoin;
+        this.basicSetting.setAllowInnerJoin(allowInnerJoin);
     }
 
     public void setIgnoreEmptySlave(Boolean ignoreEmptySlave) {

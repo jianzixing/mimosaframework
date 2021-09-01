@@ -57,8 +57,11 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             if (StringTools.isNumber(table.engineName())) {
                 mappingTable.setEngineName(table.engineName());
             }
-            if (StringTools.isNumber(table.charset())) {
+            if (StringTools.isNotEmpty(table.charset())) {
                 mappingTable.setEncoding(table.charset());
+            }
+            if (StringTools.isNotEmpty(table.version())) {
+                mappingTable.setEncoding(table.version());
             }
 
 

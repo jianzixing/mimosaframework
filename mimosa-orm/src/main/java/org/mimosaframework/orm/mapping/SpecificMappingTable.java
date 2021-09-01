@@ -28,6 +28,8 @@ public class SpecificMappingTable implements MappingTable {
      */
     private String encoding;
 
+    private String version;
+
     private String sourceMappingTableName;
 
     public SpecificMappingTable() {
@@ -120,6 +122,7 @@ public class SpecificMappingTable implements MappingTable {
         table.mappingTableName = this.mappingTableName;
         table.engineName = this.engineName;
         table.encoding = this.encoding;
+        table.version = this.version;
         table.sourceMappingTableName = this.sourceMappingTableName;
         return table;
     }
@@ -157,6 +160,11 @@ public class SpecificMappingTable implements MappingTable {
     }
 
     @Override
+    public String getVersion() {
+        return version;
+    }
+
+    @Override
     public MappingField getMappingFieldByName(String fieldName) {
         MappingField field = null;
         if (this.mappingFields != null) {
@@ -175,6 +183,10 @@ public class SpecificMappingTable implements MappingTable {
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public void setSourceMappingTableName(String sourceMappingTableName) {

@@ -57,4 +57,6 @@ public interface Configuration {
     TransactionFactory getTransactionFactory();
 
     Session buildSession() throws SQLException;
+
+    boolean allowInnerJoin();
 }

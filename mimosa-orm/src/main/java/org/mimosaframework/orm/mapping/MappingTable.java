@@ -35,6 +35,8 @@ public interface MappingTable {
 
     String getEncoding();
 
+    String getVersion();
+
     /**
      * 不区分字段是Java字段还是数据库字段
      *

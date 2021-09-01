@@ -9,6 +9,7 @@ public class BasicSetting {
     private String tablePrefix;
     private MappingLevel mappingLevel;
     private Boolean isIgnoreEmptySlave = true;
+    private Boolean allowInnerJoin = true;
 
     public boolean isShowSQL() {
         return isShowSQL;
@@ -48,5 +49,13 @@ public class BasicSetting {
 
     public void setIgnoreEmptySlave(Boolean ignoreEmptySlave) {
         isIgnoreEmptySlave = ignoreEmptySlave;
+    }
+
+    public Boolean getAllowInnerJoin() {
+        return allowInnerJoin;
+    }
+
+    public void setAllowInnerJoin(Boolean allowInnerJoin) {
+        this.allowInnerJoin = allowInnerJoin;
     }
 }

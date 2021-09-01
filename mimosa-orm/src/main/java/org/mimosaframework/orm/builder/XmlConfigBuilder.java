@@ -599,6 +599,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     @Override
     public BasicSetting getBasicInfo() throws ContextException {
         Boolean ignoreEmptySlave = true;
+        Boolean allowInnerJoin = true;
         if (!isInitBasic) {
             for (int i = 0; i < root.getLength(); i++) {
                 Node mimosaNode = root.item(i);
@@ -637,6 +638,16 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                             ignoreEmptySlave = super.isStringTrue(ies.getNodeValue());
                         }
                     }
+
+                    if (node.getNodeName().equalsIgnoreCase("allowInnerJoin")) {
+                        String str = this.getAttrByName(node, "value");
+                        if (str != null && ("yes".equalsIgnoreCase(str)
+                                || "no".equalsIgnoreCase(str)
+                                || "true".equalsIgnoreCase(str)
+                                || "false".equalsIgnoreCase(str))) {
+                            allowInnerJoin = super.isStringTrue(str);
+                        }
+                    }
                 }
             }
 
@@ -649,6 +660,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                     throw new IllegalArgumentException(I18n.print("mapping_level_not_found", mappingLevel), e);
                 }
             }
+            basicInfo.setAllowInnerJoin(allowInnerJoin);
             basicInfo.setIgnoreEmptySlave(ignoreEmptySlave);
             isInitBasic = true;
         }

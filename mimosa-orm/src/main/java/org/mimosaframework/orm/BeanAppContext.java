@@ -71,6 +71,9 @@ public class BeanAppContext implements Context {
             }
             configuration.setShowSQL(basicInfo.isShowSQL());
             configuration.setMappingLevel(basicInfo.getMappingLevel());
+            if (basicInfo.getAllowInnerJoin() == false) {
+                configuration.setAllowInnerJoin(basicInfo.getAllowInnerJoin());
+            }
             if (basicInfo.isIgnoreEmptySlave() != null) {
                 configuration.setIgnoreEmptySlave(basicInfo.isIgnoreEmptySlave());
             }
