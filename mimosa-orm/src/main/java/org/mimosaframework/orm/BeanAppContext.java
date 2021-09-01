@@ -120,6 +120,8 @@ public class BeanAppContext implements Context {
             configuration.setTableCompare(tableCompare);
         }
 
+        this.initAddition();
+
         this.checkDBMapping();
         ModelObject.addChecker(new ModelMeasureChecker(configuration.getMappingTables()));
     }
@@ -127,6 +129,10 @@ public class BeanAppContext implements Context {
     @Override
     public SessionFactoryBuilder getSessionFactoryBuilder() {
         return this.sessionFactoryBuilder;
+    }
+
+    protected void initAddition() {
+        // 提供子类额外使用
     }
 
     protected void checkDBMapping() throws ContextException {

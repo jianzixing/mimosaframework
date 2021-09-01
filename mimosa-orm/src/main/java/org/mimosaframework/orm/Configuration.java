@@ -1,6 +1,7 @@
 package org.mimosaframework.orm;
 
 import org.mimosaframework.orm.convert.NamingConvert;
+import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.SessionContext;
@@ -56,7 +57,9 @@ public interface Configuration {
 
     TransactionFactory getTransactionFactory();
 
-    Session buildSession() throws SQLException;
+    Session buildSession() throws SQLException, ContextException;
 
     boolean allowInnerJoin();
+
+    <T> T getAddition();
 }

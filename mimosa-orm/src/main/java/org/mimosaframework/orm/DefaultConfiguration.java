@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.NamingConvert;
+import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.*;
 import org.mimosaframework.orm.platform.SessionContext;
@@ -18,6 +19,7 @@ import org.mimosaframework.orm.utils.DatabaseType;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,11 +52,20 @@ public class DefaultConfiguration implements Configuration {
     protected SQLDefinedLoader definedLoader;
 
     /**
+     * 附加的额外配置，本项目中没有用以后提供给扩展框架使用
+     * 比如高并发框架
+     */
+    protected Object addition;
+
+    /**
      * True : 在选择从库时如果没有从库则选择主库,防止报错
      * False : 在选择从库时如果没有从库返回为空直接报错
      */
     protected boolean isIgnoreEmptySlave = true;
-
+    /**
+     * 可以配置一个代理的Session类做一些个人的操作
+     */
+    protected Class<Session> proxySession;
     protected Context context;
 
     public MappingLevel getMappingLevel() {
@@ -358,8 +369,19 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public Session buildSession() throws SQLException {
-        return new DefaultSession(this);
+    public Session buildSession() throws SQLException, ContextException {
+        if (this.proxySession != null) {
+            try {
+                Constructor c1 = this.proxySession.getDeclaredConstructor(new Class[]{Configuration.class});
+                c1.setAccessible(true);
+                Session session = (Session) c1.newInstance(new Object[]{this});
+                return session;
+            } catch (Exception e) {
+                throw new ContextException(I18n.print("build_session_error"), e);
+            }
+        } else {
+            return new DefaultSession(this);
+        }
     }
 
     @Override
@@ -369,6 +391,14 @@ public class DefaultConfiguration implements Configuration {
 
     public void setAllowInnerJoin(boolean allowInnerJoin) {
         this.allowInnerJoin = allowInnerJoin;
+    }
+
+    public Object getAddition() {
+        return addition;
+    }
+
+    public void setAddition(Object addition) {
+        this.addition = addition;
     }
 
     @Override
@@ -390,6 +420,7 @@ public class DefaultConfiguration implements Configuration {
         configuration.isShowSQL = isShowSQL;
         configuration.allowInnerJoin = allowInnerJoin;
         configuration.isIgnoreEmptySlave = isIgnoreEmptySlave;
+        configuration.addition = addition;
         return configuration;
     }
 }

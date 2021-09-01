@@ -234,6 +234,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("miss_df_datasource", "缺少默认的数据源配置");
         words.put("miss_byname_datasource", "没有找到数据源 %s 的配置");
         words.put("found_ds_same_name", "已经有一个数据源为 %s 的配置");
+        words.put("build_session_error", "创建session时出错");
 
         // SingleZipperTable
         words.put("get_ds_fail", "获得数据量连接失败");

@@ -46,8 +46,12 @@ public class DefaultSession implements Session {
     private ModelObjectConvertKey convert;
 
     public DefaultSession(Configuration context) throws SQLException {
+        this(context, MimosaDataSource.DEFAULT_DS_NAME);
+    }
+
+    public DefaultSession(Configuration context, String dsName) throws SQLException {
         this.context = context;
-        this.sessionContext = this.context.newSessionContext(MimosaDataSource.DEFAULT_DS_NAME, true);
+        this.sessionContext = this.context.newSessionContext(dsName, true);
         this.mappingGlobalWrapper = this.context.getMappingGlobalWrapper();
         this.convert = this.context.getModelObjectConvertKey();
         convert.setMappingGlobalWrapper(mappingGlobalWrapper);
