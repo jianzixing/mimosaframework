@@ -7,10 +7,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
@@ -64,6 +61,10 @@ public class UploadManager {
     }
 
     public List<FileItem> upload(HttpServletRequest request) {
+        return upload(request, null);
+    }
+
+    public List<FileItem> upload(HttpServletRequest request, Callback callback) {
         if (request instanceof MultipartHttpServletRequest) {
             Map<String, MultipartFile> fileMap = ((MultipartHttpServletRequest) request).getFileMap();
             if (fileMap != null && fileMap.size() > 0) {
@@ -106,23 +107,42 @@ public class UploadManager {
                             }
                         }
                         String newFileName = UUID.randomUUID().toString().replaceAll("-", "") + "." + fileType;
-                        String filePath = path;
-                        File dest = new File(filePath + File.separator + newFileName);
-                        if (!dest.getParentFile().exists()) {
-                            dest.getParentFile().mkdirs();
-                        }
                         fileItem.setFileName(newFileName);
-                        fileItem.setFile(dest);
-                        try {
-                            file.transferTo(dest);
-                        } catch (IOException e) {
-                            if (this.throwOutError) {
+
+                        if (callback != null) {
+                            InputStream inputStream = null;
+                            try {
+                                inputStream = file.getInputStream();
+                                callback.write(fileItem, inputStream);
+                            } catch (IOException e) {
                                 throw new ModuleException("file_write_error", "文件写入出错", e);
-                            } else {
-                                e.printStackTrace();
-                                fileItem.setErrorCode(-110);
-                                fileItem.setThrowable(e);
-                                continue;
+                            } finally {
+                                if (inputStream != null) {
+                                    try {
+                                        inputStream.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        } else {
+                            String filePath = path;
+                            File dest = new File(filePath + File.separator + newFileName);
+                            if (!dest.getParentFile().exists()) {
+                                dest.getParentFile().mkdirs();
+                            }
+                            fileItem.setFile(dest);
+                            try {
+                                file.transferTo(dest);
+                            } catch (IOException e) {
+                                if (this.throwOutError) {
+                                    throw new ModuleException("file_write_error", "文件写入出错", e);
+                                } else {
+                                    e.printStackTrace();
+                                    fileItem.setErrorCode(-110);
+                                    fileItem.setThrowable(e);
+                                    continue;
+                                }
                             }
                         }
                     } else {
@@ -293,5 +313,9 @@ public class UploadManager {
         public String getFileUrl() {
             return this.url + fileName;
         }
+    }
+
+    public interface Callback {
+        void write(FileItem item, InputStream stream);
     }
 }
