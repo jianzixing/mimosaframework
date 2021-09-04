@@ -600,6 +600,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
     public BasicSetting getBasicInfo() throws ContextException {
         Boolean ignoreEmptySlave = true;
         Boolean allowInnerJoin = true;
+        Boolean uppercase = false;
         if (!isInitBasic) {
             for (int i = 0; i < root.getLength(); i++) {
                 Node mimosaNode = root.item(i);
@@ -648,6 +649,16 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
                             allowInnerJoin = super.isStringTrue(str);
                         }
                     }
+
+                    if (node.getNodeName().equalsIgnoreCase("uppercase")) {
+                        String str = this.getAttrByName(node, "value");
+                        if (str != null && ("yes".equalsIgnoreCase(str)
+                                || "no".equalsIgnoreCase(str)
+                                || "true".equalsIgnoreCase(str)
+                                || "false".equalsIgnoreCase(str))) {
+                            uppercase = super.isStringTrue(str);
+                        }
+                    }
                 }
             }
 
@@ -662,6 +673,7 @@ public class XmlConfigBuilder extends AbstractConfigBuilder {
             }
             basicInfo.setAllowInnerJoin(allowInnerJoin);
             basicInfo.setIgnoreEmptySlave(ignoreEmptySlave);
+            basicInfo.setUppercase(uppercase);
             isInitBasic = true;
         }
         return this.basicInfo;

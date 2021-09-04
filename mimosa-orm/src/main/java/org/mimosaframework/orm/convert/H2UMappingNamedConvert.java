@@ -1,12 +1,19 @@
 package org.mimosaframework.orm.convert;
 
 public class H2UMappingNamedConvert implements NamingConvert {
+    private ConvertConfig config;
+
+    @Override
+    public void setConfig(ConvertConfig config) {
+        this.config = config;
+    }
+
     public String convert(String name, ConvertType type) {
         if (name == null || name.equals("")) {
             return "";
         }
         if (name.matches("[a-z_]+")) {
-            return name;
+            return config != null && config.isUppercase() ? name.toUpperCase() : name;
         }
         StringBuilder column = new StringBuilder();
         column.append(name.substring(0, 1).toLowerCase());
@@ -26,7 +33,7 @@ public class H2UMappingNamedConvert implements NamingConvert {
             tableName = tableName.replaceFirst("table_", "t_");
         }
 
-        return tableName;
+        return config != null && config.isUppercase() ? tableName.toUpperCase() : tableName;
     }
 
     @Override
@@ -34,6 +41,7 @@ public class H2UMappingNamedConvert implements NamingConvert {
         if (name.startsWith(prefix + "_")) {
             return name;
         }
-        return prefix + "_" + name;
+        return config != null && config.isUppercase() ?
+                (prefix + "_" + name).toUpperCase() : prefix + "_" + name;
     }
 }

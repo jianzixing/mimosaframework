@@ -14,6 +14,7 @@ public class MimosaOrmProperties {
     private TableCompare tableCompare;
     private boolean showSQL = false;
     private boolean allowInnerJoin = true;
+    private boolean uppercase = false;
     private String prefix;
 
     public String getApplicationName() {
@@ -62,6 +63,14 @@ public class MimosaOrmProperties {
 
     public void setAllowInnerJoin(boolean allowInnerJoin) {
         this.allowInnerJoin = allowInnerJoin;
+    }
+
+    public boolean isUppercase() {
+        return uppercase;
+    }
+
+    public void setUppercase(boolean uppercase) {
+        this.uppercase = uppercase;
     }
 
     public void setTableCompare(TableCompare tableCompare) {

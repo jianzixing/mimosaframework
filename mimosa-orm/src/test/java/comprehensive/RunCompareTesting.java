@@ -45,7 +45,7 @@ public class RunCompareTesting {
     }
 
     // 测试新建表
-    public void test1() throws SQLException {
+    public void test1() throws SQLException, ContextException {
         SpecificMappingTable mappingTable = new SpecificMappingTable();
         mappingTable.setMappingClass(RunCompareTesting.class);
         mappingTable.setMappingTableName("t_run_test");
@@ -78,7 +78,7 @@ public class RunCompareTesting {
     }
 
     // 测试增加字段
-    public void test2() throws SQLException {
+    public void test2() throws SQLException, ContextException {
         SpecificMappingTable mappingTable = new SpecificMappingTable();
         mappingTable.setMappingClass(RunCompareTesting.class);
         mappingTable.setMappingTableName("t_run_test");
@@ -116,7 +116,7 @@ public class RunCompareTesting {
     }
 
     // 测试修改字段除主键和自增外的属性
-    public void test3() throws SQLException {
+    public void test3() throws SQLException, ContextException {
         SpecificMappingTable mappingTable = new SpecificMappingTable();
         mappingTable.setMappingClass(RunCompareTesting.class);
         mappingTable.setMappingTableName("t_run_test");
@@ -155,7 +155,7 @@ public class RunCompareTesting {
     }
 
     // 测试替换主键
-    public void test4() throws SQLException {
+    public void test4() throws SQLException, ContextException {
         SpecificMappingTable mappingTable = new SpecificMappingTable();
         mappingTable.setMappingClass(RunCompareTesting.class);
         mappingTable.setMappingTableName("t_run_test");
@@ -195,7 +195,7 @@ public class RunCompareTesting {
     }
 
     // 测试删除主键字段
-    public void test5() throws SQLException {
+    public void test5() throws SQLException, ContextException {
         SpecificMappingTable mappingTable = new SpecificMappingTable();
         mappingTable.setMappingClass(RunCompareTesting.class);
         mappingTable.setMappingTableName("t_run_test");
@@ -226,7 +226,7 @@ public class RunCompareTesting {
 
 
     // 测试增加多列主键并增加单列索引
-    public void test6() throws SQLException {
+    public void test6() throws SQLException, ContextException {
         SpecificMappingTable mappingTable = new SpecificMappingTable();
         mappingTable.setMappingClass(RunCompareTesting.class);
         mappingTable.setMappingTableName("t_run_test");
@@ -272,7 +272,7 @@ public class RunCompareTesting {
     // 假如字段A拥有索引B，如果删除字段A则索引B删除报错
     // 测试删除A时移除删除索引B的数据
     // PlatformExecutor的212行
-    public void test7() throws SQLException {
+    public void test7() throws SQLException, ContextException {
         CompareMapping compareMapping = null;
         SpecificMappingTable mappingTable = null;
 
@@ -312,7 +312,7 @@ public class RunCompareTesting {
     // 测试增加 NOT NULL 字段,且表中已经存在数据时是否能成功
     // mysql自动填充默认值,其他数据库需要手动添加
     // OraclePlatformDialect的127行
-    public void test8() throws SQLException {
+    public void test8() throws SQLException, ContextException {
         SpecificMappingTable mappingTable = new SpecificMappingTable();
         mappingTable.setMappingClass(RunCompareTesting.class);
         mappingTable.setMappingTableName("t_run_test");

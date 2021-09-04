@@ -80,6 +80,9 @@ public class BeanAppContext implements Context {
             if (StringTools.isNotEmpty(basicInfo.getTablePrefix())) {
                 configuration.setTablePrefix(basicInfo.getTablePrefix());
             }
+            if (basicInfo.getUppercase() == true) {
+                configuration.setUppercase(basicInfo.getUppercase());
+            }
         }
 
         {

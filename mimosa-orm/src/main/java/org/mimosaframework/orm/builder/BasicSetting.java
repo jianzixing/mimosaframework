@@ -10,6 +10,7 @@ public class BasicSetting {
     private MappingLevel mappingLevel;
     private Boolean isIgnoreEmptySlave = true;
     private Boolean allowInnerJoin = true;
+    private Boolean uppercase = false;
 
     public boolean isShowSQL() {
         return isShowSQL;
@@ -57,5 +58,13 @@ public class BasicSetting {
 
     public void setAllowInnerJoin(Boolean allowInnerJoin) {
         this.allowInnerJoin = allowInnerJoin;
+    }
+
+    public Boolean getUppercase() {
+        return uppercase;
+    }
+
+    public void setUppercase(Boolean uppercase) {
+        this.uppercase = uppercase;
     }
 }

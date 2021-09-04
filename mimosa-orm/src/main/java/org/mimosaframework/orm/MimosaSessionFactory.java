@@ -1,5 +1,6 @@
 package org.mimosaframework.orm;
 
+import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.exception.MimosaException;
 import org.mimosaframework.orm.i18n.I18n;
 
@@ -18,7 +19,7 @@ public class MimosaSessionFactory implements SessionFactory {
         Session session = null;
         try {
             session = this.configuration.buildSession();
-        } catch (SQLException e) {
+        } catch (SQLException | ContextException e) {
             throw new MimosaException(I18n.print("create_new_session_error"), e);
         }
         currentSession = session;

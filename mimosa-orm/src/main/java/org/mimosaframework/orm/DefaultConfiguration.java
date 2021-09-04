@@ -3,6 +3,7 @@ package org.mimosaframework.orm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.utils.StringTools;
+import org.mimosaframework.orm.convert.ConvertConfig;
 import org.mimosaframework.orm.convert.ConvertFactory;
 import org.mimosaframework.orm.convert.NamingConvert;
 import org.mimosaframework.orm.exception.ContextException;
@@ -38,6 +39,7 @@ public class DefaultConfiguration implements Configuration {
     protected Set<MappingTable> mappingTables;
     protected MappingGlobalWrapper mappingGlobalWrapper = new MappingGlobalWrapper();
     protected NamingConvert convert;
+    protected ConvertConfig convertConfig;
     // 数据库表名前缀
     protected String tablePrefix;
 
@@ -48,6 +50,7 @@ public class DefaultConfiguration implements Configuration {
     protected List<? extends IDStrategy> idStrategies;
     protected boolean isShowSQL = false;
     protected boolean allowInnerJoin = true;
+    protected boolean uppercase = false;
     protected List<String> mappers;
     protected SQLDefinedLoader definedLoader;
 
@@ -184,6 +187,11 @@ public class DefaultConfiguration implements Configuration {
         if (convert == null) {
             convert = ConvertFactory.getDefaultConvert();
         }
+        if (convertConfig == null) {
+            convertConfig = new ConvertConfig();
+            convertConfig.setUppercase(uppercase);
+        }
+        convert.setConfig(convertConfig);
         return convert;
     }
 
@@ -399,6 +407,14 @@ public class DefaultConfiguration implements Configuration {
 
     public void setAddition(Object addition) {
         this.addition = addition;
+    }
+
+    public boolean isUppercase() {
+        return uppercase;
+    }
+
+    public void setUppercase(boolean uppercase) {
+        this.uppercase = uppercase;
     }
 
     @Override

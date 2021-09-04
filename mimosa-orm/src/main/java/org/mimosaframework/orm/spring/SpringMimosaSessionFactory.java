@@ -48,6 +48,7 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     protected String applicationDetail;
     protected boolean isShowSQL;
     protected boolean allowInnerJoin;
+    protected boolean uppercase;
     protected NamingConvert convert;
     protected String convertType;
     protected String scanPackage;
@@ -90,6 +91,11 @@ public class SpringMimosaSessionFactory extends AbstractConfigBuilder implements
     public void setAllowInnerJoin(boolean allowInnerJoin) {
         this.allowInnerJoin = allowInnerJoin;
         this.basicSetting.setAllowInnerJoin(allowInnerJoin);
+    }
+
+    public void setUppercase(boolean uppercase) {
+        this.uppercase = uppercase;
+        this.basicSetting.setUppercase(uppercase);
     }
 
     public void setIgnoreEmptySlave(Boolean ignoreEmptySlave) {

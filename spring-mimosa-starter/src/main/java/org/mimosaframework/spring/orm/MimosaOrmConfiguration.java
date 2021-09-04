@@ -50,6 +50,7 @@ public class MimosaOrmConfiguration implements InitializingBean {
         springMimosaSessionFactory.setTablePrefix(mimosaOrmProperties.getPrefix());
         springMimosaSessionFactory.setTableCompare(mimosaOrmProperties.getTableCompare());
         springMimosaSessionFactory.setAllowInnerJoin(mimosaOrmProperties.isAllowInnerJoin());
+        springMimosaSessionFactory.setUppercase(mimosaOrmProperties.isUppercase());
 
         return springMimosaSessionFactory;
     }

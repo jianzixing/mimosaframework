@@ -1,5 +1,6 @@
 package xmlcontext;
 
+import org.mimosaframework.orm.convert.ConvertConfig;
 import org.mimosaframework.orm.convert.ConvertType;
 import org.mimosaframework.orm.convert.NamingConvert;
 
@@ -13,6 +14,11 @@ public class TestConvert implements NamingConvert {
     public void setPm(String pm) {
         System.out.println(pm + "===");
         this.pm = pm;
+    }
+
+    @Override
+    public void setConfig(ConvertConfig config) {
+
     }
 
     @Override
