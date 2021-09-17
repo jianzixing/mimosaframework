@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  */
 public class Finder {
     private List<Math> maths = new ArrayList<>();
-    private int index = 0;
+    private Math DEFAULT = new Math("*", 1);
 
     public static <T> List<T> get(Object obj, String express) {
         Finder finder = new Finder();
@@ -46,7 +46,7 @@ public class Finder {
 
             List<T> any = new ArrayList<>();
             try {
-                this.finder(any, obj);
+                this.finder(any, obj, 0);
             } catch (Exception e) {
                 throw new IllegalArgumentException(e);
             }
@@ -55,15 +55,24 @@ public class Finder {
         return null;
     }
 
-    private void finder(List any, Object obj) throws NoSuchFieldException, IllegalAccessException {
-        Math math = this.maths.get(index);
-        index++;
+    private void finder(List any, Object obj, int deep) throws NoSuchFieldException, IllegalAccessException {
+        Math math = null;
+        if (this.maths.size() > deep) {
+            math = this.maths.get(deep);
+        }
 
         if (math == null && obj != null) {
             any.add(obj);
         }
-        if (obj == null) {
+        if (math == null || obj == null) {
             return;
+        }
+
+        if (math.type != 1 && (obj instanceof List || obj instanceof Set)) {
+            // 这里可以省略[0]这种写法
+            math = DEFAULT;
+        } else {
+            deep = deep + 1;
         }
 
         if (obj instanceof List || obj instanceof Set) {
@@ -73,7 +82,7 @@ public class Finder {
                     Iterator iterator = ((Collection) obj).iterator();
                     while (iterator.hasNext()) {
                         Object next = iterator.next();
-                        this.finder(any, next);
+                        this.finder(any, next, deep);
                     }
                 } else {
                     Integer i = Integer.parseInt(str);
@@ -91,7 +100,7 @@ public class Finder {
                             j++;
                         }
                     }
-                    this.finder(any, next);
+                    this.finder(any, next, deep);
                 }
             } else {
                 throw new IllegalArgumentException("current object is array require object");
@@ -100,7 +109,7 @@ public class Finder {
             if (math.type == 0) {
                 String str = math.str;
                 Object next = ((Map) obj).get(str);
-                this.finder(any, next);
+                this.finder(any, next, deep);
             } else {
                 throw new IllegalArgumentException("current object is object require array");
             }
@@ -112,16 +121,24 @@ public class Finder {
             Field field = obj.getClass().getDeclaredField(str);
             field.setAccessible(true);
             Object next = field.get(obj);
-            this.finder(any, next);
+            this.finder(any, next, deep);
         }
     }
 
     public static void main(String[] args) {
-      
+
     }
 
     private class Math {
         String str;
         Integer type;
+
+        public Math() {
+        }
+
+        public Math(String str, Integer type) {
+            this.str = str;
+            this.type = type;
+        }
     }
 }
