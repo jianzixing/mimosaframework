@@ -6,7 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 用来查找对象中的值
+ * 用来查找对象中的值，可以更加表达式参数获取想要的层级对象列表
+ * 比如 a.b[*].c.d[1] 表示获取a对象中的数组b的所有值中的c对象中
+ * 的d数组第一个值，然后全部装入一个list并返回
  */
 public class Finder {
     private List<Math> maths = new ArrayList<>();
@@ -15,6 +17,42 @@ public class Finder {
     public static <T> List<T> get(Object obj, String express) {
         Finder finder = new Finder();
         return finder.search(obj, express);
+    }
+
+    public static <T> List<T> exclude(List<T> retain, List compare, String... name) {
+        try {
+            if (retain != null && compare != null && name != null && name.length > 0) {
+                List<T> rm = new ArrayList<>();
+                for (T t : retain) {
+                    boolean b = false;
+                    for (Object t2 : compare) {
+                        int i = 0;
+                        for (String s : name) {
+                            Field field1 = t.getClass().getDeclaredField(s);
+                            field1.setAccessible(true);
+                            Object v1 = field1.get(t);
+                            Field field2 = t2.getClass().getDeclaredField(s);
+                            field2.setAccessible(true);
+                            Object v2 = field2.get(t2);
+                            if (v1.equals(v2)) {
+                                i++;
+                            }
+                        }
+                        if (i == name.length) {
+                            b = true;
+                            break;
+                        }
+                    }
+                    if (b) {
+                        rm.add(t);
+                    }
+                }
+                retain.removeAll(rm);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+        return retain;
     }
 
     public <T> List<T> search(Object obj, String express) {
