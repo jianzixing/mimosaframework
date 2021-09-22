@@ -2,6 +2,7 @@ package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.Finder;
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.AutoResult;
 import org.mimosaframework.orm.Paging;
 import org.mimosaframework.orm.SessionTemplate;
@@ -63,39 +64,42 @@ public abstract class ModelUtils {
         return null;
     }
 
-    public static void removeValues(List<ModelObject> objects, Serializable... keys) {
+    public static <T> void removeValues(List<T> objects, Serializable... keys) {
         if (objects != null && keys != null) {
-            for (ModelObject m : objects) {
-                for (Object k : keys) {
-                    m.remove(k);
+            for (T m : objects) {
+                for (Serializable k : keys) {
+                    Finder.removeObjectValue(m, k);
                 }
             }
         }
     }
 
-    public static void removeValues(Paging paging, Serializable... keys) {
-        List<ModelObject> objects = paging.getObjects();
+    public static <T> void removeValues(Paging paging, Serializable... keys) {
+        List<T> objects = paging.getObjects();
         if (objects != null && keys != null) {
-            for (ModelObject m : objects) {
-                for (Object k : keys) {
-                    m.remove(k);
+            for (T m : objects) {
+                for (Serializable k : keys) {
+                    Finder.removeObjectValue(m, k);
                 }
             }
         }
     }
 
-    public static void removeValue(ModelObject object, Serializable... keys) {
+    public static <T> void removeValue(T object, Serializable... keys) {
         if (object != null && keys != null) {
-            for (Object k : keys) {
-                object.remove(k);
+            for (Serializable k : keys) {
+                Finder.removeObjectValue(object, k);
             }
         }
     }
 
-    public static void setLikeUrlEncodeSearch(ModelObject search, Serializable key) {
-        if (search != null && search.containsKey(key) && key != null && !search.isEmpty(key.toString())) {
+    public static <T> void setLikeUrlEncodeSearch(T search, Serializable key) {
+        if (search != null) {
+            String v = Finder.getStringValue(search, key);
             try {
-                search.put(key, "%" + URLEncoder.encode(search.getString(key.toString()), "utf-8") + "%");
+                if (v != null && StringTools.isNotEmpty(v)) {
+                    Finder.setObjectValue(search, key, "%" + URLEncoder.encode(v, "utf-8") + "%");
+                }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
