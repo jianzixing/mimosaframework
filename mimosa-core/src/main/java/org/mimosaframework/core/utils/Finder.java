@@ -66,6 +66,20 @@ public class Finder {
         }
     }
 
+    public static void removeObjectValue(Object object, Serializable key) {
+        try {
+            if (object instanceof Map) {
+                ((Map) object).remove(key);
+            } else {
+                Field field1 = object.getClass().getDeclaredField(key.toString());
+                field1.setAccessible(true);
+                field1.set(key, null);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     public static Object getObjectValue(Object object, Serializable key) {
         try {
             if (object instanceof Map) {
