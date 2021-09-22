@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.Finder;
 import org.mimosaframework.orm.AutoResult;
 import org.mimosaframework.orm.Paging;
 import org.mimosaframework.orm.SessionTemplate;
@@ -26,29 +27,29 @@ public abstract class ModelUtils {
      * @param childrenKey
      * @return
      */
-    public static List<ModelObject> getListToTree(List<ModelObject> objects, Object idKey, Object pidKey, String childrenKey) {
-        Map<String, ModelObject> map = new LinkedHashMap();
+    public static <T> List<T> getListToTree(List<T> objects, Object idKey, Object pidKey, Serializable childrenKey) {
+        Map<String, T> map = new LinkedHashMap();
         if (objects != null) {
-            for (ModelObject m : objects) {
-                map.put(m.getString(ModelObject.getKeyName(idKey)), m);
+            for (T m : objects) {
+                map.put(Finder.getStringValue(m, ModelObject.getKeyName(idKey)), m);
             }
 
-            List<ModelObject> result = new ArrayList();
-            List<ModelObject> removes = new ArrayList<>();
+            List<T> result = new ArrayList();
+            List<T> removes = new ArrayList<>();
 
-            Set<Map.Entry<String, ModelObject>> set = map.entrySet();
-            for (Map.Entry<String, ModelObject> entry : set) {
-                String pid = entry.getValue().getString(ModelObject.getKeyName(pidKey));
-                Set<Map.Entry<String, ModelObject>> set2 = map.entrySet();
-                for (Map.Entry<String, ModelObject> cen : set2) {
-                    if (cen.getValue().getString(ModelObject.getKeyName(idKey)).equals(pid)) {
-                        ModelObject object = cen.getValue();
-                        List children = object.getModelArray(childrenKey);
+            Set<Map.Entry<String, T>> set = map.entrySet();
+            for (Map.Entry<String, T> entry : set) {
+                String pid = Finder.getStringValue(entry.getValue(), ModelObject.getKeyName(pidKey));
+                Set<Map.Entry<String, T>> set2 = map.entrySet();
+                for (Map.Entry<String, T> cen : set2) {
+                    if (Finder.getStringValue(cen.getValue(), ModelObject.getKeyName(idKey)).equals(pid)) {
+                        T object = cen.getValue();
+                        List children = Finder.getArrayValue(object, childrenKey);
                         if (children == null) {
                             children = new ArrayList<ModelObject>();
                         }
                         children.add(entry.getValue());
-                        cen.getValue().put(childrenKey, children);
+                        Finder.setObjectValue(cen.getValue(), childrenKey, children);
                         removes.add(entry.getValue());
                     }
                 }
@@ -62,7 +63,7 @@ public abstract class ModelUtils {
         return null;
     }
 
-    public static void removeValues(List<ModelObject> objects, Object... keys) {
+    public static void removeValues(List<ModelObject> objects, Serializable... keys) {
         if (objects != null && keys != null) {
             for (ModelObject m : objects) {
                 for (Object k : keys) {
@@ -72,7 +73,7 @@ public abstract class ModelUtils {
         }
     }
 
-    public static void removeValues(Paging paging, Object... keys) {
+    public static void removeValues(Paging paging, Serializable... keys) {
         List<ModelObject> objects = paging.getObjects();
         if (objects != null && keys != null) {
             for (ModelObject m : objects) {
@@ -83,7 +84,7 @@ public abstract class ModelUtils {
         }
     }
 
-    public static void removeValue(ModelObject object, Object... keys) {
+    public static void removeValue(ModelObject object, Serializable... keys) {
         if (object != null && keys != null) {
             for (Object k : keys) {
                 object.remove(k);
@@ -91,10 +92,10 @@ public abstract class ModelUtils {
         }
     }
 
-    public static void setLikeUrlEncodeSearch(ModelObject search, String key) {
-        if (search != null && search.containsKey(key) && !search.isEmpty(key)) {
+    public static void setLikeUrlEncodeSearch(ModelObject search, Serializable key) {
+        if (search != null && search.containsKey(key) && key != null && !search.isEmpty(key.toString())) {
             try {
-                search.put(key, "%" + URLEncoder.encode(search.getString(key), "utf-8") + "%");
+                search.put(key, "%" + URLEncoder.encode(search.getString(key.toString()), "utf-8") + "%");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

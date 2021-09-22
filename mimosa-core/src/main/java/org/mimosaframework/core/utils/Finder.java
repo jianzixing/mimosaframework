@@ -1,5 +1,6 @@
 package org.mimosaframework.core.utils;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -19,7 +20,7 @@ public class Finder {
         return finder.search(obj, express);
     }
 
-    public static <T> List<T> exclude(List<T> retain, List compare, String... name) {
+    public static <T> List<T> exclude(List<T> retain, List compare, Serializable... name) {
         try {
             if (retain != null && compare != null && name != null && name.length > 0) {
                 List<T> rm = new ArrayList<>();
@@ -27,13 +28,9 @@ public class Finder {
                     boolean b = false;
                     for (Object t2 : compare) {
                         int i = 0;
-                        for (String s : name) {
-                            Field field1 = t.getClass().getDeclaredField(s);
-                            field1.setAccessible(true);
-                            Object v1 = field1.get(t);
-                            Field field2 = t2.getClass().getDeclaredField(s);
-                            field2.setAccessible(true);
-                            Object v2 = field2.get(t2);
+                        for (Serializable s : name) {
+                            Object v1 = getObjectValue(t, s);
+                            Object v2 = getObjectValue(t2, s);
                             if (v1.equals(v2)) {
                                 i++;
                             }
@@ -53,6 +50,43 @@ public class Finder {
             throw new IllegalArgumentException(e);
         }
         return retain;
+    }
+
+    public static void setObjectValue(Object object, Serializable key, Object value) {
+        try {
+            if (object instanceof Map) {
+                ((Map) object).put(key, value);
+            } else {
+                Field field1 = object.getClass().getDeclaredField(key.toString());
+                field1.setAccessible(true);
+                field1.set(key, value);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static Object getObjectValue(Object object, Serializable key) {
+        try {
+            if (object instanceof Map) {
+                return ((Map) object).get(key);
+            } else {
+                Field field1 = object.getClass().getDeclaredField(key.toString());
+                field1.setAccessible(true);
+                Object v = field1.get(object);
+                return v;
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static String getStringValue(Object obj, Serializable keyName) {
+        return String.valueOf(getObjectValue(obj, keyName));
+    }
+
+    public static List getArrayValue(Object object, Serializable keyName) {
+        return (List) getObjectValue(object, keyName);
     }
 
     public <T> List<T> search(Object obj, String express) {
