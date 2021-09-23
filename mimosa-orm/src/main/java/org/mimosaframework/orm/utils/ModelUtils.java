@@ -28,7 +28,7 @@ public abstract class ModelUtils {
      * @param childrenKey
      * @return
      */
-    public static <T> List<T> getListToTree(List<T> objects, Object idKey, Object pidKey, Serializable childrenKey) {
+    public static <T> List<T> getListToTree(List<T> objects, Serializable idKey, Serializable pidKey, Serializable childrenKey) {
         Map<String, T> map = new LinkedHashMap();
         if (objects != null) {
             for (T m : objects) {
