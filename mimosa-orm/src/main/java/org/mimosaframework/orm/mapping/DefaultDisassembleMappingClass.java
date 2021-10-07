@@ -61,7 +61,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                 mappingTable.setEncoding(table.charset());
             }
             if (StringTools.isNotEmpty(table.version())) {
-                mappingTable.setEncoding(table.version());
+                mappingTable.setVersion(table.version());
             }
 
 

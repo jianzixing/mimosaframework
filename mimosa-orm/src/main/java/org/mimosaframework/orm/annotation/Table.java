@@ -13,7 +13,7 @@ public @interface Table {
 
     String engineName() default "";
 
-    String charset() default "UTF8";
+    String charset() default "";
 
     String version() default "0";
 }
