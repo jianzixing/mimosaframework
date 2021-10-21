@@ -9,6 +9,18 @@ public class AssistUtils {
         }
     }
 
+    public static void isNull(Object o, String code, String s) {
+        if (o == null) {
+            throw new ModuleException(code, s);
+        }
+    }
+
+    public static void isNull(Object o, int code, String s) {
+        if (o == null) {
+            throw new ModuleException(code, s);
+        }
+    }
+
     public static void error(String msg) {
         throw new ModuleException(-999, msg);
     }
@@ -36,6 +48,18 @@ public class AssistUtils {
     public static void notNull(Object object, String msg) {
         if (object != null) {
             throw new IllegalArgumentException(msg);
+        }
+    }
+
+    public static void notNull(Object object, String code, String msg) {
+        if (object != null) {
+            throw new ModuleException(code, msg);
+        }
+    }
+
+    public static void notNull(Object object, int code, String msg) {
+        if (object != null) {
+            throw new ModuleException(code, msg);
         }
     }
 
