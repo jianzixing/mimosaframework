@@ -175,7 +175,11 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
             for (SQLDataPlaceholder placeholder : placeholders) {
                 i++;
                 Object value = this.getFormatValue(placeholder.getValue());
-                statement.setObject(i, value);
+                if (value != null && value.getClass().isEnum()) {
+                    statement.setObject(i, String.valueOf(value));
+                } else {
+                    statement.setObject(i, value);
+                }
             }
         }
         return statement;

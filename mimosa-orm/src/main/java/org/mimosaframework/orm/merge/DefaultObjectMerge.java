@@ -178,7 +178,7 @@ public class DefaultObjectMerge implements ObjectMerge {
         }
 
         List<MergeTree> mergeTrees = mergeTree.getChildren();
-        if (mergeTrees != null && mergeTrees.size() > 0) {
+        if (o != null && mergeTrees != null && mergeTrees.size() > 0) {
             for (MergeTree mt : mergeTrees) {
                 String aliasName = mt.getExternalConnectionName();
                 Object children = o.getAny(aliasName);
