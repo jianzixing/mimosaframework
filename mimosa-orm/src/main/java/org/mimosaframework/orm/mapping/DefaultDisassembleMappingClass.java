@@ -65,7 +65,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             }
 
 
-            this.disassembleFields(mappingTable);
+            this.disassembleFields(mappingTable, table);
             this.disassembleIndexes(mappingTable, index);
 
             Set<MappingField> mappingFields = mappingTable.getMappingFields();
@@ -121,7 +121,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         }
     }
 
-    private void disassembleFields(SpecificMappingTable mappingTable) {
+    private void disassembleFields(SpecificMappingTable mappingTable, Table table) {
         String fieldName = null;
         Column column = null;
         Object fieldObject = null;
@@ -130,6 +130,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         Class<Timestamp> timestamp = null;
 
         int countTimeForUpdate = 0;
+        boolean ignoreSuperclass = table.ignoreSuperclass();
 
         if (mappingClass.isEnum()) {
             for (Object o : mappingClass.getEnumConstants()) {
@@ -174,7 +175,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             }
         } else {
             List<Field> allFields = new ArrayList<>();
-            loadAllFields(mappingClass, allFields);
+            loadAllFields(mappingClass, allFields, ignoreSuperclass);
             Field[] fields = allFields.toArray(new Field[]{});
             for (Field field : fields) {
                 fieldName = field.getName();
@@ -214,7 +215,7 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         }
     }
 
-    private void loadAllFields(Class c, List<Field> fields) {
+    private void loadAllFields(Class c, List<Field> fields, boolean ignoreSuperclass) {
         if (!c.equals(Object.class)) {
             Field[] fds = c.getDeclaredFields();
             for (Field field : fds) {
@@ -223,7 +224,9 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                     fields.add(field);
                 }
             }
-            this.loadAllFields(c.getSuperclass(), fields);
+            if (ignoreSuperclass == false) {
+                this.loadAllFields(c.getSuperclass(), fields, ignoreSuperclass);
+            }
         }
     }
 

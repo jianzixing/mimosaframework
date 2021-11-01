@@ -16,4 +16,6 @@ public @interface Table {
     String charset() default "";
 
     String version() default "0";
+
+    boolean ignoreSuperclass() default false;
 }
