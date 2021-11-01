@@ -52,11 +52,11 @@ public class SessionContext {
     }
 
     public boolean isShowSql() {
-        return contextValues.isShowSQL();
+        return contextValues != null ? contextValues.isShowSQL() : false;
     }
 
     public boolean isIgnoreEmptySlave() {
-        return contextValues.isIgnoreEmptySlave();
+        return contextValues != null ? contextValues.isIgnoreEmptySlave() : true;
     }
 
     public Transaction getTransaction() {

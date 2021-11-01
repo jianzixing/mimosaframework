@@ -88,7 +88,89 @@ public abstract class PlatformDialect implements Dialect {
     }
 
     public List<TableStructure> getTableStructures(List<String> classTableNames) throws SQLException {
-        return this.loadingTableStructures(null);
+        return this.loadingTableStructures(classTableNames);
+    }
+
+    public List<TableColumnStructure> getColumnsStructures(String schema, List<String> tables) throws SQLException {
+        StructureBuilder structureBuilder = new StructureBuilder();
+        StampAction column = structureBuilder.column(schema, tables).compile();
+        List<TableColumnStructure> columnStructures = new ArrayList<>();
+        LOBLoader.register(new LOBLoader.Loader() {
+            @Override
+            public void lob(Map map, String columnName, Object lob) {
+                if (lob instanceof Clob) {
+                    try {
+                        map.put(columnName, ((Clob) lob).getSubString(1, (int) ((Clob) lob).length()));
+                    } catch (SQLException e) {
+                        map.put(columnName, "$'clob_get_error'");
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        Object resultColumn = this.runner(column);
+        LOBLoader.close();
+        if (resultColumn instanceof List) {
+            List<ModelObject> listColumn = (List<ModelObject>) resultColumn;
+            for (ModelObject o : listColumn) {
+                TableColumnStructure columnStructure = new TableColumnStructure();
+                columnStructure.setTableSchema(o.getString("TABSCHEMA"));
+                columnStructure.setTableName(o.getString("TABNAME"));
+                columnStructure.setColumnName(o.getString("COLNAME"));
+                columnStructure.setTypeName(o.getString("TYPENAME"));
+                columnStructure.setLength(o.getIntValue("LENGTH"));
+                columnStructure.setScale(o.getIntValue("SCALE"));
+                columnStructure.setDefaultValue(o.getString("DEFAULT"));
+                columnStructure.setIsNullable(o.getString("IS_NULLABLE"));
+                columnStructure.setAutoIncrement(o.getString("AUTO_INCREMENT"));
+                columnStructure.setComment(o.getString("COMMENT"));
+                columnStructures.add(columnStructure);
+            }
+        }
+        return columnStructures;
+    }
+
+    public List<TableIndexStructure> getIndexStructures(String schema, List<String> tables) throws SQLException {
+        StructureBuilder structureBuilder = new StructureBuilder();
+        StampAction index = structureBuilder.index(schema, tables).compile();
+        List<TableIndexStructure> indexStructures = new ArrayList<>();
+        Object resultIndex = this.runner(index);
+        if (resultIndex instanceof List) {
+            List<ModelObject> listIndex = (List<ModelObject>) resultIndex;
+            for (ModelObject o : listIndex) {
+                TableIndexStructure indexStructure = new TableIndexStructure();
+                indexStructure.setTableSchema(o.getString("TABSCHEMA"));
+                indexStructure.setIndexName(o.getString("INDNAME"));
+                indexStructure.setTableName(o.getString("TABNAME"));
+                indexStructure.setType(o.getString("TYPE"));
+                indexStructure.setColumnName(o.getString("COLNAME"));
+                indexStructure.setComment(o.getString("COMMENT"));
+                indexStructures.add(indexStructure);
+            }
+        }
+        return indexStructures;
+    }
+
+    public List<TableConstraintStructure> getConstraintStructures(String schema, List<String> tables) throws SQLException {
+        StructureBuilder structureBuilder = new StructureBuilder();
+        StampAction constraint = structureBuilder.constraint(schema, tables).compile();
+        List<TableConstraintStructure> constraintStructures = new ArrayList<>();
+        Object resultConstraint = this.runner(constraint);
+        if (resultConstraint instanceof List) {
+            List<ModelObject> listConstraint = (List<ModelObject>) resultConstraint;
+            for (ModelObject o : listConstraint) {
+                TableConstraintStructure constraintStructure = new TableConstraintStructure();
+                constraintStructure.setTableSchema(o.getString("TABSCHEMA"));
+                constraintStructure.setConstraintName(o.getString("CONSNAME"));
+                constraintStructure.setTableName(o.getString("TABNAME"));
+                constraintStructure.setColumnName(o.getString("COLNAME"));
+                constraintStructure.setForeignTableName(o.getString("FGNTABNAME"));
+                constraintStructure.setForeignColumnName(o.getString("FGNCOLNAME"));
+                constraintStructure.setType(o.getString("TYPE"));
+                constraintStructures.add(constraintStructure);
+            }
+        }
+        return constraintStructures;
     }
 
     protected List<TableStructure> loadingTableStructures(List<String> classTableNames) throws SQLException {
@@ -121,75 +203,9 @@ public abstract class PlatformDialect implements Dialect {
             }
 
             if (tableStructures != null && tableStructures.size() > 0 && tables.size() > 0) {
-                StampAction column = structureBuilder.column(schema, tables).compile();
-                List<TableColumnStructure> columnStructures = new ArrayList<>();
-                LOBLoader.register(new LOBLoader.Loader() {
-                    @Override
-                    public void lob(Map map, String columnName, Object lob) {
-                        if (lob instanceof Clob) {
-                            try {
-                                map.put(columnName, ((Clob) lob).getSubString(1, (int) ((Clob) lob).length()));
-                            } catch (SQLException e) {
-                                map.put(columnName, "$'clob_get_error'");
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-                Object resultColumn = this.runner(column);
-                LOBLoader.close();
-                if (resultColumn instanceof List) {
-                    List<ModelObject> listColumn = (List<ModelObject>) resultColumn;
-                    for (ModelObject o : listColumn) {
-                        TableColumnStructure columnStructure = new TableColumnStructure();
-                        columnStructure.setTableSchema(o.getString("TABSCHEMA"));
-                        columnStructure.setTableName(o.getString("TABNAME"));
-                        columnStructure.setColumnName(o.getString("COLNAME"));
-                        columnStructure.setTypeName(o.getString("TYPENAME"));
-                        columnStructure.setLength(o.getIntValue("LENGTH"));
-                        columnStructure.setScale(o.getIntValue("SCALE"));
-                        columnStructure.setDefaultValue(o.getString("DEFAULT"));
-                        columnStructure.setIsNullable(o.getString("IS_NULLABLE"));
-                        columnStructure.setAutoIncrement(o.getString("AUTO_INCREMENT"));
-                        columnStructure.setComment(o.getString("COMMENT"));
-                        columnStructures.add(columnStructure);
-                    }
-                }
-
-                StampAction index = structureBuilder.index(schema, tables).compile();
-                List<TableIndexStructure> indexStructures = new ArrayList<>();
-                Object resultIndex = this.runner(index);
-                if (resultIndex instanceof List) {
-                    List<ModelObject> listIndex = (List<ModelObject>) resultIndex;
-                    for (ModelObject o : listIndex) {
-                        TableIndexStructure indexStructure = new TableIndexStructure();
-                        indexStructure.setTableSchema(o.getString("TABSCHEMA"));
-                        indexStructure.setIndexName(o.getString("INDNAME"));
-                        indexStructure.setTableName(o.getString("TABNAME"));
-                        indexStructure.setType(o.getString("TYPE"));
-                        indexStructure.setColumnName(o.getString("COLNAME"));
-                        indexStructure.setComment(o.getString("COMMENT"));
-                        indexStructures.add(indexStructure);
-                    }
-                }
-
-                StampAction constraint = structureBuilder.constraint(schema, tables).compile();
-                List<TableConstraintStructure> constraintStructures = new ArrayList<>();
-                Object resultConstraint = this.runner(constraint);
-                if (resultConstraint instanceof List) {
-                    List<ModelObject> listConstraint = (List<ModelObject>) resultConstraint;
-                    for (ModelObject o : listConstraint) {
-                        TableConstraintStructure constraintStructure = new TableConstraintStructure();
-                        constraintStructure.setTableSchema(o.getString("TABSCHEMA"));
-                        constraintStructure.setConstraintName(o.getString("CONSNAME"));
-                        constraintStructure.setTableName(o.getString("TABNAME"));
-                        constraintStructure.setColumnName(o.getString("COLNAME"));
-                        constraintStructure.setForeignTableName(o.getString("FGNTABNAME"));
-                        constraintStructure.setForeignColumnName(o.getString("FGNCOLNAME"));
-                        constraintStructure.setType(o.getString("TYPE"));
-                        constraintStructures.add(constraintStructure);
-                    }
-                }
+                List<TableColumnStructure> columnStructures = getColumnsStructures(schema, tables);
+                List<TableIndexStructure> indexStructures = getIndexStructures(schema, tables);
+                List<TableConstraintStructure> constraintStructures = getConstraintStructures(schema, tables);
 
                 for (TableStructure tableStructure : tableStructures) {
                     String tableName = tableStructure.getTableName();

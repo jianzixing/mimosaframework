@@ -1,11 +1,19 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.orm.MimosaDataSource;
 import org.mimosaframework.orm.criteria.*;
+import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.platform.SessionContext;
+import org.mimosaframework.orm.transaction.JDBCTransaction;
+import org.mimosaframework.orm.transaction.Transaction;
+import org.mimosaframework.orm.transaction.TransactionFactory;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.*;
 
 public final class SessionUtils {
@@ -147,5 +155,19 @@ public final class SessionUtils {
                 }
             }
         }
+    }
+
+    public static SessionContext buildSessionContext(DataSource ds) throws SQLException {
+        MimosaDataSource mimosaDataSource = new MimosaDataSource();
+        mimosaDataSource.setMaster(ds);
+        SessionContext context = new SessionContext();
+
+        context.setDataSource(mimosaDataSource);
+        DataSource dataSource = mimosaDataSource.getMaster();
+        Transaction transaction = null;
+        // 如果不支持事务默认使用JDBCTransaction
+        transaction = new JDBCTransaction(dataSource, false);
+        context.setTransaction(transaction);
+        return context;
     }
 }

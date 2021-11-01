@@ -310,7 +310,7 @@ public class PlatformExecutor {
         }
     }
 
-    private PlatformDialect getDialect() {
+    public PlatformDialect getDialect() {
         PlatformDialect dialect = PlatformFactory.getDialect(sessionContext);
         dialect.setMappingGlobalWrapper(this.mappingGlobalWrapper);
         return dialect;

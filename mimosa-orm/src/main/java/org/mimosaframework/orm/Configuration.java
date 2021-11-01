@@ -9,6 +9,7 @@ import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 import org.mimosaframework.orm.utils.DatabaseType;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
