@@ -175,7 +175,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             }
         } else {
             List<Field> allFields = new ArrayList<>();
-            loadAllFields(mappingClass, allFields, ignoreSuperclass);
+            List<String> excludeFields = new ArrayList<>();
+            loadAllFields(mappingClass, allFields, excludeFields, ignoreSuperclass);
             Field[] fields = allFields.toArray(new Field[]{});
             for (Field field : fields) {
                 fieldName = field.getName();
@@ -215,17 +216,22 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         }
     }
 
-    private void loadAllFields(Class c, List<Field> fields, boolean ignoreSuperclass) {
+    private void loadAllFields(Class c, List<Field> fields, List<String> excludeFields, boolean ignoreSuperclass) {
         if (!c.equals(Object.class)) {
             Field[] fds = c.getDeclaredFields();
             for (Field field : fds) {
+                // 如果实现类已经存在则表示覆盖父配置以实现类为准
+                if (excludeFields != null && excludeFields.contains(field.getName())) {
+                    continue;
+                }
                 Column column = field.getAnnotation(Column.class);
                 if (column != null) {
                     fields.add(field);
                 }
+                excludeFields.add(field.getName());
             }
             if (ignoreSuperclass == false) {
-                this.loadAllFields(c.getSuperclass(), fields, ignoreSuperclass);
+                this.loadAllFields(c.getSuperclass(), fields, excludeFields, ignoreSuperclass);
             }
         }
     }
