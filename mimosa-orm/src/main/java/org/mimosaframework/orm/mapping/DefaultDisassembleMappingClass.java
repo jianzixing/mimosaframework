@@ -173,7 +173,9 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
                 }
             }
         } else {
-            Field[] fields = mappingClass.getDeclaredFields();
+            List<Field> allFields = new ArrayList<>();
+            loadAllFields(mappingClass, allFields);
+            Field[] fields = allFields.toArray(new Field[]{});
             for (Field field : fields) {
                 fieldName = field.getName();
                 column = field.getAnnotation(Column.class);
@@ -209,6 +211,19 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         if (countTimeForUpdate > 1) {
             throw new IllegalArgumentException(I18n.print("just_max_one_tfu",
                     mappingTable.getMappingTableName()));
+        }
+    }
+
+    private void loadAllFields(Class c, List<Field> fields) {
+        if (!c.equals(Object.class)) {
+            Field[] fds = c.getDeclaredFields();
+            for (Field field : fds) {
+                Column column = field.getAnnotation(Column.class);
+                if (column != null) {
+                    fields.add(field);
+                }
+            }
+            this.loadAllFields(c.getSuperclass(), fields);
         }
     }
 
