@@ -25,6 +25,7 @@ public class TestCompareDB {
         tables.add("t_project_history_page");
         List<TableStructure> structures = dialect.getTableStructures(tables);
         List<TableColumnStructure> columnStructures = dialect.getColumnsStructures("dm_builder", tables);
+        List<TableIndexStructure> indexStructures = dialect.getIndexStructures("dm_builder", tables);
         if (structures != null) {
             for (TableStructure structure : structures) {
                 System.out.println(structure.getTableName() + "  ");

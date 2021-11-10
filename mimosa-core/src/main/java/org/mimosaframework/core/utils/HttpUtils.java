@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpUtils {
@@ -56,6 +57,19 @@ public class HttpUtils {
 
     public static String get(String url, Map<String, Object> params) throws IOException {
         return get(url, params, "UTF-8");
+    }
+
+    public static Map<String, String> paramsToMap(String str) {
+        if (StringTools.isNotEmpty(str)) {
+            Map<String, String> map = new LinkedHashMap<>();
+            String[] s1 = str.split("&");
+            for (String s2 : s1) {
+                String[] s3 = s2.split("=");
+                if (s3.length > 0) map.put(s3[0], s3.length > 1 ? s3[1] : null);
+            }
+            return map;
+        }
+        return null;
     }
 
     public static String mapToParams(Map<String, Object> params) {
