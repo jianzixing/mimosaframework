@@ -59,7 +59,7 @@ public class Finder {
             } else {
                 Field field1 = object.getClass().getDeclaredField(key.toString());
                 field1.setAccessible(true);
-                field1.set(key, value);
+                field1.set(object, value);
             }
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
@@ -73,7 +73,7 @@ public class Finder {
             } else {
                 Field field1 = object.getClass().getDeclaredField(key.toString());
                 field1.setAccessible(true);
-                field1.set(key, null);
+                field1.set(object, null);
             }
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
