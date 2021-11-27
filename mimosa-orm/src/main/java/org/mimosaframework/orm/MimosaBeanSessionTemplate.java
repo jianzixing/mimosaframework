@@ -261,97 +261,101 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 DefaultJoin join = (DefaultJoin) j;
                 String aliasName = join.getAliasName();
 
-                Field[] fields = tableClass.getDeclaredFields();
-                for (Field field : fields) {
-                    String fieldName = field.getName();
-                    JoinName joinName = field.getAnnotation(JoinName.class);
+                Class currClass = tableClass;
+                while (!currClass.equals(Object.class)) {
+                    Field[] fields = currClass.getDeclaredFields();
+                    currClass = currClass.getSuperclass();
+                    for (Field field : fields) {
+                        String fieldName = field.getName();
+                        JoinName joinName = field.getAnnotation(JoinName.class);
 
-                    Class fieldType = field.getType();
-                    Type type = field.getGenericType();
-                    Class genericType = null;
-                    if (type instanceof ParameterizedType) {
-                        ParameterizedType pt = (ParameterizedType) type;
-                        // 获取字段第一个泛型
-                        genericType = (Class<?>) pt.getActualTypeArguments()[0];
-                    }
+                        Class fieldType = field.getType();
+                        Type type = field.getGenericType();
+                        Class genericType = null;
+                        if (type instanceof ParameterizedType) {
+                            ParameterizedType pt = (ParameterizedType) type;
+                            // 获取字段第一个泛型
+                            genericType = (Class<?>) pt.getActualTypeArguments()[0];
+                        }
 
-                    if (fieldName.equals(aliasName)
-                            || (joinName != null && joinName.value().equals(aliasName))) {
-                        for (ModelObject object : objects) {
-                            Object child = object.get(aliasName);
-                            if (child != null) {
-                                if (child instanceof List) {
-                                    List childBeans = this.model2JavaObject(Collection.class.isAssignableFrom(fieldType) ? genericType : fieldType,
-                                            join.getChildJoin(), (List<ModelObject>) child);
-                                    if (childBeans != null && childBeans.size() > 0) {
-                                        if (Collection.class.isAssignableFrom(fieldType)) {
-                                            object.put(field.getName(), this.list2Collection(childBeans, fieldType));
-                                        } else if (fieldType.isArray()) {
-                                            object.put(field.getName(), childBeans.toArray());
-                                        } else {
-                                            object.put(field.getName(), childBeans.get(0));
+                        if (fieldName.equals(aliasName)
+                                || (joinName != null && joinName.value().equals(aliasName))) {
+                            for (ModelObject object : objects) {
+                                Object child = object.get(aliasName);
+                                if (child != null) {
+                                    if (child instanceof List) {
+                                        List childBeans = this.model2JavaObject(Collection.class.isAssignableFrom(fieldType) ? genericType : fieldType,
+                                                join.getChildJoin(), (List<ModelObject>) child);
+                                        if (childBeans != null && childBeans.size() > 0) {
+                                            if (Collection.class.isAssignableFrom(fieldType)) {
+                                                object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                            } else if (fieldType.isArray()) {
+                                                object.put(field.getName(), childBeans.toArray());
+                                            } else {
+                                                object.put(field.getName(), childBeans.get(0));
+                                            }
                                         }
-                                    }
-                                } else {
-                                    List childBeans = this.model2JavaObject(Collection.class.isAssignableFrom(fieldType) ? genericType : fieldType,
-                                            join.getChildJoin(), Arrays.asList((ModelObject) child));
-                                    if (childBeans != null && childBeans.size() > 0) {
-                                        if (Collection.class.isAssignableFrom(fieldType)) {
-                                            object.put(field.getName(), this.list2Collection(childBeans, fieldType));
-                                        } else if (fieldType.isArray()) {
-                                            object.put(field.getName(), childBeans.toArray());
-                                        } else {
-                                            object.put(field.getName(), childBeans.get(0));
+                                    } else {
+                                        List childBeans = this.model2JavaObject(Collection.class.isAssignableFrom(fieldType) ? genericType : fieldType,
+                                                join.getChildJoin(), Arrays.asList((ModelObject) child));
+                                        if (childBeans != null && childBeans.size() > 0) {
+                                            if (Collection.class.isAssignableFrom(fieldType)) {
+                                                object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                            } else if (fieldType.isArray()) {
+                                                object.put(field.getName(), childBeans.toArray());
+                                            } else {
+                                                object.put(field.getName(), childBeans.get(0));
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        for (ModelObject object : objects) {
-                            Object child = object.get(fieldType);
-                            if (child != null) {
-                                if (child instanceof List) {
-                                    List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                            (List<ModelObject>) child);
-                                    if (fieldType.isArray()) {
-                                        object.put(field.getName(), childBeans.toArray());
-                                    } else {
-                                        if (childBeans != null && childBeans.size() > 0) {
-                                            object.put(field.getName(), childBeans.get(0));
-                                        }
-                                    }
-                                } else {
-                                    List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                            Arrays.asList((ModelObject) child));
-
-                                    if (childBeans != null && childBeans.size() > 0) {
+                        } else {
+                            for (ModelObject object : objects) {
+                                Object child = object.get(fieldType);
+                                if (child != null) {
+                                    if (child instanceof List) {
+                                        List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
+                                                (List<ModelObject>) child);
                                         if (fieldType.isArray()) {
                                             object.put(field.getName(), childBeans.toArray());
                                         } else {
-                                            object.put(field.getName(), childBeans.get(0));
+                                            if (childBeans != null && childBeans.size() > 0) {
+                                                object.put(field.getName(), childBeans.get(0));
+                                            }
+                                        }
+                                    } else {
+                                        List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
+                                                Arrays.asList((ModelObject) child));
+
+                                        if (childBeans != null && childBeans.size() > 0) {
+                                            if (fieldType.isArray()) {
+                                                object.put(field.getName(), childBeans.toArray());
+                                            } else {
+                                                object.put(field.getName(), childBeans.get(0));
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        if (genericType != null && Collection.class.isAssignableFrom(fieldType)) {
-                            for (ModelObject object : objects) {
-                                Object child = object.get(genericType);
-                                if (child != null) {
-                                    if (child instanceof List) {
-                                        List childBeans = this.model2JavaObject(genericType, join.getChildJoin(),
-                                                (List<ModelObject>) child);
-                                        if (childBeans != null && childBeans.size() > 0) {
-                                            object.put(field.getName(), this.list2Collection(childBeans, fieldType));
-                                        }
-                                    } else {
-                                        List childBeans = this.model2JavaObject(genericType, join.getChildJoin(),
-                                                Arrays.asList((ModelObject) child));
+                            if (genericType != null && Collection.class.isAssignableFrom(fieldType)) {
+                                for (ModelObject object : objects) {
+                                    Object child = object.get(genericType);
+                                    if (child != null) {
+                                        if (child instanceof List) {
+                                            List childBeans = this.model2JavaObject(genericType, join.getChildJoin(),
+                                                    (List<ModelObject>) child);
+                                            if (childBeans != null && childBeans.size() > 0) {
+                                                object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                            }
+                                        } else {
+                                            List childBeans = this.model2JavaObject(genericType, join.getChildJoin(),
+                                                    Arrays.asList((ModelObject) child));
 
-                                        if (childBeans != null && childBeans.size() > 0) {
-                                            object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                            if (childBeans != null && childBeans.size() > 0) {
+                                                object.put(field.getName(), this.list2Collection(childBeans, fieldType));
+                                            }
                                         }
                                     }
                                 }

@@ -30,41 +30,45 @@ public class ModelObjectToBean implements Model2BeanFactory {
             Object value = null;
             try {
                 Class c = obj.getClass();
-                Field[] fields = c.getDeclaredFields();
-                for (Field field : fields) {
-                    Column column = field.getAnnotation(Column.class);
-                    String keyName = null;
-                    if (column != null && StringTools.isNotEmpty(column.name())) {
-                        keyName = column.name();
-                    }
+                Class currClass = c;
+                while (!currClass.equals(Object.class)) {
+                    Field[] fields = currClass.getDeclaredFields();
+                    currClass = currClass.getSuperclass();
+                    for (Field field : fields) {
+                        Column column = field.getAnnotation(Column.class);
+                        String keyName = null;
+                        if (column != null && StringTools.isNotEmpty(column.name())) {
+                            keyName = column.name();
+                        }
 
-                    if (StringTools.isEmpty(keyName)) {
-                        keyName = field.getName();
-                    }
+                        if (StringTools.isEmpty(keyName)) {
+                            keyName = field.getName();
+                        }
 
-                    Object param = object.get(keyName);
-                    Object r = type2type(param, field.getType());
-                    value = r;
+                        Object param = object.get(keyName);
+                        Object r = type2type(param, field.getType());
+                        value = r;
 
-                    fieldName = field.getName();
-                    String setName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-                    Method method = c.getMethod("set" + setName, field.getType());
+                        fieldName = field.getName();
+                        String setName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                        Method method = c.getMethod("set" + setName, field.getType());
 
-                    if (method != null) {
-                        method.invoke(obj, r);
-                    } else {
-                        if (fieldName.startsWith("is")) {
-                            setName = fieldName.substring(2);
-                            method = c.getMethod("set" + setName, field.getType());
-                            if (method != null) {
-                                method.invoke(obj, r);
+                        if (method != null) {
+                            method.invoke(obj, r);
+                        } else {
+                            if (fieldName.startsWith("is")) {
+                                setName = fieldName.substring(2);
+                                method = c.getMethod("set" + setName, field.getType());
+                                if (method != null) {
+                                    method.invoke(obj, r);
+                                }
                             }
                         }
-                    }
 
-                    if (method == null) {
-                        field.setAccessible(true);
-                        field.set(obj, r);
+                        if (method == null) {
+                            field.setAccessible(true);
+                            field.set(obj, r);
+                        }
                     }
                 }
             } catch (Exception e) {
