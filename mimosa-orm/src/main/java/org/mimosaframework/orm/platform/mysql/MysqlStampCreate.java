@@ -57,7 +57,10 @@ public class MysqlStampCreate extends PlatformStampCreate {
             }
             if (StringTools.isNotEmpty(create.charset)) {
                 sb.append(" CHARSET " + create.charset);
+            } else {
+                sb.append(" CHARSET utf8mb4");
             }
+
             if (StringTools.isNotEmpty(create.extra)) {
                 sb.append(" " + create.extra);
             }
