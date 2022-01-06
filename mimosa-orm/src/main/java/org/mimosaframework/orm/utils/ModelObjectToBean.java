@@ -78,7 +78,7 @@ public class ModelObjectToBean implements Model2BeanFactory {
         }
     }
 
-    protected static Object type2type(Object source, Class targetType) {
+    protected Object type2type(Object source, Class targetType) {
         if (source != null) {
             Class sourceType = source.getClass();
             if (sourceType == targetType) {
@@ -123,6 +123,9 @@ public class ModelObjectToBean implements Model2BeanFactory {
                     if (Integer.parseInt((String) source) == 0) return false;
                     else return true;
                 }
+            }
+            if (source instanceof ModelObject && !targetType.isPrimitive()) {
+                return toJavaObject((ModelObject) source, targetType);
             }
         }
         if (targetType.isPrimitive()) {
