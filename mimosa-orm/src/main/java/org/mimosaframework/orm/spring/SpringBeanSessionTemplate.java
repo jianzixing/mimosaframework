@@ -41,8 +41,8 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveAndUpdate(T obj) {
-        return sessionTemplate.saveAndUpdate(obj);
+    public <T> T saveOrUpdate(T obj) {
+        return sessionTemplate.saveOrUpdate(obj);
     }
 
     @Override

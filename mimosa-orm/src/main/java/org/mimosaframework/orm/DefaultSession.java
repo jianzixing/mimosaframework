@@ -100,7 +100,7 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public ModelObject saveAndUpdate(ModelObject objSource) {
+    public ModelObject saveOrUpdate(ModelObject objSource) {
         if (objSource == null || objSource.size() == 0) {
             throw new IllegalArgumentException(I18n.print("save_empty"));
         }

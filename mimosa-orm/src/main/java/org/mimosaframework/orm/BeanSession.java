@@ -13,7 +13,7 @@ public interface BeanSession extends Closeable {
 
     <T> T save(T obj);
 
-    <T> T saveAndUpdate(T obj);
+    <T> T saveOrUpdate(T obj);
 
     <T> void save(List<T> objects);
 

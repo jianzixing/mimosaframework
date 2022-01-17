@@ -64,13 +64,13 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveAndUpdate(T obj) {
+    public <T> T saveOrUpdate(T obj) {
         Object json = ModelObject.toJSON(obj);
         if (json instanceof ModelObject) {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
             model.clearNull();
-            modelSession.saveAndUpdate(model);
+            modelSession.saveOrUpdate(model);
             return (T) model2BeanFactory.toJavaObject(model, obj.getClass());
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));

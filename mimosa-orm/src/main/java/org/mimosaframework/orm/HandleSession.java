@@ -14,7 +14,7 @@ public interface HandleSession extends Closeable {
 
     ModelObject save(ModelObject obj);
 
-    ModelObject saveAndUpdate(ModelObject obj);
+    ModelObject saveOrUpdate(ModelObject obj);
 
     void save(List<ModelObject> objects);
 
