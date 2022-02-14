@@ -303,6 +303,9 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("trans_is_commit", "事务已经提交不允许再提交或者回滚");
         words.put("trans_is_mark_rollback", "事务已被标记为回滚不允许再提交");
 
+        // MappingGlobalWrapper
+        words.put("can_not_find_mapping", "没找到映射类 %s 请检查是否使用@Table注解");
+
         messageWords.add(new MessageWords(PROJECT, words));
     }
 

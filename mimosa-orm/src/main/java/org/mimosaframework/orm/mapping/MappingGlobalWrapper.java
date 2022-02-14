@@ -1,7 +1,10 @@
 package org.mimosaframework.orm.mapping;
 
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.mimosaframework.orm.i18n.I18n;
 
 public class MappingGlobalWrapper {
     /**
@@ -11,8 +14,12 @@ public class MappingGlobalWrapper {
     private Map<Class, MappingTable> mappingTables;
 
     public MappingTable getMappingTable(Class c) {
-        if (mappingTables != null) {
-            return mappingTables.get(c);
+        if (mappingTables != null && c != null) {
+            MappingTable table = mappingTables.get(c);
+            if (table == null) {
+                throw new IllegalArgumentException(I18n.print("can_not_find_mapping", c.getSimpleName()));
+            }
+            return table;
         }
         return null;
     }
@@ -32,7 +39,7 @@ public class MappingGlobalWrapper {
                 return table;
             }
         }
-        return null;
+        throw new IllegalArgumentException(I18n.print("can_not_find_mapping", tableName));
     }
 
     public void setMappingTables(Set<MappingTable> mappingTables) {
