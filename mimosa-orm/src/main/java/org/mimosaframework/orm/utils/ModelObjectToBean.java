@@ -11,17 +11,20 @@ import java.math.BigDecimal;
 
 public class ModelObjectToBean implements Model2BeanFactory {
     public <T> T toJavaObject(ModelObject object, Class<T> tClass) {
-        try {
-            T t = tClass.newInstance();
-            toJavaObject(object, t);
-            return t;
-        } catch (Exception e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(I18n.print("model_to_bean_error_2"), e);
+        if (object != null) {
+            try {
+                T t = tClass.newInstance();
+                toJavaObject(object, t);
+                return t;
+            } catch (Exception e) {
+                if (e instanceof RuntimeException) {
+                    throw (RuntimeException) e;
+                } else {
+                    throw new RuntimeException(I18n.print("model_to_bean_error_2"), e);
+                }
             }
         }
+        return null;
     }
 
     public <T> void toJavaObject(ModelObject object, T obj) {
