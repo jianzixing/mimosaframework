@@ -12,28 +12,19 @@ import java.util.*;
  * @author yangankang
  */
 public class SearchForm {
-    private List<ModelObject> objects;
+    private Query query;
 
-    public SearchForm(List<ModelObject> objects) {
-        this.objects = objects;
+    public SearchForm() {
+        query = new DefaultQuery();
     }
 
-    public Query getQuery(Class table) {
-        return this.getQuery(table, null);
+    public SearchForm(Query query) {
+        this.query = query;
     }
 
-    public Query getQuery(Class table, Map<String, Class> map) {
-        Query query = new DefaultQuery(table);
-        Map<String, List<ModelObject>> classQuery = new HashMap<>();
+    public Query set(List<ModelObject> objects) {
+        if (objects == null || objects.size() == 0) return null;
         for (ModelObject o : objects) {
-            String tableKey = o.getString("table");
-            List<ModelObject> nq = classQuery.get(tableKey);
-            if (nq == null) nq = new ArrayList<>();
-            nq.add(o);
-            classQuery.put(tableKey, nq);
-        }
-        List<ModelObject> m1 = classQuery.get(null);
-        for (ModelObject o : m1) {
             String name = o.getString("name");
             String value = o.getString("value");
             String symbol = o.getString("symbol");
@@ -61,56 +52,74 @@ public class SearchForm {
                 }
             }
         }
-
-        if (map != null && map.size() > 0) {
-            Iterator<Map.Entry<String, List<ModelObject>>> iterator = classQuery.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, List<ModelObject>> entry = iterator.next();
-                String key = entry.getKey();
-                if (key != null) {
-                    List<ModelObject> m2 = entry.getValue();
-                    for (ModelObject o : m2) {
-                        String tableKey = o.getString("table");
-                        Class c = map.get(tableKey);
-                        if (c != null) {
-                            Join join = Criteria.inner(c);
-                            String name = o.getString("name");
-                            String value = o.getString("value");
-                            String symbol = o.getString("symbol");
-                            String s = o.getString("start");
-                            String e = o.getString("end");
-
-                            if ((StringTools.isNotEmpty(value)
-                                    || StringTools.isNotEmpty(s)
-                                    || StringTools.isNotEmpty(e))
-                                    && StringTools.isNotEmpty(name)) {
-                                if (StringTools.isEmpty(symbol)) {
-                                    join.eq(name, value);
-                                } else if (symbol.equalsIgnoreCase("between")) {
-                                    join.between(name, s, e);
-                                } else if (symbol.equalsIgnoreCase("gt")) {
-                                    join.gt(name, value);
-                                } else if (symbol.equalsIgnoreCase("lt")) {
-                                    join.lt(name, value);
-                                } else if (symbol.equalsIgnoreCase("gte")) {
-                                    join.gte(name, value);
-                                } else if (symbol.equalsIgnoreCase("lte")) {
-                                    join.lte(name, value);
-                                } else if (symbol.equalsIgnoreCase("like")) {
-                                    join.like(name, value);
-                                }
-                            }
-                            query.subjoin(join);
-                        }
-                    }
-                }
-            }
-        }
         return query;
     }
 
+    public Join set(Class joinTable, ModelObject ons, List<ModelObject> objects) {
+        return set(null, joinTable, ons, objects);
+    }
+
+    public Join set(Join joinMain, Class joinTable, ModelObject ons, List<ModelObject> objects) {
+        if (objects == null || objects.size() == 0) return null;
+        Join join = Criteria.inner(joinTable);
+        if (ons != null) {
+            Iterator<Map.Entry<Object, Object>> iterator = ons.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Object, Object> next = iterator.next();
+                join.on(next.getKey(), next.getValue());
+            }
+        }
+        for (ModelObject o : objects) {
+            String name = o.getString("name");
+            String value = o.getString("value");
+            String symbol = o.getString("symbol");
+            String s = o.getString("start");
+            String e = o.getString("end");
+
+            if ((StringTools.isNotEmpty(value)
+                    || StringTools.isNotEmpty(s)
+                    || StringTools.isNotEmpty(e))
+                    && StringTools.isNotEmpty(name)) {
+                if (StringTools.isEmpty(symbol)) {
+                    join.eq(name, value);
+                } else if (symbol.equalsIgnoreCase("between")) {
+                    join.between(name, s, e);
+                } else if (symbol.equalsIgnoreCase("gt")) {
+                    join.gt(name, value);
+                } else if (symbol.equalsIgnoreCase("lt")) {
+                    join.lt(name, value);
+                } else if (symbol.equalsIgnoreCase("gte")) {
+                    join.gte(name, value);
+                } else if (symbol.equalsIgnoreCase("lte")) {
+                    join.lte(name, value);
+                } else if (symbol.equalsIgnoreCase("like")) {
+                    join.like(name, value);
+                }
+            }
+        }
+        if (joinMain != null) {
+            joinMain.subjoin(join);
+        } else {
+            query.subjoin(join);
+        }
+        return join;
+    }
+
+    public Query getQuery(Class table) {
+        if (query == null && table != null) query = new DefaultQuery(table);
+        return this.getQuery();
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public Delete getDelete() {
+        return this.getDelete(null);
+    }
+
     public Delete getDelete(Class table) {
-        Query query = this.getQuery(table, null);
+        Query query = this.getQuery(table);
         if (query != null) {
             Wraps wraps = ((DefaultQuery) query).getLogicWraps();
             DefaultDelete delete = new DefaultDelete(table);
@@ -120,8 +129,12 @@ public class SearchForm {
         return null;
     }
 
+    public Update getUpdate() {
+        return this.getUpdate(null);
+    }
+
     public Update getUpdate(Class table) {
-        Query query = this.getQuery(table, null);
+        Query query = this.getQuery(table);
         if (query != null) {
             Wraps wraps = ((DefaultQuery) query).getLogicWraps();
             DefaultUpdate update = new DefaultUpdate(table);

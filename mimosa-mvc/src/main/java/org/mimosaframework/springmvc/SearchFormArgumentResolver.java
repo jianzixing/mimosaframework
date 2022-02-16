@@ -34,7 +34,8 @@ public class SearchFormArgumentResolver implements HandlerMethodArgumentResolver
 
         try {
             List<ModelObject> objects = (List<ModelObject>) ModelArray.parse(param);
-            SearchForm searchForm = new SearchForm(objects);
+            SearchForm searchForm = new SearchForm();
+            searchForm.set(objects);
             return searchForm;
         } catch (Exception e) {
             e.printStackTrace();
