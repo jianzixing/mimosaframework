@@ -514,6 +514,15 @@ public class DefaultSession implements Session {
     }
 
     @Override
+    public AutoResult sql(SQLAutonomously autonomously) {
+        try {
+            return this.getAutonomously(autonomously);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    @Override
     public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
         SQLDefinedLoader definedLoader = this.context.getDefinedLoader();
         if (definedLoader != null) {
@@ -528,6 +537,15 @@ public class DefaultSession implements Session {
             }
         } else {
             throw new IllegalArgumentException(I18n.print("not_found_file_sql"));
+        }
+    }
+
+    @Override
+    public AutoResult mapper(TAutonomously autonomously) {
+        try {
+            return this.getAutonomously(autonomously);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
         }
     }
 

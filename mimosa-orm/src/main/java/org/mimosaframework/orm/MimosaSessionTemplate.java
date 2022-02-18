@@ -131,13 +131,25 @@ public class MimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
+    @Deprecated
     public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
         return this.sessionAgency.getAutonomously(autonomously);
     }
 
     @Override
+    public AutoResult sql(SQLAutonomously autonomously) {
+        return this.sessionAgency.sql(autonomously);
+    }
+
+    @Override
+    @Deprecated
     public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
         return this.sessionAgency.getAutonomously(autonomously);
+    }
+
+    @Override
+    public AutoResult mapper(TAutonomously autonomously) {
+        return this.sessionAgency.mapper(autonomously);
     }
 
     @Override

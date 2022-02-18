@@ -397,13 +397,25 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
+    @Deprecated
     public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
         return modelSession.getAutonomously(autonomously);
     }
 
     @Override
+    public AutoResult sql(SQLAutonomously autonomously) {
+        return modelSession.sql(autonomously);
+    }
+
+    @Override
+    @Deprecated
     public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
         return modelSession.getAutonomously(autonomously);
+    }
+
+    @Override
+    public AutoResult mapper(TAutonomously autonomously) {
+        return modelSession.mapper(autonomously);
     }
 
     @Override

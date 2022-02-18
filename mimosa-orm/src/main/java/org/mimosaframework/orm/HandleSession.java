@@ -54,9 +54,15 @@ public interface HandleSession extends Closeable {
      * @return
      * @throws Exception
      */
+    @Deprecated
     AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception;
 
+    AutoResult sql(SQLAutonomously autonomously);
+
+    @Deprecated
     AutoResult getAutonomously(TAutonomously autonomously) throws Exception;
+
+    AutoResult mapper(TAutonomously autonomously);
 
     List<DataSourceTableName> getDataSourceNames(Class c);
 }
