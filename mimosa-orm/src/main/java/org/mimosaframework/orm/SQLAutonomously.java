@@ -1,5 +1,6 @@
 package org.mimosaframework.orm;
 
+import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.sql.SQLActionFactory;
@@ -20,8 +21,20 @@ public class SQLAutonomously implements Serializable {
     private UnifyBuilder builder;
     private boolean isMaster = true;
     private String slaveName;
+    private ModelObject parameter;
 
     public SQLAutonomously() {
+    }
+
+    public SQLAutonomously(String sql, ModelObject parameter) {
+        this.sql = sql;
+        this.parameter = parameter;
+    }
+
+    public SQLAutonomously(String sql, ModelObject parameter, String slaveName) {
+        this.sql = sql;
+        this.slaveName = slaveName;
+        this.parameter = parameter;
     }
 
     public SQLAutonomously(String sql) {
@@ -60,6 +73,10 @@ public class SQLAutonomously implements Serializable {
 
     public static SQLAutonomously newInstance(String sql) {
         return new SQLAutonomously(sql);
+    }
+
+    public static SQLAutonomously newInstance(String sql, ModelObject parameter) {
+        return new SQLAutonomously(sql, parameter);
     }
 
     public static SQLAutonomously newInstance(String sql, boolean isMaster) {
@@ -182,6 +199,13 @@ public class SQLAutonomously implements Serializable {
         return null;
     }
 
+    public ModelObject getParameter() {
+        return parameter;
+    }
+
+    public void setParameter(ModelObject parameter) {
+        this.parameter = parameter;
+    }
 
     public static LinkAutonomously buildLinkAutonomously() {
         return new LinkAutonomously();

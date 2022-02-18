@@ -11,10 +11,7 @@ import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
-import org.mimosaframework.orm.platform.SessionContext;
-import org.mimosaframework.orm.platform.JDBCTraversing;
-import org.mimosaframework.orm.platform.PlatformExecutor;
-import org.mimosaframework.orm.platform.PlatformExecutorFactory;
+import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
 import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
@@ -504,7 +501,50 @@ public class DefaultSession implements Session {
                 Object r = executor.dialect(builder.compile());
                 return new AutoResult(r);
             } else {
-                Object object = executor.original(new JDBCTraversing(sql));
+                StringBuilder key = new StringBuilder();
+                StringBuilder newSql = new StringBuilder();
+                boolean start = false;
+                List<SQLDataPlaceholder> list = null;
+                ModelObject parameter = autonomously.getParameter();
+                for (int i = 0; i < sql.length(); i++) {
+                    if (list == null) list = new ArrayList<>();
+                    char c = sql.charAt(i);
+                    if (start) {
+                        if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9') {
+                            key.append(c);
+                        } else {
+                            start = false;
+
+                            String name = key.toString();
+                            Object v = parameter.get(name);
+                            key = new StringBuilder();
+                            if (v instanceof List) {
+                                int j = 0;
+                                Iterator iterator = ((List) v).iterator();
+                                while (iterator.hasNext()) {
+                                    Object v1 = iterator.next();
+                                    list.add(new SQLDataPlaceholder(name + j, v1));
+                                    j++;
+                                    newSql.append("?");
+                                    if (iterator.hasNext()) {
+                                        newSql.append(",");
+                                    }
+                                }
+                            } else {
+                                list.add(new SQLDataPlaceholder(name, v));
+                                newSql.append("?");
+                            }
+                        }
+                    }
+                    if (c == ':') {
+                        start = true;
+                    } else if (start == false) {
+                        newSql.append(c);
+                    }
+                }
+                JDBCTraversing jdbcTraversing = new JDBCTraversing(newSql.toString());
+                jdbcTraversing.setSqlDataPlaceholders(list);
+                Object object = executor.original(jdbcTraversing);
                 Map<String, Object> result = new LinkedHashMap<>(1);
                 result.put(MimosaDataSource.DEFAULT_DS_NAME, object);
                 return new AutoResult(convert, result);
