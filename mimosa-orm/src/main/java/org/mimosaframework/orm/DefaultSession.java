@@ -468,7 +468,7 @@ public class DefaultSession implements Session {
                         }
                     }
                 }
-                return new AutoResult(this.convert, objects);
+                return new AutoResult(mappingGlobalWrapper, this.convert, objects);
             }
             return null;
         } catch (SQLException e) {
@@ -547,7 +547,7 @@ public class DefaultSession implements Session {
                 Object object = executor.original(jdbcTraversing);
                 Map<String, Object> result = new LinkedHashMap<>(1);
                 result.put(MimosaDataSource.DEFAULT_DS_NAME, object);
-                return new AutoResult(convert, result);
+                return new AutoResult(mappingGlobalWrapper, convert, result);
             }
         }
         return null;
@@ -571,7 +571,7 @@ public class DefaultSession implements Session {
             if (structure != null) {
                 Object object = executor.original(structure);
                 // 这里返回的原生的字段，不会逆向转换
-                return new AutoResult(convert, object);
+                return new AutoResult(mappingGlobalWrapper, convert, object);
             } else {
                 throw new IllegalArgumentException(I18n.print("not_support_action"));
             }

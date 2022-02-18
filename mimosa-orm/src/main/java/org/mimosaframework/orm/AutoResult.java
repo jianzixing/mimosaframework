@@ -4,15 +4,22 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.Query;
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.mapping.MappingField;
+import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
+import org.mimosaframework.orm.mapping.MappingTable;
+import org.mimosaframework.orm.utils.Model2BeanFactory;
+import org.mimosaframework.orm.utils.ModelObjectToBean;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
 public class AutoResult {
+    private Model2BeanFactory model2BeanFactory = new ModelObjectToBean();
     private ModelObjectConvertKey convert;
     private Object value;
     private Set<Class> tableClasses;
+    private MappingGlobalWrapper mappingGlobalWrapper;
 
     public static AutoResult getAutoResult(String name, SessionTemplate template, ModelObject search, int start, int limit) {
         if (template != null) {
@@ -110,7 +117,8 @@ public class AutoResult {
         return 0;
     }
 
-    public AutoResult(ModelObjectConvertKey convert, Object value) {
+    public AutoResult(MappingGlobalWrapper mappingGlobalWrapper, ModelObjectConvertKey convert, Object value) {
+        this.mappingGlobalWrapper = mappingGlobalWrapper;
         this.convert = convert;
         this.value = value;
     }
@@ -160,6 +168,31 @@ public class AutoResult {
                         for (Class c : this.tableClasses) {
                             convert.reconvert(c, entryValue);
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setMapping(ModelObject mapping) {
+        this.setMapping(mapping, this.value);
+    }
+
+    private void setMapping(ModelObject mapping, Object value) {
+        if (mapping != null) {
+            if (value != null && value instanceof List) {
+                for (Object v : (List) value) {
+                    this.setMapping(mapping, v);
+                }
+            }
+
+            if (value instanceof Map) {
+                Set set = ((Map) value).keySet();
+                for (Object key : set) {
+                    if (mapping.containsKey(key)) {
+                        Object v = ((Map<?, ?>) value).get(key);
+                        ((Map<?, ?>) value).remove(key);
+                        ((Map) value).put(mapping.get(key), v);
                     }
                 }
             }
@@ -309,6 +342,11 @@ public class AutoResult {
     }
 
     public List<ModelObject> getObjects() {
+        return this.getObjects(null);
+    }
+
+    public List<ModelObject> getObjects(ModelObject mapping) {
+        if (mapping != null) this.setMapping(mapping);
         if (value instanceof List) {
             return (List<ModelObject>) value;
         }
@@ -324,6 +362,50 @@ public class AutoResult {
                 }
             }
             return objects;
+        }
+        return null;
+    }
+
+    public <T> List<T> getBeans(Class<T> t) {
+        return this.getBeans(t, null);
+    }
+
+    public <T> List<T> getBeans(Class<T> t, ModelObject mapping) {
+        if (t != null) this.setTableClass(t);
+        List<ModelObject> objects = this.getObjects(mapping);
+        if (objects != null && objects.size() > 0) {
+            List<T> r = new ArrayList<>();
+            MappingTable table = this.mappingGlobalWrapper.getMappingTable(t);
+            if (table != null) {
+                List<MappingField> fields = table.getMappingPrimaryKeyFields();
+                List<ModelObject> rm = null;
+                for (int i = 0; i < objects.size(); i++) {
+                    ModelObject object = objects.get(i);
+                    boolean has = false;
+                    for (int j = 0; j < i; j++) {
+                        ModelObject object2 = objects.get(j);
+                        for (MappingField field : fields) {
+                            String fieldName = field.getMappingFieldName();
+                            Object v1 = object.get(fieldName);
+                            Object v2 = object2.get(fieldName);
+                            if (v1 == null && v2 == null || v1 != null && v1.equals(v2)) {
+                                has = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (has) {
+                        if (rm == null) rm = new ArrayList<>();
+                        rm.add(object);
+                    }
+                }
+                if (rm != null) objects.removeAll(rm);
+            }
+            for (ModelObject object : objects) {
+                T ins = model2BeanFactory.toJavaObject(object, t);
+                r.add(ins);
+            }
+            return r;
         }
         return null;
     }
