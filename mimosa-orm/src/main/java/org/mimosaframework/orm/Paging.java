@@ -2,13 +2,14 @@ package org.mimosaframework.orm;
 
 import org.mimosaframework.core.json.ModelObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author yangankang
  */
-public class Paging<T> {
+public class Paging<T> implements Serializable {
     private long count;
     private List<T> objects;
 

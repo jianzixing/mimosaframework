@@ -8,13 +8,14 @@ import org.mimosaframework.core.exception.ModuleException;
 import org.mimosaframework.springmvc.exception.StockCode;
 import org.mimosaframework.springmvc.i18n.I18n;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
  * @author yangankang
  */
-public class ResponseMessage {
+public class ResponseMessage implements Serializable {
 
     private Object code;
     private String msg;
