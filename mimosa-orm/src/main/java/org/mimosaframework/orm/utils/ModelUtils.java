@@ -11,6 +11,7 @@ import org.mimosaframework.orm.criteria.Query;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -314,19 +315,45 @@ public abstract class ModelUtils {
      * @param keys
      * @return
      */
-    public static ModelDiffObject diffObjects(List<ModelObject> exists, List<ModelObject> news, String... keys) {
+    public static <T> ModelDiffObject diffObjects(List<T> exists, List<T> news, String... keys) {
         if (exists != null && news != null && keys != null) {
-            List<ModelObject> removedList;
-            List<ModelObject> existList = new ArrayList<>();
-            List<ModelObject> existList2 = new ArrayList<>();
-            Map<ModelObject, ModelObject> map = new LinkedHashMap<>();
-            List<ModelObject> insertList;
-            for (ModelObject exist : exists) {
-                for (ModelObject item : news) {
+            List<T> removedList;
+            List<T> existList = new ArrayList<>();
+            List<T> existList2 = new ArrayList<>();
+            Map<T, T> map = new LinkedHashMap<>();
+            List<T> insertList;
+            for (T exist : exists) {
+                for (T item : news) {
                     boolean isEqual = true;
                     for (String key : keys) {
-                        String v1 = exist.getString(key);
-                        String v2 = item.getString(key);
+                        Object v1 = null;
+                        if (exist instanceof ModelObject) {
+                            v1 = ((ModelObject) exist).getString(key);
+                        } else {
+                            try {
+                                Field field = exist.getClass().getField(key);
+                                field.setAccessible(true);
+                                v1 = field.get(exist);
+                            } catch (NoSuchFieldException e) {
+                                e.printStackTrace();
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Object v2 = null;
+                        if (item instanceof ModelObject) {
+                            v2 = ((ModelObject) item).getString(key);
+                        } else {
+                            try {
+                                Field field = exist.getClass().getField(key);
+                                field.setAccessible(true);
+                                v1 = field.get(exist);
+                            } catch (NoSuchFieldException e) {
+                                e.printStackTrace();
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         if (v1 != null && v2 != null && v1.equals(v2)) {
 
                         } else {
@@ -351,7 +378,7 @@ public abstract class ModelUtils {
         return null;
     }
 
-    public static ModelDiffObject diffObjects(List<ModelObject> exists, List<ModelObject> news, Enum... keys) {
+    public static <T> ModelDiffObject diffObjects(List<T> exists, List<T> news, Enum... keys) {
         if (exists != null && news != null && keys != null) {
             String[] strings = new String[keys.length];
             for (int i = 0; i < strings.length; i++) {
