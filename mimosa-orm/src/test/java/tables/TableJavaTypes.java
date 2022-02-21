@@ -52,6 +52,8 @@ public enum TableJavaTypes {
     longblob,
     @Column(type = SupportText.class)
     text,
+    @Column(type = SupportJSON.class)
+    json,
     @Column(type = SupportMediumText.class)
     mediumtext,
     @Column(type = SupportLongText.class)

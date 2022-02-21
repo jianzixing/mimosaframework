@@ -28,6 +28,7 @@ public class SQLServerPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.MEDIUMBLOB, "VarBinary(max)");
         registerColumnType(KeyColumnType.LONGBLOB, "VarBinary(max)");
         registerColumnType(KeyColumnType.TEXT, "NTEXT");
+        registerColumnType(KeyColumnType.JSON, "NTEXT");
         registerColumnType(KeyColumnType.MEDIUMTEXT, "NTEXT");
         registerColumnType(KeyColumnType.LONGTEXT, "NTEXT");
     }

@@ -33,6 +33,7 @@ public class PostgreSQLPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.MEDIUMBLOB, "BYTEA");
         registerColumnType(KeyColumnType.LONGBLOB, "BYTEA");
         registerColumnType(KeyColumnType.TEXT, "TEXT");
+        registerColumnType(KeyColumnType.JSON, "TEXT");
         registerColumnType(KeyColumnType.MEDIUMTEXT, "TEXT");
         registerColumnType(KeyColumnType.LONGTEXT, "TEXT");
     }

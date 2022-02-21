@@ -37,6 +37,7 @@ public class SqlitePlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.MEDIUMBLOB, "MEDIUMBLOB");
         registerColumnType(KeyColumnType.LONGBLOB, "LONGBLOB");
         registerColumnType(KeyColumnType.TEXT, "TEXT");
+        registerColumnType(KeyColumnType.JSON, "TEXT");
         registerColumnType(KeyColumnType.MEDIUMTEXT, "MEDIUMTEXT");
         registerColumnType(KeyColumnType.LONGTEXT, "LONGTEXT");
     }

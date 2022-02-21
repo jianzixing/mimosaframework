@@ -67,6 +67,8 @@ public interface ColumnTypeBuilder<T> {
 
     T text();
 
+    T json();
+
     T mediumText();
 
     T longText();

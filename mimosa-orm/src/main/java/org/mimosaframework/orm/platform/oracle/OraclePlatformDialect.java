@@ -33,6 +33,7 @@ public class OraclePlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.MEDIUMBLOB, "BLOB");
         registerColumnType(KeyColumnType.LONGBLOB, "BLOB");
         registerColumnType(KeyColumnType.TEXT, "CLOB");
+        registerColumnType(KeyColumnType.JSON, "CLOB");
         registerColumnType(KeyColumnType.MEDIUMTEXT, "CLOB");
         registerColumnType(KeyColumnType.LONGTEXT, "CLOB");
     }

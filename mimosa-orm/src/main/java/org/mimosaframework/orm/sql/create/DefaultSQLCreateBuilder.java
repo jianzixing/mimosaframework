@@ -250,6 +250,14 @@ public class DefaultSQLCreateBuilder
     }
 
     @Override
+    public DefaultSQLCreateBuilder json() {
+        this.gammars.add("type");
+        StampCreateColumn column = this.getLastColumn();
+        column.columnType = KeyColumnType.JSON;
+        return this;
+    }
+
+    @Override
     public Object mediumText() {
         this.gammars.add("type");
         StampCreateColumn column = this.getLastColumn();

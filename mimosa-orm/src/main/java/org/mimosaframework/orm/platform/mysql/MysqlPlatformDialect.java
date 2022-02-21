@@ -33,6 +33,7 @@ public class MysqlPlatformDialect extends PlatformDialect {
         registerColumnType(KeyColumnType.MEDIUMBLOB, "MEDIUMBLOB");
         registerColumnType(KeyColumnType.LONGBLOB, "LONGBLOB");
         registerColumnType(KeyColumnType.TEXT, "TEXT");
+        registerColumnType(KeyColumnType.JSON, "JSON");
         registerColumnType(KeyColumnType.MEDIUMTEXT, "MEDIUMTEXT");
         registerColumnType(KeyColumnType.LONGTEXT, "LONGTEXT");
     }

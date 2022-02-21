@@ -222,6 +222,14 @@ public class DefaultSQLAlterBuilder
     }
 
     @Override
+    public DefaultSQLAlterBuilder json() {
+        this.gammars.add("type");
+        StampAlterItem item = this.getLastItem();
+        item.columnType = KeyColumnType.JSON;
+        return this;
+    }
+
+    @Override
     public Object mediumText() {
         this.gammars.add("type");
         StampAlterItem item = this.getLastItem();

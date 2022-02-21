@@ -10,6 +10,7 @@ public enum KeyColumnType {
     TEXT,
     MEDIUMTEXT,
     LONGTEXT,
+    JSON,
     TINYINT,
     SMALLINT,
     BIGINT,

@@ -60,6 +60,9 @@ public class JavaType2ColumnType {
         if (type == KeyColumnType.TEXT) {
             if (builder != null) builder.text();
         }
+        if (type == KeyColumnType.JSON) {
+            if (builder != null) builder.json();
+        }
         if (type == KeyColumnType.MEDIUMTEXT) {
             if (builder != null) builder.mediumText();
         }
@@ -137,6 +140,9 @@ public class JavaType2ColumnType {
         }
         if (c.equals(SupportLongText.class)) {
             return KeyColumnType.LONGTEXT;
+        }
+        if (c.equals(SupportJSON.class)) {
+            return KeyColumnType.JSON;
         }
         if (c.equals(Byte.class) || c.equals(byte.class)) {
             return KeyColumnType.TINYINT;
