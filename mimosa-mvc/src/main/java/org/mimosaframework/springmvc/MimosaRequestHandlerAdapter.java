@@ -18,6 +18,10 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
         I18n.register();
     }
 
+    public void setPackages(String[] packages) {
+        resolver.setPackages(packages);
+    }
+
     public void setDefaultContentType(String defaultContentType) {
         this.defaultContentType = defaultContentType;
     }

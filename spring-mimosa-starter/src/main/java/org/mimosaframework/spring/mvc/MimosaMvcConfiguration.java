@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,6 +62,12 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
         MimosaRequestHandlerAdapter requestMappingHandlerAdapter = new MimosaRequestHandlerAdapter();
         requestMappingHandlerAdapter.setBeforeArgumentResolvers(this.getArgsResolver());
         requestMappingHandlerAdapter.setBeforeReturnValueHandlers(this.getReturnHandler());
+        String[] pkg2 = mimosaMvcProperties.getPackages();
+        String[] pkg1 = this.getPackages();
+        List<String> list = new ArrayList<>();
+        if (pkg1 != null) for (String pkg : pkg1) list.add(pkg);
+        if (pkg2 != null) for (String pkg : pkg2) list.add(pkg);
+        requestMappingHandlerAdapter.setPackages(list.toArray(new String[]{}));
         return requestMappingHandlerAdapter;
     }
 
@@ -69,6 +76,10 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
     }
 
     protected List<HandlerMethodArgumentResolver> getArgsResolver() {
+        return null;
+    }
+
+    protected String[] getPackages() {
         return null;
     }
 

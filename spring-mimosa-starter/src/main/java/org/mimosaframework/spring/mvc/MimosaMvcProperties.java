@@ -9,6 +9,15 @@ public class MimosaMvcProperties {
     private Class curdImplementClass;
     private Map<String, String> prefixs;
     private Map<String, String> replaces;
+    private String[] packages;
+
+    public String[] getPackages() {
+        return packages;
+    }
+
+    public void setPackages(String[] packages) {
+        this.packages = packages;
+    }
 
     public Class getCurdImplementClass() {
         return curdImplementClass;
