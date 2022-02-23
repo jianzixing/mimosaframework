@@ -136,7 +136,7 @@ public class DefaultSession implements Session {
             }
         }
 
-
+        SessionUtils.applyAutoIncrementValue(mappingTable, obj, objSource);
         return obj;
     }
 

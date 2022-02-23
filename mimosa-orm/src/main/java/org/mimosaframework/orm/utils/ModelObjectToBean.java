@@ -28,6 +28,10 @@ public class ModelObjectToBean implements Model2BeanFactory {
     }
 
     public <T> void toJavaObject(ModelObject object, T obj) {
+        this.toJavaObject(object, obj, false);
+    }
+
+    public <T> void toJavaObject(ModelObject object, T obj, boolean onlyEmpty) {
         if (object != null) {
             String fieldName = null;
             Object value = null;
@@ -48,27 +52,49 @@ public class ModelObjectToBean implements Model2BeanFactory {
                             keyName = field.getName();
                         }
 
+                        fieldName = field.getName();
+                        String setName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                        Method methodSet = null;
+                        try {
+                            methodSet = c.getMethod("set" + setName, field.getType());
+                        } catch (Exception e) {
+                        }
+                        if (onlyEmpty == true) {
+                            Method methodGet = null;
+                            try {
+                                methodGet = c.getMethod("get" + setName);
+                            } catch (Exception e) {
+                            }
+                            Object hasValue = methodGet != null ? methodGet.invoke(obj) : null;
+                            if (hasValue == null) {
+                                field.setAccessible(true);
+                                hasValue = field.get(obj);
+                            }
+                            if (hasValue != null) {
+                                continue;
+                            }
+                        }
+
                         Object param = object.get(keyName);
                         Object r = type2type(param, field.getType());
                         value = r;
 
-                        fieldName = field.getName();
-                        String setName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-                        Method method = c.getMethod("set" + setName, field.getType());
-
-                        if (method != null) {
-                            method.invoke(obj, r);
+                        if (methodSet != null) {
+                            methodSet.invoke(obj, r);
                         } else {
                             if (fieldName.startsWith("is")) {
                                 setName = fieldName.substring(2);
-                                method = c.getMethod("set" + setName, field.getType());
-                                if (method != null) {
-                                    method.invoke(obj, r);
+                                try {
+                                    methodSet = c.getMethod("set" + setName, field.getType());
+                                } catch (Exception e) {
+                                }
+                                if (methodSet != null) {
+                                    methodSet.invoke(obj, r);
                                 }
                             }
                         }
 
-                        if (method == null) {
+                        if (methodSet == null) {
                             field.setAccessible(true);
                             field.set(obj, r);
                         }

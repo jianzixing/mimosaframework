@@ -87,6 +87,19 @@ public final class SessionUtils {
         }
     }
 
+    public static void applyAutoIncrementValue(MappingTable mappingTable, ModelObject obj, ModelObject objSource) {
+        Set<MappingField> fields = mappingTable.getMappingFields();
+        if (fields != null && obj != null && objSource != null) {
+            for (MappingField f : fields) {
+                if (f.isMappingFieldAutoIncrement()) {
+                    if (obj.get(f.getMappingFieldName()) != null) {
+                        objSource.put(f.getMappingFieldName(), obj.get(f.getMappingFieldName()));
+                    }
+                }
+            }
+        }
+    }
+
     public static void applyAutoIncrementValue(MappingTable mappingTable, List<Long> ids, List<ModelObject> objSource) {
         if (ids != null && objSource != null && ids.size() == objSource.size()) {
             Set<MappingField> fields = mappingTable.getMappingFields();
