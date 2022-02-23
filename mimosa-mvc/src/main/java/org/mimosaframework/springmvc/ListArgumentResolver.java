@@ -1,5 +1,6 @@
 package org.mimosaframework.springmvc;
 
+import org.mimosaframework.core.json.Model;
 import org.mimosaframework.core.json.ModelArray;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
@@ -12,6 +13,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -21,8 +23,10 @@ import java.util.Map;
 public class ListArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
+        Method method = parameter.getMethod();
+        Printer printer = method.getAnnotation(Printer.class);
         Class type = parameter.getParameterType();
-        if (type.isAssignableFrom(List.class)) {
+        if (type.isAssignableFrom(List.class) && printer != null) {
             return true;
         }
         return false;
@@ -53,13 +57,20 @@ public class ListArgumentResolver implements HandlerMethodArgumentResolver {
                         actualParameter.add(attribute);
                     }
                 } else {
-                    List<?> array = ModelArray.parseArray(value);
+                    ModelArray array = ModelArray.parseArray(value);
                     String name = ClassUtils.getShortNameAsProperty(elementClass);
                     if (array != null && array.size() != 0) {
                         for (int i = 0; i < array.size(); i++) {
-                            attribute = BeanUtils.instantiateClass(elementClass);
-                            WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
-                            actualParameter.add(binder.convertIfNecessary(array.get(i), elementClass, parameter));
+                            Object item = array.get(i);
+                            if (item instanceof Model) {
+                                Object obj = ModelObject.toJavaObject((Model) item, elementClass);
+                                actualParameter.add(obj);
+                            } else {
+                                // 如果不是我想要的结果那就交给Spring初始化吧
+                                attribute = BeanUtils.instantiateClass(elementClass);
+                                WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
+                                actualParameter.add(binder.convertIfNecessary(array.get(i), elementClass, parameter));
+                            }
                         }
                     }
                 }

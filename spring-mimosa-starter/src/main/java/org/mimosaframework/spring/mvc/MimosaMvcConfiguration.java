@@ -61,11 +61,6 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
         MimosaRequestHandlerAdapter requestMappingHandlerAdapter = new MimosaRequestHandlerAdapter();
         requestMappingHandlerAdapter.setBeforeArgumentResolvers(this.getArgsResolver());
         requestMappingHandlerAdapter.setBeforeReturnValueHandlers(this.getReturnHandler());
-        try {
-            requestMappingHandlerAdapter.setPackages(this.getPackages());
-        } catch (ContextException e) {
-            e.printStackTrace();
-        }
         return requestMappingHandlerAdapter;
     }
 
@@ -74,10 +69,6 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
     }
 
     protected List<HandlerMethodArgumentResolver> getArgsResolver() {
-        return null;
-    }
-
-    protected String[] getPackages() {
         return null;
     }
 

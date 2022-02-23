@@ -1,6 +1,5 @@
 package org.mimosaframework.springmvc;
 
-import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.springmvc.i18n.I18n;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
@@ -21,10 +20,6 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
 
     public void setDefaultContentType(String defaultContentType) {
         this.defaultContentType = defaultContentType;
-    }
-
-    public void setPackages(String[] packages) throws ContextException {
-        resolver.setPackages(packages);
     }
 
     @Override
