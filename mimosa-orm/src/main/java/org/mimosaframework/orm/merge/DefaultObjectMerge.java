@@ -233,7 +233,7 @@ public class DefaultObjectMerge implements ObjectMerge {
      */
     private void sortList(MergeTree mergeTree, List list) {
         DefaultJoin join = (DefaultJoin) mergeTree.getJoin();
-        Set<OrderBy> orders = join.getSorts();
+        Set<OrderBy> orders = join.getOrderBy();
         if (orders != null && orders.size() > 0) {
             for (OrderBy orderBy : orders) {
                 this.sortListByKey(list, "" + orderBy.getField(), orderBy.isAsc());

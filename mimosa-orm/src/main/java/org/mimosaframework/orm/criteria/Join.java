@@ -36,9 +36,9 @@ public interface Join extends Filter<Join> {
 
     Join ignore(boolean is);
 
-    Join sort(OrderBy order);
+    Join orderBy(OrderBy order);
 
-    Join sort(Object field, boolean isAsc);
+    Join orderBy(Serializable field, boolean isAsc);
 
     Class getTableClass();
 

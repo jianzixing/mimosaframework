@@ -622,7 +622,7 @@ public class PlatformExecutor {
         if (logicWraps != null) select.where();
         this.buildWraps(select, queryTable, logicWraps, hasJoin, query);
 
-        this.buildOrderBy(select, orders, queryTable, joins != null && joins.size() > 0);
+        this.buildOrderBy(select, alias, orders, joins, queryTable, joins != null && joins.size() > 0);
 
         if (limit != null) {
             select.limit(limit.getStart(), limit.getLimit());
@@ -635,7 +635,7 @@ public class PlatformExecutor {
             this.buildSelectField(selectWrap, alias, fieldAlias);
             selectWrap.from().table(select, "T");
             this.buildJoinQuery(selectWrap, alias, joins, false);
-            this.buildOrderBy(selectWrap, orders, queryTable, joins != null && joins.size() > 0);
+            this.buildOrderBy(selectWrap, alias, orders, joins, queryTable, joins != null && joins.size() > 0);
 
             select = selectWrap;
         }
@@ -869,7 +869,7 @@ public class PlatformExecutor {
             }
         }
 
-        this.buildOrderBy(select, orders, mappingTable, false);
+        this.buildOrderBy(select, null, orders, null, mappingTable, false);
 
         SQLBuilderCombine combine = dialect.select(select.compile());
         Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
@@ -1010,7 +1010,9 @@ public class PlatformExecutor {
     }
 
     private void buildOrderBy(DefaultSQLSelectBuilder select,
+                              Map<Object, String> alias,
                               Set<OrderBy> orders,
+                              Set<Join> joins,
                               MappingTable mappingTable,
                               boolean isInnerSelect) {
         if (orders != null) {
@@ -1025,6 +1027,24 @@ public class PlatformExecutor {
                 }
                 if (isAsc) select.asc();
                 else select.desc();
+            }
+            if (joins != null && joins.size() > 0) {
+                for (Join join : joins) {
+                    DefaultJoin j = (DefaultJoin) join;
+                    Set<OrderBy> sorts = j.getOrderBy();
+                    if (sorts != null && sorts.size() > 0) {
+                        String tableAlias = alias.get(join);
+                        MappingTable queryTable = this.mappingGlobalWrapper.getMappingTable(j.getMainTable());
+                        for (OrderBy order : sorts) {
+                            boolean isAsc = order.isAsc();
+                            Object field = order.getField();
+                            MappingField mappingField = queryTable.getMappingFieldByJavaName(String.valueOf(field));
+                            select.orderBy().column(tableAlias, mappingField.getMappingColumnName());
+                            if (isAsc) select.asc();
+                            else select.desc();
+                        }
+                    }
+                }
             }
         }
     }

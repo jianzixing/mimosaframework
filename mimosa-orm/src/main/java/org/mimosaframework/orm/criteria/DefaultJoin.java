@@ -34,7 +34,7 @@ public class DefaultJoin implements Join {
      * join 类型 0 left join   1 inner join
      */
     private int joinType;
-    private Set<OrderBy> sorts;
+    private Set<OrderBy> orderBy;
 
     public DefaultJoin() {
     }
@@ -212,15 +212,15 @@ public class DefaultJoin implements Join {
     }
 
     @Override
-    public Join sort(OrderBy order) {
-        if (this.sorts == null) this.sorts = new LinkedHashSet<>();
-        this.sorts.add(order);
+    public Join orderBy(OrderBy order) {
+        if (this.orderBy == null) this.orderBy = new LinkedHashSet<>();
+        this.orderBy.add(order);
         return this;
     }
 
     @Override
-    public Join sort(Object field, boolean isAsc) {
-        return this.sort(new OrderBy(isAsc, field));
+    public Join orderBy(Serializable field, boolean isAsc) {
+        return this.orderBy(new OrderBy(isAsc, field));
     }
 
     public boolean isMulti() {
@@ -237,8 +237,8 @@ public class DefaultJoin implements Join {
         return this.mainTable;
     }
 
-    public Set<OrderBy> getSorts() {
-        return sorts;
+    public Set<OrderBy> getOrderBy() {
+        return orderBy;
     }
 
     public void createSetChildJoin(Join join) {
