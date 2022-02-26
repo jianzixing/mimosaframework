@@ -622,7 +622,7 @@ public class PlatformExecutor {
         if (logicWraps != null) select.where();
         this.buildWraps(select, queryTable, logicWraps, hasJoin, query);
 
-        this.buildOrderBy(select, alias, orders, joins, queryTable, joins != null && joins.size() > 0);
+        this.buildOrderBy(select, null, orders, null, queryTable, joins != null && joins.size() > 0);
 
         if (limit != null) {
             select.limit(limit.getStart(), limit.getLimit());
