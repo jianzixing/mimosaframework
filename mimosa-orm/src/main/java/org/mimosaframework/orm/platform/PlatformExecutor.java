@@ -1034,7 +1034,7 @@ public class PlatformExecutor {
                     Set<OrderBy> sorts = j.getOrderBy();
                     if (sorts != null && sorts.size() > 0) {
                         String tableAlias = alias.get(join);
-                        MappingTable queryTable = this.mappingGlobalWrapper.getMappingTable(j.getMainTable());
+                        MappingTable queryTable = this.mappingGlobalWrapper.getMappingTable(j.getTableClass());
                         for (OrderBy order : sorts) {
                             boolean isAsc = order.isAsc();
                             Object field = order.getField();
