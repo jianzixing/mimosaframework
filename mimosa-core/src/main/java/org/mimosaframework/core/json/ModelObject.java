@@ -32,6 +32,7 @@ import static org.mimosaframework.core.json.util.TypeUtils.*;
 
 /**
  * @author wenshao[szujobs@hotmail.com]
+ * 使用的fastjson的开源代码
  */
 @SuppressWarnings("serial")
 public class ModelObject extends Model implements Map<Object, Object>, Cloneable, Serializable, InvocationHandler, ModelByEnum, ModelByClass {
