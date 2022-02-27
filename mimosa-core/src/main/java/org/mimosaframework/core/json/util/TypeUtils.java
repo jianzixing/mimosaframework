@@ -611,39 +611,6 @@ public class TypeUtils {
             return (T) obj;
         }
 
-        if (obj instanceof Map) {
-            if (clazz == Map.class) {
-                return (T) obj;
-            }
-
-            Map map = (Map) obj;
-            if (clazz == Object.class && !map.containsKey(Model.DEFAULT_TYPE_KEY)) {
-                return (T) obj;
-            }
-
-            return castToJavaBean((Map<Object, Object>) obj, clazz, config);
-        }
-
-        if (clazz.isArray()) {
-            if (obj instanceof Collection) {
-
-                Collection collection = (Collection) obj;
-                int index = 0;
-                Object array = Array.newInstance(clazz.getComponentType(), collection.size());
-                for (Object item : collection) {
-                    Object value = cast(item, clazz.getComponentType(), config);
-                    Array.set(array, index, value);
-                    index++;
-                }
-
-                return (T) array;
-            }
-
-            if (clazz == byte[].class) {
-                return (T) castToBytes(obj);
-            }
-        }
-
         if (clazz.isAssignableFrom(obj.getClass())) {
             return (T) obj;
         }
@@ -706,6 +673,39 @@ public class TypeUtils {
 
         if (clazz.isEnum()) {
             return (T) castToEnum(obj, clazz, config);
+        }
+
+        if (obj instanceof Map) {
+            if (clazz == Map.class) {
+                return (T) obj;
+            }
+
+            Map map = (Map) obj;
+            if (clazz == Object.class && !map.containsKey(Model.DEFAULT_TYPE_KEY)) {
+                return (T) obj;
+            }
+
+            return castToJavaBean((Map<Object, Object>) obj, clazz, config);
+        }
+
+        if (clazz.isArray()) {
+            if (obj instanceof Collection) {
+
+                Collection collection = (Collection) obj;
+                int index = 0;
+                Object array = Array.newInstance(clazz.getComponentType(), collection.size());
+                for (Object item : collection) {
+                    Object value = cast(item, clazz.getComponentType(), config);
+                    Array.set(array, index, value);
+                    index++;
+                }
+
+                return (T) array;
+            }
+
+            if (clazz == byte[].class) {
+                return (T) castToBytes(obj);
+            }
         }
 
         if (Calendar.class.isAssignableFrom(clazz)) {
@@ -1175,7 +1175,7 @@ public class TypeUtils {
                 String propertyName;
                 if (Character.isUpperCase(c3) //
                         || c3 > 512 // for unicode method name
-                        ) {
+                ) {
                     if (compatibleWithJavaBean) {
                         propertyName = decapitalize(methodName.substring(3));
                     } else {
