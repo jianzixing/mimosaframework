@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StrategyFactory {
-    private static final Map<Class, IDStrategy> strategys = new ConcurrentHashMap<>();
+    private static final Map<String, IDStrategy> strategys = new ConcurrentHashMap<>();
 
     public static void applyStrategy(Configuration values,
                                      MappingTable table,
@@ -39,7 +39,9 @@ public class StrategyFactory {
                                      Session session,
                                      Class<? extends IDStrategy> defaultAutoIncr) throws StrategyException {
         Set<MappingField> fields = table.getMappingFields();
+        Class mappingClass = table.getMappingClass();
         for (MappingField f : fields) {
+            String key = mappingClass.getName() + "_" + f.getMappingFieldName();
             Column column = f.getMappingFieldAnnotation();
             if (column != null) {
                 // 如果表没有分表则使用数据库默认规则
@@ -58,20 +60,20 @@ public class StrategyFactory {
                         if (list != null && list.size() > 0) {
                             for (IDStrategy strategy : list) {
                                 if (strategy.getClass().isAssignableFrom(c)) {
-                                    strategys.put(c, strategy);
+                                    strategys.put(key, strategy);
                                 }
                             }
                         }
 
-                        if (strategys.get(c) == null) {
+                        if (strategys.get(key) == null) {
                             try {
-                                strategys.put(c, c.newInstance());
+                                strategys.put(key, c.newInstance());
                             } catch (Exception e) {
                                 throw new StrategyException(I18n.print("create_strategy_error"), e);
                             }
                         }
                     }
-                    IDStrategy strategy = strategys.get(c);
+                    IDStrategy strategy = strategys.get(key);
                     StrategyWrapper wrapper = new StrategyWrapper(values);
                     wrapper.setTableName(table.getMappingTableName());
                     wrapper.setDbTableName(table.getMappingTableName());
