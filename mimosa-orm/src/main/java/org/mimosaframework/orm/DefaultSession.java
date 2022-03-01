@@ -510,7 +510,8 @@ public class DefaultSession implements Session {
                     if (list == null) list = new ArrayList<>();
                     char c = sql.charAt(i);
                     if (start) {
-                        if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9') {
+                        if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9'
+                                || c == '#' || c == '$') {
                             key.append(c);
                         } else {
                             start = false;
