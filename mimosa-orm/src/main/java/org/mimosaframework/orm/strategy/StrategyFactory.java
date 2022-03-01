@@ -19,11 +19,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StrategyFactory {
     private static final Map<String, IDStrategy> strategys = new ConcurrentHashMap<>();
 
-    public static void applyStrategy(Configuration values,
-                                     MappingTable table,
-                                     ModelObject object,
-                                     Session session) throws StrategyException {
-        applyStrategy(values, table, object, session, null);
+    public static Serializable applyStrategy(Configuration values,
+                                             MappingTable table,
+                                             ModelObject object,
+                                             ModelObject source,
+                                             Session session) throws StrategyException {
+        return applyStrategy(values, table, object, source, session, null);
+    }
+
+    public static Serializable applyStrategy(Configuration values,
+                                             MappingTable table,
+                                             ModelObject object,
+                                             Session session) throws StrategyException {
+        return applyStrategy(values, table, object, null, session, null);
     }
 
     /**
@@ -33,11 +41,12 @@ public class StrategyFactory {
      * @param table
      * @param object
      */
-    public static void applyStrategy(Configuration values,
-                                     MappingTable table,
-                                     ModelObject object,
-                                     Session session,
-                                     Class<? extends IDStrategy> defaultAutoIncr) throws StrategyException {
+    public static Serializable applyStrategy(Configuration values,
+                                             MappingTable table,
+                                             ModelObject object,
+                                             ModelObject source,
+                                             Session session,
+                                             Class<? extends IDStrategy> defaultAutoIncr) throws StrategyException {
         Set<MappingField> fields = table.getMappingFields();
         Class mappingClass = table.getMappingClass();
         for (MappingField f : fields) {
@@ -81,9 +90,12 @@ public class StrategyFactory {
                     wrapper.setDbField(f.getMappingColumnName());
                     wrapper.setTableClass(table.getMappingClass());
                     Serializable serializable = strategy.get(wrapper, session);
-                    object.put(f.getMappingFieldName(), serializable);
+                    if (object != null) object.put(f.getMappingFieldName(), serializable);
+                    if (source != null) source.put(f.getMappingFieldName(), serializable);
+                    return serializable;
                 }
             }
         }
+        return null;
     }
 }

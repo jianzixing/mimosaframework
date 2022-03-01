@@ -13,6 +13,7 @@ import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.transaction.TransactionFactory;
 
 import javax.sql.DataSource;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -76,7 +77,7 @@ public final class SessionUtils {
         }
     }
 
-    public static void applyAutoIncrementValue(MappingTable mappingTable, Long id, ModelObject objSource) {
+    public static void applyAutoIncrementValue(MappingTable mappingTable, Serializable id, ModelObject objSource) {
         Set<MappingField> fields = mappingTable.getMappingFields();
         if (fields != null && id != null && objSource != null) {
             for (MappingField f : fields) {
@@ -182,5 +183,20 @@ public final class SessionUtils {
         transaction = new JDBCTransaction(dataSource, false);
         context.setTransaction(transaction);
         return context;
+    }
+
+    public static void copyDiffValue(ModelObject obj, ModelObject objSource) {
+        if (obj != null) {
+            Set<Object> keys = obj.keySet();
+            for (Object key : keys) {
+                Object v1 = obj.get(key);
+                Object v2 = objSource.get(key);
+                if (v1 == null && v2 != null || v1 == null && v2 == null) {
+                    objSource.put(key, null);
+                } else if (!v1.equals(v2)) {
+                    objSource.put(key, v1);
+                }
+            }
+        }
     }
 }

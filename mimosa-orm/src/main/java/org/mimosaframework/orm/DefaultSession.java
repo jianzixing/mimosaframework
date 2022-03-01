@@ -75,16 +75,19 @@ public class DefaultSession implements Session {
 
         if (mappingTable != null) {
             try {
-                StrategyFactory.applyStrategy(this.context, mappingTable, obj, this);
+                StrategyFactory.applyStrategy(this.context, mappingTable, obj, objSource, this);
             } catch (StrategyException e) {
                 throw new IllegalArgumentException(I18n.print("id_strategy_error"), e.getCause());
             }
 
             // 添加后如果有自增列，则返回如果没有就不返回
-            Long id = null;
+            Serializable id = null;
             try {
                 List<Long> ids = executor.inserts(mappingTable, Arrays.asList(new ModelObject[]{obj}));
-                if (ids != null && ids.size() > 0) id = ids.get(0);
+                if (ids != null && ids.size() > 0) {
+                    Long autoId = ids.get(0);
+                    if (autoId != null) id = autoId;
+                }
             } catch (SQLException e) {
                 throw new IllegalStateException(I18n.print("add_data_error"), e);
             }
@@ -136,7 +139,7 @@ public class DefaultSession implements Session {
             }
         }
 
-        SessionUtils.applyAutoIncrementValue(mappingTable, obj, objSource);
+        SessionUtils.copyDiffValue(obj, objSource);
         return obj;
     }
 
