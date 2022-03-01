@@ -55,8 +55,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             model.setObjectClass(obj.getClass());
             model.clearNull();
             modelSession.save(model);
-
-            model2BeanFactory.toJavaObject(model, obj);
+            model2BeanFactory.toJavaObject(model, obj, true);
             return obj;
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
