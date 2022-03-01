@@ -516,25 +516,8 @@ public class DefaultSession implements Session {
                         } else {
                             start = false;
 
-                            String name = key.toString();
-                            Object v = parameter.get(name);
+                            this.buildNewSql(key, parameter, list, newSql);
                             key = new StringBuilder();
-                            if (v instanceof List) {
-                                int j = 0;
-                                Iterator iterator = ((List) v).iterator();
-                                while (iterator.hasNext()) {
-                                    Object v1 = iterator.next();
-                                    list.add(new SQLDataPlaceholder(name + j, v1));
-                                    j++;
-                                    newSql.append("?");
-                                    if (iterator.hasNext()) {
-                                        newSql.append(",");
-                                    }
-                                }
-                            } else {
-                                list.add(new SQLDataPlaceholder(name, v));
-                                newSql.append("?");
-                            }
                         }
                     }
                     if (c == ':') {
@@ -543,6 +526,8 @@ public class DefaultSession implements Session {
                         newSql.append(c);
                     }
                 }
+                this.buildNewSql(key, parameter, list, newSql);
+
                 JDBCTraversing jdbcTraversing = new JDBCTraversing(newSql.toString());
                 jdbcTraversing.setSqlDataPlaceholders(list);
                 Object object = executor.original(jdbcTraversing);
@@ -552,6 +537,32 @@ public class DefaultSession implements Session {
             }
         }
         return null;
+    }
+
+    protected void buildNewSql(StringBuilder key,
+                               ModelObject parameter,
+                               List<SQLDataPlaceholder> list,
+                               StringBuilder newSql) {
+        if (key != null && key.length() > 0) {
+            String name = key.toString();
+            Object v = parameter.get(name);
+            if (v instanceof List) {
+                int j = 0;
+                Iterator iterator = ((List) v).iterator();
+                while (iterator.hasNext()) {
+                    Object v1 = iterator.next();
+                    list.add(new SQLDataPlaceholder(name + j, v1));
+                    j++;
+                    newSql.append("?");
+                    if (iterator.hasNext()) {
+                        newSql.append(",");
+                    }
+                }
+            } else {
+                list.add(new SQLDataPlaceholder(name, v));
+                newSql.append("?");
+            }
+        }
     }
 
     @Override
