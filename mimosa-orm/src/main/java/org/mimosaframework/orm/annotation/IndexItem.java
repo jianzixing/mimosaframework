@@ -6,9 +6,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface IndexItem {
-    String indexName() default "";
+    String indexName();
 
-    String[] columns() default {};
+    String[] columns();
 
     boolean unique() default false;
 }
