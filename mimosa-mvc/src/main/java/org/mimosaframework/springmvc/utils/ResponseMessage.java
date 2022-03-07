@@ -15,11 +15,10 @@ import java.lang.reflect.UndeclaredThrowableException;
 /**
  * @author yangankang
  */
-public class ResponseMessage implements Serializable {
-
-    private Object code;
-    private String msg;
-    private Object data;
+public class ResponseMessage<T> implements Serializable {
+    protected Object code;
+    protected String msg;
+    protected T data;
 
     public static ResponseMessage getInstance() {
         return new ResponseMessage();
@@ -139,7 +138,7 @@ public class ResponseMessage implements Serializable {
             ((Exception) data).printStackTrace();
         } else {
             this.code = 100;
-            this.data = data;
+            this.data = (T) data;
         }
     }
 
@@ -164,12 +163,12 @@ public class ResponseMessage implements Serializable {
         this.msg = msg;
     }
 
-    public ResponseMessage(int code, Object data) {
+    public ResponseMessage(int code, T data) {
         this.code = code;
         this.data = data;
     }
 
-    public ResponseMessage(int code, String msg, Object data) {
+    public ResponseMessage(int code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
@@ -180,12 +179,12 @@ public class ResponseMessage implements Serializable {
         this.msg = msg;
     }
 
-    public ResponseMessage(String code, Object data) {
+    public ResponseMessage(String code, T data) {
         this.code = code;
         this.data = data;
     }
 
-    public ResponseMessage(String code, String msg, Object data) {
+    public ResponseMessage(String code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
@@ -211,11 +210,11 @@ public class ResponseMessage implements Serializable {
         this.msg = msg;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 

@@ -6,14 +6,9 @@ import org.mimosaframework.springmvc.exception.StockCode;
 
 import java.util.List;
 
-public class ResponsePageMessage extends ResponseMessage {
-    private long total;
-    private List<ModelObject> data;
-    private ModelObject page;
-
-    public ResponsePageMessage(Object data) {
-        super(data);
-    }
+public class ResponsePageMessage<T extends List> extends ResponseMessage<T> {
+    protected long total;
+    protected ModelObject page;
 
     public ResponsePageMessage(StockCode code, String msg) {
         super(code, msg);
@@ -23,8 +18,8 @@ public class ResponsePageMessage extends ResponseMessage {
         super(code, msg);
     }
 
-    public ResponsePageMessage(List<ModelObject> data) {
-        this.data = data;
+    public ResponsePageMessage(Object data) {
+        super(data);
         this.setCode(100);
     }
 
@@ -34,18 +29,18 @@ public class ResponsePageMessage extends ResponseMessage {
         if (responseMessage.getCode() instanceof String)
             this.setCode((String) responseMessage.getCode());
         this.setMsg(responseMessage.getMsg());
-        this.setData(responseMessage.getData());
+        this.setData((T) responseMessage.getData());
     }
 
     public ResponsePageMessage(Paging paging) {
         if (paging != null) {
             this.total = paging.getCount();
-            this.data = paging.getObjects();
+            this.data = (T) paging.getObjects();
         }
         this.setCode(100);
     }
 
-    public ResponsePageMessage(long total, List<ModelObject> data) {
+    public ResponsePageMessage(long total, T data) {
         this.total = total;
         this.data = data;
         this.setCode(100);
@@ -65,11 +60,11 @@ public class ResponsePageMessage extends ResponseMessage {
     }
 
     @Override
-    public List<ModelObject> getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(List<ModelObject> data) {
+    public void setData(T data) {
         this.data = data;
     }
 
