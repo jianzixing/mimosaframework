@@ -20,7 +20,6 @@ public class ResponsePageMessage<T extends List> extends ResponseMessage<T> {
 
     public ResponsePageMessage(Object data) {
         super(data);
-        this.setCode(100);
     }
 
     public ResponsePageMessage(ResponseMessage responseMessage) {

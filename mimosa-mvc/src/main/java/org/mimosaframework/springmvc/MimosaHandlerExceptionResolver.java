@@ -56,11 +56,12 @@ public class MimosaHandlerExceptionResolver extends SimpleMappingExceptionResolv
                 }
                 try {
                     MethodParameter parameter = methodHandler.getReturnType();
-                    if (parameter.getParameterType().isAssignableFrom(ResponsePageMessage.class)) {
-                        String json = (new ResponsePageMessage(e)).toString();
-                        response.getWriter().write(json);
-                    } else {
+                    if (parameter.getParameterType().equals(ResponseMessage.class)) {
                         String json = (new ResponseMessage(e)).toString();
+                        response.getWriter().write(json);
+                    } else if (ResponsePageMessage.class.isAssignableFrom(parameter.getParameterType())
+                            || parameter.getParameterType().equals(ResponsePageMessage.class)) {
+                        String json = (new ResponsePageMessage(e)).toString();
                         response.getWriter().write(json);
                     }
                 } catch (IOException ex) {
