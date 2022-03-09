@@ -134,6 +134,11 @@ public class DefaultSession implements Session {
             ModelObject exist = this.get(query);
             if (exist != null) {
                 this.update(obj);
+                if (pks != null) {
+                    for (MappingField field : pks) {
+                        obj.put(field.getMappingFieldName(), exist.get(field.getMappingFieldName()));
+                    }
+                }
             } else {
                 this.save(obj);
             }
