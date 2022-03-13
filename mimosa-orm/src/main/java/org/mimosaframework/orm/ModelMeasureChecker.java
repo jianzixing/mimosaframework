@@ -3,6 +3,7 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.exception.ModelCheckerException;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.json.ModelObjectChecker;
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.mapping.MappingField;
@@ -132,7 +133,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                 }
             }
 
-            if (!isNullable && defaultValue == null && object.get(javaName) == null) {
+            if (!isNullable && StringTools.isEmpty(defaultValue) && object.get(javaName) == null) {
                 throw new ModelCheckerException(javaName, Code.NULL_VALUE.toString(), I18n.print("field_empty", javaName));
             }
 

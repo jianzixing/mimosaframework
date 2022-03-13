@@ -3,7 +3,7 @@ package org.mimosaframework.core.exception;
 /**
  * @author yangankang
  */
-public class ModelCheckerException extends Exception {
+public class ModelCheckerException extends RuntimeException {
     private String code;
     private String field;
 

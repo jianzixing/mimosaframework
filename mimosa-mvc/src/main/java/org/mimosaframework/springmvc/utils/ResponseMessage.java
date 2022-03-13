@@ -1,10 +1,10 @@
 package org.mimosaframework.springmvc.utils;
 
 import org.mimosaframework.core.exception.ModelCheckerException;
+import org.mimosaframework.core.exception.ModuleException;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.exception.TransactionException;
-import org.mimosaframework.core.exception.ModuleException;
 import org.mimosaframework.springmvc.exception.StockCode;
 import org.mimosaframework.springmvc.i18n.I18n;
 
@@ -74,7 +74,6 @@ public class ResponseMessage<T> implements Serializable {
             if (code == null) code = -100;
             this.code = code;
             this.msg = ((ModelCheckerException) data).getMessage();
-            ((ModelCheckerException) data).printStackTrace();
         } else if (data instanceof UndeclaredThrowableException || data instanceof UndeclaredThrowableException) {
             this.code = -9997;
             Throwable causedBy = ((Exception) data);
