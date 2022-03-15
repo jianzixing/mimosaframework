@@ -52,6 +52,18 @@ public class Finder {
         return retain;
     }
 
+    public static boolean hasField(Class c, Serializable key) {
+        Field[] fields = c.getDeclaredFields();
+        if (fields != null && fields.length > 0) {
+            for (Field field : fields) {
+                if (field.getName().equals(key)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static void setObjectValue(Object object, Serializable key, Object value) {
         try {
             if (object instanceof Map) {
