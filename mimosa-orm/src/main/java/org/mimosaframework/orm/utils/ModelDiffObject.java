@@ -41,4 +41,8 @@ public class ModelDiffObject<T> {
     public Map<T, T> getMap() {
         return map;
     }
+
+    public Map<T, T> getUpdateMap() {
+        return map;
+    }
 }
