@@ -363,7 +363,7 @@ public abstract class ModelUtils {
                     if (isEqual) {
                         existList.add(exist);
                         existList2.add(item);
-                        map.put(exist, item);
+                        map.put(item, exist);
                     }
                 }
             }
