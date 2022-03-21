@@ -374,6 +374,8 @@ public abstract class ModelUtils {
             insertList.removeAll(existList2);
 
             return new ModelDiffObject(removedList, existList, existList2, insertList, map);
+        } else if (exists == null && news != null) {
+            return new ModelDiffObject(null, null, null, news, null);
         }
         return null;
     }
