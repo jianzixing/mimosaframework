@@ -330,7 +330,7 @@ public class DefaultSession implements Session {
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         if (pks.size() != 1) {
-            throw new IllegalArgumentException(I18n.print("delete_only_pk", c.getSimpleName(), "" + pks.size()));
+            throw new IllegalArgumentException(I18n.print("query_only_pk", c.getSimpleName(), "" + pks.size()));
         }
 
         Query query = new DefaultQuery(c);
@@ -339,7 +339,7 @@ public class DefaultSession implements Session {
 
         if (results != null) {
             if (results.size() > 1) {
-                throw new IllegalArgumentException(I18n.print("query_only_pk", "" + results.size()));
+                throw new IllegalArgumentException(I18n.print("query_only_amount", "" + results.size()));
             } else if (results.size() == 1) {
                 return (ModelObject) results.get(0);
             }

@@ -173,7 +173,8 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("delete_fail", "删除数据失败");
         words.put("delete_filter_empty", "使用条件删除数据,过滤条件不能为空");
         words.put("delete_only_pk", "当前方法只允许删除主键存在且唯一的对象,[%s]的主键数量为 %s");
-        words.put("query_only_pk", "当前方法只允许查询主键唯一的值，查询结果数量 %s 不匹配");
+        words.put("query_only_pk", "当当前方法只允许查询主键存在且唯一的对象,[%s]的主键数量为 %s");
+        words.put("query_only_amount", "当前方法只允许查询主键唯一的值，查询结果数量 %s 不匹配");
         words.put("for_update_join_fail", "查询使用 for update 时不允许使用join语句");
         words.put("for_update_order_fail", "查询使用 for update 时不允许使用order排序");
         words.put("for_update_limit_fail", "查询使用 for update 时不允许使用limit分页");
