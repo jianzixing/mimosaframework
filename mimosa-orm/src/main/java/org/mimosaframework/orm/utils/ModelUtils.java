@@ -387,6 +387,8 @@ public abstract class ModelUtils {
                 strings[i] = keys[i].name();
             }
             return diffObjects(exists, news, strings);
+        } else if (exists == null && news != null) {
+            return new ModelDiffObject(null, null, null, news, null);
         }
         return null;
     }
