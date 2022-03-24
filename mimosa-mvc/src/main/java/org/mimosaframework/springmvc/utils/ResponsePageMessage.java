@@ -74,4 +74,9 @@ public class ResponsePageMessage<T extends List> extends ResponseMessage<T> {
     public void setPage(ModelObject page) {
         this.page = page;
     }
+
+    @Override
+    public String toString() {
+        return ModelObject.toJSONString(this);
+    }
 }
