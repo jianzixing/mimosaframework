@@ -75,7 +75,7 @@ public class DefaultSession implements Session {
 
         if (mappingTable != null) {
             try {
-                StrategyFactory.applyStrategy(this.context, mappingTable, obj, objSource, this);
+                StrategyFactory.applyStrategy(this.context, mappingTable, obj, objSource, this, false);
             } catch (StrategyException e) {
                 throw new IllegalArgumentException(I18n.print("id_strategy_error"), e.getCause());
             }
@@ -179,7 +179,7 @@ public class DefaultSession implements Session {
             AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
             try {
-                StrategyFactory.applyStrategy(this.context, mappingTable, object, this);
+                StrategyFactory.applyStrategy(this.context, mappingTable, object, this, false);
             } catch (StrategyException e) {
                 throw new IllegalArgumentException(I18n.print("id_strategy_error"), e.getCause());
             }
