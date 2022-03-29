@@ -1,9 +1,7 @@
 package org.mimosaframework.orm;
 
-import org.mimosaframework.orm.criteria.Delete;
 import org.mimosaframework.orm.criteria.Function;
 import org.mimosaframework.orm.criteria.Query;
-import org.mimosaframework.orm.criteria.Update;
 
 import java.io.Closeable;
 import java.io.Serializable;
@@ -19,15 +17,11 @@ public interface BeanSession extends Closeable {
 
     <T> int update(T obj);
 
-    <T> int update(List<T> objects);
-
-    int update(Update update);
+    <T> int updates(List<T> objects);
 
     <T> int delete(T obj);
 
-    <T> int delete(List<T> objects);
-
-    int delete(Delete delete);
+    <T> int deletes(List<T> objects);
 
     <T> int delete(Class<T> c, Serializable id);
 

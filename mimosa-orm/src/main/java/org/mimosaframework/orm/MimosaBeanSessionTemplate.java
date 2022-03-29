@@ -99,33 +99,39 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
     @Override
     public <T> int update(T update) {
-        Object obj = update;
-        if (update instanceof UpdateObject) {
-            obj = ((UpdateObject) obj).get();
-        }
-        Object json = ModelObject.toJSON(obj);
-        if (json instanceof ModelObject) {
-            ModelObject model = (ModelObject) json;
-            model.setObjectClass(obj.getClass());
-            model.clearNull();
+        if (update instanceof Query || update instanceof Delete) {
+            throw new IllegalArgumentException(I18n.print("only_update_object"));
+        } else if (update instanceof Update) {
+            return modelSession.update((Update) update);
+        } else {
+            Object obj = update;
             if (update instanceof UpdateObject) {
-                Serializable[] fields = ((UpdateObject) update).getNullFields();
-                if (fields != null) {
-                    for (Serializable f : fields) {
-                        if (f != null) {
-                            model.put(f.toString(), null);
+                obj = ((UpdateObject) obj).get();
+            }
+            Object json = ModelObject.toJSON(obj);
+            if (json instanceof ModelObject) {
+                ModelObject model = (ModelObject) json;
+                model.setObjectClass(obj.getClass());
+                model.clearNull();
+                if (update instanceof UpdateObject) {
+                    Serializable[] fields = ((UpdateObject) update).getNullFields();
+                    if (fields != null) {
+                        for (Serializable f : fields) {
+                            if (f != null) {
+                                model.put(f.toString(), null);
+                            }
                         }
                     }
                 }
+                return modelSession.update(model);
+            } else {
+                throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
             }
-            return modelSession.update(model);
-        } else {
-            throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
     }
 
     @Override
-    public <T> int update(List<T> objects) {
+    public <T> int updates(List<T> objects) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
             for (T update : objects) {
@@ -160,24 +166,25 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public int update(Update update) {
-        return modelSession.update(update);
-    }
-
-    @Override
-    public <T> int delete(T obj) {
-        Object json = ModelObject.toJSON(obj);
-        if (json instanceof ModelObject) {
-            ModelObject model = (ModelObject) json;
-            model.setObjectClass(obj.getClass());
-            return modelSession.delete(model);
+    public <T> int delete(T delete) {
+        if (delete instanceof Query || delete instanceof Update) {
+            throw new IllegalArgumentException(I18n.print("only_delete_object"));
+        } else if (delete instanceof Delete) {
+            return modelSession.delete((Delete) delete);
         } else {
-            throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
+            Object json = ModelObject.toJSON(delete);
+            if (json instanceof ModelObject) {
+                ModelObject model = (ModelObject) json;
+                model.setObjectClass(delete.getClass());
+                return modelSession.delete(model);
+            } else {
+                throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
+            }
         }
     }
 
     @Override
-    public <T> int delete(List<T> objects) {
+    public <T> int deletes(List<T> objects) {
         List<ModelObject> deletes = null;
         if (objects != null && objects.size() > 0) {
             for (T object : objects) {
@@ -194,11 +201,6 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             return modelSession.delete(deletes);
         }
         return 0;
-    }
-
-    @Override
-    public int delete(Delete delete) {
-        return modelSession.delete(delete);
     }
 
     @Override

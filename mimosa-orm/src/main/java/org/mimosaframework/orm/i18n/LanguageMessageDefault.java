@@ -288,6 +288,9 @@ public class LanguageMessageDefault implements MessagesRegister {
 
         // MimosaBeanSessionTemplate
         words.put("bean_save_not_json", "使用的对象不是映射对象");
+        words.put("only_delete_object", "请使用Delete删除对象");
+        words.put("only_update_object", "请使用Update更新对象");
+        words.put("only_query_object", "请使用Query查询对象");
 
         // MimosaBeanSessionTemplate
         words.put("model_to_bean_error", "Map转换成JavaBean出错,无法设置字段 %s 的值为 %s");
