@@ -429,20 +429,20 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
 
     @Override
-    public Query query(Class clazz) {
+    public Query buildQuery(Class clazz) {
         Query query = new DefaultQuery(this, clazz);
         return query;
     }
 
 
     @Override
-    public Delete delete(Class clazz) {
+    public Delete buildDelete(Class clazz) {
         Delete delete = new DefaultDelete(this, clazz);
         return delete;
     }
 
     @Override
-    public Update update(Class clazz) {
+    public Update buildUpdate(Class clazz) {
         Update update = new DefaultUpdate(this, clazz);
         return update;
     }

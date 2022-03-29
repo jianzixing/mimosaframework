@@ -144,17 +144,17 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public Query query(Class clazz) {
-        return sessionTemplate.query(clazz);
+    public Query buildQuery(Class clazz) {
+        return sessionTemplate.buildQuery(clazz);
     }
 
     @Override
-    public Delete delete(Class clazz) {
-        return sessionTemplate.delete(clazz);
+    public Delete buildDelete(Class clazz) {
+        return sessionTemplate.buildDelete(clazz);
     }
 
     @Override
-    public Update update(Class clazz) {
-        return sessionTemplate.update(clazz);
+    public Update buildUpdate(Class clazz) {
+        return sessionTemplate.buildUpdate(clazz);
     }
 }
