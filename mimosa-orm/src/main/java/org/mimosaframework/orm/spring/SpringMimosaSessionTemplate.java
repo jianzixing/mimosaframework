@@ -53,38 +53,38 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public void update(ModelObject obj) {
-        sessionTemplate.update(obj);
+    public int update(ModelObject obj) {
+        return sessionTemplate.update(obj);
     }
 
     @Override
-    public void update(List<ModelObject> objects) {
-        sessionTemplate.update(objects);
+    public int update(List<ModelObject> objects) {
+        return sessionTemplate.update(objects);
     }
 
     @Override
-    public long update(Update update) {
+    public int update(Update update) {
         return sessionTemplate.update(update);
     }
 
     @Override
-    public void delete(ModelObject obj) {
-        sessionTemplate.delete(obj);
+    public int delete(ModelObject obj) {
+        return sessionTemplate.delete(obj);
     }
 
     @Override
-    public void delete(List<ModelObject> objects) {
-        sessionTemplate.delete(objects);
+    public int delete(List<ModelObject> objects) {
+        return sessionTemplate.delete(objects);
     }
 
     @Override
-    public long delete(Delete delete) {
+    public int delete(Delete delete) {
         return sessionTemplate.delete(delete);
     }
 
     @Override
-    public void delete(Class c, Serializable id) {
-        sessionTemplate.delete(c, id);
+    public int delete(Class c, Serializable id) {
+        return sessionTemplate.delete(c, id);
     }
 
     @Override

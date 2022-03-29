@@ -202,7 +202,7 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public void update(ModelObject obj) {
+    public int update(ModelObject obj) {
         if (obj == null || obj.size() == 0) {
             throw new IllegalArgumentException(I18n.print("update_empty"));
         }
@@ -220,7 +220,7 @@ public class DefaultSession implements Session {
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         if (obj.size() - pks.size() <= 0) {
             //如果只有主键值没有需要更新的值就不执行更新操作
-            return;
+            return 0;
         }
         if (!SessionUtils.checkPrimaryKey(pks, obj)) {
             throw new IllegalArgumentException(I18n.print("update_set_id"));
@@ -230,21 +230,23 @@ public class DefaultSession implements Session {
         TypeCorrectUtils.correct(obj, mappingTable);
         try {
             Update update = SessionUtils.buildUpdateByModel(mappingTable, obj);
-            executor.update(mappingTable, (DefaultUpdate) update);
+            return executor.update(mappingTable, (DefaultUpdate) update);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("update_fail"), e);
         }
     }
 
     @Override
-    public void update(List<ModelObject> objects) {
+    public int update(List<ModelObject> objects) {
+        int i = 0;
         for (ModelObject o : objects) {
-            this.update(o);
+            i += this.update(o);
         }
+        return i;
     }
 
     @Override
-    public long update(Update update) {
+    public int update(Update update) {
         DefaultUpdate u = (DefaultUpdate) update;
         if (u.getLogicWraps() == null || u.getValues().size() == 0) {
             throw new IllegalArgumentException(I18n.print("update_filter_empty"));
@@ -253,18 +255,18 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
-        int count = 0;
+        Integer count = 0;
         try {
             count = executor.update(mappingTable, u);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("update_fail"), e);
         }
 
-        return count;
+        return count == null ? 0 : count;
     }
 
     @Override
-    public void delete(ModelObject objSource) {
+    public int delete(ModelObject objSource) {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
@@ -276,21 +278,23 @@ public class DefaultSession implements Session {
 
         try {
             Delete delete = SessionUtils.buildDeleteByModel(mappingTable, obj);
-            executor.delete(mappingTable, (DefaultDelete) delete);
+            return executor.delete(mappingTable, (DefaultDelete) delete);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("delete_fail"), e);
         }
     }
 
     @Override
-    public void delete(List<ModelObject> objects) {
+    public int delete(List<ModelObject> objects) {
+        int i = 0;
         for (ModelObject o : objects) {
-            this.delete(o);
+            i += this.delete(o);
         }
+        return i;
     }
 
     @Override
-    public long delete(Delete delete) {
+    public int delete(Delete delete) {
         DefaultDelete d = (DefaultDelete) delete;
         if (d.getLogicWraps() == null) {
             throw new IllegalArgumentException(I18n.print("delete_filter_empty"));
@@ -308,7 +312,7 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public void delete(Class c, Serializable id) {
+    public int delete(Class c, Serializable id) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
@@ -320,7 +324,7 @@ public class DefaultSession implements Session {
 
         Delete delete = new DefaultDelete(c);
         delete.eq(pks.get(0).getMappingFieldName(), id);
-        this.delete(delete);
+        return this.delete(delete);
     }
 
     @Override

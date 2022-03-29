@@ -18,19 +18,19 @@ public interface HandleSession extends Closeable {
 
     void save(List<ModelObject> objects);
 
-    void update(ModelObject obj);
+    int update(ModelObject obj);
 
-    void update(List<ModelObject> objects);
+    int update(List<ModelObject> objects);
 
-    long update(Update update);
+    int update(Update update);
 
-    void delete(ModelObject obj);
+    int delete(ModelObject obj);
 
-    void delete(List<ModelObject> objects);
+    int delete(List<ModelObject> objects);
 
-    long delete(Delete delete);
+    int delete(Delete delete);
 
-    void delete(Class c, Serializable id);
+    int delete(Class c, Serializable id);
 
     ModelObject get(Class c, Serializable id);
 

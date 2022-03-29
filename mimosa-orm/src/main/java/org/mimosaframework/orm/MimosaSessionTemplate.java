@@ -57,38 +57,38 @@ public class MimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public void update(ModelObject obj) {
-        this.sessionAgency.update(obj);
+    public int update(ModelObject obj) {
+        return this.sessionAgency.update(obj);
     }
 
     @Override
-    public void update(List<ModelObject> objects) {
-        this.sessionAgency.update(objects);
+    public int update(List<ModelObject> objects) {
+        return this.sessionAgency.update(objects);
     }
 
     @Override
-    public long update(Update update) {
+    public int update(Update update) {
         return this.sessionAgency.update(update);
     }
 
     @Override
-    public void delete(ModelObject obj) {
-        this.sessionAgency.delete(obj);
+    public int delete(ModelObject obj) {
+        return this.sessionAgency.delete(obj);
     }
 
     @Override
-    public void delete(List<ModelObject> objects) {
-        this.sessionAgency.delete(objects);
+    public int delete(List<ModelObject> objects) {
+        return this.sessionAgency.delete(objects);
     }
 
     @Override
-    public long delete(Delete delete) {
+    public int delete(Delete delete) {
         return this.sessionAgency.delete(delete);
     }
 
     @Override
-    public void delete(Class c, Serializable id) {
-        this.sessionAgency.delete(c, id);
+    public int delete(Class c, Serializable id) {
+        return this.sessionAgency.delete(c, id);
     }
 
     @Override

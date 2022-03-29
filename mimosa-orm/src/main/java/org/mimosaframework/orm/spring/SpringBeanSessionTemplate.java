@@ -51,38 +51,38 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> void update(T obj) {
-        sessionTemplate.update(obj);
+    public <T> int update(T obj) {
+        return sessionTemplate.update(obj);
     }
 
     @Override
-    public <T> void update(List<T> objects) {
-        sessionTemplate.update(objects);
+    public <T> int update(List<T> objects) {
+        return sessionTemplate.update(objects);
     }
 
     @Override
-    public long update(Update update) {
+    public int update(Update update) {
         return sessionTemplate.update(update);
     }
 
     @Override
-    public <T> void delete(T obj) {
-        sessionTemplate.delete(obj);
+    public <T> int delete(T obj) {
+        return sessionTemplate.delete(obj);
     }
 
     @Override
-    public <T> void delete(List<T> objects) {
-        sessionTemplate.delete(objects);
+    public <T> int delete(List<T> objects) {
+        return sessionTemplate.delete(objects);
     }
 
     @Override
-    public long delete(Delete delete) {
+    public int delete(Delete delete) {
         return sessionTemplate.delete(delete);
     }
 
     @Override
-    public <T> void delete(Class<T> c, Serializable id) {
-        sessionTemplate.delete(c, id);
+    public <T> int delete(Class<T> c, Serializable id) {
+        return sessionTemplate.delete(c, id);
     }
 
     @Override

@@ -98,7 +98,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> void update(T update) {
+    public <T> int update(T update) {
         Object obj = update;
         if (update instanceof UpdateObject) {
             obj = ((UpdateObject) obj).get();
@@ -118,14 +118,14 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                     }
                 }
             }
-            modelSession.update(model);
+            return modelSession.update(model);
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
     }
 
     @Override
-    public <T> void update(List<T> objects) {
+    public <T> int update(List<T> objects) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
             for (T update : objects) {
@@ -154,29 +154,30 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                     throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
                 }
             }
-            modelSession.update(updates);
+            return modelSession.update(updates);
         }
+        return 0;
     }
 
     @Override
-    public long update(Update update) {
+    public int update(Update update) {
         return modelSession.update(update);
     }
 
     @Override
-    public <T> void delete(T obj) {
+    public <T> int delete(T obj) {
         Object json = ModelObject.toJSON(obj);
         if (json instanceof ModelObject) {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
-            modelSession.delete(model);
+            return modelSession.delete(model);
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
     }
 
     @Override
-    public <T> void delete(List<T> objects) {
+    public <T> int delete(List<T> objects) {
         List<ModelObject> deletes = null;
         if (objects != null && objects.size() > 0) {
             for (T object : objects) {
@@ -190,18 +191,19 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                     throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
                 }
             }
-            modelSession.delete(deletes);
+            return modelSession.delete(deletes);
         }
+        return 0;
     }
 
     @Override
-    public long delete(Delete delete) {
+    public int delete(Delete delete) {
         return modelSession.delete(delete);
     }
 
     @Override
-    public <T> void delete(Class<T> c, Serializable id) {
-        modelSession.delete(c, id);
+    public <T> int delete(Class<T> c, Serializable id) {
+        return modelSession.delete(c, id);
     }
 
     @Override
