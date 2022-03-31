@@ -331,7 +331,7 @@ public abstract class ModelUtils {
                             v1 = ((ModelObject) exist).getString(key);
                         } else {
                             try {
-                                Field field = exist.getClass().getField(key);
+                                Field field = exist.getClass().getDeclaredField(key);
                                 field.setAccessible(true);
                                 v1 = field.get(exist);
                             } catch (NoSuchFieldException e) {
@@ -345,7 +345,7 @@ public abstract class ModelUtils {
                             v2 = ((ModelObject) item).getString(key);
                         } else {
                             try {
-                                Field field = exist.getClass().getField(key);
+                                Field field = exist.getClass().getDeclaredField(key);
                                 field.setAccessible(true);
                                 v1 = field.get(exist);
                             } catch (NoSuchFieldException e) {
