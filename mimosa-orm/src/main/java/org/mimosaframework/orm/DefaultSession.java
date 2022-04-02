@@ -122,13 +122,16 @@ public class DefaultSession implements Session {
                 if (pkvalue == null) {
 
                 } else {
-                    query.eq(field.getMappingFieldName(), obj.get(field.getMappingFieldName()));
-                    countpk++;
+                    Object pkValue = obj.get(field.getMappingFieldName());
+                    if (pkValue != null && !(pkValue instanceof String && StringTools.isEmpty(pkValue + ""))) {
+                        query.eq(field.getMappingFieldName(), pkValue);
+                        countpk++;
+                    }
                 }
             }
         }
 
-        if (countpk == 0) {
+        if (countpk < pks.size()) {
             this.save(obj);
         } else {
             ModelObject exist = this.get(query);
