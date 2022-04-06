@@ -45,4 +45,20 @@ public class ModelDiffObject<T> {
     public Map<T, T> getUpdateMap() {
         return map;
     }
+
+    public boolean hasRemove() {
+        return removed != null && removed.size() > 0;
+    }
+
+    public boolean hasExist() {
+        return exists != null && exists.size() > 0;
+    }
+
+    public boolean hasInsert() {
+        return inserts != null && inserts.size() > 0;
+    }
+
+    public boolean hasUpdate() {
+        return updates != null && updates.size() > 0;
+    }
 }
