@@ -954,7 +954,11 @@ public class PlatformExecutor {
                         JoinOnFilter filter = iterator.next();
                         if (filter.isOn()) {
                             OnField field = filter.getOnField();
-                            MappingField mainMappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(field.getKey()));
+                            AliasTableField aliasTableField = this.getTableFieldByAsField(alias, mainMappingTable, field.getKey());
+                            MappingField mainMappingField = aliasTableField.mappingField;
+                            if (StringTools.isNotEmpty(aliasTableField.aliasName)) {
+                                parentAliasName = aliasTableField.aliasName;
+                            }
                             MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field.getValue()));
                             if (mainMappingField == null) {
                                 throw new IllegalArgumentException(I18n
@@ -1167,6 +1171,16 @@ public class PlatformExecutor {
                               DefaultQuery query) {
         Object key = filter.getKey();
         String as = filter.getAs();
+        if (key instanceof AsField) {
+            as = ((AsField) key).getAlias();
+            if (StringTools.isEmpty(as)) {
+                throw new IllegalArgumentException("miss table alias name in AsField");
+            }
+            key = ((AsField) key).getField();
+            if (key == null) {
+                throw new IllegalArgumentException("miss query field in AsField");
+            }
+        }
 
         MappingField field = null;
         String columnName = null;
@@ -1340,5 +1354,55 @@ public class PlatformExecutor {
             }
         }
         return repeat;
+    }
+
+    /**
+     * 为了支持跨级判断
+     *
+     * @param alias
+     * @param mainMappingTable
+     * @param fieldKey
+     * @return
+     */
+    private AliasTableField getTableFieldByAsField(Map<Object, String> alias, MappingTable mainMappingTable, Object fieldKey) {
+        String aliasName = null;
+        if (fieldKey instanceof AsField) {
+            aliasName = ((AsField) fieldKey).getAlias();
+            if (StringTools.isNotEmpty(aliasName)) {
+                Class tableClass = null;
+                for (Map.Entry<Object, String> entry : alias.entrySet()) {
+                    if (aliasName.equalsIgnoreCase(entry.getValue())) {
+                        Object key = entry.getKey();
+                        if (key instanceof Query) {
+                            tableClass = ((Query<?>) key).getTableClass();
+                        } else if (key instanceof Join) {
+                            tableClass = ((Join) key).getTableClass();
+                        }
+                    }
+                }
+                if (tableClass == null) {
+                    throw new IllegalArgumentException("can't find mapping table alias by " + aliasName);
+                }
+                mainMappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
+            } else {
+                throw new IllegalArgumentException("miss table alias name in AsField");
+            }
+            fieldKey = ((AsField) fieldKey).getField();
+            if (fieldKey == null) {
+                throw new IllegalArgumentException("miss query field in AsField");
+            }
+        }
+        MappingField mappingField = mainMappingTable.getMappingFieldByJavaName(String.valueOf(fieldKey));
+        return new AliasTableField(mappingField, aliasName);
+    }
+
+    class AliasTableField {
+        MappingField mappingField;
+        String aliasName;
+
+        public AliasTableField(MappingField mappingField, String aliasName) {
+            this.mappingField = mappingField;
+            this.aliasName = aliasName;
+        }
     }
 }
