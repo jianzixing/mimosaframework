@@ -32,6 +32,7 @@ public class DefaultQuery implements LogicQuery {
     private boolean isForUpdate = false;
     private boolean isMaster = true;
     private String slaveName;
+    private String as;
 
     /**
      * 查询数据方式
@@ -80,6 +81,7 @@ public class DefaultQuery implements LogicQuery {
         query.tableClass = tableClass;
         query.isMaster = isMaster;
         query.slaveName = slaveName;
+        query.as = as;
         return query;
     }
 
@@ -130,6 +132,12 @@ public class DefaultQuery implements LogicQuery {
             return this.beanSessionTemplate.count(this);
         }
         return 0;
+    }
+
+    @Override
+    public LogicQuery as(String as) {
+        this.as = as;
+        return this;
     }
 
     public Limit getLimit() {
@@ -550,6 +558,19 @@ public class DefaultQuery implements LogicQuery {
 
     public void clearFilters() {
         this.logicWraps = null;
+    }
+
+    public String getAs() {
+        return as;
+    }
+
+    public String getQueryTableAs() {
+        if (StringTools.isNotEmpty(as)) return as;
+        return "T";
+    }
+
+    public void setAs(String as) {
+        this.as = as;
     }
 
     private void checkJoinHasOnFilter(Set<Join> joins) {

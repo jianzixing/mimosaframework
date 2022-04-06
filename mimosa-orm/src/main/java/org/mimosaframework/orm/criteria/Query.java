@@ -77,4 +77,6 @@ public interface Query<T extends Query> extends Filter<T> {
     <M> List<M> list();
 
     long count();
+
+    T as(String as);
 }

@@ -26,6 +26,7 @@ import org.mimosaframework.orm.transaction.Transaction;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 执行数据库数据结构校验
@@ -534,14 +535,15 @@ public class PlatformExecutor {
         sessionContext.setMaster(isMaster);
         sessionContext.setSlaveName(slaveName);
 
-        Map<Object, String> alias = null;
+        Map<Object, String> alias = new HashMap<>();
+        alias.put(query, query.getQueryTableAs());
         Map<Object, List<SelectFieldAliasReference>> fieldAlias = null;
-        int i = 1, j = 1;
+        int j = 1;
+        AtomicInteger i = new AtomicInteger(1);
         boolean hasJoin = false;
         if (joins != null && joins.size() > 0) {
             hasJoin = true;
-            if (alias == null) alias = new HashMap<>();
-            alias.put(query, "T");
+            alias.put(query, query.getQueryTableAs());
             MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
             Set<MappingField> mappingFields = this.getSelectFields(fields, excludes, mappingTable);
             if (fieldAlias == null) fieldAlias = new HashMap<>();
@@ -551,7 +553,7 @@ public class PlatformExecutor {
                 reference.setFieldName(field.getMappingColumnName());
                 reference.setFieldAliasName("F" + j);
                 reference.setJavaFieldName(field.getMappingFieldName());
-                reference.setTableAliasName("T");
+                reference.setTableAliasName(query.getQueryTableAs());
                 reference.setTableClass(tableClass);
                 reference.setMainClass(tableClass);
                 reference.setPrimaryKey(field.isMappingFieldPrimaryKey());
@@ -566,10 +568,7 @@ public class PlatformExecutor {
                 Class table = defaultJoin.getTable();
                 mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
                 if (fieldAlias == null) fieldAlias = new HashMap<>();
-                String joinAliasName = ((DefaultJoin) join).getAs();
-                if (StringTools.isEmpty(joinAliasName)) {
-                    joinAliasName = "T" + i;
-                }
+                String joinAliasName = getJoinAlias(alias, join, i);
                 alias.put(join, joinAliasName);
 
                 mappingFields = this.getSelectFields(fields, excludes, mappingTable);
@@ -587,7 +586,6 @@ public class PlatformExecutor {
                     j++;
                 }
                 fieldAlias.put(join, fieldAliasList);
-                i++;
             }
         }
 
@@ -601,7 +599,7 @@ public class PlatformExecutor {
         select.select();
 
         if (isChildSelect) {
-            select.distinctByAlias("T", "*");
+            select.distinctByAlias(query.getQueryTableAs(), "*");
         } else {
             if (hasJoin) {
                 this.buildSelectField(select, alias, fieldAlias);
@@ -609,20 +607,21 @@ public class PlatformExecutor {
                 if (fields != null || excludes != null) {
                     Set<MappingField> mappingFields = this.getSelectFields(fields, excludes, queryTable);
                     for (MappingField field : mappingFields) {
-                        select.fields("T", field.getMappingColumnName());
+                        select.fields(query.getQueryTableAs(), field.getMappingColumnName());
                     }
                 } else {
                     select.all();
                 }
             }
         }
-        select.from().table(queryTable.getMappingTableName(), "T");
+        select.from().table(queryTable.getMappingTableName(), query.getQueryTableAs());
         // 如果是子查询语句，则子查询语句只需要包含inner join的联合条件
-        this.buildJoinQuery(select, alias, joins, isChildSelect ? true : false);
+        this.buildJoinQuery(query, select, alias, joins, isChildSelect ? true : false);
         if (logicWraps != null) select.where();
         this.buildWraps(select, queryTable, logicWraps, hasJoin, query);
 
-        this.buildOrderBy(select, null, orders, null, queryTable, joins != null && joins.size() > 0);
+        this.buildOrderBy(query, select, null, orders, null,
+                queryTable, joins != null && joins.size() > 0);
 
         if (limit != null) {
             select.limit(limit.getStart(), limit.getLimit());
@@ -633,9 +632,10 @@ public class PlatformExecutor {
             DefaultSQLSelectBuilder selectWrap = new DefaultSQLSelectBuilder();
             selectWrap.select();
             this.buildSelectField(selectWrap, alias, fieldAlias);
-            selectWrap.from().table(select, "T");
-            this.buildJoinQuery(selectWrap, alias, joins, false);
-            this.buildOrderBy(selectWrap, alias, orders, joins, queryTable, joins != null && joins.size() > 0);
+            selectWrap.from().table(select, query.getQueryTableAs());
+            this.buildJoinQuery(query, selectWrap, alias, joins, false);
+            this.buildOrderBy(query, selectWrap, alias, orders, joins, queryTable,
+                    joins != null && joins.size() > 0);
 
             select = selectWrap;
         }
@@ -663,20 +663,16 @@ public class PlatformExecutor {
         sessionContext.setMaster(isMaster);
         sessionContext.setSlaveName(slaveName);
 
-        Map<Object, String> alias = null;
-        int i = 1;
+        Map<Object, String> alias = new HashMap<>();
+        alias.put(query, query.getQueryTableAs());
+        AtomicInteger i = new AtomicInteger(1);
         boolean hasJoins = false;
         if (joins != null && joins.size() > 0) {
             hasJoins = true;
-            if (alias == null) alias = new HashMap<>();
-            alias.put(query, "T");
+            alias.put(query, query.getQueryTableAs());
             for (Join join : joins) {
-                String joinAliasName = ((DefaultJoin) join).getAs();
-                if (StringTools.isEmpty(joinAliasName)) {
-                    joinAliasName = "T" + i;
-                }
+                String joinAliasName = getJoinAlias(alias, join, i);
                 alias.put(join, joinAliasName);
-                i++;
             }
         }
 
@@ -687,7 +683,7 @@ public class PlatformExecutor {
         Serializable[] params = new Serializable[1];
         if (pks != null && pks.size() == 1) {
             if (hasJoins) {
-                params[0] = new FieldItem("T", pks.get(0).getMappingColumnName());
+                params[0] = new FieldItem(query.getQueryTableAs(), pks.get(0).getMappingColumnName());
             } else {
                 params[0] = new FieldItem(pks.get(0).getMappingColumnName());
             }
@@ -697,11 +693,11 @@ public class PlatformExecutor {
         select.count(params).as("count");
 
         if (hasJoins) {
-            select.from().table(mappingTable.getMappingTableName(), "T");
+            select.from().table(mappingTable.getMappingTableName(), query.getQueryTableAs());
         } else {
             select.from().table(mappingTable.getMappingTableName());
         }
-        this.buildJoinQuery(select, alias, joins, true);
+        this.buildJoinQuery(query, select, alias, joins, true);
         if (logicWraps != null) select.where();
         this.buildWraps(select, mappingTable, logicWraps, hasJoins, query);
 
@@ -785,7 +781,7 @@ public class PlatformExecutor {
                 select.as(alias);
             }
         }
-        select.from().table(mappingTable.getMappingTableName());
+        select.from().table(mappingTable.getMappingTableName(), "T");
         if (logicWraps != null) select.where();
         this.buildWraps(select, mappingTable, logicWraps, false, null);
 
@@ -869,7 +865,7 @@ public class PlatformExecutor {
             }
         }
 
-        this.buildOrderBy(select, null, orders, null, mappingTable, false);
+        this.buildOrderBy(null, select, null, orders, null, mappingTable, false);
 
         SQLBuilderCombine combine = dialect.select(select.compile());
         Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
@@ -916,11 +912,13 @@ public class PlatformExecutor {
         }
     }
 
-    private void buildJoinQuery(DefaultSQLSelectBuilder select,
+    private void buildJoinQuery(DefaultQuery query,
+                                DefaultSQLSelectBuilder select,
                                 Map<Object, String> alias,
                                 Set<Join> joins,
                                 boolean onlyInnerJoin) {
         if (joins != null && joins.size() > 0) {
+
             for (Join j : joins) {
                 DefaultJoin join = (DefaultJoin) j;
                 if (onlyInnerJoin && join.getJoinType() != 1) {
@@ -936,7 +934,7 @@ public class PlatformExecutor {
                     if (parent != null) {
                         parentAliasName = alias.get(parent);
                     } else {
-                        parentAliasName = "T";
+                        parentAliasName = query.getQueryTableAs();
                     }
 
                     MappingTable mainMappingTable = this.mappingGlobalWrapper.getMappingTable(mainTable);
@@ -1009,7 +1007,8 @@ public class PlatformExecutor {
         }
     }
 
-    private void buildOrderBy(DefaultSQLSelectBuilder select,
+    private void buildOrderBy(DefaultQuery query,
+                              DefaultSQLSelectBuilder select,
                               Map<Object, String> alias,
                               Set<OrderBy> orders,
                               Set<Join> joins,
@@ -1021,7 +1020,7 @@ public class PlatformExecutor {
                 Object field = order.getField();
                 MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field));
                 if (isInnerSelect) {
-                    select.orderBy().column("T", mappingField.getMappingColumnName());
+                    select.orderBy().column(query != null ? query.getQueryTableAs() : "T", mappingField.getMappingColumnName());
                 } else {
                     select.orderBy().column(mappingField.getMappingColumnName());
                 }
@@ -1137,7 +1136,7 @@ public class PlatformExecutor {
                 CriteriaLogic logic = filter.getLogic();
 
                 if (where != null) {
-                    this.setSymbol(builder, where, hasJoins ? "T" : null, table, 0, query);
+                    this.setSymbol(builder, where, hasJoins ? query.getQueryTableAs() : null, table, 0, query);
                 } else if (link != null) {
                     SimpleCommonWhereBuilder builderWraps = new SimpleCommonWhereBuilder();
                     this.buildWraps(builderWraps, table, link, hasJoins, query);
@@ -1316,5 +1315,30 @@ public class PlatformExecutor {
 
     public Object original(JDBCTraversing traversing) throws SQLException {
         return this.runner.doHandler(traversing);
+    }
+
+    private String getJoinAlias(Map<Object, String> alias, Join join, AtomicInteger integer) {
+        String joinAliasName = ((DefaultJoin) join).getAs();
+        if (StringTools.isEmpty(joinAliasName)) {
+            joinAliasName = "T" + integer.incrementAndGet();
+            while (isRepeatAlias(alias, joinAliasName)) {
+                joinAliasName = "T" + integer.incrementAndGet();
+            }
+        } else if (isRepeatAlias(alias, joinAliasName)) {
+            throw new IllegalArgumentException(I18n.print("repeat_alias_name", joinAliasName));
+        }
+        return joinAliasName;
+    }
+
+    private boolean isRepeatAlias(Map<Object, String> alias, String joinAliasName) {
+        boolean repeat = false;
+        Set<Map.Entry<Object, String>> set = alias.entrySet();
+        for (Map.Entry<Object, String> entry : set) {
+            if (joinAliasName.equals(entry.getValue())) {
+                repeat = true;
+                break;
+            }
+        }
+        return repeat;
     }
 }
