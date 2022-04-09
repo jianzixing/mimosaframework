@@ -930,12 +930,6 @@ public class PlatformExecutor {
                     Class<?> mainTable = join.getMainTable();
                     String aliasName = alias.get(j);
                     Join parent = join.getParentJoin();
-                    String parentAliasName = null;
-                    if (parent != null) {
-                        parentAliasName = alias.get(parent);
-                    } else {
-                        parentAliasName = query.getQueryTableAs();
-                    }
 
                     MappingTable mainMappingTable = this.mappingGlobalWrapper.getMappingTable(mainTable);
                     MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(table);
@@ -951,6 +945,12 @@ public class PlatformExecutor {
                     select.on();
                     Iterator<JoinOnFilter> iterator = ons.iterator();
                     while (iterator.hasNext()) {
+                        String parentAliasName = null;
+                        if (parent != null) {
+                            parentAliasName = alias.get(parent);
+                        } else {
+                            parentAliasName = query.getQueryTableAs();
+                        }
                         JoinOnFilter filter = iterator.next();
                         if (filter.isOn()) {
                             OnField field = filter.getOnField();

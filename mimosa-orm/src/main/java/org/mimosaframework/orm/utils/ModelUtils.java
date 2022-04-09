@@ -318,8 +318,8 @@ public abstract class ModelUtils {
     public static <T> ModelDiffObject diffObjects(List<T> exists, List<T> news, String... keys) {
         if (exists != null && news != null && keys != null) {
             List<T> removedList;
-            List<T> existList = new ArrayList<>();
-            List<T> existList2 = new ArrayList<>();
+            Set<T> existList = new LinkedHashSet<>();
+            Set<T> existList2 = new LinkedHashSet<>();
             Map<T, T> map = new LinkedHashMap<>();
             List<T> insertList;
             for (T exist : exists) {
@@ -373,7 +373,7 @@ public abstract class ModelUtils {
             insertList = new ArrayList<>(news);
             insertList.removeAll(existList2);
 
-            return new ModelDiffObject(removedList, existList, existList2, insertList, map);
+            return new ModelDiffObject(removedList, new ArrayList<>(existList), new ArrayList<>(existList2), insertList, map);
         } else if (exists == null && news != null) {
             return new ModelDiffObject(null, null, null, news, null);
         }
