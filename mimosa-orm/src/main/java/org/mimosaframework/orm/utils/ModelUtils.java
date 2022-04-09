@@ -347,7 +347,7 @@ public abstract class ModelUtils {
                             try {
                                 Field field = item.getClass().getDeclaredField(key);
                                 field.setAccessible(true);
-                                v2 = field.get(exist);
+                                v2 = field.get(item);
                             } catch (NoSuchFieldException e) {
                                 e.printStackTrace();
                             } catch (IllegalAccessException e) {
