@@ -131,7 +131,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updates(List<T> objects) {
+    public <T> int update(List<T> objects) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
             for (T update : objects) {
@@ -184,7 +184,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int deletes(List<T> objects) {
+    public <T> int delete(List<T> objects) {
         List<ModelObject> deletes = null;
         if (objects != null && objects.size() > 0) {
             for (T object : objects) {

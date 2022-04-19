@@ -56,8 +56,8 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updates(List<T> objects) {
-        return sessionTemplate.updates(objects);
+    public <T> int update(List<T> objects) {
+        return sessionTemplate.update(objects);
     }
 
     @Override
@@ -66,8 +66,8 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int deletes(List<T> objects) {
-        return sessionTemplate.deletes(objects);
+    public <T> int delete(List<T> objects) {
+        return sessionTemplate.delete(objects);
     }
 
     @Override
