@@ -146,7 +146,7 @@ public class ResponseMessage<T> implements Serializable {
     }
 
     public boolean success() {
-        if (this.code != null && this.code.equals(SUCCESS)) {
+        if (this.code != null && (this.code.equals(SUCCESS) || this.code.equals("" + SUCCESS))) {
             return true;
         }
         return false;

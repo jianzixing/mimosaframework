@@ -18,6 +18,10 @@ public class ResponsePageMessage<T extends List> extends ResponseMessage<T> {
         super(code, msg);
     }
 
+    public ResponsePageMessage(int code, String msg) {
+        super(code, msg);
+    }
+
     public ResponsePageMessage(Object data) {
         super(data);
     }
