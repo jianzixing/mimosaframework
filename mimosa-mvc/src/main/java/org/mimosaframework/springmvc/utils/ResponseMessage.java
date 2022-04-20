@@ -56,6 +56,10 @@ public class ResponseMessage<T> implements Serializable {
         return new ResponseMessage(code, msg, data);
     }
 
+    public static ResponseMessage fromString(String str) {
+        return ModelObject.parseObject(str, ResponseMessage.class);
+    }
+
     public ResponseMessage() {
         this.code = 100;
         this.msg = I18n.print("success");
@@ -139,6 +143,13 @@ public class ResponseMessage<T> implements Serializable {
             this.code = 100;
             this.data = (T) data;
         }
+    }
+
+    public boolean success() {
+        if (this.code != null && this.code.equals(SUCCESS)) {
+            return true;
+        }
+        return false;
     }
 
     private boolean setMatchMessage(Throwable throwable) {
