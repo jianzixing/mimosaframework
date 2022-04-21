@@ -3,6 +3,9 @@ package org.mimosaframework.springmvc.utils;
 import org.mimosaframework.core.exception.ModelCheckerException;
 import org.mimosaframework.core.exception.ModuleException;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.json.TypeReference;
+import org.mimosaframework.core.json.parser.ParserConfig;
+import org.mimosaframework.core.json.util.TypeUtils;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.springmvc.exception.StockCode;
@@ -10,7 +13,10 @@ import org.mimosaframework.springmvc.i18n.I18n;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author yangankang
@@ -233,4 +239,16 @@ public class ResponseMessage<T> implements Serializable {
     }
 
     public static final int SUCCESS = 100;
+
+    public static <T> T toObject(ResponseMessage responseMessage, TypeReference<T> reference) {
+        Type type = reference != null ? reference.getType() : null;
+        return TypeUtils.cast(responseMessage.data, type, ParserConfig.getGlobalInstance());
+    }
+
+    public <T> T toObject(Class<T> t) {
+        if (this.data instanceof String) {
+            return ModelObject.parseObject((String) this.data, t);
+        }
+        return ModelObject.parseObject(ModelObject.toJSONString(this.data), t);
+    }
 }
