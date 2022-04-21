@@ -195,7 +195,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
                         url += printer.path();
                         lineUrl += printer.path();
                     }
-                    String[] path = new String[]{url, url.toLowerCase(), lineUrl};
+                    String[] path = new String[]{url, StringTools.toLowerIgnoreBrace(url), lineUrl};
 
 
                     return createRequestMappingInfoByPrinter(printer, condition, path);

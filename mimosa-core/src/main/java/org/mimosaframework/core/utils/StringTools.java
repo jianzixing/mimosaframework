@@ -67,6 +67,26 @@ public final class StringTools {
         return sb.toString();
     }
 
+    public static String toLowerIgnoreBrace(String str) {
+        if (isNotEmpty(str)) {
+            boolean inBrace = false;
+            char[] chars = str.toCharArray();
+            StringBuffer sb = new StringBuffer();
+            for (char c : chars) {
+                if (c == '{') inBrace = true;
+                if (c == '}') inBrace = false;
+                if (c >= 'A' && c <= 'Z' && inBrace == false) {
+                    char newC = (char) (c + 32);
+                    sb.append(newC);
+                } else {
+                    sb.append(c);
+                }
+            }
+            str = sb.toString();
+        }
+        return str;
+    }
+
     /* 驼峰转下划线 */
     public static String humpToLine(String str) {
         return humpToLine(str, false);
