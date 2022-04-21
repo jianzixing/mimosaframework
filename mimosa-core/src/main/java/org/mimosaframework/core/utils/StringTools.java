@@ -69,6 +69,10 @@ public final class StringTools {
 
     /* 驼峰转下划线 */
     public static String humpToLine(String str) {
+        return humpToLine(str, false);
+    }
+
+    public static String humpToLine(String str, boolean ignoreBrace) {
         if (str == null || str.equals("")) {
             return str;
         }
@@ -77,11 +81,15 @@ public final class StringTools {
         }
         StringBuilder column = new StringBuilder();
         char[] sources = str.toCharArray();
-        boolean first = true;
+        boolean first = true, inBrace = false;
         for (int i = 0; i < sources.length; i++) {
             char c = sources[i];
+            if (ignoreBrace != false) {
+                if (c == '{') inBrace = true;
+                if (c == '}') inBrace = false;
+            }
             if (!first) {
-                if (c >= 'A' && c <= 'Z') {
+                if (c >= 'A' && c <= 'Z' && inBrace == false) {
                     if ((i + 1 < sources.length && sources[i + 1] >= 'A' && sources[i + 1] <= 'Z')
                             && (i > 0 && sources[i - 1] >= 'a' && sources[i - 1] <= 'z')) {
                         column.append("_" + Character.toLowerCase(c));

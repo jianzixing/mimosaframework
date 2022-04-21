@@ -181,12 +181,15 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
                         methodName = printer.value();
                     }
 
-                    String url = this.getCommonPrefix(type)
-                            + "/" + this.replaceCommonPrefix(type, className)
-                            + "/" + methodName;
-                    String lineUrl = this.getCommonPrefix(type)
-                            + "/" + StringTools.humpToLine(this.replaceCommonPrefix(type, className))
-                            + "/" + StringTools.humpToLine(methodName);
+                    String prefixUri = this.getCommonPrefix(type);
+                    String typeUri = this.replaceCommonPrefix(type, className);
+                    String handleUri = methodName;
+                    String url = prefixUri + (typeUri.startsWith("/") ? "" : "/") + typeUri + (handleUri.startsWith("/") ? "" : "/") + handleUri;
+
+                    prefixUri = this.getCommonPrefix(type);
+                    typeUri = StringTools.humpToLine(this.replaceCommonPrefix(type, className));
+                    handleUri = StringTools.humpToLine(methodName, true);
+                    String lineUrl = prefixUri + (typeUri.startsWith("/") ? "" : "/") + typeUri + (handleUri.startsWith("/") ? "" : "/") + handleUri;
 
                     if (StringTools.isNotEmpty(printer.path())) {
                         url += printer.path();
