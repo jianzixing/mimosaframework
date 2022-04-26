@@ -83,4 +83,8 @@ public class ResponsePageMessage<T extends List> extends ResponseMessage<T> {
     public String toString() {
         return ModelObject.toJSONString(this);
     }
+
+    public Paging toPaging() {
+        return new Paging(total, data);
+    }
 }
