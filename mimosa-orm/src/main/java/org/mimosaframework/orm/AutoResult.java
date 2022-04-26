@@ -382,16 +382,20 @@ public class AutoResult {
                 for (int i = 0; i < objects.size(); i++) {
                     ModelObject object = objects.get(i);
                     boolean has = false;
-                    for (int j = 0; j < i; j++) {
+                    for (int j = 0; j < objects.size(); j++) {
                         ModelObject object2 = objects.get(j);
+                        int k = 0;
                         for (MappingField field : fields) {
                             String fieldName = field.getMappingFieldName();
                             Object v1 = object.get(fieldName);
                             Object v2 = object2.get(fieldName);
-                            if (v1 == null && v2 == null || v1 != null && v1.equals(v2)) {
-                                has = true;
-                                break;
+                            if ((v1 == null && v2 == null || v1 != null && v1.equals(v2)) && object != object2) {
+                                k++;
                             }
+                        }
+                        if (fields.size() == k) {
+                            has = true;
+                            break;
                         }
                     }
                     if (has) {
