@@ -2,10 +2,12 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.BasicFunction;
 
-public interface Function<T extends Function> extends Filter<T> {
-    T addFunction(BasicFunction function, Object field);
+import java.io.Serializable;
 
-    T addFunction(BasicFunction function, Object field, String alias);
+public interface Function<T extends Function> extends Filter<T> {
+    T addFunction(BasicFunction function, Serializable field);
+
+    T addFunction(BasicFunction function, Serializable field, String alias);
 
     T addFunction(FunctionField function);
 

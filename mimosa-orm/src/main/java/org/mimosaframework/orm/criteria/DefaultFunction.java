@@ -24,7 +24,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public LogicFunction addFunction(BasicFunction function, Object field) {
+    public LogicFunction addFunction(BasicFunction function, Serializable field) {
         if (funs == null) {
             funs = new LinkedHashSet<>();
         }
@@ -33,7 +33,7 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public LogicFunction addFunction(BasicFunction function, Object field, String alias) {
+    public LogicFunction addFunction(BasicFunction function, Serializable field, String alias) {
         if (funs == null) {
             funs = new LinkedHashSet<>();
         }

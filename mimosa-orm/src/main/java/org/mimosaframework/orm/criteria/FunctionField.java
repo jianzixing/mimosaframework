@@ -6,7 +6,7 @@ import org.mimosaframework.orm.BasicFunction;
 import java.io.Serializable;
 
 public class FunctionField implements Serializable {
-    private Object field;
+    private Serializable field;
     private BasicFunction function;
     private String alias;
     // 处理精度
@@ -14,35 +14,35 @@ public class FunctionField implements Serializable {
     private boolean distinct = false;
     private String avgCountName;
 
-    public FunctionField(Object field, BasicFunction function) {
+    public FunctionField(Serializable field, BasicFunction function) {
         this.field = field;
         this.function = function;
     }
 
-    public FunctionField(Object field, BasicFunction function, String alias) {
+    public FunctionField(Serializable field, BasicFunction function, String alias) {
         this.field = field;
         this.function = function;
         this.alias = alias;
     }
 
-    public FunctionField(Object field, BasicFunction function, int scale) {
+    public FunctionField(Serializable field, BasicFunction function, int scale) {
         this.field = field;
         this.function = function;
         this.scale = scale;
     }
 
-    public FunctionField(Object field, BasicFunction function, String alias, int scale) {
+    public FunctionField(Serializable field, BasicFunction function, String alias, int scale) {
         this.field = field;
         this.function = function;
         this.alias = alias;
         this.scale = scale;
     }
 
-    public Object getField() {
+    public Serializable getField() {
         return field;
     }
 
-    public void setField(Object field) {
+    public void setField(Serializable field) {
         this.field = field;
     }
 
