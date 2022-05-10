@@ -244,6 +244,7 @@ public class UploadManager {
         private int errorCode;
         private Throwable throwable;
         private String url = "";
+        private String path;
 
         public String getUrl() {
             return url;
@@ -312,6 +313,14 @@ public class UploadManager {
 
         public String getFileUrl() {
             return this.url + fileName;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
         }
     }
 
