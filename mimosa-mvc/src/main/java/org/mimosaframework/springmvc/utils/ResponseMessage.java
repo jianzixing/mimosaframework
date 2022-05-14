@@ -242,13 +242,13 @@ public class ResponseMessage<T> implements Serializable {
 
     public static <T> T toObject(ResponseMessage responseMessage, TypeReference<T> reference) {
         Type type = reference != null ? reference.getType() : null;
-        return TypeUtils.cast(responseMessage.data, type, ParserConfig.getGlobalInstance());
+        return TypeUtils.cast(responseMessage.getData(), type, ParserConfig.getGlobalInstance());
     }
 
     public static <T> T toObject(ResponseMessage responseMessage, Class<T> t) {
-        if (responseMessage.data instanceof String) {
-            return ModelObject.parseObject((String) responseMessage.data, t);
+        if (responseMessage.getData() instanceof String) {
+            return ModelObject.parseObject((String) responseMessage.getData(), t);
         }
-        return ModelObject.parseObject(ModelObject.toJSONString(responseMessage.data), t);
+        return ModelObject.parseObject(ModelObject.toJSONString(responseMessage.getData()), t);
     }
 }

@@ -6,7 +6,7 @@ import org.mimosaframework.springmvc.exception.StockCode;
 
 import java.util.List;
 
-public class ResponsePageMessage<T extends List> extends ResponseMessage<T> {
+public class ResponsePageMessage<T> extends ResponseMessage<T> {
     protected long total;
     protected ModelObject page;
 
@@ -85,6 +85,6 @@ public class ResponsePageMessage<T extends List> extends ResponseMessage<T> {
     }
 
     public Paging toPaging() {
-        return new Paging(total, data);
+        return new Paging(total, (List) data);
     }
 }
