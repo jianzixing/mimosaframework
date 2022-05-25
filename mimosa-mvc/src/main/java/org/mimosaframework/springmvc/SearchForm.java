@@ -1,5 +1,6 @@
 package org.mimosaframework.springmvc;
 
+import org.mimosaframework.core.exception.ModuleException;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
@@ -26,6 +27,16 @@ public class SearchForm {
         if (objects == null || objects.size() == 0) return null;
         for (ModelObject o : objects) {
             String name = o.getString("name");
+            // 如果存在就报错以防止构造查询导致数据泄露
+            if (StringTools.isNotEmpty(name)) {
+                DefaultQuery dq = (DefaultQuery) this.query;
+                if (dq.hasFilter(name)) {
+                    throw new ModuleException("exist_filter", "已经存在的查询条件");
+                }
+            }
+        }
+        for (ModelObject o : objects) {
+            String name = o.getString("name");
             String value = o.getString("value");
             String symbol = o.getString("symbol");
             String s = o.getString("start");
@@ -38,7 +49,13 @@ public class SearchForm {
                 if (StringTools.isEmpty(symbol)) {
                     query.eq(name, value);
                 } else if (symbol.equalsIgnoreCase("between")) {
-                    query.between(name, s, e);
+                    if (StringTools.isNotEmpty(s) && StringTools.isEmpty(e)) {
+                        query.gte(name, s);
+                    } else if (StringTools.isEmpty(s) && StringTools.isNotEmpty(e)) {
+                        query.lte(name, e);
+                    } else {
+                        query.between(name, s, e);
+                    }
                 } else if (symbol.equalsIgnoreCase("gt")) {
                     query.gt(name, value);
                 } else if (symbol.equalsIgnoreCase("lt")) {
