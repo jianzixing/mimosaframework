@@ -133,7 +133,7 @@ public class ModelMeasureChecker implements ModelObjectChecker {
                 }
             }
 
-            if (!isNullable && StringTools.isEmpty(defaultValue) && object.get(javaName) == null) {
+            if (!isNullable && StringTools.isEmpty(defaultValue) && object.get(javaName) == null && StringTools.isEmpty(defaultValue)) {
                 throw new ModelCheckerException(javaName, Code.NULL_VALUE.toString(), I18n.print("field_empty", javaName));
             }
 

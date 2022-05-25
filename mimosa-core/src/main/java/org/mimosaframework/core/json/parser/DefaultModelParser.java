@@ -74,35 +74,36 @@ import org.mimosaframework.core.json.util.TypeUtils;
  */
 public class DefaultModelParser implements Closeable {
 
-    public final Object                input;
-    public final SymbolTable           symbolTable;
-    protected ParserConfig             config;
+    public final Object input;
+    public final SymbolTable symbolTable;
+    protected ParserConfig config;
 
-    private final static Set<Class<?>> primitiveClasses   = new HashSet<Class<?>>();
+    private final static Set<Class<?>> primitiveClasses = new HashSet<Class<?>>();
 
-    private String                     dateFormatPattern  = Model.DEFFAULT_DATE_FORMAT;
-    private DateFormat                 dateFormat;
+    private String dateFormatPattern = Model.DEFFAULT_DATE_FORMAT;
+    private DateFormat dateFormat;
 
     public final ModelLexer lexer;
 
-    protected ParseContext             context;
+    protected ParseContext context;
 
-    private ParseContext[]             contextArray;
-    private int                        contextArrayIndex  = 0;
+    private ParseContext[] contextArray;
+    private int contextArrayIndex = 0;
 
-    private List<ResolveTask>          resolveTaskList;
+    private List<ResolveTask> resolveTaskList;
 
-    public final static int            NONE               = 0;
-    public final static int            NeedToResolve      = 1;
-    public final static int            TypeNameRedirect   = 2;
+    public final static int NONE = 0;
+    public final static int NeedToResolve = 1;
+    public final static int TypeNameRedirect = 2;
 
-    public int                         resolveStatus      = NONE;
+    public int resolveStatus = NONE;
 
-    private List<ExtraTypeProvider>    extraTypeProviders = null;
-    private List<ExtraProcessor>       extraProcessors    = null;
-    protected FieldTypeResolver        fieldTypeResolver  = null;
-    
-    protected transient BeanContext    lastBeanContext;
+    private List<ExtraTypeProvider> extraTypeProviders = null;
+    private List<ExtraProcessor> extraProcessors = null;
+    protected FieldTypeResolver fieldTypeResolver = null;
+    private boolean closeAutoType = true;
+
+    protected transient BeanContext lastBeanContext;
 
     static {
         primitiveClasses.add(boolean.class);
@@ -147,31 +148,31 @@ public class DefaultModelParser implements Closeable {
         this.dateFormat = dateFormat;
     }
 
-    public DefaultModelParser(String input){
+    public DefaultModelParser(String input) {
         this(input, ParserConfig.getGlobalInstance(), Model.DEFAULT_PARSER_FEATURE);
     }
 
-    public DefaultModelParser(final String input, final ParserConfig config){
+    public DefaultModelParser(final String input, final ParserConfig config) {
         this(input, new ModelScanner(input, Model.DEFAULT_PARSER_FEATURE), config);
     }
 
-    public DefaultModelParser(final String input, final ParserConfig config, int features){
+    public DefaultModelParser(final String input, final ParserConfig config, int features) {
         this(input, new ModelScanner(input, features), config);
     }
 
-    public DefaultModelParser(final char[] input, int length, final ParserConfig config, int features){
+    public DefaultModelParser(final char[] input, int length, final ParserConfig config, int features) {
         this(input, new ModelScanner(input, length, features), config);
     }
 
-    public DefaultModelParser(final ModelLexer lexer){
+    public DefaultModelParser(final ModelLexer lexer) {
         this(lexer, ParserConfig.getGlobalInstance());
     }
 
-    public DefaultModelParser(final ModelLexer lexer, final ParserConfig config){
+    public DefaultModelParser(final ModelLexer lexer, final ParserConfig config) {
         this(null, lexer, config);
     }
 
-    public DefaultModelParser(final Object input, final ModelLexer lexer, final ParserConfig config){
+    public DefaultModelParser(final Object input, final ModelLexer lexer, final ParserConfig config) {
         this.lexer = lexer;
         this.input = input;
         this.config = config;
@@ -200,15 +201,15 @@ public class DefaultModelParser implements Closeable {
         return input.toString();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public final Object parseObject(final Map object, Object fieldName) {
         final ModelLexer lexer = this.lexer;
-        
+
         if (lexer.token() == ModelToken.NULL) {
             lexer.nextToken();
             return null;
         }
-        
+
         if (lexer.token() == ModelToken.RBRACE) {
             lexer.nextToken();
             return object;
@@ -218,10 +219,10 @@ public class DefaultModelParser implements Closeable {
             throw new ModelException("syntax error, expect {, actual " + lexer.tokenName() + ", " + lexer.info());
         }
 
-       ParseContext context = this.context;
+        ParseContext context = this.context;
         try {
             boolean setContextFlag = false;
-            for (;;) {
+            for (; ; ) {
                 lexer.skipWhitespace();
                 char ch = lexer.getCurrent();
                 if (lexer.isEnabled(Feature.AllowArbitraryCommas)) {
@@ -265,11 +266,11 @@ public class DefaultModelParser implements Closeable {
                     lexer.resetStringPosition();
                     lexer.scanNumber();
                     try {
-                    if (lexer.token() == ModelToken.LITERAL_INT) {
-                        key = lexer.integerValue();
-                    } else {
-                        key = lexer.decimalValue(true);
-                    }
+                        if (lexer.token() == ModelToken.LITERAL_INT) {
+                            key = lexer.integerValue();
+                        } else {
+                            key = lexer.decimalValue(true);
+                        }
                     } catch (NumberFormatException e) {
                         throw new ModelException("parse number key error" + lexer.info());
                     }
@@ -303,7 +304,7 @@ public class DefaultModelParser implements Closeable {
 
                 lexer.resetStringPosition();
 
-                if (key == Model.DEFAULT_TYPE_KEY && !lexer.isEnabled(Feature.DisableSpecialKeyDetect)) {
+                if (closeAutoType == false && key == Model.DEFAULT_TYPE_KEY && !lexer.isEnabled(Feature.DisableSpecialKeyDetect)) {
                     String typeName = lexer.scanSymbol(symbolTable, '"');
                     Class<?> clazz = TypeUtils.loadClass(typeName, config.getDefaultClassLoader());
 
@@ -337,13 +338,13 @@ public class DefaultModelParser implements Closeable {
                             throw new ModelException("create instance error", e);
                         }
                     }
-                    
+
                     this.setResolveStatus(TypeNameRedirect);
 
                     if (this.context != null && !(fieldName instanceof Integer)) {
                         this.popContext();
                     }
-                    
+
                     if (object.size() > 0) {
                         Object newObj = TypeUtils.cast(object, clazz, this.config);
                         this.parseObject(newObj);
@@ -354,7 +355,7 @@ public class DefaultModelParser implements Closeable {
                     return deserializer.deserialze(this, clazz, fieldName);
                 }
 
-                if (key == "$ref" && !lexer.isEnabled(Feature.DisableSpecialKeyDetect)) {
+                if (closeAutoType == false && key == "$ref" && !lexer.isEnabled(Feature.DisableSpecialKeyDetect)) {
                     lexer.nextToken(ModelToken.LITERAL_STRING);
                     if (lexer.token() == ModelToken.LITERAL_STRING) {
                         String ref = lexer.stringVal();
@@ -446,7 +447,7 @@ public class DefaultModelParser implements Closeable {
                     lexer.nextToken();
                     ModelArray list = new ModelArray();
                     this.parseArray(list, key);
-                    
+
                     if (lexer.isEnabled(Feature.UseObjectArray)) {
                         value = list.toArray();
                     } else {
@@ -488,7 +489,7 @@ public class DefaultModelParser implements Closeable {
                     if (!objParsed) {
                         obj = this.parseObject(input, key);
                     }
-                    
+
                     if (ctxLocal != null && input != obj) {
                         ctxLocal.object = object;
                     }
@@ -576,7 +577,7 @@ public class DefaultModelParser implements Closeable {
     public <T> T parseObject(Class<T> clazz) {
         return (T) parseObject(clazz, null);
     }
-    
+
     public <T> T parseObject(Type type) {
         return parseObject(type, null);
     }
@@ -629,7 +630,7 @@ public class DefaultModelParser implements Closeable {
         parseArray(type, array, null);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void parseArray(Type type, Collection array, Object fieldName) {
         if (lexer.token() == ModelToken.SET || lexer.token() == ModelToken.TREE_SET) {
             lexer.nextToken();
@@ -654,7 +655,7 @@ public class DefaultModelParser implements Closeable {
         ParseContext context = this.context;
         this.setContext(array, fieldName);
         try {
-            for (int i = 0;; ++i) {
+            for (int i = 0; ; ++i) {
                 if (lexer.isEnabled(Feature.AllowArbitraryCommas)) {
                     while (lexer.token() == ModelToken.COMMA) {
                         lexer.nextToken();
@@ -775,7 +776,7 @@ public class DefaultModelParser implements Closeable {
                         int fastMatch = derializer.getFastMatchToken();
 
                         if (lexer.token() != ModelToken.RBRACKET) {
-                            for (;;) {
+                            for (; ; ) {
                                 Object item = derializer.deserialze(this, type, null);
                                 varList.add(item);
 
@@ -834,7 +835,7 @@ public class DefaultModelParser implements Closeable {
             throw new ModelException("syntax error, expect {, actual " + lexer.tokenName());
         }
 
-        for (;;) {
+        for (; ; ) {
             // lexer.scanSymbol
             String key = lexer.scanSymbol(symbolTable);
 
@@ -854,7 +855,7 @@ public class DefaultModelParser implements Closeable {
             if (beanDeser != null) {
                 fieldDeser = beanDeser.getFieldDeserializer(key);
             }
-            
+
             if (fieldDeser == null) {
                 if (!lexer.isEnabled(Feature.IgnoreNotMatch)) {
                     throw new ModelException("setter not found, class " + clazz.getName() + ", property " + key);
@@ -1023,7 +1024,7 @@ public class DefaultModelParser implements Closeable {
                 setResolveStatus(DefaultModelParser.NONE);
             } else {
                 ResolveTask task = getLastResolveTask();
-                task.fieldDeserializer  = new ResolveFieldDeserializer(array);
+                task.fieldDeserializer = new ResolveFieldDeserializer(array);
                 task.ownerContext = context;
                 setResolveStatus(DefaultModelParser.NONE);
             }
@@ -1057,7 +1058,7 @@ public class DefaultModelParser implements Closeable {
         parseArray(array, null);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public final void parseArray(final Collection array, Object fieldName) {
         final ModelLexer lexer = this.lexer;
 
@@ -1067,7 +1068,7 @@ public class DefaultModelParser implements Closeable {
 
         if (lexer.token() != ModelToken.LBRACKET) {
             throw new ModelException("syntax error, expect [, actual " + ModelToken.name(lexer.token()) + ", pos "
-                                    + lexer.pos());
+                    + lexer.pos());
         }
 
         lexer.nextToken(ModelToken.LITERAL_STRING);
@@ -1075,7 +1076,7 @@ public class DefaultModelParser implements Closeable {
         ParseContext context = this.context;
         this.setContext(array, fieldName);
         try {
-            for (int i = 0;; ++i) {
+            for (int i = 0; ; ++i) {
                 if (lexer.isEnabled(Feature.AllowArbitraryCommas)) {
                     while (lexer.token() == ModelToken.COMMA) {
                         lexer.nextToken();
@@ -1205,7 +1206,7 @@ public class DefaultModelParser implements Closeable {
     public FieldTypeResolver getFieldTypeResolver() {
         return fieldTypeResolver;
     }
-    
+
     public void setFieldTypeResolver(FieldTypeResolver fieldTypeResolver) {
         this.fieldTypeResolver = fieldTypeResolver;
     }
@@ -1375,7 +1376,7 @@ public class DefaultModelParser implements Closeable {
             lexer.nextToken();
         } else {
             throw new ModelException("syntax error, expect " + ModelToken.name(token) + ", actual "
-                                    + ModelToken.name(lexer.token()));
+                    + ModelToken.name(lexer.token()));
         }
     }
 
@@ -1387,12 +1388,12 @@ public class DefaultModelParser implements Closeable {
             throwException(token);
         }
     }
-    
+
     public void throwException(int token) {
         throw new ModelException("syntax error, expect " + ModelToken.name(token) + ", actual "
-                                + ModelToken.name(lexer.token()));
+                + ModelToken.name(lexer.token()));
     }
-    
+
     public void close() {
         final ModelLexer lexer = this.lexer;
 
@@ -1428,7 +1429,7 @@ public class DefaultModelParser implements Closeable {
             } else {
                 refValue = task.context.object;
             }
-            
+
             FieldDeserializer fieldDeser = task.fieldDeserializer;
 
             if (fieldDeser != null) {
@@ -1440,30 +1441,30 @@ public class DefaultModelParser implements Closeable {
     public static class ResolveTask {
 
         public final ParseContext context;
-        public final String       referenceValue;
-        public FieldDeserializer  fieldDeserializer;
-        public ParseContext       ownerContext;
+        public final String referenceValue;
+        public FieldDeserializer fieldDeserializer;
+        public ParseContext ownerContext;
 
-        public ResolveTask(ParseContext context, String referenceValue){
+        public ResolveTask(ParseContext context, String referenceValue) {
             this.context = context;
             this.referenceValue = referenceValue;
         }
     }
-    
+
     public void parseExtra(Object object, String key) {
         final ModelLexer lexer = this.lexer; // xxx
         lexer.nextTokenWithColon();
         Type type = null;
-        
+
         if (extraTypeProviders != null) {
             for (ExtraTypeProvider extraProvider : extraTypeProviders) {
                 type = extraProvider.getExtraType(object, key);
             }
         }
         Object value = type == null //
-            ? parse() // skip
-            : parseObject(type);
-            
+                ? parse() // skip
+                : parseObject(type);
+
         if (object instanceof ExtraProcessable) {
             ExtraProcessable extraProcessable = ((ExtraProcessable) object);
             extraProcessable.processExtra(key, value);

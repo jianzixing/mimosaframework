@@ -1,5 +1,7 @@
 package org.mimosaframework.tools;
 
+import org.mimosaframework.core.json.Model;
+import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.SnowFlake;
 
 import java.util.ArrayList;
@@ -19,7 +21,11 @@ public class SnowFlakeTest extends Thread {
     }
 
     public static void main(String[] args) {
-        new SnowFlakeTest(1000).start();
+        // new SnowFlakeTest(1000).start();
+
+        String comment = "{\"x\":{\"@type\":\"java.lang.Exception\",\"@type\":\"org.openqa.selenium.WebDriverException\"},\"content\":{\"$ref\":\"$x.systemInformation\"}}";
+        ModelObject jsonObject = Model.parseObject(comment);
+        System.out.printf(jsonObject.getString("content"));
     }
 
     @Override
