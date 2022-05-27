@@ -65,6 +65,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("not_in_must_key_value", "not_in查询缺少指定字段");
         words.put("join_not_have_filter", "Join %s 查询时缺乏ON Filter条件");
         words.put("join_as_repeat", "Join的查询别名 AS %s 重复");
+        words.put("query_as_not_legal", "设置Query的as参数 %s 不合法");
 
         // AddCompareMapping
         words.put("add_new_table_error", "向数据库添加新表[%s]出错,请检查映射类[%s],如果出现不支持情况请手动建表");

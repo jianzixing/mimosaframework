@@ -136,7 +136,15 @@ public class DefaultQuery implements LogicQuery {
 
     @Override
     public LogicQuery as(String as) {
-        this.as = as;
+        if (StringTools.isNotEmpty(as)) {
+            char[] chars = as.toCharArray();
+            for (char c : chars) {
+                if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= 0 && c <= 9 || c == '_')) {
+                    throw new IllegalArgumentException(I18n.print("query_as_not_legal", as));
+                }
+            }
+            this.as = as;
+        }
         return this;
     }
 

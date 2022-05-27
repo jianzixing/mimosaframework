@@ -245,6 +245,7 @@ public class UploadManager {
         private Throwable throwable;
         private String url = "";
         private String path;
+        private String thumb;
         private long size;
 
         public String getUrl() {
@@ -330,6 +331,14 @@ public class UploadManager {
 
         public void setSize(long size) {
             this.size = size;
+        }
+
+        public String getThumb() {
+            return thumb;
+        }
+
+        public void setThumb(String thumb) {
+            this.thumb = thumb;
         }
     }
 
