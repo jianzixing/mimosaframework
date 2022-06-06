@@ -108,6 +108,7 @@ public class UploadManager {
                         }
                         String newFileName = UUID.randomUUID().toString().replaceAll("-", "") + "." + fileType;
                         fileItem.setFileName(newFileName);
+                        fileItem.setSize(file.getSize());
 
                         if (callback != null) {
                             InputStream inputStream = null;
