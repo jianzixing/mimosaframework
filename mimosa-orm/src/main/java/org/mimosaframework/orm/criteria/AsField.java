@@ -2,7 +2,7 @@ package org.mimosaframework.orm.criteria;
 
 import java.io.Serializable;
 
-public class AsField {
+public class AsField implements Serializable {
     private String alias;
     private String field;
 
@@ -17,5 +17,10 @@ public class AsField {
 
     public String getField() {
         return field;
+    }
+
+    @Override
+    public String toString() {
+        return alias + "." + field;
     }
 }
