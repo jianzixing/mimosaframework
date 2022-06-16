@@ -108,7 +108,8 @@ public class Finder {
     }
 
     public static String getStringValue(Object obj, Serializable keyName) {
-        return String.valueOf(getObjectValue(obj, keyName));
+        Object v = getObjectValue(obj, keyName);
+        return v != null ? String.valueOf(v) : null;
     }
 
     public static List getArrayValue(Object object, Serializable keyName) {
