@@ -5,6 +5,7 @@ import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.Paging;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.utils.SQLUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -136,15 +137,8 @@ public class DefaultQuery implements LogicQuery {
 
     @Override
     public LogicQuery as(String as) {
-        if (StringTools.isNotEmpty(as)) {
-            char[] chars = as.toCharArray();
-            for (char c : chars) {
-                if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= 0 && c <= 9 || c == '_')) {
-                    throw new IllegalArgumentException(I18n.print("query_as_not_legal", as));
-                }
-            }
-            this.as = as;
-        }
+        SQLUtils.checkAsName(as);
+        this.as = as;
         return this;
     }
 

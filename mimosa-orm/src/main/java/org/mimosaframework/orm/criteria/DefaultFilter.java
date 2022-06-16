@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.utils.SQLUtils;
 
 import java.io.Serializable;
 
@@ -75,6 +76,7 @@ public class DefaultFilter implements Filter {
     }
 
     public DefaultFilter as(Serializable as) {
+        SQLUtils.checkAsName(as);
         this.as = as.toString();
         return this;
     }

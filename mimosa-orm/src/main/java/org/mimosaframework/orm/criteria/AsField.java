@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.orm.utils.SQLUtils;
+
 import java.io.Serializable;
 
 public class AsField implements Serializable {
@@ -7,6 +9,7 @@ public class AsField implements Serializable {
     private String field;
 
     public AsField(String alias, Serializable field) {
+        SQLUtils.checkAsName(alias);
         this.alias = alias;
         this.field = field.toString();
     }

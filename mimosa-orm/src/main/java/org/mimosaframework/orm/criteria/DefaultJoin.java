@@ -2,6 +2,7 @@ package org.mimosaframework.orm.criteria;
 
 
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.utils.SQLUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -183,6 +184,7 @@ public class DefaultJoin implements Join {
 
     @Override
     public Join as(Serializable s) {
+        SQLUtils.checkAsName(as);
         this.as = s.toString();
         return this;
     }

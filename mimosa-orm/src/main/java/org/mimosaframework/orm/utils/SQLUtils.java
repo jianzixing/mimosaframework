@@ -1,8 +1,10 @@
 package org.mimosaframework.orm.utils;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.i18n.I18n;
 
 import javax.sql.DataSource;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -186,6 +188,19 @@ public class SQLUtils {
                 fieldValue.put(fieldName, null);
             } else {
                 fieldValue.put(fieldName, s);
+            }
+        }
+    }
+
+    public static void checkAsName(Serializable str) {
+        if (str == null) return;
+        String as = str.toString();
+        if (StringTools.isNotEmpty(as)) {
+            char[] chars = as.toCharArray();
+            for (char c : chars) {
+                if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_')) {
+                    throw new IllegalArgumentException(I18n.print("query_as_not_legal", as));
+                }
             }
         }
     }
