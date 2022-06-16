@@ -4,4 +4,6 @@ public interface LogicFilter<Q, T> extends Filter<T> {
     Q or();
 
     Q and();
+
+    T linked(WrapsLinked linked);
 }
