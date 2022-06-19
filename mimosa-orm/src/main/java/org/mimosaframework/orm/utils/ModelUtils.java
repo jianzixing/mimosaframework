@@ -44,7 +44,8 @@ public abstract class ModelUtils {
                 String pid = Finder.getStringValue(entry.getValue(), ModelObject.getKeyName(pidKey));
                 Set<Map.Entry<String, T>> set2 = map.entrySet();
                 for (Map.Entry<String, T> cen : set2) {
-                    if (Finder.getStringValue(cen.getValue(), ModelObject.getKeyName(idKey)).equals(pid)) {
+                    if (Finder.getStringValue(cen.getValue(), ModelObject.getKeyName(idKey)).equals(pid)
+                            && !cen.getValue().equals(entry.getValue())) {
                         T object = cen.getValue();
                         List children = Finder.getArrayValue(object, childrenKey);
                         if (children == null) {
