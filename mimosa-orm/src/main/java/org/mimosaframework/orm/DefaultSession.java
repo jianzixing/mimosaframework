@@ -560,6 +560,9 @@ public class DefaultSession implements Session {
                                StringBuilder newSql) {
         if (key != null && key.length() > 0) {
             String name = key.toString();
+            if (parameter == null || parameter.size() == 0) {
+                throw new IllegalArgumentException("execute sql missing parameters");
+            }
             Object v = parameter.get(name);
             if (v instanceof List) {
                 int j = 0;
