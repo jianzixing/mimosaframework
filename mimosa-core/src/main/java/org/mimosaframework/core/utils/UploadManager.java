@@ -248,6 +248,7 @@ public class UploadManager {
         private String path;
         private String thumb;
         private long size;
+        private long thumbSize;
 
         public String getUrl() {
             return url;
@@ -340,6 +341,14 @@ public class UploadManager {
 
         public void setThumb(String thumb) {
             this.thumb = thumb;
+        }
+
+        public long getThumbSize() {
+            return thumbSize;
+        }
+
+        public void setThumbSize(long thumbSize) {
+            this.thumbSize = thumbSize;
         }
     }
 
