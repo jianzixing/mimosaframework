@@ -33,19 +33,15 @@ import java.util.List;
  */
 @Configuration
 @ConditionalOnClass({RequestMappingHandlerMapping.class, RequestMappingHandlerAdapter.class})
-@ConditionalOnBean({MimosaSessionTemplate.class})
+@ConditionalOnBean()
 @EnableConfigurationProperties({MimosaMvcProperties.class})
 public class MimosaMvcConfiguration implements WebMvcRegistrations {
 
     @Autowired
     MimosaMvcProperties mimosaMvcProperties;
 
-    private SpringMimosaSessionTemplate mimosaSessionTemplate;
-
-    @Resource
-    public void setMimosaSessionTemplate(SpringMimosaSessionTemplate mimosaSessionTemplate) {
-        this.mimosaSessionTemplate = mimosaSessionTemplate;
-    }
+    @Autowired(required = false)
+    SpringMimosaSessionTemplate mimosaSessionTemplate;
 
     @Override
     public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {

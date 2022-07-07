@@ -30,13 +30,13 @@ public class MimosaOrmConfiguration implements InitializingBean {
     private MimosaOrmProperties mimosaOrmProperties;
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean({DataSource.class})
     public MimosaOrmDataSources mimosaOrmDataSources(DataSource dataSource) throws SQLException {
         return new MimosaOrmDataSources(dataSource);
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean({MimosaOrmDataSources.class})
     public SpringMimosaSessionFactory mimosaSessionFactory(MimosaOrmDataSources mimosaOrmDataSources) throws Exception {
         SpringMimosaSessionFactory springMimosaSessionFactory = new SpringMimosaSessionFactory();
         // 将autoConfigurationProperties中的值添加到这里
@@ -56,7 +56,7 @@ public class MimosaOrmConfiguration implements InitializingBean {
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean({SpringMimosaSessionFactory.class})
     public SpringMimosaSessionTemplate mimosaSessionTemplate(SpringMimosaSessionFactory mimosaSessionFactory) {
         SpringMimosaSessionTemplate springMimosaSessionTemplate = new SpringMimosaSessionTemplate();
         springMimosaSessionTemplate.setFactory(mimosaSessionFactory);
@@ -64,7 +64,7 @@ public class MimosaOrmConfiguration implements InitializingBean {
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean({SpringMimosaSessionFactory.class})
     public SpringBeanSessionTemplate mimosaBeanSessionTemplate(SpringMimosaSessionFactory mimosaSessionFactory) {
         SpringBeanSessionTemplate springMimosaSessionTemplate = new SpringBeanSessionTemplate();
         springMimosaSessionTemplate.setFactory(mimosaSessionFactory);
