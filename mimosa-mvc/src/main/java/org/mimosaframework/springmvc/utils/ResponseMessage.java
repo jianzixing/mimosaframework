@@ -180,14 +180,14 @@ public class ResponseMessage<T> implements Serializable {
     }
 
     public ResponseMessage(int code, T data) {
+        this(data);
         this.code = code;
-        this.data = data;
     }
 
     public ResponseMessage(int code, String msg, T data) {
+        this(data);
         this.code = code;
         this.msg = msg;
-        this.data = data;
     }
 
     public ResponseMessage(String code, String msg) {
@@ -196,14 +196,14 @@ public class ResponseMessage<T> implements Serializable {
     }
 
     public ResponseMessage(String code, T data) {
+        this(data);
         this.code = code;
-        this.data = data;
     }
 
     public ResponseMessage(String code, String msg, T data) {
+        this(data);
         this.code = code;
         this.msg = msg;
-        this.data = data;
     }
 
     public Object getCode() {
