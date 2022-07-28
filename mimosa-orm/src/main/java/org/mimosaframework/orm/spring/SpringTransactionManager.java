@@ -15,6 +15,7 @@ public class SpringTransactionManager implements TransactionManager {
 
     public SpringTransactionManager(PlatformTransactionManager transactionManager,
                                     TransactionDefinition transactionDefinition) {
+        // todo:如果没有配置spring的事务，这块应该也能使用需要改一下这块
         Assert.notNull(transactionManager, I18n.print("spring_trans_manager_miss"));
         this.transactionManager = transactionManager;
         this.transactionDefinition = transactionDefinition;
