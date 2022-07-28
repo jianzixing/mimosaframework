@@ -302,7 +302,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
                 while (iterator.hasNext()) {
                     Map.Entry<String, String> entry = iterator.next();
                     String key = entry.getKey();
-                    if (s1[s1.length - 2].equalsIgnoreCase(key) && entry.getValue() != null) {
+                    if ((name.startsWith(key) || s1[s1.length - 2].equalsIgnoreCase(key)) && entry.getValue() != null) {
                         return entry.getValue();
                     }
                 }
