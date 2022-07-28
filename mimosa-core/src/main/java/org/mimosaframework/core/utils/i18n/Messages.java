@@ -45,7 +45,7 @@ public final class Messages {
 
         map = i18n.get("default");
         if (map != null) {
-            String value = map.get(key);
+            String value = map.get(project + "_" + key);
             if (value != null) {
                 if (replaces != null) {
                     value = String.format(value, replaces);
