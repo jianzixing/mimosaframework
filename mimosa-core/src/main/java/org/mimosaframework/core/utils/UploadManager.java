@@ -244,6 +244,7 @@ public class UploadManager {
         private String type;
         private int errorCode;
         private Throwable throwable;
+        private String domain;
         private String url = "";
         private String path;
         private String thumb;
@@ -314,6 +315,13 @@ public class UploadManager {
             this.throwable = throwable;
         }
 
+        public String getDomain() {
+            return domain;
+        }
+
+        public void setDomain(String domain) {
+            this.domain = domain;
+        }
 
         public String getFileUrl() {
             return this.url + fileName;
