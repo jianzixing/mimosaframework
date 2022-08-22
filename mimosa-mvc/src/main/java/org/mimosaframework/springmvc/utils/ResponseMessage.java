@@ -68,7 +68,7 @@ public class ResponseMessage<T> implements Serializable {
 
     public ResponseMessage() {
         this.code = 100;
-        this.msg = I18n.print("success");
+        this.msg = "success";
     }
 
     public ResponseMessage(int code) {
