@@ -162,6 +162,15 @@ public class VerifyCodeUtils {
         }
     }
 
+    public static void outputImage(int w, int h, OutputStream stream, String code) throws IOException {
+        try {
+            BufferedImage image = outputImage(w, h, code);
+            ImageIO.write(image, "png", stream);
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
     /**
      * 输出指定验证码图片流
      *
