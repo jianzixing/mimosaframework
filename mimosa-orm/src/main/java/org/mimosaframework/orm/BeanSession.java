@@ -2,6 +2,7 @@ package org.mimosaframework.orm;
 
 import org.mimosaframework.orm.criteria.Function;
 import org.mimosaframework.orm.criteria.Query;
+import org.mimosaframework.orm.criteria.UpdateObject;
 
 import java.io.Closeable;
 import java.io.Serializable;
@@ -16,6 +17,8 @@ public interface BeanSession extends Closeable {
     <T> void save(List<T> objects);
 
     <T> int update(T obj);
+
+    <T> int update(List<T> objects, UpdateObject object);
 
     <T> int update(List<T> objects);
 

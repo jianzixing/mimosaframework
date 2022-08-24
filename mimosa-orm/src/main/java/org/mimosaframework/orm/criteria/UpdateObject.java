@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class UpdateObject<T> {
     private T obj;
     private Serializable[] nullFields;
+    private Serializable[] retainFields;
 
     public UpdateObject() {
     }
@@ -29,7 +30,16 @@ public class UpdateObject<T> {
         return this;
     }
 
+    public UpdateObject retains(Serializable... fields) {
+        this.retainFields = fields;
+        return this;
+    }
+
     public Serializable[] getNullFields() {
         return nullFields;
+    }
+
+    public Serializable[] getRetainFields() {
+        return retainFields;
     }
 }

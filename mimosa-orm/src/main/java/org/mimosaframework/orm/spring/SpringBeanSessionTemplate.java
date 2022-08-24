@@ -1,10 +1,7 @@
 package org.mimosaframework.orm.spring;
 
 import org.mimosaframework.orm.*;
-import org.mimosaframework.orm.criteria.Delete;
-import org.mimosaframework.orm.criteria.Function;
-import org.mimosaframework.orm.criteria.Query;
-import org.mimosaframework.orm.criteria.Update;
+import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.transaction.TransactionManager;
 
 import java.io.IOException;
@@ -53,6 +50,11 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     @Override
     public <T> int update(T obj) {
         return sessionTemplate.update(obj);
+    }
+
+    @Override
+    public <T> int update(List<T> objects, UpdateObject object) {
+        return sessionTemplate.update(objects, object);
     }
 
     @Override

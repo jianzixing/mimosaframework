@@ -115,10 +115,18 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 model.clearNull();
                 if (update instanceof UpdateObject) {
                     Serializable[] fields = ((UpdateObject) update).getNullFields();
+                    Serializable[] retains = ((UpdateObject) update).getRetainFields();
                     if (fields != null) {
                         for (Serializable f : fields) {
                             if (f != null) {
                                 model.put(f.toString(), null);
+                            }
+                        }
+                    }
+                    if (retains != null) {
+                        for (Serializable f : retains) {
+                            if (f != null) {
+                                model.put(f.toString(), model.get(f));
                             }
                         }
                     }
@@ -132,8 +140,16 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
     @Override
     public <T> int update(List<T> objects) {
+        return update(objects, null);
+    }
+
+    @Override
+    public <T> int update(List<T> objects, UpdateObject updateObject) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
+            Serializable[] commonFields = updateObject != null ? updateObject.getNullFields() : null;
+            Serializable[] commonRetains = updateObject != null ? updateObject.getRetainFields() : null;
+
             for (T update : objects) {
                 if (updates == null) updates = new ArrayList<>();
                 Object object = update;
@@ -147,10 +163,20 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                     model.clearNull();
                     if (update instanceof UpdateObject) {
                         Serializable[] fields = ((UpdateObject) update).getNullFields();
+                        if (fields == null) fields = commonFields;
+                        Serializable[] retains = ((UpdateObject) update).getRetainFields();
+                        if (retains == null) retains = commonRetains;
                         if (fields != null) {
                             for (Serializable f : fields) {
                                 if (f != null) {
                                     model.put(f.toString(), null);
+                                }
+                            }
+                        }
+                        if (retains != null) {
+                            for (Serializable f : retains) {
+                                if (f != null) {
+                                    model.put(f.toString(), model.get(f));
                                 }
                             }
                         }
