@@ -161,23 +161,24 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                     ModelObject model = (ModelObject) json;
                     model.setObjectClass(object.getClass());
                     model.clearNull();
+                    Serializable[] fields = null, retains = null;
                     if (update instanceof UpdateObject) {
-                        Serializable[] fields = ((UpdateObject) update).getNullFields();
-                        if (fields == null) fields = commonFields;
-                        Serializable[] retains = ((UpdateObject) update).getRetainFields();
-                        if (retains == null) retains = commonRetains;
-                        if (fields != null) {
-                            for (Serializable f : fields) {
-                                if (f != null) {
-                                    model.put(f.toString(), null);
-                                }
+                        fields = ((UpdateObject) update).getNullFields();
+                        retains = ((UpdateObject) update).getRetainFields();
+                    }
+                    if (fields == null) fields = commonFields;
+                    if (retains == null) retains = commonRetains;
+                    if (fields != null) {
+                        for (Serializable f : fields) {
+                            if (f != null) {
+                                model.put(f.toString(), null);
                             }
                         }
-                        if (retains != null) {
-                            for (Serializable f : retains) {
-                                if (f != null) {
-                                    model.put(f.toString(), model.get(f));
-                                }
+                    }
+                    if (retains != null) {
+                        for (Serializable f : retains) {
+                            if (f != null) {
+                                model.put(f.toString(), model.get(f));
                             }
                         }
                     }
