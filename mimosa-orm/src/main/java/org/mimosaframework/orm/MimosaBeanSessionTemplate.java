@@ -64,17 +64,50 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
     @Override
     public <T> T saveOrUpdate(T obj) {
-        Object json = ModelObject.toJSON(obj);
-        if (json instanceof ModelObject) {
-            ModelObject model = (ModelObject) json;
-            model.setObjectClass(obj.getClass());
-            model.clearNull();
-            modelSession.saveOrUpdate(model);
-            model2BeanFactory.toJavaObject(model, obj, true);
-            return obj;
-        } else {
+        if (obj == null) {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
+        Object json = null;
+        ModelObject model = null;
+        Class tableClass = obj.getClass();
+        if (obj instanceof UpdateObject) {
+            json = ModelObject.toJSON(((UpdateObject<?>) obj).get());
+            if (json == null || !(json instanceof ModelObject)) {
+                throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
+            }
+            tableClass = ((UpdateObject<?>) obj).get().getClass();
+            model = (ModelObject) json;
+            model.setObjectClass(tableClass);
+            model.clearNull();
+
+            Serializable[] fields = ((UpdateObject) obj).getNullFields();
+            Serializable[] retains = ((UpdateObject) obj).getRetainFields();
+            if (fields != null) {
+                for (Serializable f : fields) {
+                    if (f != null) {
+                        model.put(f.toString(), null);
+                    }
+                }
+            }
+            if (retains != null) {
+                for (Serializable f : retains) {
+                    if (f != null) {
+                        model.put(f.toString(), model.get(f));
+                    }
+                }
+            }
+        } else {
+            json = ModelObject.toJSON(obj);
+            if (!(json instanceof ModelObject)) {
+                throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
+            }
+            model = (ModelObject) json;
+            model.setObjectClass(tableClass);
+            model.clearNull();
+        }
+        modelSession.saveOrUpdate(model);
+        model2BeanFactory.toJavaObject(model, obj, true);
+        return obj;
     }
 
     @Override
