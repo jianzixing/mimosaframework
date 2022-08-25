@@ -70,8 +70,10 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         Object json = null;
         ModelObject model = null;
         Class tableClass = obj.getClass();
+        Object mappingBean = obj;
         if (obj instanceof UpdateObject) {
-            json = ModelObject.toJSON(((UpdateObject<?>) obj).get());
+            mappingBean = ((UpdateObject<?>) obj).get();
+            json = ModelObject.toJSON(mappingBean);
             if (json == null || !(json instanceof ModelObject)) {
                 throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
             }
@@ -106,7 +108,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             model.clearNull();
         }
         modelSession.saveOrUpdate(model);
-        model2BeanFactory.toJavaObject(model, obj, true);
+        model2BeanFactory.toJavaObject(model, mappingBean, true);
         return obj;
     }
 
