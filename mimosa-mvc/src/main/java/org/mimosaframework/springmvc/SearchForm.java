@@ -12,7 +12,7 @@ import java.util.*;
  *
  * @author yangankang
  */
-public class SearchForm {
+public class SearchForm<T> {
     private Query query;
 
     public SearchForm() {
@@ -23,8 +23,24 @@ public class SearchForm {
         this.query = query;
     }
 
-    public Query set(List<ModelObject> objects) {
-        if (objects == null || objects.size() == 0) return null;
+    private List<ModelObject> getItems(List<T> objects) {
+        if (objects != null && objects.size() > 0) {
+            List<ModelObject> newObjs = new ArrayList<>();
+            for (T o : objects) {
+                if (o instanceof ModelObject) {
+                    newObjs.add((ModelObject) o);
+                } else if (o instanceof SearchItem) {
+                    newObjs.add((ModelObject) ModelObject.toJSON(o));
+                }
+            }
+            return newObjs;
+        }
+        return null;
+    }
+
+    public Query set(List<T> items) {
+        if (items == null || items.size() == 0) return null;
+        List<ModelObject> objects = getItems(items);
         for (ModelObject o : objects) {
             String name = o.getString("name");
             // 如果存在就报错以防止构造查询导致数据泄露
@@ -46,7 +62,7 @@ public class SearchForm {
                     || StringTools.isNotEmpty(s)
                     || StringTools.isNotEmpty(e))
                     && StringTools.isNotEmpty(name)) {
-                if (StringTools.isEmpty(symbol)) {
+                if (StringTools.isEmpty(symbol) || symbol.equalsIgnoreCase("eq")) {
                     query.eq(name, value);
                 } else if (symbol.equalsIgnoreCase("between")) {
                     if (StringTools.isNotEmpty(s) && StringTools.isEmpty(e)) {
@@ -72,12 +88,13 @@ public class SearchForm {
         return query;
     }
 
-    public Join set(Class joinTable, ModelObject ons, List<ModelObject> objects) {
+    public Join set(Class joinTable, ModelObject ons, List<T> objects) {
         return set(null, joinTable, ons, objects);
     }
 
-    public Join set(Join joinMain, Class joinTable, ModelObject ons, List<ModelObject> objects) {
-        if (objects == null || objects.size() == 0) return null;
+    public Join set(Join joinMain, Class joinTable, ModelObject ons, List<T> items) {
+        if (items == null || items.size() == 0) return null;
+        List<ModelObject> objects = this.getItems(items);
         Join join = Criteria.inner(joinTable);
         if (ons != null) {
             Iterator<Map.Entry<Object, Object>> iterator = ons.entrySet().iterator();
