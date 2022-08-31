@@ -73,6 +73,9 @@ public class DefaultUpdate implements LogicUpdate {
 
     @Override
     public Update set(Serializable key, Object value) {
+        if (value == null) {
+            value = Keyword.NULL;
+        }
         values.put(key, value);
         return this;
     }
