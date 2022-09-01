@@ -378,7 +378,7 @@ public abstract class ModelUtils {
         } else if (exists == null && news != null) {
             return new ModelDiffObject(null, null, null, news, null);
         }
-        return null;
+        return new ModelDiffObject(null, null, null, null, null);
     }
 
     public static <T> ModelDiffObject diffObjects(List<T> exists, List<T> news, Enum... keys) {
