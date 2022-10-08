@@ -10,6 +10,10 @@ public class UpdateObject<T> {
     private Serializable[] nullFields;
     private Serializable[] retainFields;
 
+    public static <T> UpdateObject<T> wrap(T obj, Serializable... fields) {
+        return new UpdateObject(obj).nulls(fields);
+    }
+
     public UpdateObject() {
     }
 
