@@ -6,6 +6,8 @@ public class SearchItem {
     private Symbol symbol;
     private String start;
     private String end;
+    // 和下一个条件的关系
+    private Logic logic;
 
     public String getName() {
         return name;
@@ -47,7 +49,19 @@ public class SearchItem {
         this.end = end;
     }
 
+    public Logic getLogic() {
+        return logic;
+    }
+
+    public void setLogic(Logic logic) {
+        this.logic = logic;
+    }
+
     enum Symbol {
         eq, between, gt, lt, gte, lte, like
+    }
+
+    enum Logic {
+        or, and
     }
 }

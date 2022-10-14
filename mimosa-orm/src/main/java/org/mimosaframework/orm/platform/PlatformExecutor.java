@@ -1023,6 +1023,12 @@ public class PlatformExecutor {
                 boolean isAsc = order.isAsc();
                 Object field = order.getField();
                 MappingField mappingField = mappingTable.getMappingFieldByJavaName(String.valueOf(field));
+                if (mappingField == null) {
+                    throw new IllegalArgumentException(
+                            I18n.print("miss_executor_mapping_field",
+                                    String.valueOf(field), mappingTable.getMappingTableName())
+                    );
+                }
                 if (isInnerSelect) {
                     select.orderBy().column(query != null ? query.getQueryTableAs() : "T", mappingField.getMappingColumnName());
                 } else {
