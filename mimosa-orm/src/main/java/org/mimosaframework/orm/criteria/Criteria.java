@@ -64,4 +64,8 @@ public final class Criteria {
     public static final AsField as(String alias, Serializable field) {
         return new AsField(alias, field);
     }
+
+    public static Keyword NULL() {
+        return Keyword.NULL;
+    }
 }
