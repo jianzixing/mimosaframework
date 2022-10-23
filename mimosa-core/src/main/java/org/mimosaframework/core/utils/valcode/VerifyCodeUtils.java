@@ -112,6 +112,10 @@ public class VerifyCodeUtils {
         return verifyCode;
     }
 
+    public static void outputVerifyImage(int w, int h, File outputFile, String code) throws IOException {
+        outputImage(w, h, outputFile, code);
+    }
+
     /**
      * 输出随机验证码图片流,并返回验证码值
      *
