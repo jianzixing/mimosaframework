@@ -133,6 +133,11 @@ public class VerifyCodeUtils {
         return verifyCode;
     }
 
+    public static void outputVerifyImage(int w, int h, OutputStream os, String code) throws IOException {
+        BufferedImage image = outputImage(w, h, code);
+        ImageIO.write(image, "png", os);
+    }
+
     public static BufferedImage getVerifyImage(int w, int h, String code) throws IOException {
         BufferedImage image = outputImage(w, h, code);
         return image;
