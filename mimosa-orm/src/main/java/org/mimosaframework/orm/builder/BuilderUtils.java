@@ -20,7 +20,7 @@ public class BuilderUtils {
                                              String mappingClassPackage,
                                              Set<String> additionClasses) throws ContextException {
         FilterPackageClass filterPackageClass = new DefaultFilterPackageClass();
-        filterPackageClass.setPackagePath(Arrays.asList(new String[]{mappingClassPackage}));
+        filterPackageClass.setPackagePath(Arrays.asList(mappingClassPackage.split(",")));
         Set<Class> classes = filterPackageClass.getScanClass(annotation);
         if (classes == null && additionClasses != null && additionClasses.size() > 0) {
             classes = new LinkedHashSet<>();
