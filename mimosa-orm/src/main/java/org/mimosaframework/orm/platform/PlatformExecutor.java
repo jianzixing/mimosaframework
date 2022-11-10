@@ -389,14 +389,22 @@ public class PlatformExecutor {
                 }
             } else {
                 keys = new LinkedHashSet<>();
-                columns = new String[fields.size()];
+                Set<String> objectKeys = new HashSet<>();
+                for (ModelObject object : objects) {
+                    Set sets = object.keySet();
+                    objectKeys.addAll(sets);
+                }
+
+                columns = new String[objectKeys.size()];
                 i = 0;
                 for (MappingField mappingField : fields) {
                     String javaName = mappingField.getMappingFieldName();
                     String columnName = mappingField.getMappingColumnName();
-                    keys.add(javaName);
-                    columns[i] = columnName;
-                    i++;
+                    if (objectKeys.contains(javaName)) {
+                        keys.add(javaName);
+                        columns[i] = columnName;
+                        i++;
+                    }
                 }
             }
             insertBuilder.columns(columns).values();

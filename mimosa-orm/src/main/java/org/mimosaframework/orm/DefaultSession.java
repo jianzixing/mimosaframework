@@ -166,6 +166,7 @@ public class DefaultSession implements Session {
             if (object == null || object.size() == 0) {
                 throw new IllegalArgumentException(I18n.print("batch_save_empty"));
             }
+            object.clearNull();
             Class c = object.getObjectClass();
             SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, object);
 
