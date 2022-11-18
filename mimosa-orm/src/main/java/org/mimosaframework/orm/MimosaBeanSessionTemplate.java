@@ -80,24 +80,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             tableClass = ((UpdateObject<?>) obj).get().getClass();
             model = (ModelObject) json;
             model.setObjectClass(tableClass);
-            model.clearNull();
-
-            Serializable[] fields = ((UpdateObject) obj).getNullFields();
-            Serializable[] retains = ((UpdateObject) obj).getRetainFields();
-            if (fields != null) {
-                for (Serializable f : fields) {
-                    if (f != null) {
-                        model.put(f.toString(), null);
-                    }
-                }
-            }
-            if (retains != null) {
-                for (Serializable f : retains) {
-                    if (f != null) {
-                        model.put(f.toString(), model.get(f));
-                    }
-                }
-            }
+            this.setUpdateModelField((UpdateObject) obj, model, null);
         } else {
             json = ModelObject.toJSON(obj);
             if (!(json instanceof ModelObject)) {
@@ -147,24 +130,10 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             if (json instanceof ModelObject) {
                 ModelObject model = (ModelObject) json;
                 model.setObjectClass(obj.getClass());
-                model.clearNull();
                 if (update instanceof UpdateObject) {
-                    Serializable[] fields = ((UpdateObject) update).getNullFields();
-                    Serializable[] retains = ((UpdateObject) update).getRetainFields();
-                    if (fields != null) {
-                        for (Serializable f : fields) {
-                            if (f != null) {
-                                model.put(f.toString(), null);
-                            }
-                        }
-                    }
-                    if (retains != null) {
-                        for (Serializable f : retains) {
-                            if (f != null) {
-                                model.put(f.toString(), model.get(f));
-                            }
-                        }
-                    }
+                    this.setUpdateModelField((UpdateObject) update, model, null);
+                } else {
+                    model.clearNull();
                 }
                 return modelSession.update(model);
             } else {
@@ -195,27 +164,10 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 if (json instanceof ModelObject) {
                     ModelObject model = (ModelObject) json;
                     model.setObjectClass(object.getClass());
-                    model.clearNull();
-                    Serializable[] fields = null, retains = null;
                     if (update instanceof UpdateObject) {
-                        fields = ((UpdateObject) update).getNullFields();
-                        retains = ((UpdateObject) update).getRetainFields();
-                    }
-                    if (fields == null) fields = commonFields;
-                    if (retains == null) retains = commonRetains;
-                    if (fields != null) {
-                        for (Serializable f : fields) {
-                            if (f != null) {
-                                model.put(f.toString(), null);
-                            }
-                        }
-                    }
-                    if (retains != null) {
-                        for (Serializable f : retains) {
-                            if (f != null) {
-                                model.put(f.toString(), model.get(f));
-                            }
-                        }
+                        this.setUpdateModelField((UpdateObject) update, model, updateObject);
+                    } else {
+                        model.clearNull();
                     }
                     updates.add(model);
                 } else {
@@ -527,5 +479,37 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     @Override
     public <T> T execute(TransactionExecutor<T> executor) {
         return modelSession.execute(executor);
+    }
+
+    private void setUpdateModelField(UpdateObject obj, ModelObject model, UpdateObject global) {
+        if (obj != null && obj.isFull() == false) {
+            Serializable[] excludeFields = obj.getExcludeFields();
+            Serializable[] globalExcludeFields = global != null ? global.getExcludeFields() : null;
+            if (excludeFields != null || globalExcludeFields != null) {
+                if (excludeFields != null) {
+                    for (Serializable f : excludeFields) if (model.get(f) == null) model.remove(f);
+                } else if (globalExcludeFields != null) {
+                    for (Serializable f : globalExcludeFields) if (model.get(f) == null) model.remove(f);
+                }
+            } else {
+                model.clearNull();
+                Serializable[] fields = obj.getNullFields();
+                Serializable[] retains = obj.getRetainFields();
+                Serializable[] globalFields = global != null ? global.getNullFields() : null;
+                Serializable[] globalRetains = global != null ? global.getRetainFields() : null;
+                if (fields != null) {
+                    for (Serializable f : fields) if (f != null) model.put(f.toString(), null);
+                } else if (globalFields != null) {
+                    for (Serializable f : globalFields) if (f != null) model.put(f.toString(), null);
+                }
+                if (retains != null) {
+                    for (Serializable f : retains) if (f != null) model.put(f.toString(), model.get(f));
+                } else if (globalRetains != null) {
+                    for (Serializable f : globalRetains) if (f != null) model.put(f.toString(), model.get(f));
+                }
+            }
+        } else if (obj != null) {
+            // 这里需要保留所有值
+        }
     }
 }

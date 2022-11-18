@@ -9,9 +9,23 @@ public class UpdateObject<T> {
     private T obj;
     private Serializable[] nullFields;
     private Serializable[] retainFields;
+    private Serializable[] excludeFields;
+    private boolean full = false;
 
-    public static <T> UpdateObject<T> wrap(T obj, Serializable... fields) {
+    public static <T> UpdateObject<T> nulls(T obj, Serializable... fields) {
         return new UpdateObject(obj).nulls(fields);
+    }
+
+    public static <T> UpdateObject<T> retains(T obj, Serializable... fields) {
+        return new UpdateObject(obj).retains(fields);
+    }
+
+    public static <T> UpdateObject<T> excludes(T obj, Serializable... fields) {
+        return new UpdateObject(obj).excludes(fields);
+    }
+
+    public static <T> UpdateObject<T> full(T obj) {
+        return new UpdateObject(obj).full();
     }
 
     public UpdateObject() {
@@ -29,6 +43,10 @@ public class UpdateObject<T> {
         return this.obj;
     }
 
+    public boolean isFull() {
+        return full;
+    }
+
     public UpdateObject nulls(Serializable... fields) {
         this.nullFields = fields;
         return this;
@@ -39,11 +57,35 @@ public class UpdateObject<T> {
         return this;
     }
 
+    public UpdateObject excludes(Serializable... fields) {
+        this.excludeFields = fields;
+        return this;
+    }
+
+    public UpdateObject retains(boolean full) {
+        this.full = full;
+        return this;
+    }
+
+    public UpdateObject full() {
+        full(true);
+        return this;
+    }
+
+    public UpdateObject full(boolean full) {
+        this.full = full;
+        return this;
+    }
+
     public Serializable[] getNullFields() {
         return nullFields;
     }
 
     public Serializable[] getRetainFields() {
         return retainFields;
+    }
+
+    public Serializable[] getExcludeFields() {
+        return excludeFields;
     }
 }
