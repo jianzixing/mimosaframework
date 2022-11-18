@@ -12,19 +12,23 @@ public class UpdateObject<T> {
     private Serializable[] excludeFields;
     private boolean full = false;
 
-    public static <T> UpdateObject<T> nulls(T obj, Serializable... fields) {
+    public static <T> UpdateObject<T> wrap(T obj, Serializable... fields) {
         return new UpdateObject(obj).nulls(fields);
     }
 
-    public static <T> UpdateObject<T> retains(T obj, Serializable... fields) {
+    public static <T> UpdateObject<T> wrapNulls(T obj, Serializable... fields) {
+        return new UpdateObject(obj).nulls(fields);
+    }
+
+    public static <T> UpdateObject<T> wrapRetains(T obj, Serializable... fields) {
         return new UpdateObject(obj).retains(fields);
     }
 
-    public static <T> UpdateObject<T> excludes(T obj, Serializable... fields) {
+    public static <T> UpdateObject<T> wrapExcludes(T obj, Serializable... fields) {
         return new UpdateObject(obj).excludes(fields);
     }
 
-    public static <T> UpdateObject<T> full(T obj) {
+    public static <T> UpdateObject<T> wrapFull(T obj) {
         return new UpdateObject(obj).full();
     }
 
