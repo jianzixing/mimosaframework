@@ -97,7 +97,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate addSelf(Serializable key, Integer step) {
+    public LogicUpdate addSelf(Serializable key, long step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.ADD_SELF);
         v.setStep(step);
@@ -106,7 +106,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate subSelf(Serializable key, Integer step) {
+    public LogicUpdate subSelf(Serializable key, long step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);

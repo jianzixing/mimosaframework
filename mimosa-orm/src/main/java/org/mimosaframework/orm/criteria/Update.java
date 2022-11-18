@@ -16,9 +16,9 @@ public interface Update<T extends Update> extends Filter<T> {
 
     T subSelf(Serializable key);
 
-    T addSelf(Serializable key, Integer step);
+    T addSelf(Serializable key, long step);
 
-    T subSelf(Serializable key, Integer step);
+    T subSelf(Serializable key, long step);
 
     T addSelf(Serializable key, String step);
 
