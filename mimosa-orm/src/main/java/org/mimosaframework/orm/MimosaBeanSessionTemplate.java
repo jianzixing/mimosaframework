@@ -151,9 +151,6 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     public <T> int update(List<T> objects, UpdateObject updateObject) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
-            Serializable[] commonFields = updateObject != null ? updateObject.getNullFields() : null;
-            Serializable[] commonRetains = updateObject != null ? updateObject.getRetainFields() : null;
-
             for (T update : objects) {
                 if (updates == null) updates = new ArrayList<>();
                 Object object = update;
@@ -164,8 +161,9 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 if (json instanceof ModelObject) {
                     ModelObject model = (ModelObject) json;
                     model.setObjectClass(object.getClass());
-                    if (update instanceof UpdateObject) {
-                        this.setUpdateModelField((UpdateObject) update, model, updateObject);
+                    if (update instanceof UpdateObject || updateObject != null) {
+                        this.setUpdateModelField(update instanceof UpdateObject ? (UpdateObject) update : null,
+                                model, updateObject);
                     } else {
                         model.clearNull();
                     }
@@ -482,8 +480,8 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     private void setUpdateModelField(UpdateObject obj, ModelObject model, UpdateObject global) {
-        if (obj != null && obj.isFull() == false) {
-            Serializable[] excludeFields = obj.getExcludeFields();
+        if (obj != null && obj.isFull() == false || global != null) {
+            Serializable[] excludeFields = obj != null ? obj.getExcludeFields() : null;
             Serializable[] globalExcludeFields = global != null ? global.getExcludeFields() : null;
             if (excludeFields != null || globalExcludeFields != null) {
                 if (excludeFields != null) {
@@ -493,8 +491,8 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 }
             } else {
                 model.clearNull();
-                Serializable[] fields = obj.getNullFields();
-                Serializable[] retains = obj.getRetainFields();
+                Serializable[] fields = obj != null ? obj.getNullFields() : null;
+                Serializable[] retains = obj != null ? obj.getRetainFields() : null;
                 Serializable[] globalFields = global != null ? global.getNullFields() : null;
                 Serializable[] globalRetains = global != null ? global.getRetainFields() : null;
                 if (fields != null) {
