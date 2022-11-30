@@ -1,6 +1,7 @@
 package org.mimosaframework.springmvc;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.json.parser.Feature;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.builder.BuilderUtils;
 import org.mimosaframework.orm.exception.ContextException;
@@ -59,7 +60,7 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
 
-        ModelObject object = ModelObject.parseObject(value);
+        ModelObject object = ModelObject.parseObject(value, Feature.OrderedField);
         if (type.isAssignableFrom(ModelObject.class)) {
             return object;
         } else {
