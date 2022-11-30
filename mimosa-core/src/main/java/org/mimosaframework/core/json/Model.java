@@ -99,6 +99,7 @@ public abstract class Model implements ModelStreamAware, ModelAware {
         features |= Feature.AllowArbitraryCommas.getMask();
         features |= Feature.SortFeidFastMatch.getMask();
         features |= Feature.IgnoreNotMatch.getMask();
+        features |= Feature.OrderedField.getMask();
         DEFAULT_PARSER_FEATURE = features;
     }
 
