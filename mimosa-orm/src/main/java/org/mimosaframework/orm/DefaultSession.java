@@ -478,7 +478,7 @@ public class DefaultSession implements Session {
                                     bigDecimal.setScale(field.getScale(), BigDecimal.ROUND_HALF_UP);
                                     object.put(String.valueOf(field.getAlias()), bigDecimal.doubleValue());
                                 } catch (Exception e) {
-                                    logger.error("calc scale error : " + e.getMessage());
+                                    logger.error("calc scale error : " + e.getMessage(), e);
                                 }
                             }
                         }
