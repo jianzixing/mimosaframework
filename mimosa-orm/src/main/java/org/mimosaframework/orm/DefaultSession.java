@@ -105,9 +105,6 @@ public class DefaultSession implements Session {
 
     @Override
     public ModelObject saveOrUpdate(ModelObject objSource) {
-        if (executor.isSupportDuplicateKeyUpdate()) {
-            return save(objSource, true);
-        }
         if (objSource == null || objSource.size() == 0) {
             throw new IllegalArgumentException(I18n.print("save_empty"));
         }
@@ -141,6 +138,9 @@ public class DefaultSession implements Session {
         if (countpk < pks.size()) {
             this.save(obj);
         } else {
+            if (executor.isSupportDuplicateKeyUpdate()) {
+                return save(objSource, true);
+            }
             ModelObject exist = this.get(query);
             if (exist != null) {
                 this.update(obj);
