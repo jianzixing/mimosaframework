@@ -126,7 +126,17 @@ public class PostgreSQLPlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public SQLBuilderCombine save(StampInsert insert) {
+        return null;
+    }
+
+    @Override
     public boolean isSupportGeneratedKeys() {
         return true;
+    }
+
+    @Override
+    public boolean isSupportDuplicateKeyUpdate() {
+        return false;
     }
 }

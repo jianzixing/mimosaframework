@@ -320,6 +320,11 @@ public class SqlitePlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public SQLBuilderCombine save(StampInsert insert) {
+        return null;
+    }
+
+    @Override
     protected DialectNextStep defineModifyColumn(DataDefinition definition) throws SQLException {
         List<ColumnEditType> columnEditTypes = this.compareColumnChange(definition.getTableStructure(),
                 definition.getMappingField(), definition.getColumnStructure());
@@ -357,5 +362,10 @@ public class SqlitePlatformDialect extends PlatformDialect {
     @Override
     public boolean isSelectHavingMustGroupBy() {
         return true;
+    }
+
+    @Override
+    public boolean isSupportDuplicateKeyUpdate() {
+        return false;
     }
 }

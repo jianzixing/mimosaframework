@@ -111,6 +111,11 @@ public class SQLServerPlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public SQLBuilderCombine save(StampInsert insert) {
+        return null;
+    }
+
+    @Override
     protected DialectNextStep defineAddColumn(DataDefinition definition) throws SQLException {
         return super.defineAddColumn(definition);
     }
@@ -127,5 +132,10 @@ public class SQLServerPlatformDialect extends PlatformDialect {
     @Override
     public boolean isSelectLimitMustOrderBy() {
         return true;
+    }
+
+    @Override
+    public boolean isSupportDuplicateKeyUpdate() {
+        return false;
     }
 }

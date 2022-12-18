@@ -57,6 +57,10 @@ public class DefaultSession implements Session {
 
     @Override
     public ModelObject save(ModelObject objSource) {
+        return save(objSource, false);
+    }
+
+    private ModelObject save(ModelObject objSource, boolean update) {
         if (objSource == null || objSource.size() == 0) {
             throw new IllegalArgumentException(I18n.print("save_empty"));
         }
@@ -83,7 +87,7 @@ public class DefaultSession implements Session {
             // 添加后如果有自增列，则返回如果没有就不返回
             Serializable id = null;
             try {
-                List<Long> ids = executor.inserts(mappingTable, Arrays.asList(new ModelObject[]{obj}));
+                List<Long> ids = executor.inserts(mappingTable, Arrays.asList(new ModelObject[]{obj}), update);
                 if (ids != null && ids.size() > 0) {
                     Long autoId = ids.get(0);
                     if (autoId != null) id = autoId;
@@ -101,6 +105,9 @@ public class DefaultSession implements Session {
 
     @Override
     public ModelObject saveOrUpdate(ModelObject objSource) {
+        if (executor.isSupportDuplicateKeyUpdate()) {
+            return save(objSource, true);
+        }
         if (objSource == null || objSource.size() == 0) {
             throw new IllegalArgumentException(I18n.print("save_empty"));
         }
@@ -198,7 +205,7 @@ public class DefaultSession implements Session {
         // 添加后如果有自增列，则返回如果没有就不返回
         List<Long> ids = null;
         try {
-            ids = executor.inserts(mappingTable, saves);
+            ids = executor.inserts(mappingTable, saves, false);
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("batch_save_data_error"), e);
         }

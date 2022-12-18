@@ -38,6 +38,8 @@ public interface Dialect {
 
     SQLBuilderCombine update(StampUpdate update);
 
+    SQLBuilderCombine save(StampInsert insert);
+
     DialectNextStep define(DataDefinition definition) throws SQLException;
 
     void rebuildTable(List<TableStructure> structures,
@@ -51,4 +53,6 @@ public interface Dialect {
     boolean isSelectHavingMustGroupBy();
 
     boolean isSupportSameColumnIndex();
+
+    boolean isSupportDuplicateKeyUpdate();
 }

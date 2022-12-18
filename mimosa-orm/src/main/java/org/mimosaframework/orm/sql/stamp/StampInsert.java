@@ -8,6 +8,7 @@ public class StampInsert implements StampAction {
     public Class tableClass;
 
     public StampColumn[] columns;
+    // 可以支持多值，(1,2),(3,4),(5,6)
     public Object[][] values;
     public StampSelect select;
 

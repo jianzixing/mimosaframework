@@ -37,7 +37,12 @@ public class RunBaseSession {
 
     @Test
     public void saveAndUpdate() {
-
+        ModelObject user = new ModelObject(TableUser.class);
+        user.put("id", 3);
+        user.put(TableUser.userName, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        user.put(TableUser.password, RandomUtils.randomIgnoreCaseAlphanumeric(30));
+        template.saveOrUpdate(user);
+        System.out.println(user);
     }
 
     @Test

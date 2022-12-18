@@ -94,6 +94,13 @@ public class MysqlPlatformDialect extends PlatformDialect {
         return combine;
     }
 
+    @Override
+    public SQLBuilderCombine save(StampInsert insert) {
+        StampCombineBuilder builder = this.builder.save();
+        SQLBuilderCombine insertCombine = builder.getSqlBuilder(this.mappingGlobalWrapper, insert);
+        return insertCombine;
+    }
+
     protected DialectNextStep defineModifyColumn(DataDefinition definition) throws SQLException {
         TableStructure tableStructure = definition.getTableStructure();
         MappingTable mappingTable = definition.getMappingTable();
@@ -186,6 +193,11 @@ public class MysqlPlatformDialect extends PlatformDialect {
 
     @Override
     public boolean isSupportGeneratedKeys() {
+        return true;
+    }
+
+    @Override
+    public boolean isSupportDuplicateKeyUpdate() {
         return true;
     }
 }

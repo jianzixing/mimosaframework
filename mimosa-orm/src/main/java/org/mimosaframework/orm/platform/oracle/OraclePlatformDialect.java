@@ -130,6 +130,11 @@ public class OraclePlatformDialect extends PlatformDialect {
     }
 
     @Override
+    public boolean isSupportDuplicateKeyUpdate() {
+        return false;
+    }
+
+    @Override
     public SQLBuilderCombine delete(StampDelete delete) {
         StampCombineBuilder builder = this.builder.delete();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, delete);
@@ -148,6 +153,11 @@ public class OraclePlatformDialect extends PlatformDialect {
         StampCombineBuilder builder = this.builder.update();
         SQLBuilderCombine combine = builder.getSqlBuilder(this.mappingGlobalWrapper, update);
         return combine;
+    }
+
+    @Override
+    public SQLBuilderCombine save(StampInsert insert) {
+        return null;
     }
 
     @Override

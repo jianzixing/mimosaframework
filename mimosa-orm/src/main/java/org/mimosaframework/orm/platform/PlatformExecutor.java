@@ -365,7 +365,7 @@ public class PlatformExecutor {
         dialect.rebuildTable(structures, mappingTable, structure);
     }
 
-    public List<Long> inserts(MappingTable table, List<ModelObject> objects) throws SQLException {
+    public List<Long> inserts(MappingTable table, List<ModelObject> objects, boolean update) throws SQLException {
         PlatformDialect dialect = this.getDialect();
         if (objects != null && objects.size() > 0) {
             Set<MappingField> fields = table.getMappingFields();
@@ -429,7 +429,12 @@ public class PlatformExecutor {
                     }
                 }
             }
-            SQLBuilderCombine combine = dialect.insert(insert);
+            SQLBuilderCombine combine = null;
+            if (update) {
+                combine = dialect.save(insert);
+            } else {
+                combine = dialect.insert(insert);
+            }
             Object object = this.runner.doHandler(new JDBCTraversing(TypeForRunner.INSERT,
                     combine.getSql(), combine.getPlaceholders()));
             if (!dialect.isSupportGeneratedKeys()) {
@@ -496,6 +501,11 @@ public class PlatformExecutor {
         SQLBuilderCombine combine = dialect.update(updateBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.UPDATE,
                 combine.getSql(), combine.getPlaceholders()));
+    }
+
+    public boolean isSupportDuplicateKeyUpdate() {
+        PlatformDialect dialect = this.getDialect();
+        return dialect.isSupportDuplicateKeyUpdate();
     }
 
     public Integer delete(MappingTable table, DefaultDelete delete) throws SQLException {

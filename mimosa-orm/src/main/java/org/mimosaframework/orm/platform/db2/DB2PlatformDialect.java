@@ -119,6 +119,11 @@ public class DB2PlatformDialect extends PlatformDialect {
         return combine;
     }
 
+    @Override
+    public SQLBuilderCombine save(StampInsert insert) {
+        return null;
+    }
+
     protected void rebuildStartTable(MappingTable mappingTable, String tableName) throws SQLException {
         if (mappingTable != null) {
             StampCreate create = this.commonCreateTable(mappingTable, tableName, true);
@@ -142,5 +147,10 @@ public class DB2PlatformDialect extends PlatformDialect {
     @Override
     public boolean isSupportGeneratedKeys() {
         return true;
+    }
+
+    @Override
+    public boolean isSupportDuplicateKeyUpdate() {
+        return false;
     }
 }

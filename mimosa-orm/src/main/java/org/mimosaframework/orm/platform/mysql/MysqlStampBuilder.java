@@ -68,6 +68,13 @@ public class MysqlStampBuilder implements PlatformStampBuilder {
                 new MysqlStampShare());
     }
 
+    public PlatformStampInsert save() {
+        return new MysqlStampSave(new PlatformStampSection(),
+                new MysqlStampReference(),
+                new MysqlPlatformDialect(),
+                new MysqlStampShare());
+    }
+
     @Override
     public StampCombineBuilder structure() {
         return new MysqlStampStructure();
