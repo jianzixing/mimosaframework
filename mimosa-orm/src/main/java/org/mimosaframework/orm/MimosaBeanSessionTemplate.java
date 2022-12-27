@@ -487,11 +487,13 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             Serializable[] globalExcludeFields = global != null ? global.getExcludeFields() : null;
             if (excludeFields != null || globalExcludeFields != null) {
                 if (excludeFields != null) {
-                    for (Serializable f : excludeFields)
-                        if (model.get(f.toString()) == null) model.remove(f.toString());
+                    for (Serializable f : excludeFields) {
+                        model.remove(f.toString());
+                    }
                 } else if (globalExcludeFields != null) {
-                    for (Serializable f : globalExcludeFields)
-                        if (model.get(f.toString()) == null) model.remove(f.toString());
+                    for (Serializable f : globalExcludeFields) {
+                        model.remove(f.toString());
+                    }
                 }
             }
 
