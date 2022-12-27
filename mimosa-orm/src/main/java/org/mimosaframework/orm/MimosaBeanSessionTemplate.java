@@ -481,6 +481,8 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
     private void setUpdateModelField(UpdateObject obj, ModelObject model, UpdateObject global) {
         if (obj != null && obj.isFull() == false || global != null) {
+            model.clearNull();
+
             Serializable[] excludeFields = obj != null ? obj.getExcludeFields() : null;
             Serializable[] globalExcludeFields = global != null ? global.getExcludeFields() : null;
             if (excludeFields != null || globalExcludeFields != null) {
@@ -489,22 +491,21 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 } else if (globalExcludeFields != null) {
                     for (Serializable f : globalExcludeFields) if (model.get(f) == null) model.remove(f);
                 }
-            } else {
-                model.clearNull();
-                Serializable[] fields = obj != null ? obj.getNullFields() : null;
-                Serializable[] retains = obj != null ? obj.getRetainFields() : null;
-                Serializable[] globalFields = global != null ? global.getNullFields() : null;
-                Serializable[] globalRetains = global != null ? global.getRetainFields() : null;
-                if (fields != null) {
-                    for (Serializable f : fields) if (f != null) model.put(f.toString(), null);
-                } else if (globalFields != null) {
-                    for (Serializable f : globalFields) if (f != null) model.put(f.toString(), null);
-                }
-                if (retains != null) {
-                    for (Serializable f : retains) if (f != null) model.put(f.toString(), model.get(f));
-                } else if (globalRetains != null) {
-                    for (Serializable f : globalRetains) if (f != null) model.put(f.toString(), model.get(f));
-                }
+            }
+
+            Serializable[] fields = obj != null ? obj.getNullFields() : null;
+            Serializable[] retains = obj != null ? obj.getRetainFields() : null;
+            Serializable[] globalFields = global != null ? global.getNullFields() : null;
+            Serializable[] globalRetains = global != null ? global.getRetainFields() : null;
+            if (fields != null) {
+                for (Serializable f : fields) if (f != null) model.put(f.toString(), null);
+            } else if (globalFields != null) {
+                for (Serializable f : globalFields) if (f != null) model.put(f.toString(), null);
+            }
+            if (retains != null) {
+                for (Serializable f : retains) if (f != null) model.put(f.toString(), model.get(f));
+            } else if (globalRetains != null) {
+                for (Serializable f : globalRetains) if (f != null) model.put(f.toString(), model.get(f));
             }
         } else if (obj != null) {
             // 这里需要保留所有值
