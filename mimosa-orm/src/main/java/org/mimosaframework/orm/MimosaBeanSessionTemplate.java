@@ -487,9 +487,11 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             Serializable[] globalExcludeFields = global != null ? global.getExcludeFields() : null;
             if (excludeFields != null || globalExcludeFields != null) {
                 if (excludeFields != null) {
-                    for (Serializable f : excludeFields) if (model.get(f) == null) model.remove(f);
+                    for (Serializable f : excludeFields)
+                        if (model.get(f.toString()) == null) model.remove(f.toString());
                 } else if (globalExcludeFields != null) {
-                    for (Serializable f : globalExcludeFields) if (model.get(f) == null) model.remove(f);
+                    for (Serializable f : globalExcludeFields)
+                        if (model.get(f.toString()) == null) model.remove(f.toString());
                 }
             }
 
@@ -503,9 +505,9 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 for (Serializable f : globalFields) if (f != null) model.put(f.toString(), null);
             }
             if (retains != null) {
-                for (Serializable f : retains) if (f != null) model.put(f.toString(), model.get(f));
+                for (Serializable f : retains) if (f != null) model.put(f.toString(), model.get(f.toString()));
             } else if (globalRetains != null) {
-                for (Serializable f : globalRetains) if (f != null) model.put(f.toString(), model.get(f));
+                for (Serializable f : globalRetains) if (f != null) model.put(f.toString(), model.get(f.toString()));
             }
         } else if (obj != null) {
             // 这里需要保留所有值
