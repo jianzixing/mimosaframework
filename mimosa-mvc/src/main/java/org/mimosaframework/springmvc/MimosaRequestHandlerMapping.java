@@ -296,13 +296,14 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
     private synchronized String getCommonPrefix(Class c) {
         String name = c.getName();
         if (prefixs != null) {
-            String[] s1 = name.split("\\.");
-            if (s1.length >= 2) {
+            int last = name.lastIndexOf(".");
+            if (last > 0) {
+                String s = name.substring(0, last);
                 Iterator<Map.Entry<String, String>> iterator = prefixs.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<String, String> entry = iterator.next();
                     String key = entry.getKey();
-                    if ((name.startsWith(key) || s1[s1.length - 2].equalsIgnoreCase(key)) && entry.getValue() != null) {
+                    if (s.endsWith(key) && entry.getValue() != null) {
                         return entry.getValue();
                     }
                 }
