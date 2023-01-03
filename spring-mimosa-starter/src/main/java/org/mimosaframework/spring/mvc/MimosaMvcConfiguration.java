@@ -38,10 +38,10 @@ import java.util.List;
 public class MimosaMvcConfiguration implements WebMvcRegistrations {
 
     @Autowired
-    MimosaMvcProperties mimosaMvcProperties;
+    protected MimosaMvcProperties mimosaMvcProperties;
 
     @Autowired(required = false)
-    SpringMimosaSessionTemplate mimosaSessionTemplate;
+    protected SpringMimosaSessionTemplate mimosaSessionTemplate;
 
     @Override
     public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
