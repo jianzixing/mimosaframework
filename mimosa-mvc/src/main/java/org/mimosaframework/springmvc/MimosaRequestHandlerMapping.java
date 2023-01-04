@@ -33,18 +33,18 @@ import java.util.Map;
 public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         implements EmbeddedValueResolverAware {
 
-    private boolean useSuffixPatternMatch = true;
-    private boolean useRegisteredSuffixPatternMatch = false;
-    private boolean useTrailingSlashMatch = true;
-    private ContentNegotiationManager contentNegotiationManager = new ContentNegotiationManager();
-    private StringValueResolver embeddedValueResolver;
-    private RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
+    protected boolean useSuffixPatternMatch = true;
+    protected boolean useRegisteredSuffixPatternMatch = false;
+    protected boolean useTrailingSlashMatch = true;
+    protected ContentNegotiationManager contentNegotiationManager = new ContentNegotiationManager();
+    protected StringValueResolver embeddedValueResolver;
+    protected RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
 
-    private String prefix = null;
-    private Map<String, String> prefixs = null;
-    private Map<String, String> replaces = null;
-    private Class<? extends CurdImplement> curdImplementClass;
-    private SessionTemplate sessionTemplate;
+    protected String prefix = null;
+    protected Map<String, String> prefixs = null;
+    protected Map<String, String> replaces = null;
+    protected Class<? extends CurdImplement> curdImplementClass;
+    protected SessionTemplate sessionTemplate;
 
     static {
         I18n.register();
