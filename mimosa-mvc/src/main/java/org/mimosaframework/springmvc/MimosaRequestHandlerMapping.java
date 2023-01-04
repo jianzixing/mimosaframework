@@ -156,7 +156,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         RequestCondition<?> condition = (element instanceof Class<?> ?
                 getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
         if (requestMapping != null) {
-            return createRequestMappingInfo(requestMapping, condition);
+            return createRequestMappingInfo(requestMapping, condition, element);
         }
 
         // only support method
@@ -356,6 +356,10 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
                 .customCondition(customCondition)
                 .options(this.config)
                 .build();
+    }
+
+    protected RequestMappingInfo createRequestMappingInfo(RequestMapping requestMapping, RequestCondition<?> customCondition, AnnotatedElement element) {
+        return createRequestMappingInfo(requestMapping, customCondition);
     }
 
     protected RequestMappingInfo createRequestMappingInfo(RequestMapping requestMapping, RequestCondition<?> customCondition) {
