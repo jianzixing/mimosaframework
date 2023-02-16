@@ -119,26 +119,23 @@ public class Finder {
     public <T> List<T> search(Object obj, String express) {
         if (obj != null && StringTools.isNotEmpty(express)) {
             String[] s1 = express.split("\\.");
+            Pattern r = Pattern.compile("\\[.*?\\]");
             for (String s2 : s1) {
                 String[] s5 = s2.split("\\[");
                 Math mathMain = new Math();
                 mathMain.type = 0;
                 mathMain.str = s5[0];
                 this.maths.add(mathMain);
-                boolean isMatch = Pattern.matches("\\[.*?\\]", s2);
-                if (isMatch) {
-                    Pattern r = Pattern.compile("\\[.*?\\]");
-                    Matcher m = r.matcher(s2);
-                    while (m.find()) {
-                        String s3 = m.group(0);
-                        if (StringTools.isNotEmpty(s3)) {
-                            s3 = s3.substring(1, s3.length() - 1);
+                Matcher m = r.matcher(s2);
+                while (m.find()) {
+                    String s3 = m.group(0);
+                    if (StringTools.isNotEmpty(s3)) {
+                        s3 = s3.substring(1, s3.length() - 1);
 
-                            Math math = new Math();
-                            math.type = 1;
-                            math.str = s3.trim();
-                            this.maths.add(math);
-                        }
+                        Math math = new Math();
+                        math.type = 1;
+                        math.str = s3.trim();
+                        this.maths.add(math);
                     }
                 }
             }
