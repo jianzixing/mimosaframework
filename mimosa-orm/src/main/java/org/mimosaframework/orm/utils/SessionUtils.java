@@ -199,4 +199,20 @@ public final class SessionUtils {
             }
         }
     }
+
+    public static boolean hasFullNecessaryField(MappingTable mappingTable, ModelObject objSource) {
+        Set<MappingField> fields = mappingTable.getMappingFields();
+        if (fields != null && objSource != null) {
+            for (MappingField field : fields) {
+                if (field.isMappingFieldNullable() == false) {
+                    Object v = objSource.get(field.getMappingFieldName());
+                    if (v == null) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 }

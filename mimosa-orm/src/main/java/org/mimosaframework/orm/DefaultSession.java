@@ -138,7 +138,8 @@ public class DefaultSession implements Session {
         if (countpk < pks.size()) {
             this.save(obj);
         } else {
-            if (executor.isSupportDuplicateKeyUpdate()) {
+            // 如果使用 insert update 语句就必须保证所有必填字段都存在
+            if (executor.isSupportDuplicateKeyUpdate() && SessionUtils.hasFullNecessaryField(mappingTable, objSource)) {
                 return save(objSource, true);
             }
             ModelObject exist = this.get(query);
