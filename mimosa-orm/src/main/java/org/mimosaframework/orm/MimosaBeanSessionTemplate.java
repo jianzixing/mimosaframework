@@ -148,7 +148,16 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(List<T> objects, UpdateObject updateObject) {
+    public <T> int edit(T obj, Serializable... fields) {
+        return update(UpdateObject.wrapRetains(obj, fields));
+    }
+
+    @Override
+    public <T> int edit(List<T> objects, Serializable... fields) {
+        return update(objects, UpdateObject.wrapRetains(null, fields));
+    }
+
+    private <T> int update(List<T> objects, UpdateObject updateObject) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
             for (T update : objects) {

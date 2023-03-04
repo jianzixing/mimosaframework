@@ -18,9 +18,11 @@ public interface BeanSession extends Closeable {
 
     <T> int update(T obj);
 
-    <T> int update(List<T> objects, UpdateObject object);
-
     <T> int update(List<T> objects);
+
+    <T> int edit(T obj, Serializable... fields);
+
+    <T> int edit(List<T> objects, Serializable... fields);
 
     <T> int delete(T obj);
 

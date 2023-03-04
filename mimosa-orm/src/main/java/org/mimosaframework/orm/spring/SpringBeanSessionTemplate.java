@@ -53,13 +53,18 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(List<T> objects, UpdateObject object) {
-        return sessionTemplate.update(objects, object);
+    public <T> int update(List<T> objects) {
+        return sessionTemplate.update(objects);
     }
 
     @Override
-    public <T> int update(List<T> objects) {
-        return sessionTemplate.update(objects);
+    public <T> int edit(T obj, Serializable... fields) {
+        return sessionTemplate.edit(obj, fields);
+    }
+
+    @Override
+    public <T> int edit(List<T> objects, Serializable... fields) {
+        return sessionTemplate.edit(objects, fields);
     }
 
     @Override
