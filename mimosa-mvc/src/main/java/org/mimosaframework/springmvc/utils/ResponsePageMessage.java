@@ -1,7 +1,9 @@
 package org.mimosaframework.springmvc.utils;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.json.serializer.SerializeConfig;
 import org.mimosaframework.orm.Paging;
+import org.mimosaframework.springmvc.DyToStringSerializer;
 import org.mimosaframework.springmvc.exception.StockCode;
 
 import java.util.List;
@@ -81,7 +83,11 @@ public class ResponsePageMessage<T> extends ResponseMessage<T> {
 
     @Override
     public String toString() {
-        return ModelObject.toJSONString(this);
+        // 将长long类型转换成字符串
+        SerializeConfig config = new SerializeConfig();
+        config.put(Long.class, DyToStringSerializer.instance);
+        config.put(Long.TYPE, DyToStringSerializer.instance);
+        return ModelObject.toJSONString(this, config);
     }
 
     public Paging toPaging() {
