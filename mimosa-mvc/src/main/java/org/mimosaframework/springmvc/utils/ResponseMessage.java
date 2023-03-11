@@ -238,10 +238,11 @@ public class ResponseMessage<T> implements Serializable {
 
     public String toString() {
         // 将长long类型转换成字符串
-        SerializeConfig config = new SerializeConfig();
-        config.put(Long.class, DyToStringSerializer.instance);
-        config.put(Long.TYPE, DyToStringSerializer.instance);
-        return ModelObject.toJSONString(this, config);
+        // SerializeConfig config = new SerializeConfig();
+        // config.put(Long.class, DyToStringSerializer.instance);
+        // config.put(Long.TYPE, DyToStringSerializer.instance);
+        // return ModelObject.toJSONString(this, config);
+        return ModelObject.toJSONString(this);
     }
 
     public static final int SUCCESS = 100;
