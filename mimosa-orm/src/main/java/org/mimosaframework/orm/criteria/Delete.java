@@ -10,5 +10,7 @@ public interface Delete<T extends Delete> extends Filter<T> {
 
     long delete();
 
+    T unsafe();
+
     Query covert2query();
 }

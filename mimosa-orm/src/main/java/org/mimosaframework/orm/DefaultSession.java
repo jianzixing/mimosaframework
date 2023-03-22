@@ -308,7 +308,7 @@ public class DefaultSession implements Session {
     @Override
     public int delete(Delete delete) {
         DefaultDelete d = (DefaultDelete) delete;
-        if (d.getLogicWraps() == null) {
+        if (d.getLogicWraps() == null && d.isUnsafe() == false) {
             throw new IllegalArgumentException(I18n.print("delete_filter_empty"));
         }
 

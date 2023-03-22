@@ -14,6 +14,7 @@ public class DefaultDelete implements LogicDelete {
 
     private Wraps<Filter> logicWraps;
     private Class tableClass;
+    private boolean unsafe = false;
 
     public DefaultDelete() {
     }
@@ -61,6 +62,10 @@ public class DefaultDelete implements LogicDelete {
         return this;
     }
 
+    public boolean isUnsafe() {
+        return unsafe;
+    }
+
     @Override
     public LogicDelete setTableClass(Class c) {
         this.tableClass = c;
@@ -87,6 +92,12 @@ public class DefaultDelete implements LogicDelete {
             return this.beanSessionTemplate.delete(this);
         }
         return 0;
+    }
+
+    @Override
+    public LogicDelete unsafe() {
+        this.unsafe = true;
+        return this;
     }
 
     @Override
