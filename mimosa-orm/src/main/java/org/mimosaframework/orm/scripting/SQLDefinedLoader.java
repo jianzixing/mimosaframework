@@ -26,6 +26,7 @@ public class SQLDefinedLoader {
     public void load(List<String> pkg) throws IOException, URISyntaxException {
         ClassLoader classLoader = this.getClass().getClassLoader();
         for (String path : pkg) {
+            path = path.trim();
             if (sqlDefiner == null) {
                 sqlDefiner = new XMLSQLDefiner(this.configure);
             }
@@ -181,6 +182,8 @@ public class SQLDefinedLoader {
                 InputStream is = null;
                 try {
                     String fileName = jarEntry.getName();
+                    String[] s = fileName.split("/");
+                    fileName = s[s.length - 1];
                     is = jarFile.getInputStream(jarEntry);
                     XMapper mapper = sqlDefiner.getDefiner(is, fileName);
                     addMapper(mapper);
