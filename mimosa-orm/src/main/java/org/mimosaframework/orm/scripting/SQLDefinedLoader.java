@@ -176,36 +176,25 @@ public class SQLDefinedLoader {
             JarEntry jarEntry = jarEntries.nextElement();
             String jarEntryName = jarEntry.getName();
 
-            if (jarEntryName.contains(pathName) && !jarEntryName.equals(pathName + "/")) {
-                if (jarEntry.isDirectory()) {
-                    String clazzName = jarEntry.getName().replace("/", ".");
-                    int endIndex = clazzName.lastIndexOf(".");
-                    String prefix = null;
-                    if (endIndex > 0) {
-                        prefix = clazzName.substring(0, endIndex);
-                    }
-                    findClassJar(prefix);
-                }
-                if (jarEntry.getName().endsWith(".xml")) {
-                    InputStream is = null;
-                    try {
-                        String fileName = jarEntry.getName();
-                        is = jarFile.getInputStream(jarEntry);
-                        XMapper mapper = sqlDefiner.getDefiner(is, fileName);
-                        addMapper(mapper);
-                    } catch (ParserConfigurationException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (SAXException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (is != null) {
-                            try {
-                                is.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+            if (jarEntryName.startsWith(pathName.substring(1)) && jarEntry.getName().endsWith(".xml")) {
+                InputStream is = null;
+                try {
+                    String fileName = jarEntry.getName();
+                    is = jarFile.getInputStream(jarEntry);
+                    XMapper mapper = sqlDefiner.getDefiner(is, fileName);
+                    addMapper(mapper);
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SAXException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
