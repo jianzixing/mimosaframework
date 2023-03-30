@@ -283,11 +283,15 @@ public class DefaultConfiguration implements Configuration {
         }
     }
 
-    public void setMappers(List<String> mappers) {
+    public void setMappers(List<String> mappers) throws ContextException {
         this.mappers = mappers;
         if (mappers != null) {
             this.definedLoader = new SQLDefinedLoader(new DefinerConfigure());
-            this.definedLoader.load(mappers);
+            try {
+                this.definedLoader.load(mappers);
+            } catch (Exception e) {
+                throw new ContextException(I18n.print("build_session_error"), e);
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.JarURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.jar.JarEntry;
@@ -22,7 +23,8 @@ public class SQLDefinedLoader {
         this.configure = configure;
     }
 
-    public void load(List<String> pkg) {
+    public void load(List<String> pkg) throws IOException, URISyntaxException {
+        ClassLoader classLoader = this.getClass().getClassLoader();
         for (String path : pkg) {
             if (sqlDefiner == null) {
                 sqlDefiner = new XMLSQLDefiner(this.configure);
@@ -32,25 +34,33 @@ public class SQLDefinedLoader {
             }
 
 
-            URL url = null;
+            Enumeration<URL> url = null;
             if (path.endsWith(".xml")) {
-                url = this.getClass().getResource(path);
+                url = classLoader.getResources(path);
                 if (url == null) {
                     throw new IllegalArgumentException(I18n.print("not_fount_resource", path));
                 }
             } else {
                 path = path.replace(".", "/");
-                if (!path.startsWith("/")) path = "/" + path;
-                url = this.getClass().getResource(path);
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+                url = classLoader.getResources(path);
                 if (url == null) {
                     throw new IllegalArgumentException(I18n.print("not_fount_resource", path));
                 }
             }
-            String protocol = url.getProtocol();
-            if ("file".equals(protocol)) {
-                findClassLocal(path);
-            } else if ("jar".equals(protocol)) {
-                findClassJar(path);
+            if (url != null) {
+                path = "/" + path;
+                while (url.hasMoreElements()) {
+                    URL item = url.nextElement();
+                    String protocol = item.getProtocol();
+                    if ("file".equals(protocol)) {
+                        findClassLocal(item.toURI(), path);
+                    } else if ("jar".equals(protocol)) {
+                        findClassJar(item, path);
+                    }
+                }
             }
         }
     }
@@ -90,19 +100,8 @@ public class SQLDefinedLoader {
         }
     }
 
-    private void findClassLocal(final String packName) {
-        URI url = null;
-        try {
-            if (packName.endsWith(".xml")) {
-                url = this.getClass().getResource(packName).toURI();
-            } else {
-                url = SQLDefinedLoader.class.getResource(packName).toURI();
-            }
-        } catch (Exception e1) {
-            throw new RuntimeException(I18n.print("not_fount_resource", packName));
-        }
-
-        final File file = new File(url);
+    private void findClassLocal(URI uri, final String pathName) throws URISyntaxException {
+        final File file = new File(uri);
         if (file.isFile()) {
             InputStream is = null;
             try {
@@ -129,7 +128,11 @@ public class SQLDefinedLoader {
 
                 public boolean accept(File filterFile) {
                     if (filterFile.isDirectory()) {
-                        findClassLocal(packName + "." + filterFile.getName());
+                        try {
+                            findClassLocal(filterFile.toURI(), pathName);
+                        } catch (URISyntaxException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                     if (filterFile.getName().endsWith(".xml")) {
                         InputStream is = null;
@@ -160,11 +163,9 @@ public class SQLDefinedLoader {
         }
     }
 
-    private void findClassJar(final String packName) {
-        String pathName = packName.replace(".", "/");
+    private void findClassJar(URL url, String pathName) {
         JarFile jarFile = null;
         try {
-            URL url = SQLDefinedLoader.class.getResource(pathName);
             JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
             jarFile = jarURLConnection.getJarFile();
         } catch (IOException e) {
