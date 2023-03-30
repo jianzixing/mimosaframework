@@ -39,7 +39,9 @@ public class SQLDefinedLoader {
                     throw new IllegalArgumentException(I18n.print("not_fount_resource", path));
                 }
             } else {
-                url = this.getClass().getResource("/" + path.replace(".", "/"));
+                path = path.replace(".", "/");
+                if (!path.startsWith("/")) path = "/" + path;
+                url = this.getClass().getResource(path);
                 if (url == null) {
                     throw new IllegalArgumentException(I18n.print("not_fount_resource", path));
                 }
@@ -94,7 +96,7 @@ public class SQLDefinedLoader {
             if (packName.endsWith(".xml")) {
                 url = this.getClass().getResource(packName).toURI();
             } else {
-                url = SQLDefinedLoader.class.getResource("/" + packName.replace(".", "/")).toURI();
+                url = SQLDefinedLoader.class.getResource(packName).toURI();
             }
         } catch (Exception e1) {
             throw new RuntimeException(I18n.print("not_fount_resource", packName));
