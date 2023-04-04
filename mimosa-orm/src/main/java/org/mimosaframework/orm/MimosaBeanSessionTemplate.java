@@ -282,6 +282,8 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
     private List model2JavaObject(Class tableClass, Set<Join> joins, List<ModelObject> objects) {
         if (joins != null && joins.size() > 0 && objects != null && objects.size() > 0) {
+            // 处理一下
+            this.processIgnoreJoin(joins);
             for (Join j : joins) {
                 DefaultJoin join = (DefaultJoin) j;
                 String aliasName = join.getAliasName();
@@ -399,6 +401,33 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             return beans;
         }
         return null;
+    }
+
+    private void processIgnoreJoin(Set<Join> joins) {
+        List<Join> ignoreJoins = new ArrayList<>();
+        List<Join> rms = new ArrayList<>();
+        for (Join j : joins) {
+            DefaultJoin join = (DefaultJoin) j;
+            if (join.isIgnore()) {
+                rms.add(j);
+                ignoreJoins.addAll(join.getChildJoin());
+            }
+        }
+        if (ignoreJoins.size() > 0) {
+            joins.addAll(ignoreJoins);
+        }
+        if (rms.size() > 0) joins.removeAll(rms);
+        boolean has = false;
+        for (Join j : joins) {
+            DefaultJoin join = (DefaultJoin) j;
+            if (join.isIgnore()) {
+                has = true;
+                break;
+            }
+        }
+        if (has) {
+            processIgnoreJoin(joins);
+        }
     }
 
     private Object list2Collection(List beans, Class c) {
