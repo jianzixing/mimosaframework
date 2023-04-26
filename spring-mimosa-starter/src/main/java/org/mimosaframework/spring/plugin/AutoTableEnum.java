@@ -5,6 +5,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
+ * https://www.bbsmax.com/A/8Bz8qOvNJx/
  * desc 自动创建表结构的枚举类
  * @goal generate_table
  *
