@@ -274,7 +274,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("fun_miss_filter", "函数查询缺少having的条件");
         words.put("miss_executor_mapping_field", "映射字段 %s 在 %s 中不存在");
         words.put("miss_symbol_field", "在表 %s 中没找到字段 %s 信息");
-        words.put("miss_symbol_as_table", "没有找到表查询别名为 %s.%s 表信息");
+        words.put("miss_symbol_as_table", "没有找到表查询别名为 %s.%s 表信息,请检查是否有join查询");
         words.put("repeat_alias_name", "查询语句别名 %s 重复");
 
         // PlatformDialect
