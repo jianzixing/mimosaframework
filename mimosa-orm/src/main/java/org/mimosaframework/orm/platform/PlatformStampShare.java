@@ -166,6 +166,9 @@ public class PlatformStampShare {
             sb.append("(");
             for (Object param : params) {
                 if (param instanceof StampColumn) {
+                    if (((StampColumn) param).distinct) {
+                        sb.append("DISTINCT ");
+                    }
                     sb.append(this.commonality.getReference().getColumnName(wrapper, stampTables, (StampColumn) param));
                 }
                 if (param instanceof StampKeyword) {

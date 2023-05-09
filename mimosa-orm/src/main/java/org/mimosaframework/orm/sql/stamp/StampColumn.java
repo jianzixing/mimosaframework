@@ -6,6 +6,7 @@ public class StampColumn {
     public Class table;
     public String tableAliasName;
     public Serializable column;
+    public boolean distinct;
 
     public StampColumn() {
     }

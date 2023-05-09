@@ -684,13 +684,14 @@ public class PlatformExecutor {
         Map<Object, String> alias = new HashMap<>();
         alias.put(query, query.getQueryTableAs());
         AtomicInteger i = new AtomicInteger(1);
-        boolean hasJoins = false;
+        boolean hasJoins = false, hasInnerJoin = false;
         if (joins != null && joins.size() > 0) {
             hasJoins = true;
             alias.put(query, query.getQueryTableAs());
             for (Join join : joins) {
                 String joinAliasName = getJoinAlias(alias, join, i);
                 alias.put(join, joinAliasName);
+                if (((DefaultJoin) join).getJoinType() == 1) hasInnerJoin = true;
             }
         }
 
@@ -699,12 +700,17 @@ public class PlatformExecutor {
         MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(tableClass);
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         Serializable[] params = new Serializable[1];
-        if (pks != null && pks.size() == 1) {
+        if (pks != null && pks.size() >= 1) {
+            FieldItem fieldItem = null;
             if (hasJoins) {
-                params[0] = new FieldItem(query.getQueryTableAs(), pks.get(0).getMappingColumnName());
+                fieldItem = new FieldItem(query.getQueryTableAs(), pks.get(0).getMappingColumnName());
             } else {
-                params[0] = new FieldItem(pks.get(0).getMappingColumnName());
+                fieldItem = new FieldItem(pks.get(0).getMappingColumnName());
             }
+            if (hasInnerJoin) {
+                fieldItem.distinct();
+            }
+            params[0] = fieldItem;
         } else {
             params[0] = 1;
         }

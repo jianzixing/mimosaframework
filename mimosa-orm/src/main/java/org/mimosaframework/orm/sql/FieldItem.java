@@ -6,6 +6,7 @@ public class FieldItem implements Serializable {
     private Class table;
     private String tableAliasName;
     private Serializable field;
+    private boolean distinct = false;
 
     public FieldItem(Serializable field) {
         this.field = field;
@@ -43,5 +44,13 @@ public class FieldItem implements Serializable {
 
     public void setField(Serializable field) {
         this.field = field;
+    }
+
+    public void distinct() {
+        this.distinct = true;
+    }
+
+    public boolean isDistinct() {
+        return this.distinct;
     }
 }
