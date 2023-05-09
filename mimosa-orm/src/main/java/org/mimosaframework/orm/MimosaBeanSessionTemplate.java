@@ -395,8 +395,13 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
         if (tableClass != null && objects != null && objects.size() > 0) {
             List beans = new ArrayList();
-            for (ModelObject object : objects) {
-                beans.add(model2BeanFactory.toJavaObject(object, tableClass));
+            for (Object object : objects) {
+                // 由于某个表多次join会得到相同的结果key，但是这里遍历join的时候会把已经转换好的beans传入
+                if (object instanceof ModelObject) {
+                    beans.add(model2BeanFactory.toJavaObject((ModelObject) object, tableClass));
+                } else if (tableClass.isAssignableFrom(object.getClass())) {
+                    beans.add(object);
+                }
             }
             return beans;
         }
