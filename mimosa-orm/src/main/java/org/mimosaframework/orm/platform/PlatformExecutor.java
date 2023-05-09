@@ -1222,7 +1222,7 @@ public class PlatformExecutor {
                 if (joins != null) {
                     for (Join j : joins) {
                         DefaultJoin dj = (DefaultJoin) j;
-                        if (dj.getAs().equals(as)) {
+                        if (as.equals(dj.getAs())) {
                             asTable = mappingGlobalWrapper.getMappingTable(dj.getTableClass());
                             field = asTable.getMappingFieldByJavaName(String.valueOf(key));
                             break;
