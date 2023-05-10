@@ -598,12 +598,14 @@ public class DefaultQuery implements LogicQuery {
     }
 
     public boolean hasFilter(String name) {
-        Iterator<WrapsObject<Filter>> iterator = this.logicWraps.iterator();
-        while (iterator.hasNext()) {
-            WrapsObject<Filter> next = iterator.next();
-            DefaultFilter filter = (DefaultFilter) next.getWhere();
-            if (name.equalsIgnoreCase(String.valueOf(filter.getKey()))) {
-                return true;
+        if (this.logicWraps != null) {
+            Iterator<WrapsObject<Filter>> iterator = this.logicWraps.iterator();
+            while (iterator.hasNext()) {
+                WrapsObject<Filter> next = iterator.next();
+                DefaultFilter filter = (DefaultFilter) next.getWhere();
+                if (name.equalsIgnoreCase(String.valueOf(filter.getKey()))) {
+                    return true;
+                }
             }
         }
         return false;
