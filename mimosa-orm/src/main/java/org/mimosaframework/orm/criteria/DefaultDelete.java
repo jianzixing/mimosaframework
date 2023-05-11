@@ -219,10 +219,4 @@ public class DefaultDelete implements LogicDelete {
         this.add(filter);
         return this;
     }
-
-    @Override
-    public LogicDelete exists(Query query) {
-        // 之后需要实现
-        return this;
-    }
 }

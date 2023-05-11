@@ -127,10 +127,4 @@ public class HavingField implements Filter {
         this.filter.isNotNull(key);
         return this;
     }
-
-    @Override
-    public Object exists(Query query) {
-        // 之后需要实现
-        return this;
-    }
 }

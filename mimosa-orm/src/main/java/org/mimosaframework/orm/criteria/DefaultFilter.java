@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * @author yangankang
  */
-public class DefaultFilter implements Filter {
+public class DefaultFilter implements QueryFilter {
     private String as;
     private Serializable key;
     private Object value;

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author yangankang
  */
-public interface Query<T extends Query> extends Filter<T> {
+public interface Query<T extends Query> extends QueryFilter<T> {
 
     T filter(DefaultFilter as);
 

@@ -280,10 +280,4 @@ public class DefaultUpdate implements LogicUpdate {
         this.add(filter);
         return this;
     }
-
-    @Override
-    public LogicUpdate exists(Query query) {
-        // 之后需要实现
-        return this;
-    }
 }

@@ -43,6 +43,4 @@ public interface Filter<T> {
     T isNull(Serializable key);
 
     T isNotNull(Serializable key);
-
-    T exists(Query query);
 }

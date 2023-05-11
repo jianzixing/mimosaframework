@@ -365,10 +365,4 @@ public class DefaultJoin implements Join {
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
-
-    @Override
-    public Join exists(Query query) {
-        // 之后需要实现
-        return this;
-    }
 }
