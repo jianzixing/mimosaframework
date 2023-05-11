@@ -49,7 +49,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
         return new DB2StampDelete(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
-                new DB2StampShare());
+                new DB2StampShare(this.select()));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class DB2StampBuilder implements PlatformStampBuilder {
         return new DB2StampUpdate(new DB2StampSection(),
                 new DB2StampReference(),
                 new DB2PlatformDialect(),
-                new DB2StampShare());
+                new DB2StampShare(this.select()));
     }
 
     @Override

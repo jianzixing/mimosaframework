@@ -3,6 +3,7 @@ package org.mimosaframework.orm.platform.oracle;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.ExecuteImmediate;
+import org.mimosaframework.orm.platform.PlatformStampSelect;
 import org.mimosaframework.orm.platform.PlatformStampShare;
 import org.mimosaframework.orm.platform.SQLDataPlaceholder;
 import org.mimosaframework.orm.sql.stamp.*;
@@ -12,6 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 public class OracleStampShare extends PlatformStampShare {
+    public OracleStampShare() {
+    }
+
+    public OracleStampShare(PlatformStampSelect select) {
+        super(select);
+    }
 
     public void addAutoIncrement(MappingGlobalWrapper wrapper, Class table, String tableStr) {
         String tableName = this.commonality.getReference().getTableName(wrapper, table, tableStr);

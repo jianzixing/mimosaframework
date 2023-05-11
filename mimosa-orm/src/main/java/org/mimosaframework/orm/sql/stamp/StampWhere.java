@@ -21,4 +21,5 @@ public class StampWhere {
     public StampFieldFun fun;           // isNull(b)
 
     public StampWhere wrapWhere;        // (a = b ... )
+    public StampSelect select;
 }

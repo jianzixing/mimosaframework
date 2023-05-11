@@ -240,6 +240,12 @@ public class DefaultFunction implements LogicFunction {
         return this;
     }
 
+    @Override
+    public LogicFunction exists(Query query) {
+        // 之后需要实现
+        return this;
+    }
+
     public Class getTableClass() {
         return tableClass;
     }

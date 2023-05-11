@@ -3,6 +3,7 @@ package org.mimosaframework.orm.platform.postgresql;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.ExecuteImmediate;
+import org.mimosaframework.orm.platform.PlatformStampSelect;
 import org.mimosaframework.orm.platform.PlatformStampShare;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 import org.mimosaframework.orm.sql.stamp.StampAlter;
@@ -10,6 +11,12 @@ import org.mimosaframework.orm.sql.stamp.StampColumn;
 import org.mimosaframework.orm.sql.stamp.StampCreate;
 
 public class PostgreSQLStampShare extends PlatformStampShare {
+    public PostgreSQLStampShare() {
+    }
+
+    public PostgreSQLStampShare(PlatformStampSelect select) {
+        super(select);
+    }
 
     public void addCommentSQL(MappingGlobalWrapper wrapper,
                               StampAction action,

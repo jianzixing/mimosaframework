@@ -16,6 +16,8 @@ public class DefaultFilter implements Filter {
     private Object endValue;
     private String symbol;
 
+    private Query query;
+
     public DefaultFilter() {
     }
 
@@ -73,6 +75,14 @@ public class DefaultFilter implements Filter {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
     }
 
     public DefaultFilter as(Serializable as) {
@@ -267,6 +277,13 @@ public class DefaultFilter implements Filter {
         if (key == null) {
             throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
         }
+        return this;
+    }
+
+    @Override
+    public DefaultFilter exists(Query query) {
+        this.symbol = "exists";
+        this.query = query;
         return this;
     }
 }

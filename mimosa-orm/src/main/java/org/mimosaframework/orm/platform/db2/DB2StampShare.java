@@ -3,10 +3,18 @@ package org.mimosaframework.orm.platform.db2;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.platform.ExecuteImmediate;
+import org.mimosaframework.orm.platform.PlatformStampSelect;
 import org.mimosaframework.orm.platform.PlatformStampShare;
 import org.mimosaframework.orm.sql.stamp.*;
 
 public class DB2StampShare extends PlatformStampShare {
+    public DB2StampShare() {
+    }
+
+    public DB2StampShare(PlatformStampSelect select) {
+        super(select);
+    }
+
     public void addCommentSQL(MappingGlobalWrapper wrapper,
                               StampAction action,
                               Object param,

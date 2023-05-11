@@ -49,7 +49,7 @@ public class MysqlStampBuilder implements PlatformStampBuilder {
         return new MysqlStampDelete(new PlatformStampSection(),
                 new MysqlStampReference(),
                 new MysqlPlatformDialect(),
-                new MysqlStampShare());
+                new MysqlStampShare(this.select()));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class MysqlStampBuilder implements PlatformStampBuilder {
         return new MysqlStampUpdate(new PlatformStampSection(),
                 new MysqlStampReference(),
                 new MysqlPlatformDialect(),
-                new MysqlStampShare());
+                new MysqlStampShare(this.select()));
     }
 
     public PlatformStampInsert save() {

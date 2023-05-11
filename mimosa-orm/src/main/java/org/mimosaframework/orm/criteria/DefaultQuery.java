@@ -385,6 +385,13 @@ public class DefaultQuery implements LogicQuery {
         return this;
     }
 
+    @Override
+    public LogicQuery exists(Query query) {
+        Filter filter = new DefaultFilter().exists(query);
+        this.addFilterInLinked(filter);
+        return this;
+    }
+
     private void addFilterInLinked(Filter filter) {
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();

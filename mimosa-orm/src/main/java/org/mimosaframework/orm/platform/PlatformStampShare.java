@@ -9,6 +9,18 @@ import java.util.List;
 
 public class PlatformStampShare {
     protected PlatformStampCommonality commonality;
+    protected PlatformStampSelect select;
+
+    public PlatformStampShare() {
+    }
+
+    public PlatformStampShare(PlatformStampSelect select) {
+        this.select = select;
+    }
+
+    public void setSelect(PlatformStampSelect select) {
+        this.select = select;
+    }
 
     public void setCommonality(PlatformStampCommonality commonality) {
         this.commonality = commonality;
@@ -42,6 +54,13 @@ public class PlatformStampShare {
             StampWhere wrapWhere = where.wrapWhere;
             sb.append("(");
             this.buildWhere(wrapper, placeholders, stampTables, wrapWhere, sb);
+            sb.append(")");
+        } else if (whereType == KeyWhereType.EXISTS) {
+            StampSelect stampSelect = where.select;
+            sb.append("EXISTS (");
+            if (select != null) {
+                select.buildSelect(wrapper, stampSelect, sb, placeholders);
+            }
             sb.append(")");
         } else {
             StampFieldFun fun = where.fun;

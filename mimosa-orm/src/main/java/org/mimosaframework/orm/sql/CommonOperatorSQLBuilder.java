@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.sql;
 
+import org.mimosaframework.orm.sql.select.DefaultSQLSelectBuilder;
 import org.mimosaframework.orm.sql.stamp.KeyWhereType;
 import org.mimosaframework.orm.sql.stamp.StampColumn;
 import org.mimosaframework.orm.sql.stamp.StampFieldFun;
@@ -201,6 +202,20 @@ public abstract class CommonOperatorSQLBuilder<T extends CommonOperatorSQLBuilde
         this.lastWhere.whereType = KeyWhereType.FUN;
         this.lastWhere.not = true;
         this.lastWhere.fun = new StampFieldFun("isNull", new StampColumn(aliasName, field));
+        return (T) this;
+    }
+
+    @Override
+    public T exists(SelectBuilder select) {
+        this.gammars.add("operator");
+        StampWhere where = new StampWhere();
+        this.lastWhere.next = where;
+        this.lastWhere = where;
+        this.lastWhere.whereType = KeyWhereType.EXISTS;
+        this.lastWhere.not = false;
+        if (select instanceof DefaultSQLSelectBuilder) {
+            this.lastWhere.select = ((DefaultSQLSelectBuilder) select).compile();
+        }
         return (T) this;
     }
 }

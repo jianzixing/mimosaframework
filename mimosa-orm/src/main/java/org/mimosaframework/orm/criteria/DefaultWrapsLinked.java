@@ -137,4 +137,10 @@ public class DefaultWrapsLinked implements LogicWrapsLinked {
         this.addFilterInLinked(filter);
         return this;
     }
+
+    @Override
+    public LogicWrapsLinked exists(Query query) {
+        // 之后需要实现
+        return this;
+    }
 }

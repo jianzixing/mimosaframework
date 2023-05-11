@@ -465,6 +465,7 @@ public class PlatformExecutor {
         Wraps<Filter> wraps = update.getLogicWraps();
         Map<Object, Object> sets = update.getValues();
 
+        PlatformExecutorSelectContext context = new PlatformExecutorSelectContext();
         DefaultSQLUpdateBuilder updateBuilder = new DefaultSQLUpdateBuilder();
         updateBuilder.update().table(table.getMappingTableName());
         Iterator<Map.Entry<Object, Object>> iterator = sets.entrySet().iterator();
@@ -497,7 +498,7 @@ public class PlatformExecutor {
         }
 
         if (wraps != null) updateBuilder.where();
-        this.buildWraps(updateBuilder, table, wraps, false, null);
+        this.buildWraps(context, updateBuilder, table, wraps, false);
         SQLBuilderCombine combine = dialect.update(updateBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.UPDATE,
                 combine.getSql(), combine.getPlaceholders()));
@@ -514,8 +515,10 @@ public class PlatformExecutor {
         DefaultSQLDeleteBuilder deleteBuilder = new DefaultSQLDeleteBuilder();
         deleteBuilder.delete().from().table(table.getMappingTableName());
 
+        PlatformExecutorSelectContext context = new PlatformExecutorSelectContext();
+
         if (wraps != null) deleteBuilder.where();
-        this.buildWraps(deleteBuilder, table, wraps, false, null);
+        this.buildWraps(context, deleteBuilder, table, wraps, false);
         SQLBuilderCombine combine = dialect.delete(deleteBuilder.compile());
         return (Integer) this.runner.doHandler(new JDBCTraversing(TypeForRunner.DELETE,
                 combine.getSql(), combine.getPlaceholders()));
@@ -523,6 +526,22 @@ public class PlatformExecutor {
 
     public List<ModelObject> select(DefaultQuery query, ModelObjectConvertKey convert) throws SQLException {
         PlatformDialect dialect = this.getDialect();
+        PlatformExecutorSelectContext context = new PlatformExecutorSelectContext();
+        context.setQuery(query);
+        context.setDialect(dialect);
+
+        DefaultSQLSelectBuilder select = this.select(context);
+        SQLBuilderCombine combine = dialect.select(select.compile());
+        Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
+                combine.getSql(), combine.getPlaceholders()));
+
+        Map<Object, List<SelectFieldAliasReference>> fieldAlias = context.getFieldAlias();
+        return this.buildMergeObjects(fieldAlias, query, convert, (List<ModelObject>) result);
+    }
+
+    private DefaultSQLSelectBuilder select(PlatformExecutorSelectContext context) {
+        DefaultQuery query = context.getQuery();
+        PlatformDialect dialect = context.getDialect();
         Wraps<Filter> logicWraps = query.getLogicWraps();
         Set<Join> joins = query.getJoins();
         Set<OrderBy> orders = query.getOrderBy();
@@ -555,9 +574,10 @@ public class PlatformExecutor {
 
         Map<Object, String> alias = new HashMap<>();
         alias.put(query, query.getQueryTableAs());
-        Map<Object, List<SelectFieldAliasReference>> fieldAlias = null;
+        Map<Object, List<SelectFieldAliasReference>> fieldAlias = context.getFieldAlias();
         int j = 1;
-        AtomicInteger i = new AtomicInteger(1);
+        AtomicInteger i = context.getCounter();
+        if (i == null) i = new AtomicInteger(1);
         boolean hasJoin = false;
         if (joins != null && joins.size() > 0) {
             hasJoin = true;
@@ -607,6 +627,9 @@ public class PlatformExecutor {
             }
         }
 
+        context.setFieldAlias(fieldAlias);
+        context.setCounter(i);
+
         // 判断是否需要组合子查询，以解决join和limit的数量问题
         boolean isChildSelect = false;
         if (limit != null && joins != null && joins.size() > 0) {
@@ -634,9 +657,9 @@ public class PlatformExecutor {
         }
         select.from().table(queryTable.getMappingTableName(), query.getQueryTableAs());
         // 如果是子查询语句，则子查询语句只需要包含inner join的联合条件
-        this.buildJoinQuery(query, select, alias, joins, isChildSelect ? true : false);
+        this.buildJoinQuery(context, select, alias, joins, isChildSelect ? true : false);
         if (logicWraps != null) select.where();
-        this.buildWraps(select, queryTable, logicWraps, hasJoin, query);
+        this.buildWraps(context, select, queryTable, logicWraps, hasJoin);
 
         this.buildOrderBy(query, select, null, orders, null,
                 queryTable, joins != null && joins.size() > 0);
@@ -651,7 +674,7 @@ public class PlatformExecutor {
             selectWrap.select();
             this.buildSelectField(selectWrap, alias, fieldAlias);
             selectWrap.from().table(select, query.getQueryTableAs());
-            this.buildJoinQuery(query, selectWrap, alias, joins, false);
+            this.buildJoinQuery(context, selectWrap, alias, joins, false);
             this.buildOrderBy(query, selectWrap, alias, orders, joins, queryTable,
                     joins != null && joins.size() > 0);
 
@@ -662,11 +685,7 @@ public class PlatformExecutor {
             select.forUpdate();
         }
 
-        SQLBuilderCombine combine = dialect.select(select.compile());
-        Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
-                combine.getSql(), combine.getPlaceholders()));
-
-        return this.buildMergeObjects(fieldAlias, query, convert, (List<ModelObject>) result);
+        return select;
     }
 
     public long count(DefaultQuery query) throws SQLException {
@@ -680,6 +699,9 @@ public class PlatformExecutor {
 
         sessionContext.setMaster(isMaster);
         sessionContext.setSlaveName(slaveName);
+
+        PlatformExecutorSelectContext context = new PlatformExecutorSelectContext();
+        context.setQuery(query);
 
         Map<Object, String> alias = new HashMap<>();
         alias.put(query, query.getQueryTableAs());
@@ -715,15 +737,16 @@ public class PlatformExecutor {
             params[0] = 1;
         }
         select.count(params).as("count");
+        context.setCounter(i);
 
         if (hasJoins) {
             select.from().table(mappingTable.getMappingTableName(), query.getQueryTableAs());
         } else {
             select.from().table(mappingTable.getMappingTableName());
         }
-        this.buildJoinQuery(query, select, alias, joins, true);
+        this.buildJoinQuery(context, select, alias, joins, true);
         if (logicWraps != null) select.where();
-        this.buildWraps(select, mappingTable, logicWraps, hasJoins, query);
+        this.buildWraps(context, select, mappingTable, logicWraps, hasJoins);
 
         SQLBuilderCombine combine = dialect.select(select.compile());
         Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
@@ -752,6 +775,8 @@ public class PlatformExecutor {
 
         MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(tableClass);
 
+        PlatformExecutorSelectContext context = new PlatformExecutorSelectContext();
+        context.setDialect(dialect);
         DefaultSQLSelectBuilder select = new DefaultSQLSelectBuilder();
         select.select();
         for (FunctionField fun : funs) {
@@ -807,7 +832,7 @@ public class PlatformExecutor {
         }
         select.from().table(mappingTable.getMappingTableName(), "T");
         if (logicWraps != null) select.where();
-        this.buildWraps(select, mappingTable, logicWraps, false, null);
+        this.buildWraps(context, select, mappingTable, logicWraps, false);
 
         // 如果having要求必须传入group by那么就传入主键
         if (havingFields != null && havingFields.size() > 0
@@ -885,7 +910,7 @@ public class PlatformExecutor {
                     }
                 }
 
-                this.setSymbol(select, filter, null, mappingTable, 1, null);
+                this.setSymbol(context, select, filter, null, mappingTable, 1);
             }
         }
 
@@ -936,11 +961,12 @@ public class PlatformExecutor {
         }
     }
 
-    private void buildJoinQuery(DefaultQuery query,
+    private void buildJoinQuery(PlatformExecutorSelectContext context,
                                 DefaultSQLSelectBuilder select,
                                 Map<Object, String> alias,
                                 Set<Join> joins,
                                 boolean onlyInnerJoin) {
+        DefaultQuery query = context.getQuery();
         if (joins != null && joins.size() > 0) {
 
             for (Join j : joins) {
@@ -1024,7 +1050,7 @@ public class PlatformExecutor {
                             }
                         } else {
                             DefaultFilter f = (DefaultFilter) filter.getFilter();
-                            this.setSymbol(select, f, aliasName, mappingTable, 0, null);
+                            this.setSymbol(context, select, f, aliasName, mappingTable, 0);
                         }
                         if (iterator.hasNext()) {
                             select.and();
@@ -1156,11 +1182,12 @@ public class PlatformExecutor {
         return modelMerge.getMergeAfterObjects(os, query.getTableClass());
     }
 
-    private void buildWraps(CommonSymbolBuilder builder,
+    private void buildWraps(PlatformExecutorSelectContext context,
+                            CommonSymbolBuilder builder,
                             MappingTable table,
                             Wraps<Filter> wraps,
-                            boolean hasJoins,
-                            DefaultQuery query) {
+                            boolean hasJoins) {
+        DefaultQuery query = context.getQuery();
         if (wraps != null) {
             Iterator<WrapsObject<Filter>> wrapsIterator = wraps.iterator();
             while (wrapsIterator.hasNext()) {
@@ -1170,10 +1197,10 @@ public class PlatformExecutor {
                 CriteriaLogic logic = filter.getLogic();
 
                 if (where != null) {
-                    this.setSymbol(builder, where, hasJoins ? query.getQueryTableAs() : null, table, 0, query);
+                    this.setSymbol(context, builder, where, hasJoins ? query.getQueryTableAs() : null, table, 0);
                 } else if (link != null) {
                     SimpleCommonWhereBuilder builderWraps = new SimpleCommonWhereBuilder();
-                    this.buildWraps(builderWraps, table, link, hasJoins, query);
+                    this.buildWraps(context, builderWraps, table, link, hasJoins);
                     if (builder instanceof SimpleCommonWhereBuilder) {
                         ((SimpleCommonWhereBuilder) builder).wrapper(builderWraps);
                     } else {
@@ -1193,12 +1220,13 @@ public class PlatformExecutor {
         }
     }
 
-    private boolean setSymbol(CommonSymbolBuilder builder,
+    private boolean setSymbol(PlatformExecutorSelectContext context,
+                              CommonSymbolBuilder builder,
                               DefaultFilter filter,
                               String aliasName,
                               MappingTable table,
-                              int type,
-                              DefaultQuery query) {
+                              int type) {
+        DefaultQuery query = context.getQuery();
         Object key = filter.getKey();
         String as = filter.getAs();
         if (key instanceof AsField) {
@@ -1321,6 +1349,11 @@ public class PlatformExecutor {
                 builder.isNotNull(columnName);
             }
             return false;
+        }
+        if (symbol.equalsIgnoreCase("exists")) {
+            PlatformExecutorSelectContext newContext = context.clone();
+            newContext.setQuery((DefaultQuery) filter.getQuery());
+            builder.exists(this.select(newContext));
         }
         return true;
     }

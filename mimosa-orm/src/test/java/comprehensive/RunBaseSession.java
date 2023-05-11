@@ -181,6 +181,13 @@ public class RunBaseSession {
     }
 
     @Test
+    public void exists() {
+        List list = template.list(Criteria.query(TableUser.class)
+                .exists(Criteria.query(TableUser.class).eq(TableUser.age, 10)));
+        System.out.println(list);
+    }
+
+    @Test
     public void close() throws IOException {
 
     }

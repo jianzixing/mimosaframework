@@ -49,7 +49,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
         return new PostgreSQLStampDelete(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
-                new PostgreSQLStampShare());
+                new PostgreSQLStampShare(this.select()));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class PostgreSQLStampBuilder implements PlatformStampBuilder {
         return new PostgreSQLStampUpdate(new PostgreSQLStampSection(),
                 new PostgreSQLStampReference(),
                 new PostgreSQLPlatformDialect(),
-                new PostgreSQLStampShare());
+                new PostgreSQLStampShare(this.select()));
     }
 
     @Override

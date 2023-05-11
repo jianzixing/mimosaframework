@@ -14,4 +14,6 @@ public interface OperatorFunctionBuilder<T> {
     T isNotNull(Class table, Serializable field);
 
     T isNotNull(String aliasName, Serializable field);
+
+    T exists(SelectBuilder select);
 }

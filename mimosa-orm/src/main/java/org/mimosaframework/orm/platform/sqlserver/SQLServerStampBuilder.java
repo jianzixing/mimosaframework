@@ -49,7 +49,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
         return new SQLServerStampDelete(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
-                new SQLServerStampShare());
+                new SQLServerStampShare(this.select()));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SQLServerStampBuilder implements PlatformStampBuilder {
         return new SQLServerStampUpdate(new SQLServerStampSection(),
                 new SQLServerStampReference(),
                 new SQLServerPlatformDialect(),
-                new SQLServerStampShare());
+                new SQLServerStampShare(this.select()));
     }
 
     @Override

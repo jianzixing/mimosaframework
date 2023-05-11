@@ -49,7 +49,7 @@ public class SqliteStampBuilder implements PlatformStampBuilder {
         return new SqliteStampDelete(new PlatformStampSection(),
                 new SqliteStampReference(),
                 new SqlitePlatformDialect(),
-                new SqliteStampShare());
+                new SqliteStampShare(this.select()));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SqliteStampBuilder implements PlatformStampBuilder {
         return new SqliteStampUpdate(new PlatformStampSection(),
                 new SqliteStampReference(),
                 new SqlitePlatformDialect(),
-                new SqliteStampShare());
+                new SqliteStampShare(this.select()));
     }
 
     @Override

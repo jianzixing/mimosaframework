@@ -49,7 +49,7 @@ public class OracleStampBuilder implements PlatformStampBuilder {
         return new OracleStampDelete(new PlatformStampSection(),
                 new OracleStampReference(),
                 new OraclePlatformDialect(),
-                new OracleStampShare());
+                new OracleStampShare(this.select()));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class OracleStampBuilder implements PlatformStampBuilder {
         return new OracleStampUpdate(new PlatformStampSection(),
                 new OracleStampReference(),
                 new OraclePlatformDialect(),
-                new OracleStampShare());
+                new OracleStampShare(this.select()));
     }
 
     @Override
