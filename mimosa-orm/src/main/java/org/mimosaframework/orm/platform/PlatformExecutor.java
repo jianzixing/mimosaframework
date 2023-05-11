@@ -1229,58 +1229,60 @@ public class PlatformExecutor {
         DefaultQuery query = context.getQuery();
         Object key = filter.getKey();
         String as = filter.getAs();
-        if (key instanceof AsField) {
-            as = ((AsField) key).getAlias();
-            if (StringTools.isEmpty(as)) {
-                throw new IllegalArgumentException("miss table alias name in AsField");
-            }
-            key = ((AsField) key).getField();
-            if (key == null) {
-                throw new IllegalArgumentException("miss query field in AsField");
-            }
-        }
-
-        MappingField field = null;
-        String columnName = null;
-        if (StringTools.isEmpty(as)) {
-            field = table.getMappingFieldByJavaName(String.valueOf(key));
-            if (field == null) {
-                throw new IllegalArgumentException(I18n.print("miss_symbol_field",
-                        table.getMappingTableName(), "" + key));
-            }
-            columnName = field.getMappingColumnName();
-        } else {
-            if (query != null) {
-                Set<Join> joins = query.getJoins();
-                MappingTable asTable = null;
-                if (joins != null) {
-                    for (Join j : joins) {
-                        DefaultJoin dj = (DefaultJoin) j;
-                        if (as.equals(dj.getAs())) {
-                            asTable = mappingGlobalWrapper.getMappingTable(dj.getTableClass());
-                            field = asTable.getMappingFieldByJavaName(String.valueOf(key));
-                            break;
-                        }
-                    }
-                }
-                if (asTable == null) {
-                    throw new IllegalArgumentException(I18n.print("miss_symbol_as_table",
-                            as, "" + key));
-                }
-                if (field == null) {
-                    throw new IllegalArgumentException(I18n.print("miss_symbol_field",
-                            asTable.getMappingTableName(), "" + key));
-                }
-                columnName = field.getMappingColumnName();
-            } else {
-                columnName = String.valueOf(filter.getKey());
-            }
-        }
-
         Object value = filter.getValue();
         Object startValue = filter.getStartValue();
         Object endValue = filter.getEndValue();
         String symbol = filter.getSymbol();
+
+        MappingField field = null;
+        String columnName = null;
+        if (!"exists".equalsIgnoreCase(symbol)) {
+            if (key instanceof AsField) {
+                as = ((AsField) key).getAlias();
+                if (StringTools.isEmpty(as)) {
+                    throw new IllegalArgumentException("miss table alias name in AsField");
+                }
+                key = ((AsField) key).getField();
+                if (key == null) {
+                    throw new IllegalArgumentException("miss query field in AsField");
+                }
+            }
+
+            if (StringTools.isEmpty(as)) {
+                field = table.getMappingFieldByJavaName(String.valueOf(key));
+                if (field == null) {
+                    throw new IllegalArgumentException(I18n.print("miss_symbol_field",
+                            table.getMappingTableName(), "" + key));
+                }
+                columnName = field.getMappingColumnName();
+            } else {
+                if (query != null) {
+                    Set<Join> joins = query.getJoins();
+                    MappingTable asTable = null;
+                    if (joins != null) {
+                        for (Join j : joins) {
+                            DefaultJoin dj = (DefaultJoin) j;
+                            if (as.equals(dj.getAs())) {
+                                asTable = mappingGlobalWrapper.getMappingTable(dj.getTableClass());
+                                field = asTable.getMappingFieldByJavaName(String.valueOf(key));
+                                break;
+                            }
+                        }
+                    }
+                    if (asTable == null) {
+                        throw new IllegalArgumentException(I18n.print("miss_symbol_as_table",
+                                as, "" + key));
+                    }
+                    if (field == null) {
+                        throw new IllegalArgumentException(I18n.print("miss_symbol_field",
+                                asTable.getMappingTableName(), "" + key));
+                    }
+                    columnName = field.getMappingColumnName();
+                } else {
+                    columnName = String.valueOf(filter.getKey());
+                }
+            }
+        }
 
         if (StringTools.isNotEmpty(as)) {
             aliasName = as;
