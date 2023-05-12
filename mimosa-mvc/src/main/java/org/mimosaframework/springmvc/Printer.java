@@ -41,4 +41,7 @@ public @interface Printer {
 
     // 仅给第三方做权限码使用
     String[] menus() default {};
+
+    // 仅给第三方做权限码使用,资源码
+    String resource() default "";
 }
