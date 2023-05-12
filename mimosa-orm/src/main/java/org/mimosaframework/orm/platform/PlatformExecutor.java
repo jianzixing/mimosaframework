@@ -556,18 +556,6 @@ public class PlatformExecutor {
 
 
         MappingTable queryTable = this.mappingGlobalWrapper.getMappingTable(tableClass);
-        if ((orders == null || orders.size() == 0) && (
-                (limit != null && dialect.isSelectLimitMustOrderBy()) || query.isWithoutOrderBy() == false)) {
-            // 第一种情况  如果排序是空的且分页查询必须排序字段则默认添加主键升序
-            // 第二种情况  如果没有排序则添加一个默认的排序
-            List<MappingField> pks = queryTable.getMappingPrimaryKeyFields();
-            if (orders == null) orders = new LinkedHashSet<>();
-            if (pks != null && pks.size() > 0) {
-                for (MappingField field : pks) {
-                    orders.add(new OrderBy(true, field.getMappingFieldName()));
-                }
-            }
-        }
 
         sessionContext.setMaster(isMaster);
         sessionContext.setSlaveName(slaveName);
@@ -630,6 +618,19 @@ public class PlatformExecutor {
         context.setFieldAlias(fieldAlias);
         context.setCounter(i);
 
+        if (hasJoin && (orders == null || orders.size() == 0) && (
+                (limit != null && dialect.isSelectLimitMustOrderBy()) || query.isWithoutOrderBy() == false)) {
+            // 第一种情况  如果排序是空的且分页查询必须排序字段则默认添加主键升序
+            // 第二种情况  如果没有排序则添加一个默认的排序
+            List<MappingField> pks = queryTable.getMappingPrimaryKeyFields();
+            if (orders == null) orders = new LinkedHashSet<>();
+            if (pks != null && pks.size() > 0) {
+                for (MappingField field : pks) {
+                    orders.add(new OrderBy(true, field.getMappingFieldName()));
+                }
+            }
+        }
+
         // 判断是否需要组合子查询，以解决join和limit的数量问题
         boolean isChildSelect = false;
         if (limit != null && joins != null && joins.size() > 0) {
@@ -645,7 +646,7 @@ public class PlatformExecutor {
             if (hasJoin) {
                 this.buildSelectField(select, alias, fieldAlias);
             } else {
-                if (fields != null || excludes != null) {
+                if (fields != null && fields.size() > 0 || excludes != null && excludes.size() > 0) {
                     Set<MappingField> mappingFields = this.getSelectFields(fields, excludes, queryTable);
                     for (MappingField field : mappingFields) {
                         select.fields(query.getQueryTableAs(), field.getMappingColumnName());
@@ -1084,8 +1085,11 @@ public class PlatformExecutor {
                 } else {
                     select.orderBy().column(mappingField.getMappingColumnName());
                 }
-                if (isAsc) select.asc();
-                else select.desc();
+                if (isAsc) {
+                    select.asc();
+                } else {
+                    select.desc();
+                }
             }
             if (joins != null && joins.size() > 0) {
                 for (Join join : joins) {
@@ -1354,7 +1358,12 @@ public class PlatformExecutor {
         }
         if (symbol.equalsIgnoreCase("exists")) {
             PlatformExecutorSelectContext newContext = context.clone();
-            newContext.setQuery((DefaultQuery) filter.getQuery());
+            DefaultQuery subQuery = (DefaultQuery) filter.getQuery();
+            if (newContext.getCounter() == null) {
+                newContext.setCounter(new AtomicInteger(1));
+            }
+            newContext.setQuery(subQuery);
+            subQuery.setAs("T" + newContext.getCounter().incrementAndGet());
             builder.exists(this.select(newContext));
         }
         return true;
