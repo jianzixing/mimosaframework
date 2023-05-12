@@ -32,4 +32,10 @@ public @interface Printer {
     boolean plaintext() default true;
 
     String contentType() default "";
+
+    // 仅给第三方做权限码使用
+    String menu() default "";
+
+    // 仅给第三方做权限码使用
+    String[] menus() default {};
 }
