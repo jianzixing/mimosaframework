@@ -33,6 +33,9 @@ public @interface Printer {
 
     String contentType() default "";
 
+    // 接口描述
+    String detail() default "";
+
     // 仅给第三方做权限码使用
     String menu() default "";
 
