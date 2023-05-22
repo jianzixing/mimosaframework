@@ -312,7 +312,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                                 if (child != null) {
                                     if (child instanceof List) {
                                         List childBeans = this.model2JavaObject(Collection.class.isAssignableFrom(fieldType) ? genericType : fieldType,
-                                                join.getChildJoin(), (List<ModelObject>) child);
+                                                join.getChildJoin(), this.checkAndCovertList(child, true));
                                         if (childBeans != null && childBeans.size() > 0) {
                                             if (Collection.class.isAssignableFrom(fieldType)) {
                                                 object.put(field.getName(), this.list2Collection(childBeans, fieldType));
@@ -324,7 +324,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                                         }
                                     } else {
                                         List childBeans = this.model2JavaObject(Collection.class.isAssignableFrom(fieldType) ? genericType : fieldType,
-                                                join.getChildJoin(), Arrays.asList((ModelObject) child));
+                                                join.getChildJoin(), this.checkAndCovertList(child, false));
                                         if (childBeans != null && childBeans.size() > 0) {
                                             if (Collection.class.isAssignableFrom(fieldType)) {
                                                 object.put(field.getName(), this.list2Collection(childBeans, fieldType));
@@ -343,7 +343,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                                 if (child != null) {
                                     if (child instanceof List) {
                                         List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                                (List<ModelObject>) child);
+                                                this.checkAndCovertList(child, true));
                                         if (fieldType.isArray()) {
                                             object.put(field.getName(), childBeans.toArray());
                                         } else {
@@ -353,7 +353,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                                         }
                                     } else {
                                         List childBeans = this.model2JavaObject(fieldType, join.getChildJoin(),
-                                                Arrays.asList((ModelObject) child));
+                                                this.checkAndCovertList(child, false));
 
                                         if (childBeans != null && childBeans.size() > 0) {
                                             if (fieldType.isArray()) {
@@ -372,13 +372,13 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                                     if (child != null) {
                                         if (child instanceof List) {
                                             List childBeans = this.model2JavaObject(genericType, join.getChildJoin(),
-                                                    (List<ModelObject>) child);
+                                                    this.checkAndCovertList(child, true));
                                             if (childBeans != null && childBeans.size() > 0) {
                                                 object.put(field.getName(), this.list2Collection(childBeans, fieldType));
                                             }
                                         } else {
                                             List childBeans = this.model2JavaObject(genericType, join.getChildJoin(),
-                                                    Arrays.asList((ModelObject) child));
+                                                    this.checkAndCovertList(child, false));
 
                                             if (childBeans != null && childBeans.size() > 0) {
                                                 object.put(field.getName(), this.list2Collection(childBeans, fieldType));
@@ -404,6 +404,19 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                 }
             }
             return beans;
+        }
+        return null;
+    }
+
+    private List checkAndCovertList(Object child, boolean isList) {
+        if (isList) {
+            if (child instanceof List) {
+                return (List<ModelObject>) child;
+            }
+        } else {
+            if (child instanceof Map) {
+                return Arrays.asList(child);
+            }
         }
         return null;
     }
