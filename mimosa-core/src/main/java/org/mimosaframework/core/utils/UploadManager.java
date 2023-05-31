@@ -1,5 +1,6 @@
 package org.mimosaframework.core.utils;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.mimosaframework.core.exception.ModuleException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
@@ -159,6 +160,51 @@ public class UploadManager {
             }
         }
         return null;
+    }
+
+    public FileItem upload(InputStream stream, String fileType) {
+        FileItem fileItem = new FileItem();
+        fileItem.setUrl(this.url);
+        if (fileType != null) {
+            fileItem.setType(fileType);
+            if (!this.allowFile.contains(fileType.toLowerCase())) {
+                if (this.throwOutError) {
+                    throw new ModuleException("file_not_allow", "文件" + fileType + "格式不允许上传");
+                } else {
+                    fileItem.setErrorCode(-100);
+                    return fileItem;
+                }
+            }
+            String newFileName = UUID.randomUUID().toString().replaceAll("-", "") + "." + fileType;
+            fileItem.setFileName(newFileName);
+
+            String filePath = path;
+            File dest = new File(filePath + File.separator + newFileName);
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+            fileItem.setFile(dest);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(dest)) {
+                IOUtils.copy(stream, fileOutputStream);
+            } catch (IOException e) {
+                if (this.throwOutError) {
+                    throw new ModuleException("file_write_error", "文件写入出错", e);
+                } else {
+                    e.printStackTrace();
+                    fileItem.setErrorCode(-110);
+                    fileItem.setThrowable(e);
+                    return fileItem;
+                }
+            }
+        } else {
+            if (this.throwOutError) {
+                throw new ModuleException("file_not_type", "文件必须包含格式后缀名");
+            } else {
+                fileItem.setErrorCode(-120);
+                return fileItem;
+            }
+        }
+        return fileItem;
     }
 
     public int uploadFileCount(HttpServletRequest request) {
