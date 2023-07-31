@@ -51,6 +51,7 @@ import org.mimosaframework.core.json.serializer.SerializeWriter;
 import org.mimosaframework.core.json.serializer.SerializerFeature;
 import org.mimosaframework.core.json.util.IOUtils;
 import org.mimosaframework.core.json.util.TypeUtils;
+import org.mimosaframework.core.utils.DyToStringSerializer;
 
 /**
  * This is the main class for using Fastjson. You usually call these two methods {@link #toJSONString(Object)} and {@link #parseObject(String, Class)}.
@@ -252,8 +253,8 @@ public abstract class Model implements ModelStreamAware, ModelAware {
      *             {@link TypeReference} class. For example, to get the type for
      *             {@code Collection<Foo>}, you should use:
      *             <pre>
-     *                         Type type = new TypeReference&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                         </pre>
+     *                                     Type type = new TypeReference&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                                     </pre>
      * @return an object of type T from the string
      */
     @SuppressWarnings("unchecked")
@@ -952,5 +953,12 @@ public abstract class Model implements ModelStreamAware, ModelAware {
         }
 
         return chars;
+    }
+
+    public String toFrontString() {
+        SerializeConfig config = new SerializeConfig();
+        config.put(Long.class, DyToStringSerializer.instance);
+        config.put(Long.TYPE, DyToStringSerializer.instance);
+        return ModelObject.toJSONString(this, config);
     }
 }

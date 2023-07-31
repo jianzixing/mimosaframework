@@ -1,4 +1,4 @@
-package org.mimosaframework.springmvc;
+package org.mimosaframework.core.utils;
 
 import org.mimosaframework.core.json.serializer.ModelSerializer;
 import org.mimosaframework.core.json.serializer.SerializeWriter;

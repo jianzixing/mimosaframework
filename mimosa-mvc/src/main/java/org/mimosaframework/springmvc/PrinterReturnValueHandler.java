@@ -2,7 +2,7 @@ package org.mimosaframework.springmvc;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.json.serializer.SerializeConfig;
-import org.mimosaframework.core.json.serializer.ToStringSerializer;
+import org.mimosaframework.core.utils.DyToStringSerializer;
 import org.mimosaframework.core.utils.StringTools;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;

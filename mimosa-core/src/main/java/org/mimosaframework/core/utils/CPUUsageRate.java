@@ -112,6 +112,7 @@ public class CPUUsageRate {
         }
         while (true) {
             Thread.sleep(1000);
+            System.out.println();
             System.out.println(CPUUsageRate.getInstance().getProcessCpu());
             CPUUsageRate.getInstance().getThreadCpu();
         }
