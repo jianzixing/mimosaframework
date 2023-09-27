@@ -27,12 +27,20 @@ public class ResponsePageMessage<T> extends ResponseMessage<T> {
     }
 
     public ResponsePageMessage(ResponseMessage responseMessage) {
-        if (responseMessage.getCode() instanceof Integer)
-            this.setCode((Integer) responseMessage.getCode());
-        if (responseMessage.getCode() instanceof String)
-            this.setCode((String) responseMessage.getCode());
-        this.setMsg(responseMessage.getMsg());
-        this.setData((T) responseMessage.getData());
+        if (responseMessage != null) {
+            if (responseMessage.getCode() instanceof Integer) {
+                this.setCode((Integer) responseMessage.getCode());
+            }
+            if (responseMessage.getCode() instanceof String) {
+                this.setCode((String) responseMessage.getCode());
+            }
+            if (responseMessage.getMsg() != null) {
+                this.setMsg(responseMessage.getMsg());
+            }
+            if (responseMessage.getData() != null) {
+                this.setData((T) responseMessage.getData());
+            }
+        }
     }
 
     public ResponsePageMessage(Paging paging) {
