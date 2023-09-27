@@ -157,7 +157,15 @@ public class DefaultFilterPackageClass implements FilterPackageClass {
      */
     @Override
     public void setPackagePath(List<String> packagePath) {
-        this.packagePaths = packagePath;
+        if (packagePath != null) {
+            List<String> list = new ArrayList<>();
+            for (String s : packagePath) {
+                if (StringTools.isNotEmpty(s)) {
+                    list.add(s.trim());
+                }
+            }
+            this.packagePaths = list;
+        }
     }
 
     /**
