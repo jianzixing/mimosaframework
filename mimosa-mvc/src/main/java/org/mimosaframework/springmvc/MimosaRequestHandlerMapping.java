@@ -25,10 +25,7 @@ import org.springframework.web.util.UrlPathHelper;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         implements EmbeddedValueResolverAware {
@@ -186,19 +183,30 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
                     String handleUri = methodName;
                     String url = prefixUri + (typeUri.startsWith("/") ? "" : "/") + typeUri + (handleUri.startsWith("/") ? "" : "/") + handleUri;
 
-                    prefixUri = this.getCommonPrefix(type);
-                    typeUri = StringTools.humpToLine(this.replaceCommonPrefix(type, className));
-                    handleUri = StringTools.humpToLine(methodName, true);
-                    String lineUrl = prefixUri + (typeUri.startsWith("/") ? "" : "/") + typeUri + (handleUri.startsWith("/") ? "" : "/") + handleUri;
-
                     if (StringTools.isNotEmpty(printer.path())) {
                         url += printer.path();
-                        lineUrl += printer.path();
                     }
-                    String[] path = new String[]{url, StringTools.toLowerIgnoreBrace(url), lineUrl};
+                    List<String> list = new ArrayList<>(3);
+                    list.add(url);
+                    String toLowerUrl = StringTools.toLowerIgnoreBrace(url);
+                    if (!list.contains(toLowerUrl)) {
+                        list.add(toLowerUrl);
+                    }
 
+                    String[] s = url.split("/");
+                    String sr = "";
+                    for (int i = 0; i < s.length; i++) {
+                        if (i == 0) {
+                            sr += StringTools.humpToLine(s[i], true);
+                        } else {
+                            sr = sr + "/" + StringTools.humpToLine(s[i], true);
+                        }
+                    }
+                    if (!list.contains(sr)) {
+                        list.add(sr);
+                    }
 
-                    return createRequestMappingInfoByPrinter(printer, condition, path);
+                    return createRequestMappingInfoByPrinter(printer, condition, list.toArray(new String[]{}));
                 }
             }
         }
