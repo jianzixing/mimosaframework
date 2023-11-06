@@ -2,6 +2,7 @@ package org.mimosaframework.springmvc.utils;
 
 import org.mimosaframework.core.exception.ModelCheckerException;
 import org.mimosaframework.core.exception.ModuleException;
+import org.mimosaframework.core.exception.ModuleForceException;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.json.TypeReference;
 import org.mimosaframework.core.json.parser.ParserConfig;
@@ -77,6 +78,9 @@ public class ResponseMessage<T> implements Serializable {
         if (data instanceof ModuleException) {
             this.code = ((ModuleException) data).getCode();
             this.msg = ((ModuleException) data).getMessage();
+        } else if (data instanceof ModuleForceException) {
+            this.code = ((ModuleForceException) data).getCode();
+            this.msg = ((ModuleForceException) data).getMessage();
         } else if (data instanceof ModelCheckerException) {
             Object code = ((ModelCheckerException) data).getCode();
             if (code == null) code = -100;
