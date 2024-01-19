@@ -90,6 +90,8 @@ public abstract class Model implements ModelStreamAware, ModelAware {
 
     public static int DEFAULT_PARSER_FEATURE;
 
+    private static SerializeConfig config = new SerializeConfig();
+
     static {
         int features = 0;
         features |= Feature.AutoCloseSource.getMask();
@@ -102,6 +104,9 @@ public abstract class Model implements ModelStreamAware, ModelAware {
         features |= Feature.IgnoreNotMatch.getMask();
         features |= Feature.OrderedField.getMask();
         DEFAULT_PARSER_FEATURE = features;
+
+        config.put(Long.class, DyToStringSerializer.instance);
+        config.put(Long.TYPE, DyToStringSerializer.instance);
     }
 
     public static int DEFAULT_GENERATE_FEATURE;
@@ -253,8 +258,8 @@ public abstract class Model implements ModelStreamAware, ModelAware {
      *             {@link TypeReference} class. For example, to get the type for
      *             {@code Collection<Foo>}, you should use:
      *             <pre>
-     *                                     Type type = new TypeReference&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                                     </pre>
+     *                                                             Type type = new TypeReference&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                                                             </pre>
      * @return an object of type T from the string
      */
     @SuppressWarnings("unchecked")
@@ -956,9 +961,6 @@ public abstract class Model implements ModelStreamAware, ModelAware {
     }
 
     public String toFrontString() {
-        SerializeConfig config = new SerializeConfig();
-        config.put(Long.class, DyToStringSerializer.instance);
-        config.put(Long.TYPE, DyToStringSerializer.instance);
         return ModelObject.toJSONString(this, config);
     }
 }
