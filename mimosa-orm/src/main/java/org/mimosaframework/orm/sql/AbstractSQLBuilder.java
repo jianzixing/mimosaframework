@@ -11,11 +11,10 @@ public abstract class AbstractSQLBuilder implements UnifyBuilder {
     protected Object point = null;
     protected int posPoint = -1;
 
-    @Override
-    public SQLAutonomously autonomously() {
-        SQLAutonomously autonomously = SQLAutonomously.newInstance(this);
-        return autonomously;
-    }
+    // public SQLAutonomously autonomously() {
+    //     SQLAutonomously autonomously = SQLAutonomously.newInstance(this);
+    //     return autonomously;
+    // }
 
     protected void addPoint(Object point) {
         this.gammars.add(point);

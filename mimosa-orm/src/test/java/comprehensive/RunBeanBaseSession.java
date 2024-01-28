@@ -192,11 +192,11 @@ public class RunBeanBaseSession {
     }
 
 
-    @Test
-    public void getAutonomously() throws Exception {
-        AutoResult result = template.getAutonomously(SQLAutonomously.select().all().from().table(BeanUser.class).autonomously());
-        System.out.println(result.getObjects());
-    }
+//    @Test
+//    public void getAutonomously() throws Exception {
+//        AutoResult result = template.getAutonomously(SQLAutonomously.select().all().from().table(BeanUser.class).autonomously());
+//        System.out.println(result.getObjects());
+//    }
 
     @Test
     public void getDataSourceNames() {

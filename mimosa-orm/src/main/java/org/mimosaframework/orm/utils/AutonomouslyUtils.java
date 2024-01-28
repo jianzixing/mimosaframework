@@ -1,16 +1,38 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.orm.SQLAutonomously;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.platform.JDBCTraversing;
 import org.mimosaframework.orm.platform.TypeForRunner;
 import org.mimosaframework.orm.scripting.BoundSql;
 import org.mimosaframework.orm.scripting.DynamicSqlSource;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 
 public class AutonomouslyUtils {
     public static JDBCTraversing parseStructure(SQLDefinedLoader definedLoader, String name, ModelObject parameter) {
         DynamicSqlSource sqlSource = definedLoader.getDynamicSqlSource(name);
+        if (sqlSource == null) {
+            throw new IllegalArgumentException(I18n.print("not_found_file_sql"));
+        }
+        return buildTraversing(sqlSource, parameter);
+    }
+
+    public static JDBCTraversing boundSql(SQLDefinedLoader definedLoader, SQLAutonomously.Action action, String sql, ModelObject parameter) {
+        DynamicSqlSource sqlSource = null;
+        try {
+            sqlSource = definedLoader.buildDynamicSqlSource(action != null ? action.name() : null, sql);
+        } catch (Exception e) {
+            throw new RuntimeException("parse sql error " + sql, e);
+        }
+        return buildTraversing(sqlSource, parameter);
+    }
+
+    private static JDBCTraversing buildTraversing(DynamicSqlSource sqlSource, ModelObject parameter) {
         if (sqlSource == null) {
             throw new IllegalArgumentException(I18n.print("not_found_file_sql"));
         }

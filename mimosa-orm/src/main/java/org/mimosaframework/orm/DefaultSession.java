@@ -505,93 +505,25 @@ public class DefaultSession implements Session {
     @Override
     public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
         String sql = autonomously.getSql();
-        UnifyBuilder builder = autonomously.getBuilder();
 
         boolean isMaster = autonomously.isMaster();
         String slaveName = autonomously.getSlaveName();
 
-        if (StringTools.isEmpty(sql) && builder != null) {
-            List<SQLAutonomously.LinkAutonomously> ds = autonomously.getDataSourceLinks();
-            if (ds != null && ds.size() > 0) {
-                SQLAutonomously.LinkAutonomously link = ds.get(0);
-                sql = link.getSql();
-                String dsName = link.getDataSourceName();
-                isMaster = autonomously.isMaster(dsName);
-                slaveName = autonomously.getSlaveName(dsName);
-            }
-        }
-        if (StringTools.isNotEmpty(sql) || builder != null) {
+        if (StringTools.isNotEmpty(sql)) {
             sessionContext.setMaster(isMaster);
             sessionContext.setSlaveName(slaveName);
-            if (builder != null) {
-                Object r = executor.dialect(builder.compile());
-                return new AutoResult(r);
-            } else {
-                StringBuilder key = new StringBuilder();
-                StringBuilder newSql = new StringBuilder();
-                boolean start = false;
-                List<SQLDataPlaceholder> list = null;
-                ModelObject parameter = autonomously.getParameter();
-                for (int i = 0; i < sql.length(); i++) {
-                    if (list == null) list = new ArrayList<>();
-                    char c = sql.charAt(i);
-                    if (start) {
-                        if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9'
-                                || c == '#' || c == '$') {
-                            key.append(c);
-                        } else {
-                            start = false;
 
-                            this.buildNewSql(key, parameter, list, newSql);
-                            key = new StringBuilder();
-                        }
-                    }
-                    if (c == ':') {
-                        start = true;
-                    } else if (start == false) {
-                        newSql.append(c);
-                    }
-                }
-                this.buildNewSql(key, parameter, list, newSql);
+            SQLDefinedLoader definedLoader = this.context.getDefinedLoader();
+            JDBCTraversing structure = AutonomouslyUtils.boundSql(definedLoader,
+                    autonomously.getAction(),
+                    sql, autonomously.getParameter());
 
-                JDBCTraversing jdbcTraversing = new JDBCTraversing(newSql.toString());
-                jdbcTraversing.setSqlDataPlaceholders(list);
-                Object object = executor.original(jdbcTraversing);
-                Map<String, Object> result = new LinkedHashMap<>(1);
-                result.put(MimosaDataSource.DEFAULT_DS_NAME, object);
-                return new AutoResult(mappingGlobalWrapper, convert, result);
-            }
+            Object object = executor.original(structure);
+            Map<String, Object> result = new LinkedHashMap<>(1);
+            result.put(MimosaDataSource.DEFAULT_DS_NAME, object);
+            return new AutoResult(mappingGlobalWrapper, convert, result);
         }
         return null;
-    }
-
-    protected void buildNewSql(StringBuilder key,
-                               ModelObject parameter,
-                               List<SQLDataPlaceholder> list,
-                               StringBuilder newSql) {
-        if (key != null && key.length() > 0) {
-            String name = key.toString();
-            if (parameter == null || parameter.size() == 0) {
-                throw new IllegalArgumentException("execute sql missing parameters");
-            }
-            Object v = parameter.get(name);
-            if (v instanceof List) {
-                int j = 0;
-                Iterator iterator = ((List) v).iterator();
-                while (iterator.hasNext()) {
-                    Object v1 = iterator.next();
-                    list.add(new SQLDataPlaceholder(name + j, v1));
-                    j++;
-                    newSql.append("?");
-                    if (iterator.hasNext()) {
-                        newSql.append(",");
-                    }
-                }
-            } else {
-                list.add(new SQLDataPlaceholder(name, v));
-                newSql.append("?");
-            }
-        }
     }
 
     @Override

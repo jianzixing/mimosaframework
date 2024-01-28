@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.sql;
 
-import org.mimosaframework.orm.SQLAutonomously;
 import org.mimosaframework.orm.sql.stamp.StampAction;
 
 /**
@@ -8,6 +7,4 @@ import org.mimosaframework.orm.sql.stamp.StampAction;
  */
 public interface UnifyBuilder {
     StampAction compile();
-
-    SQLAutonomously autonomously();
 }

@@ -17,11 +17,10 @@ public class StructureBuilder implements
         return structure;
     }
 
-    @Override
-    public SQLAutonomously autonomously() {
-        SQLAutonomously autonomously = SQLAutonomously.newInstance(this);
-        return autonomously;
-    }
+    // public SQLAutonomously autonomously() {
+    //     SQLAutonomously autonomously = SQLAutonomously.newInstance(this);
+    //     return autonomously;
+    // }
 
     public UnifyBuilder column(List<String> tables) {
         structure.type = 1;

@@ -357,7 +357,7 @@ public class AutoResult {
                 Object o = entry.getValue();
                 if (o instanceof List) {
                     objects.addAll((List) o);
-                } else {
+                } else if (o instanceof Map) {
                     objects.add((ModelObject) o);
                 }
             }

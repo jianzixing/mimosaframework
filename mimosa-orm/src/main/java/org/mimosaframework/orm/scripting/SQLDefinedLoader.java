@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.scripting;
 
 import org.mimosaframework.orm.i18n.I18n;
+import org.mimosaframework.orm.scripting.tags.MixedSqlNode;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -204,6 +205,13 @@ public class SQLDefinedLoader {
                 }
             }
         }
+    }
 
+    public DynamicSqlSource buildDynamicSqlSource(String action, String sql) throws ParserConfigurationException, IOException, SAXException {
+        if (sqlDefiner == null) {
+            sqlDefiner = new XMLSQLDefiner(this.configure);
+        }
+        MixedSqlNode sqlNode = sqlDefiner.parseSqlNode(action, sql);
+        return new DynamicSqlSource(this.configure, sqlNode);
     }
 }

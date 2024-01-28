@@ -11,6 +11,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 public class XMLSQLDefiner implements SQLDefiner {
     private static final List<String> ACTION_NAMES = new ArrayList<>(5);
+    private static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
     static {
         ACTION_NAMES.add("select");
@@ -38,7 +40,6 @@ public class XMLSQLDefiner implements SQLDefiner {
 
     @Override
     public XMapper getDefiner(InputStream inputStream, String fileName) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         db.setEntityResolver(new IgnoreDTDEntityResolver());
         Document document = db.parse(inputStream);
@@ -207,5 +208,27 @@ public class XMLSQLDefiner implements SQLDefiner {
             throw new BuilderException("Too many default (otherwise) elements in choose statement.");
         }
         return defaultSqlNode;
+    }
+
+    public MixedSqlNode parseSqlNode(String action, String sql) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        db.setEntityResolver(new IgnoreDTDEntityResolver());
+        if ("update".equalsIgnoreCase(action)) {
+            sql = "<select>" + sql + "</select>";
+        } else if ("update".equalsIgnoreCase(action)) {
+            sql = "<update>" + sql + "</update>";
+        } else if ("insert".equalsIgnoreCase(action)) {
+            sql = "<insert>" + sql + "</insert>";
+        } else if ("sql".equalsIgnoreCase(action)) {
+            sql = "<sql>" + sql + "</sql>";
+        } else if ("delete".equalsIgnoreCase(action)) {
+            sql = "<delete>" + sql + "</delete>";
+        } else {
+            sql = "<select>" + sql + "</select>";
+        }
+
+        Document document = db.parse(new ByteArrayInputStream(sql.getBytes()));
+        Node sqlNode = document.getChildNodes().item(0);
+        return new MixedSqlNode(this.parseDynamicTags(sqlNode), sqlNode.getNodeName().toLowerCase());
     }
 }

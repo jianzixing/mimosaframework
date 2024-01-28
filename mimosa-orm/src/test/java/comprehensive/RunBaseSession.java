@@ -158,11 +158,11 @@ public class RunBaseSession {
         System.out.println(objects.getObjects());
     }
 
-    @Test
-    public void getAutonomously() throws Exception {
-        AutoResult result = template.getAutonomously(SQLAutonomously.select().all().from().table(TableOrder.class).autonomously());
-        System.out.println(result.getObjects());
-    }
+//    @Test
+//    public void getAutonomously() throws Exception {
+//        AutoResult result = template.getAutonomously(SQLAutonomously.select().all().from().table(TableOrder.class).autonomously());
+//        System.out.println(result.getObjects());
+//    }
 
     @Test
     public void getDataSourceNames() {
