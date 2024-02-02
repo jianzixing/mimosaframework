@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 
 public class CalcNumber {
     private BigDecimal bg;
+    private int scale = 8;
 
     public CalcNumber(BigDecimal bg) {
         this.bg = bg;
@@ -77,7 +78,7 @@ public class CalcNumber {
         if (to.compareTo(new BigDecimal(0)) == 0) {
             bg = new BigDecimal(0);
         }
-        bg = bg.divide(to);
+        bg = bg.divide(to, scale, BigDecimal.ROUND_HALF_UP);
         return this;
     }
 
@@ -86,7 +87,7 @@ public class CalcNumber {
         if (to.compareTo(new BigDecimal(0)) == 0) {
             bg = new BigDecimal(0);
         }
-        bg = bg.divide(to, roundingMode);
+        bg = bg.divide(to, scale, roundingMode);
         return this;
     }
 
@@ -116,7 +117,19 @@ public class CalcNumber {
     public String toPrice() {
         if (this.bg != null) {
             BigDecimal bigDecimal = this.bg.setScale(2, BigDecimal.ROUND_DOWN);
-            return bigDecimal.toPlainString();
+            DecimalFormat format = new DecimalFormat("#.00");
+            // return bigDecimal.toPlainString();
+            return format.format(bigDecimal);
+        }
+        return "0";
+    }
+
+    public String format(String format) {
+        if (this.bg != null) {
+            BigDecimal bigDecimal = this.bg.setScale(2, BigDecimal.ROUND_DOWN);
+            DecimalFormat decimalFormat = new DecimalFormat(format);
+            // return bigDecimal.toPlainString();
+            return decimalFormat.format(bigDecimal);
         }
         return "0";
     }
@@ -142,6 +155,11 @@ public class CalcNumber {
             return bigDecimal.toPlainString();
         }
         return "0";
+    }
+
+    public CalcNumber scale(int scale) {
+        this.scale = scale;
+        return this;
     }
 
     public int toInteger() {
@@ -202,5 +220,9 @@ public class CalcNumber {
             return money.longValue();
         }
         return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(CalcNumber.as(9).divide(3).toPrice());
     }
 }

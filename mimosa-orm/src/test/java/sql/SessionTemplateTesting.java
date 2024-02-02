@@ -54,7 +54,8 @@ public class SessionTemplateTesting {
     public void testSql1() throws Exception {
         ModelObject params = new ModelObject();
         params.put("id", 1);
-        SQLAutonomously sqlAutonomously = SQLAutonomously.select("select * from t_user where id=#{id}", params);
+        SQLAutonomously sqlAutonomously = SQLAutonomously.select("select * from t_cms where project_id=#{projectId} and template_id=#{templateId} " +
+                "and del=0 and name = #{name} json->$.age = #{jsonage} order by top,publish_time desc limit #{from},#{size}", params);
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(ModelObject.toJSONString(autoResult.getObjects()));
     }
