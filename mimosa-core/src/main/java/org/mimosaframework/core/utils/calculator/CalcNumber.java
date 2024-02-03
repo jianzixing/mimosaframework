@@ -208,10 +208,23 @@ public class CalcNumber {
     }
 
     public boolean gte(BigDecimal payPriceIntegralAmount) {
-        if (this.bg.equals(payPriceIntegralAmount) || this.bg.max(payPriceIntegralAmount) == this.bg) {
-            return true;
-        }
-        return false;
+        return this.bg.compareTo(payPriceIntegralAmount) >= 0;
+    }
+
+    public boolean lte(BigDecimal payPriceIntegralAmount) {
+        return this.bg.compareTo(payPriceIntegralAmount) <= 0;
+    }
+
+    public boolean gt(BigDecimal payPriceIntegralAmount) {
+        return this.bg.compareTo(payPriceIntegralAmount) > 0;
+    }
+
+    public boolean eq(BigDecimal payPriceIntegralAmount) {
+        return this.bg.compareTo(payPriceIntegralAmount) == 0;
+    }
+
+    public boolean lt(BigDecimal payPriceIntegralAmount) {
+        return this.bg.compareTo(payPriceIntegralAmount) < 0;
     }
 
     public long toPennyPrice() {
@@ -224,5 +237,6 @@ public class CalcNumber {
 
     public static void main(String[] args) {
         System.out.println(CalcNumber.as(9).divide(3).toPrice());
+        System.out.println(CalcNumber.as(10).lte(new BigDecimal(10)));
     }
 }
