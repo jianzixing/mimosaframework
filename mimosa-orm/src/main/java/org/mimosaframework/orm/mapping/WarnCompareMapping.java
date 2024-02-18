@@ -22,7 +22,7 @@ public class WarnCompareMapping extends AbstractCompareMapping {
     @Override
     protected boolean createTable(CompareUpdateTableMate tableMate) throws SQLException {
         MappingTable mappingTable = tableMate.getMappingTable();
-        logger.warn(I18n.print("compare_mapping_warn_create_table",
+        logger.error(I18n.print("compare_mapping_warn_create_table",
                 mappingTable.getMappingTableName()));
         return false;
     }
@@ -42,7 +42,7 @@ public class WarnCompareMapping extends AbstractCompareMapping {
                 sb.append(typeIterator.next() + "");
                 if (typeIterator.hasNext()) sb.append(" ");
             }
-            logger.warn(I18n.print("compare_mapping_warn_field_update",
+            logger.error(I18n.print("compare_mapping_warn_field_update",
                     mappingTable.getMappingTableName(),
                     mappingField.getMappingColumnName(),
                     sb.toString()
@@ -57,7 +57,7 @@ public class WarnCompareMapping extends AbstractCompareMapping {
         List<MappingField> createFields = tableMate.getCreateFields();
 
         for (MappingField mappingField : createFields) {
-            logger.warn(I18n.print("compare_mapping_warn_field_add",
+            logger.error(I18n.print("compare_mapping_warn_field_add",
                     mappingTable.getMappingTableName(),
                     mappingField.getMappingColumnName()));
         }
@@ -71,7 +71,7 @@ public class WarnCompareMapping extends AbstractCompareMapping {
 
         if (mappingLevel == MappingLevel.WARN) {
             for (TableColumnStructure columnStructure : delColumns) {
-                logger.warn(I18n.print("compare_mapping_warn_field_del",
+                logger.error(I18n.print("compare_mapping_warn_field_del",
                         mappingTable.getMappingTableName(),
                         columnStructure.getColumnName()));
             }
@@ -85,7 +85,7 @@ public class WarnCompareMapping extends AbstractCompareMapping {
         MappingTable mappingTable = tableMate.getMappingTable();
 
         for (MappingIndex mappingIndex : indices) {
-            logger.warn(I18n.print("compare_mapping_warn_index_update",
+            logger.error(I18n.print("compare_mapping_warn_index_update",
                     mappingTable.getMappingTableName(),
                     mappingIndex.getIndexName()));
         }
@@ -97,7 +97,7 @@ public class WarnCompareMapping extends AbstractCompareMapping {
         List<MappingIndex> newIndexes = tableMate.getNewIndexes();
         MappingTable mappingTable = tableMate.getMappingTable();
         for (MappingIndex mappingIndex : newIndexes) {
-            logger.warn(I18n.print("compare_mapping_warn_index_add",
+            logger.error(I18n.print("compare_mapping_warn_index_add",
                     mappingTable.getMappingTableName(),
                     mappingIndex.getIndexName()));
         }
@@ -108,9 +108,9 @@ public class WarnCompareMapping extends AbstractCompareMapping {
     protected boolean dropIndices(CompareUpdateTableMate tableMate) throws SQLException {
         List<String> dropIndexes = tableMate.getDropIndexes();
         MappingTable mappingTable = tableMate.getMappingTable();
-        
+
         for (String indexName : dropIndexes) {
-            logger.warn(I18n.print("compare_mapping_warn_index_add",
+            logger.error(I18n.print("compare_mapping_warn_index_add",
                     mappingTable.getMappingTableName(),
                     indexName));
         }
