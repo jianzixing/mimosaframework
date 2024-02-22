@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.mapping;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.orm.MappingLevel;
 import org.mimosaframework.orm.platform.*;
 
@@ -7,6 +9,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class UpdateCompareMapping extends CreateCompareMapping {
+    private static final Log logger = LogFactory.getLog(UpdateCompareMapping.class);
 
     public UpdateCompareMapping(MappingGlobalWrapper mappingGlobalWrapper, SessionContext dataSourceWrapper) {
         super(mappingGlobalWrapper, dataSourceWrapper);
@@ -20,33 +23,36 @@ public class UpdateCompareMapping extends CreateCompareMapping {
 
     @Override
     protected void rebuildTable(CompareUpdateTableMate tableMate) throws SQLException {
+        // 不支持重建表这种危险操作了
         MappingTable mappingTable = tableMate.getMappingTable();
-        // 重建表
-        executor.doDialectRebuild(tableMate.getTableStructures(), mappingTable, tableMate.getStructure());
-        Set<MappingIndex> mappingIndices = mappingTable.getMappingIndexes();
-        if (mappingIndices != null) {
-            PlatformDialect dialect = tableMate.getDialect();
-            if (!dialect.isSupportSameColumnIndex()) {
-                // 如果不支持多列索引则这里删除相同列索引
-                Set<MappingIndex> onlyDiffIndex = new LinkedHashSet<>();
-                for (MappingIndex index : mappingIndices) {
-                    boolean is = false;
-                    for (MappingIndex odi : onlyDiffIndex) {
-                        if (index.isSameColumn(odi)) {
-                            is = true;
-                            break;
-                        }
-                    }
-                    if (!is) {
-                        onlyDiffIndex.add(index);
-                    }
-                }
-                mappingIndices = onlyDiffIndex;
-            }
-            for (MappingIndex mappingIndex : mappingIndices) {
-                executor.createIndex(mappingTable, mappingIndex);
-            }
-        }
+        logger.error("compare table fail need recreate table " + mappingTable.getMappingTableName());
+
+        // // 重建表
+        // executor.doDialectRebuild(tableMate.getTableStructures(), mappingTable, tableMate.getStructure());
+        // Set<MappingIndex> mappingIndices = mappingTable.getMappingIndexes();
+        // if (mappingIndices != null) {
+        //     PlatformDialect dialect = tableMate.getDialect();
+        //     if (!dialect.isSupportSameColumnIndex()) {
+        //         // 如果不支持多列索引则这里删除相同列索引
+        //         Set<MappingIndex> onlyDiffIndex = new LinkedHashSet<>();
+        //         for (MappingIndex index : mappingIndices) {
+        //             boolean is = false;
+        //             for (MappingIndex odi : onlyDiffIndex) {
+        //                 if (index.isSameColumn(odi)) {
+        //                     is = true;
+        //                     break;
+        //                 }
+        //             }
+        //             if (!is) {
+        //                 onlyDiffIndex.add(index);
+        //             }
+        //         }
+        //         mappingIndices = onlyDiffIndex;
+        //     }
+        //     for (MappingIndex mappingIndex : mappingIndices) {
+        //         executor.createIndex(mappingTable, mappingIndex);
+        //     }
+        // }
     }
 
     @Override
