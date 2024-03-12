@@ -26,7 +26,7 @@ public class ListArgumentResolver implements HandlerMethodArgumentResolver {
         Method method = parameter.getMethod();
         Printer printer = method.getAnnotation(Printer.class);
         Class type = parameter.getParameterType();
-        if (type.isAssignableFrom(List.class) && printer != null) {
+        if (List.class.isAssignableFrom(type) && printer != null) {
             return true;
         }
         return false;
