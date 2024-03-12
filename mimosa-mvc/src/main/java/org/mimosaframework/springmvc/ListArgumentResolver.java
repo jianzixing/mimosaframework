@@ -45,7 +45,7 @@ public class ListArgumentResolver implements HandlerMethodArgumentResolver {
         if (StringTools.isNotEmpty(value)) {
             List actualParameter = new ArrayList();
             Object attribute = null;
-            if (parameterType.isAssignableFrom(ModelArray.class)) {
+            if (parameterType.equals(ModelArray.class)) {
                 ModelArray array = ModelArray.parseArray(value);
                 return array;
             } else {
@@ -54,6 +54,12 @@ public class ListArgumentResolver implements HandlerMethodArgumentResolver {
                         List<?> array = ModelArray.parseArray(value, elementClass);
                         for (int i = 0; i < array.size(); i++) {
                             attribute = array.get(i);
+                            actualParameter.add(attribute);
+                        }
+                    } else if (elementClass.isAssignableFrom(ModelObject.class)) {
+                        List<?> array = ModelArray.parseArray(value, elementClass);
+                        for (int i = 0; i < array.size(); i++) {
+                            attribute = new ModelObject((Map<Object, Object>) array.get(i));
                             actualParameter.add(attribute);
                         }
                     } else {
