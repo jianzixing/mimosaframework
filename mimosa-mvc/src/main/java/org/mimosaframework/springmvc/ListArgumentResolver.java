@@ -26,7 +26,7 @@ public class ListArgumentResolver implements HandlerMethodArgumentResolver {
         Method method = parameter.getMethod();
         Printer printer = method.getAnnotation(Printer.class);
         Class type = parameter.getParameterType();
-        if (List.class.isAssignableFrom(type) && printer != null) {
+        if ((type.isAssignableFrom(List.class) || type.equals(ModelArray.class)) && printer != null) {
             return true;
         }
         return false;
@@ -37,48 +37,49 @@ public class ListArgumentResolver implements HandlerMethodArgumentResolver {
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) throws Exception {
+        // 获取枚举类型
         Class<?> elementClass = getElementTypeFromAnnotation(parameter);
+        Class parameterType = parameter.getParameterType();
         String value = webRequest.getParameter(parameter.getParameterName());
 
         if (StringTools.isNotEmpty(value)) {
             List actualParameter = new ArrayList();
             Object attribute = null;
-            if (elementClass != null) {
-                if (BeanUtils.isSimpleValueType(elementClass)) {
-                    List<?> array = ModelArray.parseArray(value, elementClass);
-                    for (int i = 0; i < array.size(); i++) {
-                        attribute = array.get(i);
-                        actualParameter.add(attribute);
-                    }
-                } else if (elementClass.isAssignableFrom(ModelObject.class)) {
-                    List<?> array = ModelArray.parseArray(value, elementClass);
-                    for (int i = 0; i < array.size(); i++) {
-                        attribute = new ModelObject((Map<Object, Object>) array.get(i));
-                        actualParameter.add(attribute);
-                    }
-                } else {
-                    ModelArray array = ModelArray.parseArray(value);
-                    String name = ClassUtils.getShortNameAsProperty(elementClass);
-                    if (array != null && array.size() != 0) {
+            if (parameterType.isAssignableFrom(ModelArray.class)) {
+                ModelArray array = ModelArray.parseArray(value);
+                return array;
+            } else {
+                if (elementClass != null) {
+                    if (BeanUtils.isSimpleValueType(elementClass)) {
+                        List<?> array = ModelArray.parseArray(value, elementClass);
                         for (int i = 0; i < array.size(); i++) {
-                            Object item = array.get(i);
-                            if (item instanceof Model) {
-                                Object obj = ModelObject.toJavaObject((Model) item, elementClass);
-                                actualParameter.add(obj);
-                            } else {
-                                // 如果不是我想要的结果那就交给Spring初始化吧
-                                attribute = BeanUtils.instantiateClass(elementClass);
-                                WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
-                                actualParameter.add(binder.convertIfNecessary(array.get(i), elementClass, parameter));
+                            attribute = array.get(i);
+                            actualParameter.add(attribute);
+                        }
+                    } else {
+                        ModelArray array = ModelArray.parseArray(value);
+                        String name = ClassUtils.getShortNameAsProperty(elementClass);
+                        if (array != null && array.size() != 0) {
+                            for (int i = 0; i < array.size(); i++) {
+                                Object item = array.get(i);
+                                if (item instanceof Model) {
+                                    Object obj = ModelObject.toJavaObject((Model) item, elementClass);
+                                    actualParameter.add(obj);
+                                } else {
+                                    // 如果不是我想要的结果那就交给Spring初始化吧
+                                    attribute = BeanUtils.instantiateClass(elementClass);
+                                    WebDataBinder binder = binderFactory.createBinder(webRequest, attribute, name);
+                                    actualParameter.add(binder.convertIfNecessary(array.get(i), elementClass, parameter));
+                                }
                             }
                         }
                     }
-                }
-            } else {
-                List<?> array = ModelArray.parseArray(value);
-                if (array != null && array.size() != 0) {
-                    for (int i = 0; i < array.size(); i++) {
-                        actualParameter.add(array.get(i));
+                } else {
+                    List<?> array = ModelArray.parseArray(value);
+                    if (array != null && array.size() != 0) {
+                        for (int i = 0; i < array.size(); i++) {
+                            actualParameter.add(array.get(i));
+                        }
                     }
                 }
             }
