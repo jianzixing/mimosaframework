@@ -124,4 +124,11 @@ public @interface Column {
      * @return
      */
     boolean extCanUpdate() default true;
+
+    /**
+     * 是否用作文档
+     *
+     * @return
+     */
+    boolean doc() default false;
 }
