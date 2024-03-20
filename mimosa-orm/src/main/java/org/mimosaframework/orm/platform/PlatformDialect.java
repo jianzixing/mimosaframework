@@ -326,6 +326,7 @@ public abstract class PlatformDialect implements Dialect {
                 boolean autoIncr = mappingField.isMappingAutoIncrement();
                 boolean isPk = mappingField.isMappingFieldPrimaryKey();
                 boolean timeForUpdate = mappingField.isMappingFieldTimeForUpdate();
+                boolean timeForCreate = mappingField.isMappingFieldTimeForCreate();
                 String comment = mappingField.getMappingFieldComment();
 
                 sql.column(field);
@@ -349,6 +350,7 @@ public abstract class PlatformDialect implements Dialect {
                 }
 
                 if (timeForUpdate) sql.timeForUpdate();
+                if (timeForCreate) sql.timeForCreate();
             }
 
             if (StringTools.isNotEmpty(mappingTable.getEncoding())) {
@@ -384,12 +386,15 @@ public abstract class PlatformDialect implements Dialect {
         boolean autoIncr = mappingField.isMappingAutoIncrement();
         String comment = mappingField.getMappingFieldComment();
         boolean isTimeForUpdate = mappingField.isMappingFieldTimeForUpdate();
+        boolean isTimeForCreate = mappingField.isMappingFieldTimeForCreate();
 
         DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
         sql.alter().table(mappingTable.getMappingClass()).add().column(field);
 
         if (isTimeForUpdate) {
             sql.timeForUpdate();
+        } else if (isTimeForCreate) {
+            sql.timeForCreate();
         } else {
             this.setSQLType(sql, type, length, scale);
             if (!nullable) {

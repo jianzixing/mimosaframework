@@ -19,7 +19,7 @@ public enum TablePay {
     status,
     @Column(type = BigDecimal.class, length = 16, scale = 2)
     payMoney,
-    @Column(type = Date.class)
+    @Column(type = Date.class, timeForCreate = true)
     createdTime,
     @Column(timeForUpdate = true)
     modifiedDate

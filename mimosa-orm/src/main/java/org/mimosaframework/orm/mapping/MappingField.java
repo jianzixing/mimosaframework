@@ -44,6 +44,8 @@ public interface MappingField {
 
     boolean isMappingFieldTimeForUpdate();
 
+    boolean isMappingFieldTimeForCreate();
+
     boolean isMappingFieldPrimaryKey();
 
     MappingTable getMappingTable();

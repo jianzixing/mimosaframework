@@ -83,11 +83,18 @@ public @interface Column {
 
     /**
      * 创建一个时间类型字段,在任何更新添加时都会更新时间,示例SQL如下:
-     * `modified_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间'
+     * `modified_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间'
      *
      * @return
      */
     boolean timeForUpdate() default false;
+
+    /**
+     * `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP;
+     *
+     * @return
+     */
+    boolean timeForCreate() default false;
 
     String defaultValue() default "";
 
@@ -126,7 +133,7 @@ public @interface Column {
     boolean extCanUpdate() default true;
 
     /**
-     * 是否用作文档
+     * 是否用作文档，没有任何作用只用作标识字段用途
      *
      * @return
      */

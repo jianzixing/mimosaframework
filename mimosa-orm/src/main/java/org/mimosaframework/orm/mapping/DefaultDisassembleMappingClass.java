@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -255,8 +256,8 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
             // 如果是主键且没有配置
             mappingField.setMappingFieldType(long.class);
         } else {
-            if (isEnum == false) {
-                Class type = ((Field) fieldObject).getType();
+            if (!isEnum) {
+                Class<?> type = ((Field) fieldObject).getType();
                 if (column.type() != String.class && column.type() != type) {
                     // 如果注解里使用了自定义的类型则注解优先
                     type = column.type();
@@ -276,12 +277,28 @@ public class DefaultDisassembleMappingClass implements DisassembleMappingClass {
         if (StringTools.isNotEmpty(column.comment())) {
             mappingField.setMappingFieldComment(column.comment());
         }
+
         mappingField.setMappingFieldTimeForUpdate(column.timeForUpdate());
+        mappingField.setMappingFieldTimeForCreate(column.timeForCreate());
         if (StringTools.isNotEmpty(column.defaultValue())) {
             mappingField.setMappingFieldDefaultValue(column.defaultValue());
         }
 
-        Class c = mappingField.getMappingFieldType();
+
+        Class<?> c = mappingField.getMappingFieldType();
+        if (isEnum && (column.timeForUpdate() || column.timeForCreate()) && c != null && c.equals(String.class)) {
+            mappingField.setMappingFieldType(Date.class);
+            c = mappingField.getMappingFieldType();
+        }
+        if (c == null) {
+            throw new IllegalArgumentException(I18n.print("field_type_miss", mappingTable.getMappingClassName(), fieldName));
+        }
+        if ((column.timeForUpdate() || column.timeForCreate())
+                && !c.equals(Date.class)
+                && !c.equals(java.sql.Date.class)
+                && !c.equals(java.sql.Timestamp.class)) {
+            throw new IllegalArgumentException(I18n.print("time_field_type_error"));
+        }
         if (Boolean.class == c || boolean.class == c) {
             String df = mappingField.getMappingFieldDefaultValue();
             if ("false".equalsIgnoreCase(df)) {

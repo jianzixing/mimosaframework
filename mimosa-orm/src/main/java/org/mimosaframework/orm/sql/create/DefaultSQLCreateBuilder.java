@@ -394,6 +394,14 @@ public class DefaultSQLCreateBuilder
         return this;
     }
 
+    public DefaultSQLCreateBuilder timeForCreate() {
+        StampCreateColumn column = this.getLastColumn();
+        if (column != null) {
+            column.timeForCreate = true;
+        }
+        return this;
+    }
+
     @Override
     public DefaultSQLCreateBuilder unique() {
         this.gammars.add("unique");

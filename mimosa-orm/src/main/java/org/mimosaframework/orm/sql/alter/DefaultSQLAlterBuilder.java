@@ -448,4 +448,12 @@ public class DefaultSQLAlterBuilder
         }
         return this;
     }
+
+    public DefaultSQLAlterBuilder timeForCreate() {
+        StampAlterItem item = this.getLastItem();
+        if (item != null) {
+            item.timeForCreate = true;
+        }
+        return this;
+    }
 }

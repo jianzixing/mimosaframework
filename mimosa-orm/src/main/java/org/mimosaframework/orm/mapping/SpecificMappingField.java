@@ -84,6 +84,11 @@ public class SpecificMappingField implements MappingField {
     private boolean mappingFieldTimeForUpdate;
 
     /**
+     * 从映射类中读取，新建数据默认初始化时间为当前时间
+     */
+    private boolean mappingFieldTimeForCreate;
+
+    /**
      * 从映射类中读取的默认值
      */
     private String mappingFieldDefaultValue;
@@ -242,6 +247,14 @@ public class SpecificMappingField implements MappingField {
 
     public void setMappingFieldTimeForUpdate(boolean mappingFieldTimeForUpdate) {
         this.mappingFieldTimeForUpdate = mappingFieldTimeForUpdate;
+    }
+
+    public boolean isMappingFieldTimeForCreate() {
+        return mappingFieldTimeForCreate;
+    }
+
+    public void setMappingFieldTimeForCreate(boolean mappingFieldTimeForCreate) {
+        this.mappingFieldTimeForCreate = mappingFieldTimeForCreate;
     }
 
     public String getMappingFieldDefaultValue() {
