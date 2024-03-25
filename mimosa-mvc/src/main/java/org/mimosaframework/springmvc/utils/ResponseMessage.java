@@ -242,7 +242,7 @@ public class ResponseMessage<T> implements Serializable {
         // config.put(Long.class, DyToStringSerializer.instance);
         // config.put(Long.TYPE, DyToStringSerializer.instance);
         // return ModelObject.toJSONString(this, config);
-        return ModelObject.toJSONString(this);
+        return ModelObject.toFrontString(this);
     }
 
     public static final int SUCCESS = 100;
