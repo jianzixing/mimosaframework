@@ -25,13 +25,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import org.mimosaframework.core.json.parser.DefaultModelParser;
 import org.mimosaframework.core.json.parser.ModelLexer;
@@ -258,8 +252,8 @@ public abstract class Model implements ModelStreamAware, ModelAware {
      *             {@link TypeReference} class. For example, to get the type for
      *             {@code Collection<Foo>}, you should use:
      *             <pre>
-     *                                                                                                             Type type = new TypeReference&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                                                                                                             </pre>
+     *                                                                                                                                                 Type type = new TypeReference&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                                                                                                                                                 </pre>
      * @return an object of type T from the string
      */
     @SuppressWarnings("unchecked")
@@ -961,10 +955,10 @@ public abstract class Model implements ModelStreamAware, ModelAware {
     }
 
     public String toFrontString() {
-        return ModelObject.toJSONString(this, config);
+        return Model.toFrontString(this);
     }
 
     public static String toFrontString(Object obj) {
-        return ModelObject.toJSONString(obj, config);
+        return ModelObject.toJSONString(obj, config, SerializerFeature.WriteDateUseDateFormat);
     }
 }

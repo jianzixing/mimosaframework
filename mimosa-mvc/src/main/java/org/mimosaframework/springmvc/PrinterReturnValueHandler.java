@@ -15,12 +15,6 @@ import java.lang.reflect.Method;
 public class PrinterReturnValueHandler implements HandlerMethodReturnValueHandler {
     private static final String DEFAULT_CONTENT_TYPE = "application/json;charset=UTF-8";
     private String contentType = null;
-    private static final SerializeConfig config = new SerializeConfig();
-
-    static {
-        config.put(Long.class, DyToStringSerializer.instance);
-        config.put(Long.TYPE, DyToStringSerializer.instance);
-    }
 
     public PrinterReturnValueHandler(String contentType) {
         this.contentType = contentType;
@@ -77,7 +71,7 @@ public class PrinterReturnValueHandler implements HandlerMethodReturnValueHandle
             } else if (o instanceof Number) {
                 text = String.valueOf(o);
             } else {
-                text = ModelObject.toJSONString(o, config);
+                text = ModelObject.toFrontString(o);
             }
             response.getWriter().write(text);
         }
