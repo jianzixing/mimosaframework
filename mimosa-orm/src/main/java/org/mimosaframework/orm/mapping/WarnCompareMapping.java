@@ -110,7 +110,7 @@ public class WarnCompareMapping extends AbstractCompareMapping {
         MappingTable mappingTable = tableMate.getMappingTable();
 
         for (String indexName : dropIndexes) {
-            logger.error(I18n.print("compare_mapping_warn_index_add",
+            logger.error(I18n.print("compare_mapping_warn_index_del",
                     mappingTable.getMappingTableName(),
                     indexName));
         }
