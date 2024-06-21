@@ -1,7 +1,5 @@
 package org.mimosaframework.orm.criteria;
 
-import java.io.Serializable;
-
 public class DefaultWrapsLinked implements LogicWrapsLinked {
     private Wraps<Filter> logicWraps;
 
@@ -41,98 +39,98 @@ public class DefaultWrapsLinked implements LogicWrapsLinked {
     }
 
     @Override
-    public LogicWrapsLinked eq(Serializable key, Object value) {
+    public LogicWrapsLinked eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked in(Serializable key, Iterable values) {
+    public LogicWrapsLinked in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked in(Serializable key, Object... values) {
+    public LogicWrapsLinked in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked nin(Serializable key, Iterable values) {
+    public LogicWrapsLinked nin(Object key, Iterable values) {
         Filter filter = new DefaultFilter().nin(key, values);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked nin(Serializable key, Object... values) {
+    public LogicWrapsLinked nin(Object key, Object... values) {
         Filter filter = new DefaultFilter().nin(key, values);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked like(Serializable key, Object value) {
+    public LogicWrapsLinked like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked ne(Serializable key, Object value) {
+    public LogicWrapsLinked ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked gt(Serializable key, Object value) {
+    public LogicWrapsLinked gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked gte(Serializable key, Object value) {
+    public LogicWrapsLinked gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked lt(Serializable key, Object value) {
+    public LogicWrapsLinked lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked lte(Serializable key, Object value) {
+    public LogicWrapsLinked lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked between(Serializable key, Object start, Object end) {
+    public LogicWrapsLinked between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked isNull(Serializable key) {
+    public LogicWrapsLinked isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.addFilterInLinked(filter);
         return this;
     }
 
     @Override
-    public LogicWrapsLinked isNotNull(Serializable key) {
+    public LogicWrapsLinked isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
         this.addFilterInLinked(filter);
         return this;

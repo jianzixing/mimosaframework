@@ -1,12 +1,13 @@
 package org.mimosaframework.orm.criteria;
 
 
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BasicFunction;
 
 import java.io.Serializable;
 
 public class FunctionField implements Serializable {
-    private Serializable field;
+    private String field;
     private BasicFunction function;
     private String alias;
     // 处理精度
@@ -14,36 +15,36 @@ public class FunctionField implements Serializable {
     private boolean distinct = false;
     private String avgCountName;
 
-    public FunctionField(Serializable field, BasicFunction function) {
-        this.field = field;
+    public FunctionField(Object field, BasicFunction function) {
+        this.field = ClassUtils.value(field);
         this.function = function;
     }
 
-    public FunctionField(Serializable field, BasicFunction function, String alias) {
-        this.field = field;
+    public FunctionField(Object field, BasicFunction function, String alias) {
+        this.field = ClassUtils.value(field);
         this.function = function;
         this.alias = alias;
     }
 
-    public FunctionField(Serializable field, BasicFunction function, int scale) {
-        this.field = field;
+    public FunctionField(Object field, BasicFunction function, int scale) {
+        this.field = ClassUtils.value(field);
         this.function = function;
         this.scale = scale;
     }
 
-    public FunctionField(Serializable field, BasicFunction function, String alias, int scale) {
-        this.field = field;
+    public FunctionField(Object field, BasicFunction function, String alias, int scale) {
+        this.field = ClassUtils.value(field);
         this.function = function;
         this.alias = alias;
         this.scale = scale;
     }
 
-    public Serializable getField() {
+    public Object getField() {
         return field;
     }
 
-    public void setField(Serializable field) {
-        this.field = field;
+    public void setField(Object field) {
+        this.field = ClassUtils.value(field);
     }
 
     public BasicFunction getFunction() {

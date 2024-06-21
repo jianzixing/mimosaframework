@@ -2,8 +2,6 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.BasicFunction;
 
-import java.io.Serializable;
-
 public class HavingField implements Filter {
     private BasicFunction function;
     private Filter filter;
@@ -31,98 +29,98 @@ public class HavingField implements Filter {
     }
 
     @Override
-    public HavingField eq(Serializable key, Object value) {
+    public HavingField eq(Object key, Object value) {
         this.filter = new DefaultFilter();
         this.filter.eq(key, value);
         return this;
     }
 
     @Override
-    public HavingField in(Serializable key, Iterable values) {
+    public HavingField in(Object key, Iterable values) {
         this.filter = new DefaultFilter();
         this.filter.in(key, values);
         return this;
     }
 
     @Override
-    public HavingField in(Serializable key, Object... values) {
+    public HavingField in(Object key, Object... values) {
         this.filter = new DefaultFilter();
         this.filter.in(key, values);
         return this;
     }
 
     @Override
-    public HavingField nin(Serializable key, Iterable values) {
+    public HavingField nin(Object key, Iterable values) {
         this.filter = new DefaultFilter();
         this.filter.nin(key, values);
         return this;
     }
 
     @Override
-    public HavingField nin(Serializable key, Object... values) {
+    public HavingField nin(Object key, Object... values) {
         this.filter = new DefaultFilter();
         this.filter.nin(key, values);
         return this;
     }
 
     @Override
-    public HavingField like(Serializable key, Object value) {
+    public HavingField like(Object key, Object value) {
         this.filter = new DefaultFilter();
         this.filter.like(key, value);
         return this;
     }
 
     @Override
-    public HavingField ne(Serializable key, Object value) {
+    public HavingField ne(Object key, Object value) {
         this.filter = new DefaultFilter();
         this.filter.ne(key, value);
         return this;
     }
 
     @Override
-    public HavingField gt(Serializable key, Object value) {
+    public HavingField gt(Object key, Object value) {
         this.filter = new DefaultFilter();
         this.filter.gt(key, value);
         return this;
     }
 
     @Override
-    public HavingField gte(Serializable key, Object value) {
+    public HavingField gte(Object key, Object value) {
         this.filter = new DefaultFilter();
         this.filter.gte(key, value);
         return this;
     }
 
     @Override
-    public HavingField lt(Serializable key, Object value) {
+    public HavingField lt(Object key, Object value) {
         this.filter = new DefaultFilter();
         this.filter.lt(key, value);
         return this;
     }
 
     @Override
-    public HavingField lte(Serializable key, Object value) {
+    public HavingField lte(Object key, Object value) {
         this.filter = new DefaultFilter();
         this.filter.lte(key, value);
         return this;
     }
 
     @Override
-    public HavingField between(Serializable key, Object start, Object end) {
+    public HavingField between(Object key, Object start, Object end) {
         this.filter = new DefaultFilter();
         this.filter.between(key, start, end);
         return this;
     }
 
     @Override
-    public HavingField isNull(Serializable key) {
+    public HavingField isNull(Object key) {
         this.filter = new DefaultFilter();
         this.filter.isNull(key);
         return this;
     }
 
     @Override
-    public HavingField isNotNull(Serializable key) {
+    public HavingField isNotNull(Object key) {
         this.filter = new DefaultFilter();
         this.filter.isNotNull(key);
         return this;

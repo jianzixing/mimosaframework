@@ -2,7 +2,6 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.Paging;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -18,7 +17,7 @@ public interface Query<T extends Query> extends QueryFilter<T> {
 
     T orderBy(OrderBy order);
 
-    T orderBy(Serializable field, boolean isAsc);
+    T orderBy(Object field, boolean isAsc);
 
     T withoutOrderBy();
 
@@ -45,13 +44,13 @@ public interface Query<T extends Query> extends QueryFilter<T> {
      * @param fields
      * @return
      */
-    T fields(Serializable... fields);
+    T fields(Object... fields);
 
-    T fields(Class tableClass, Serializable... fields);
+    T fields(Class tableClass, Object... fields);
 
-    T fields(List<Serializable> fields);
+    T fields(List<Object> fields);
 
-    T fields(Class tableClass, List<Serializable> fields);
+    T fields(Class tableClass, List<Object> fields);
 
     /**
      * 从映射表中排除当前字段值
@@ -60,13 +59,13 @@ public interface Query<T extends Query> extends QueryFilter<T> {
      * @param fields
      * @return
      */
-    T excludes(Serializable... fields);
+    T excludes(Object... fields);
 
-    T excludes(Class tableClass, Serializable... fields);
+    T excludes(Class tableClass, Object... fields);
 
-    T excludes(List<Serializable> fields);
+    T excludes(List<Object> fields);
 
-    T excludes(Class tableClass, List<Serializable> fields);
+    T excludes(Class tableClass, List<Object> fields);
 
     Class getTableClass();
 

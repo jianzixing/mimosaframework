@@ -1,16 +1,15 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.utils.SQLUtils;
-
-import java.io.Serializable;
 
 /**
  * @author yangankang
  */
 public class DefaultFilter implements QueryFilter {
     private String as;
-    private Serializable key;
+    private String key;
     private Object value;
     private Object startValue;
     private Object endValue;
@@ -21,8 +20,8 @@ public class DefaultFilter implements QueryFilter {
     public DefaultFilter() {
     }
 
-    public DefaultFilter(Serializable key, Object value, String symbol) {
-        this.key = key;
+    public DefaultFilter(Object key, Object value, String symbol) {
+        this.key = ClassUtils.value(key);
         this.value = value;
         if (symbol != null) {
             this.symbol = symbol.trim();
@@ -37,7 +36,7 @@ public class DefaultFilter implements QueryFilter {
         this.as = as;
     }
 
-    public Serializable getKey() {
+    public String getKey() {
         return key;
     }
 
@@ -57,8 +56,8 @@ public class DefaultFilter implements QueryFilter {
         return symbol;
     }
 
-    public void setKey(Serializable key) {
-        this.key = key;
+    public void setKey(Object key) {
+        this.key = ClassUtils.value(key);
     }
 
     public void setValue(Object value) {
@@ -85,15 +84,15 @@ public class DefaultFilter implements QueryFilter {
         this.query = query;
     }
 
-    public DefaultFilter as(Serializable as) {
-        SQLUtils.checkAsName(as);
+    public DefaultFilter as(Object as) {
+        SQLUtils.checkAsName(ClassUtils.value(as));
         this.as = as.toString();
         return this;
     }
 
     @Override
-    public DefaultFilter eq(Serializable key, Object value) {
-        this.key = key;
+    public DefaultFilter eq(Object key, Object value) {
+        this.key = ClassUtils.value(key);
         this.value = value;
         this.symbol = "=";
         if (key == null) {
@@ -106,8 +105,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter in(Serializable key, Iterable values) {
-        this.key = key;
+    public DefaultFilter in(Object key, Iterable values) {
+        this.key = ClassUtils.value(key);
         this.value = values;
         this.symbol = "in";
         if (key == null) {
@@ -120,8 +119,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter in(Serializable key, Object... values) {
-        this.key = key;
+    public DefaultFilter in(Object key, Object... values) {
+        this.key = ClassUtils.value(key);
         this.value = values;
         this.symbol = "in";
         if (key == null) {
@@ -134,8 +133,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter nin(Serializable key, Iterable values) {
-        this.key = key;
+    public DefaultFilter nin(Object key, Iterable values) {
+        this.key = ClassUtils.value(key);
         this.value = values;
         this.symbol = "notIn";
         if (key == null) {
@@ -148,8 +147,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter nin(Serializable key, Object... values) {
-        this.key = key;
+    public DefaultFilter nin(Object key, Object... values) {
+        this.key = ClassUtils.value(key);
         this.value = values;
         this.symbol = "notIn";
         if (key == null) {
@@ -162,8 +161,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter like(Serializable key, Object value) {
-        this.key = key;
+    public DefaultFilter like(Object key, Object value) {
+        this.key = ClassUtils.value(key);
         this.value = value;
         this.symbol = "like";
         if (key == null) {
@@ -176,8 +175,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter ne(Serializable key, Object value) {
-        this.key = key;
+    public DefaultFilter ne(Object key, Object value) {
+        this.key = ClassUtils.value(key);
         this.value = value;
         this.symbol = "!=";
         if (key == null) {
@@ -190,8 +189,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter gt(Serializable key, Object value) {
-        this.key = key;
+    public DefaultFilter gt(Object key, Object value) {
+        this.key = ClassUtils.value(key);
         this.value = value;
         this.symbol = ">";
         if (key == null) {
@@ -204,8 +203,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter gte(Serializable key, Object value) {
-        this.key = key;
+    public DefaultFilter gte(Object key, Object value) {
+        this.key = ClassUtils.value(key);
         this.value = value;
         this.symbol = ">=";
         if (key == null) {
@@ -218,8 +217,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter lt(Serializable key, Object value) {
-        this.key = key;
+    public DefaultFilter lt(Object key, Object value) {
+        this.key = ClassUtils.value(key);
         this.value = value;
         this.symbol = "<";
         if (key == null) {
@@ -232,8 +231,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter lte(Serializable key, Object value) {
-        this.key = key;
+    public DefaultFilter lte(Object key, Object value) {
+        this.key = ClassUtils.value(key);
         this.value = value;
         this.symbol = "<=";
         if (key == null) {
@@ -246,8 +245,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter between(Serializable key, Object start, Object end) {
-        this.key = key;
+    public DefaultFilter between(Object key, Object start, Object end) {
+        this.key = ClassUtils.value(key);
         this.startValue = start;
         this.endValue = end;
         this.symbol = "between";
@@ -261,8 +260,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter isNull(Serializable key) {
-        this.key = key;
+    public DefaultFilter isNull(Object key) {
+        this.key = ClassUtils.value(key);
         this.symbol = "isNull";
         if (key == null) {
             throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
@@ -271,8 +270,8 @@ public class DefaultFilter implements QueryFilter {
     }
 
     @Override
-    public DefaultFilter isNotNull(Serializable key) {
-        this.key = key;
+    public DefaultFilter isNotNull(Object key) {
+        this.key = ClassUtils.value(key);
         this.symbol = "notNull";
         if (key == null) {
             throw new IllegalArgumentException(I18n.print("key_not_allow_null"));

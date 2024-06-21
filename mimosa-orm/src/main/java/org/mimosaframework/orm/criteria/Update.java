@@ -1,7 +1,5 @@
 package org.mimosaframework.orm.criteria;
 
-import java.io.Serializable;
-
 /**
  * @author yangankang
  */
@@ -10,19 +8,19 @@ public interface Update<T extends Update> extends Filter<T> {
 
     T linked(WrapsLinked linked);
 
-    Update<LogicUpdate> set(Serializable key, Object value);
+    Update<LogicUpdate> set(Object key, Object value);
 
-    T addSelf(Serializable key);
+    T addSelf(Object key);
 
-    T subSelf(Serializable key);
+    T subSelf(Object key);
 
-    T addSelf(Serializable key, long step);
+    T addSelf(Object key, long step);
 
-    T subSelf(Serializable key, long step);
+    T subSelf(Object key, long step);
 
-    T addSelf(Serializable key, String step);
+    T addSelf(Object key, String step);
 
-    T subSelf(Serializable key, String step);
+    T subSelf(Object key, String step);
 
     long update();
 

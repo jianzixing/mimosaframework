@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.utils;
 
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.core.utils.Finder;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.AutoResult;
@@ -33,7 +34,7 @@ public abstract class ModelUtils {
         Map<String, T> map = new LinkedHashMap();
         if (objects != null) {
             for (T m : objects) {
-                map.put(Finder.getStringValue(m, ModelObject.getKeyName(idKey)), m);
+                map.put(Finder.getStringValue(m, ClassUtils.value(idKey)), m);
             }
 
             List<T> result = new ArrayList();
@@ -41,10 +42,10 @@ public abstract class ModelUtils {
 
             Set<Map.Entry<String, T>> set = map.entrySet();
             for (Map.Entry<String, T> entry : set) {
-                String pid = Finder.getStringValue(entry.getValue(), ModelObject.getKeyName(pidKey));
+                String pid = Finder.getStringValue(entry.getValue(), ClassUtils.value(pidKey));
                 Set<Map.Entry<String, T>> set2 = map.entrySet();
                 for (Map.Entry<String, T> cen : set2) {
-                    if (Finder.getStringValue(cen.getValue(), ModelObject.getKeyName(idKey)).equals(pid)
+                    if (Finder.getStringValue(cen.getValue(), ClassUtils.value(idKey)).equals(pid)
                             && !cen.getValue().equals(entry.getValue())) {
                         T object = cen.getValue();
                         List children = Finder.getArrayValue(object, childrenKey);
@@ -267,7 +268,7 @@ public abstract class ModelUtils {
 
     public static ModelObject queryPKModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c) {
         if (sessionTemplate != null && object != null && keyFrom != null && c != null) {
-            return sessionTemplate.get(c, object.getString(ModelObject.getKeyName(keyFrom)));
+            return sessionTemplate.get(c, object.getString(ClassUtils.value(keyFrom)));
         }
         return null;
     }

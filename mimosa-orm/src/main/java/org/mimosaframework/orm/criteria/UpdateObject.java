@@ -1,30 +1,30 @@
 package org.mimosaframework.orm.criteria;
 
-import java.io.Serializable;
+import org.mimosaframework.core.utils.ClassUtils;
 
 /**
  * 使用bean的时候如何设置null是个问题所以包装一下
  */
 public class UpdateObject<T> {
     private T obj;
-    private Serializable[] nullFields;
-    private Serializable[] retainFields;
-    private Serializable[] excludeFields;
+    private String[] nullFields;
+    private String[] retainFields;
+    private String[] excludeFields;
     private boolean full = false;
 
-    public static <T> UpdateObject<T> wrap(T obj, Serializable... fields) {
+    public static <T> UpdateObject<T> wrap(T obj, Object... fields) {
         return new UpdateObject(obj).nulls(fields);
     }
 
-    public static <T> UpdateObject<T> wrapNulls(T obj, Serializable... fields) {
+    public static <T> UpdateObject<T> wrapNulls(T obj, Object... fields) {
         return new UpdateObject(obj).nulls(fields);
     }
 
-    public static <T> UpdateObject<T> wrapRetains(T obj, Serializable... fields) {
+    public static <T> UpdateObject<T> wrapRetains(T obj, Object... fields) {
         return new UpdateObject(obj).retains(fields);
     }
 
-    public static <T> UpdateObject<T> wrapExcludes(T obj, Serializable... fields) {
+    public static <T> UpdateObject<T> wrapExcludes(T obj, Object... fields) {
         return new UpdateObject(obj).excludes(fields);
     }
 
@@ -51,18 +51,18 @@ public class UpdateObject<T> {
         return full;
     }
 
-    public UpdateObject nulls(Serializable... fields) {
-        this.nullFields = fields;
+    public UpdateObject nulls(Object... fields) {
+        this.nullFields = ClassUtils.values(fields);
         return this;
     }
 
-    public UpdateObject retains(Serializable... fields) {
-        this.retainFields = fields;
+    public UpdateObject retains(Object... fields) {
+        this.retainFields = ClassUtils.values(fields);
         return this;
     }
 
-    public UpdateObject excludes(Serializable... fields) {
-        this.excludeFields = fields;
+    public UpdateObject excludes(Object... fields) {
+        this.excludeFields = ClassUtils.values(fields);
         return this;
     }
 
@@ -81,15 +81,15 @@ public class UpdateObject<T> {
         return this;
     }
 
-    public Serializable[] getNullFields() {
+    public String[] getNullFields() {
         return nullFields;
     }
 
-    public Serializable[] getRetainFields() {
+    public String[] getRetainFields() {
         return retainFields;
     }
 
-    public Serializable[] getExcludeFields() {
+    public String[] getExcludeFields() {
         return excludeFields;
     }
 }

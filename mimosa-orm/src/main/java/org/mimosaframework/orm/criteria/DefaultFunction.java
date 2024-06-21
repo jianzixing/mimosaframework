@@ -1,8 +1,8 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BasicFunction;
 
-import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -24,20 +24,20 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public LogicFunction addFunction(BasicFunction function, Serializable field) {
+    public LogicFunction addFunction(BasicFunction function, Object field) {
         if (funs == null) {
             funs = new LinkedHashSet<>();
         }
-        funs.add(new FunctionField(field, function));
+        funs.add(new FunctionField(ClassUtils.value(field), function));
         return this;
     }
 
     @Override
-    public LogicFunction addFunction(BasicFunction function, Serializable field, String alias) {
+    public LogicFunction addFunction(BasicFunction function, Object field, String alias) {
         if (funs == null) {
             funs = new LinkedHashSet<>();
         }
-        funs.add(new FunctionField(field, function, alias));
+        funs.add(new FunctionField(ClassUtils.value(field), function, alias));
         return this;
     }
 
@@ -143,99 +143,99 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
-    public LogicFunction eq(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().eq(key, value);
+    public LogicFunction eq(Object key, Object value) {
+        Filter filter = new DefaultFilter().eq(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction in(Serializable key, Iterable values) {
-        Filter filter = new DefaultFilter().in(key, values);
+    public LogicFunction in(Object key, Iterable values) {
+        Filter filter = new DefaultFilter().in(ClassUtils.value(key), values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction in(Serializable key, Object... values) {
-        Filter filter = new DefaultFilter().in(key, values);
+    public LogicFunction in(Object key, Object... values) {
+        Filter filter = new DefaultFilter().in(ClassUtils.value(key), values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction nin(Serializable key, Iterable values) {
-        Filter filter = new DefaultFilter().nin(key, values);
+    public LogicFunction nin(Object key, Iterable values) {
+        Filter filter = new DefaultFilter().nin(ClassUtils.value(key), values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction nin(Serializable key, Object... values) {
-        Filter filter = new DefaultFilter().nin(key, values);
+    public LogicFunction nin(Object key, Object... values) {
+        Filter filter = new DefaultFilter().nin(ClassUtils.value(key), values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction like(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().like(key, value);
+    public LogicFunction like(Object key, Object value) {
+        Filter filter = new DefaultFilter().like(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction ne(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().ne(key, value);
+    public LogicFunction ne(Object key, Object value) {
+        Filter filter = new DefaultFilter().ne(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction gt(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().gt(key, value);
+    public LogicFunction gt(Object key, Object value) {
+        Filter filter = new DefaultFilter().gt(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction gte(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().gte(key, value);
+    public LogicFunction gte(Object key, Object value) {
+        Filter filter = new DefaultFilter().gte(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction lt(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().lt(key, value);
+    public LogicFunction lt(Object key, Object value) {
+        Filter filter = new DefaultFilter().lt(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction lte(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().lte(key, value);
+    public LogicFunction lte(Object key, Object value) {
+        Filter filter = new DefaultFilter().lte(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction between(Serializable key, Object start, Object end) {
-        Filter filter = new DefaultFilter().between(key, start, end);
+    public LogicFunction between(Object key, Object start, Object end) {
+        Filter filter = new DefaultFilter().between(ClassUtils.value(key), start, end);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction isNull(Serializable key) {
-        Filter filter = new DefaultFilter().isNull(key);
+    public LogicFunction isNull(Object key) {
+        Filter filter = new DefaultFilter().isNull(ClassUtils.value(key));
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicFunction isNotNull(Serializable key) {
-        Filter filter = new DefaultFilter().isNotNull(key);
+    public LogicFunction isNotNull(Object key) {
+        Filter filter = new DefaultFilter().isNotNull(ClassUtils.value(key));
         this.add(filter);
         return this;
     }

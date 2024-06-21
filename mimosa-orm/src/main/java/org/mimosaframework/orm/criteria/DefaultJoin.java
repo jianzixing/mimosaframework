@@ -1,10 +1,10 @@
 package org.mimosaframework.orm.criteria;
 
 
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.utils.SQLUtils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -183,9 +183,9 @@ public class DefaultJoin implements Join {
     }
 
     @Override
-    public Join as(Serializable s) {
+    public Join as(Object s) {
         SQLUtils.checkAsName(as);
-        this.as = s.toString();
+        this.as = ClassUtils.value(s);
         return this;
     }
 
@@ -221,8 +221,8 @@ public class DefaultJoin implements Join {
     }
 
     @Override
-    public Join orderBy(Serializable field, boolean isAsc) {
-        return this.orderBy(new OrderBy(isAsc, field));
+    public Join orderBy(Object field, boolean isAsc) {
+        return this.orderBy(new OrderBy(isAsc, ClassUtils.value(field)));
     }
 
     public boolean isMulti() {
@@ -269,98 +269,98 @@ public class DefaultJoin implements Join {
     }
 
     @Override
-    public Join eq(Serializable key, Object value) {
+    public Join eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join in(Serializable key, Iterable values) {
+    public Join in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join in(Serializable key, Object... values) {
+    public Join in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join nin(Serializable key, Iterable values) {
+    public Join nin(Object key, Iterable values) {
         Filter filter = new DefaultFilter().nin(key, values);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join nin(Serializable key, Object... values) {
+    public Join nin(Object key, Object... values) {
         Filter filter = new DefaultFilter().nin(key, values);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join like(Serializable key, Object value) {
+    public Join like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join ne(Serializable key, Object value) {
+    public Join ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join gt(Serializable key, Object value) {
+    public Join gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join gte(Serializable key, Object value) {
+    public Join gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join lt(Serializable key, Object value) {
+    public Join lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join lte(Serializable key, Object value) {
+    public Join lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join between(Serializable key, Object start, Object end) {
+    public Join between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join isNull(Serializable key) {
+    public Join isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.ons.add(new JoinOnFilter(filter));
         return this;
     }
 
     @Override
-    public Join isNotNull(Serializable key) {
+    public Join isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.ons.add(new JoinOnFilter(filter));
         return this;

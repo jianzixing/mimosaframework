@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
-import java.io.Serializable;
+import org.mimosaframework.core.utils.ClassUtils;
+
 
 /**
  * @author yangankang
@@ -69,7 +70,8 @@ public final class Criteria {
         return new UpdateObject(t);
     }
 
-    public static AsField as(String alias, Serializable field) {
+    public static AsField as(String alias, Object field) {
+        field = ClassUtils.value(field);
         return new AsField(alias, field);
     }
 

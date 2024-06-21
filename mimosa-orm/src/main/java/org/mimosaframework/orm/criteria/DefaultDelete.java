@@ -1,9 +1,8 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.SessionTemplate;
-
-import java.io.Serializable;
 
 /**
  * @author yangankang
@@ -123,99 +122,99 @@ public class DefaultDelete implements LogicDelete {
     }
 
     @Override
-    public LogicDelete eq(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().eq(key, value);
+    public LogicDelete eq(Object key, Object value) {
+        Filter filter = new DefaultFilter().eq(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete in(Serializable key, Iterable values) {
-        Filter filter = new DefaultFilter().in(key, values);
+    public LogicDelete in(Object key, Iterable values) {
+        Filter filter = new DefaultFilter().in(ClassUtils.value(key), values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete in(Serializable key, Object... values) {
-        Filter filter = new DefaultFilter().in(key, values);
+    public LogicDelete in(Object key, Object... values) {
+        Filter filter = new DefaultFilter().in(ClassUtils.value(key), values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete nin(Serializable key, Iterable values) {
-        Filter filter = new DefaultFilter().nin(key, values);
+    public LogicDelete nin(Object key, Iterable values) {
+        Filter filter = new DefaultFilter().nin(ClassUtils.value(key), values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete nin(Serializable key, Object... values) {
-        Filter filter = new DefaultFilter().nin(key, values);
+    public LogicDelete nin(Object key, Object... values) {
+        Filter filter = new DefaultFilter().nin(ClassUtils.value(key), values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete like(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().like(key, value);
+    public LogicDelete like(Object key, Object value) {
+        Filter filter = new DefaultFilter().like(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete ne(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().ne(key, value);
+    public LogicDelete ne(Object key, Object value) {
+        Filter filter = new DefaultFilter().ne(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete gt(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().gt(key, value);
+    public LogicDelete gt(Object key, Object value) {
+        Filter filter = new DefaultFilter().gt(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete gte(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().gte(key, value);
+    public LogicDelete gte(Object key, Object value) {
+        Filter filter = new DefaultFilter().gte(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete lt(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().lt(key, value);
+    public LogicDelete lt(Object key, Object value) {
+        Filter filter = new DefaultFilter().lt(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete lte(Serializable key, Object value) {
-        Filter filter = new DefaultFilter().lte(key, value);
+    public LogicDelete lte(Object key, Object value) {
+        Filter filter = new DefaultFilter().lte(ClassUtils.value(key), value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete between(Serializable key, Object start, Object end) {
-        Filter filter = new DefaultFilter().between(key, start, end);
+    public LogicDelete between(Object key, Object start, Object end) {
+        Filter filter = new DefaultFilter().between(ClassUtils.value(key), start, end);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete isNull(Serializable key) {
-        Filter filter = new DefaultFilter().isNull(key);
+    public LogicDelete isNull(Object key) {
+        Filter filter = new DefaultFilter().isNull(ClassUtils.value(key));
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicDelete isNotNull(Serializable key) {
-        Filter filter = new DefaultFilter().isNotNull(key);
+    public LogicDelete isNotNull(Object key) {
+        Filter filter = new DefaultFilter().isNotNull(ClassUtils.value(key));
         this.add(filter);
         return this;
     }

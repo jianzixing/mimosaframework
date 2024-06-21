@@ -1,9 +1,9 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.SessionTemplate;
 
-import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public class DefaultUpdate implements LogicUpdate {
     private BeanSessionTemplate beanSessionTemplate;
 
     private Wraps<Filter> logicWraps;
-    private Map<Object, Object> values = new LinkedHashMap<Object, Object>();
+    private Map<String, Object> values = new LinkedHashMap<>();
     private Class tableClass;
 
     public DefaultUpdate() {
@@ -47,11 +47,11 @@ public class DefaultUpdate implements LogicUpdate {
         return tableClass;
     }
 
-    public Map<Object, Object> getValues() {
+    public Map<String, Object> getValues() {
         return values;
     }
 
-    public void setValues(Map<Object, Object> values) {
+    public void setValues(Map<String, Object> values) {
         this.values = values;
     }
 
@@ -72,63 +72,63 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public Update set(Serializable key, Object value) {
+    public Update set(Object key, Object value) {
         if (value == null) {
             value = Keyword.NULL;
         }
-        values.put(key, value);
+        values.put(ClassUtils.value(key), value);
         return this;
     }
 
     @Override
-    public LogicUpdate addSelf(Serializable key) {
+    public LogicUpdate addSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.ADD_SELF);
-        values.put(key, v);
+        values.put(ClassUtils.value(key), v);
         return this;
     }
 
     @Override
-    public LogicUpdate subSelf(Serializable key) {
+    public LogicUpdate subSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
-        values.put(key, v);
+        values.put(ClassUtils.value(key), v);
         return this;
     }
 
     @Override
-    public LogicUpdate addSelf(Serializable key, long step) {
-        UpdateSetValue v = new UpdateSetValue();
-        v.setType(UpdateSpecialType.ADD_SELF);
-        v.setStep(step);
-        values.put(key, v);
-        return this;
-    }
-
-    @Override
-    public LogicUpdate subSelf(Serializable key, long step) {
-        UpdateSetValue v = new UpdateSetValue();
-        v.setType(UpdateSpecialType.SUB_SELF);
-        v.setStep(step);
-        values.put(key, v);
-        return this;
-    }
-
-    @Override
-    public LogicUpdate addSelf(Serializable key, String step) {
+    public LogicUpdate addSelf(Object key, long step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.ADD_SELF);
         v.setStep(step);
-        values.put(key, v);
+        values.put(ClassUtils.value(key), v);
         return this;
     }
 
     @Override
-    public LogicUpdate subSelf(Serializable key, String step) {
+    public LogicUpdate subSelf(Object key, long step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
-        values.put(key, v);
+        values.put(ClassUtils.value(key), v);
+        return this;
+    }
+
+    @Override
+    public LogicUpdate addSelf(Object key, String step) {
+        UpdateSetValue v = new UpdateSetValue();
+        v.setType(UpdateSpecialType.ADD_SELF);
+        v.setStep(step);
+        values.put(ClassUtils.value(key), v);
+        return this;
+    }
+
+    @Override
+    public LogicUpdate subSelf(Object key, String step) {
+        UpdateSetValue v = new UpdateSetValue();
+        v.setType(UpdateSpecialType.SUB_SELF);
+        v.setStep(step);
+        values.put(ClassUtils.value(key), v);
         return this;
     }
 
@@ -184,98 +184,98 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate eq(Serializable key, Object value) {
+    public LogicUpdate eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate in(Serializable key, Iterable values) {
+    public LogicUpdate in(Object key, Iterable values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate in(Serializable key, Object... values) {
+    public LogicUpdate in(Object key, Object... values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate nin(Serializable key, Iterable values) {
+    public LogicUpdate nin(Object key, Iterable values) {
         Filter filter = new DefaultFilter().nin(key, values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate nin(Serializable key, Object... values) {
+    public LogicUpdate nin(Object key, Object... values) {
         Filter filter = new DefaultFilter().nin(key, values);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate like(Serializable key, Object value) {
+    public LogicUpdate like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate ne(Serializable key, Object value) {
+    public LogicUpdate ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate gt(Serializable key, Object value) {
+    public LogicUpdate gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate gte(Serializable key, Object value) {
+    public LogicUpdate gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate lt(Serializable key, Object value) {
+    public LogicUpdate lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate lte(Serializable key, Object value) {
+    public LogicUpdate lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate between(Serializable key, Object start, Object end) {
+    public LogicUpdate between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate isNull(Serializable key) {
+    public LogicUpdate isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
         this.add(filter);
         return this;
     }
 
     @Override
-    public LogicUpdate isNotNull(Serializable key) {
+    public LogicUpdate isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
         this.add(filter);
         return this;

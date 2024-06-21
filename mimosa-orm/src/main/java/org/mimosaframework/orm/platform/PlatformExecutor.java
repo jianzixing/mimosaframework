@@ -463,14 +463,14 @@ public class PlatformExecutor {
         PlatformDialect dialect = this.getDialect();
 
         Wraps<Filter> wraps = update.getLogicWraps();
-        Map<Object, Object> sets = update.getValues();
+        Map<String, Object> sets = update.getValues();
 
         PlatformExecutorSelectContext context = new PlatformExecutorSelectContext();
         DefaultSQLUpdateBuilder updateBuilder = new DefaultSQLUpdateBuilder();
         updateBuilder.update().table(table.getMappingTableName());
-        Iterator<Map.Entry<Object, Object>> iterator = sets.entrySet().iterator();
+        Iterator<Map.Entry<String, Object>> iterator = sets.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<Object, Object> entry = iterator.next();
+            Map.Entry<String, Object> entry = iterator.next();
             Object key = entry.getKey();
             MappingField field = table.getMappingFieldByJavaName(String.valueOf(key));
             if (field != null) {

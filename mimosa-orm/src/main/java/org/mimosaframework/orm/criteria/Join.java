@@ -1,7 +1,5 @@
 package org.mimosaframework.orm.criteria;
 
-import java.io.Serializable;
-
 /**
  * @author yangankang
  */
@@ -26,7 +24,7 @@ public interface Join extends Filter<Join> {
 
     Join aliasName(Object s);
 
-    Join as(Serializable s);
+    Join as(Object s);
 
     Join single();
 
@@ -38,7 +36,7 @@ public interface Join extends Filter<Join> {
 
     Join orderBy(OrderBy order);
 
-    Join orderBy(Serializable field, boolean isAsc);
+    Join orderBy(Object field, boolean isAsc);
 
     Class getTableClass();
 
