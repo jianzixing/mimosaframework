@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.SessionTemplate;
@@ -7,7 +8,7 @@ import org.mimosaframework.orm.SessionTemplate;
 /**
  * @author yangankang
  */
-public class DefaultDelete implements LogicDelete {
+public class DefaultDelete extends AbstractFilter<LogicDelete> implements LogicDelete {
     private SessionTemplate sessionTemplate;
     private BeanSessionTemplate beanSessionTemplate;
 

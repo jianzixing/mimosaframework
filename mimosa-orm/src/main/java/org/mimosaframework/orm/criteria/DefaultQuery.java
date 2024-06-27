@@ -1,5 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.FieldFunction;
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.Paging;
@@ -12,7 +14,7 @@ import java.util.*;
 /**
  * @author yangankang
  */
-public class DefaultQuery implements LogicQuery {
+public class DefaultQuery extends AbstractFilter<LogicQuery> implements LogicQuery {
     private SessionTemplate sessionTemplate;
     private BeanSessionTemplate beanSessionTemplate;
 
@@ -394,9 +396,9 @@ public class DefaultQuery implements LogicQuery {
     private void addFilterInLinked(Filter filter) {
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
-            this.logicWraps.add(new WrapsObject<Filter>(filter));
+            this.logicWraps.add(new WrapsObject<>(filter));
         } else {
-            logicWraps.addLast(new WrapsObject<Filter>(filter));
+            logicWraps.addLast(new WrapsObject<>(filter));
         }
     }
 
@@ -425,7 +427,17 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
+    public <F> LogicQuery fields(FieldFunction<F>... fields) {
+        return this.fields(Arrays.asList(fields));
+    }
+
+    @Override
     public LogicQuery fields(Class tableClass, Object... fields) {
+        return this.fields(tableClass, Arrays.asList(fields));
+    }
+
+    @Override
+    public <F> LogicQuery fields(Class tableClass, FieldFunction<F>... fields) {
         return this.fields(tableClass, Arrays.asList(fields));
     }
 
@@ -443,7 +455,7 @@ public class DefaultQuery implements LogicQuery {
             List<String> nf = new ArrayList<>();
             for (Object field : fields) {
                 if (field != null) {
-                    nf.add(String.valueOf(field));
+                    nf.add(ClassUtils.value(field));
                 }
             }
             this.fields.put(tableClass, nf);
@@ -457,7 +469,17 @@ public class DefaultQuery implements LogicQuery {
     }
 
     @Override
+    public <F> LogicQuery excludes(FieldFunction<F>... fields) {
+        return this.excludes(Arrays.asList(fields));
+    }
+
+    @Override
     public LogicQuery excludes(Class tableClass, Object... fields) {
+        return this.excludes(tableClass, Arrays.asList(fields));
+    }
+
+    @Override
+    public <F> LogicQuery excludes(Class tableClass, FieldFunction<F>... fields) {
         return this.excludes(tableClass, Arrays.asList(fields));
     }
 
@@ -475,7 +497,7 @@ public class DefaultQuery implements LogicQuery {
             List<String> nf = new ArrayList<>();
             for (Object field : fields) {
                 if (field != null) {
-                    nf.add(String.valueOf(field));
+                    nf.add(ClassUtils.value(field));
                 }
             }
             this.excludes.put(tableClass, nf);
@@ -545,8 +567,23 @@ public class DefaultQuery implements LogicQuery {
 
     @Override
     public LogicQuery orderBy(Object field, boolean isAsc) {
-        if (!withoutOrderBy) return this.orderBy(new OrderBy(isAsc, field));
+        if (!withoutOrderBy) return this.orderBy(new OrderBy(ClassUtils.value(field), isAsc));
         return null;
+    }
+
+    @Override
+    public <F> LogicQuery orderBy(FieldFunction<F> field, boolean isAsc) {
+        return this.orderBy((Object) field, isAsc);
+    }
+
+    @Override
+    public LogicQuery orderBy(Object field, Sort sort) {
+        return this.orderBy(field, sort.isAsc());
+    }
+
+    @Override
+    public <F> LogicQuery orderBy(FieldFunction<F> field, Sort sort) {
+        return this.orderBy((Object) field, sort.isAsc());
     }
 
     @Override

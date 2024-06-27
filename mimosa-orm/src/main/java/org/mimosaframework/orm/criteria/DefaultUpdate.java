@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author yangankang
  */
-public class DefaultUpdate implements LogicUpdate {
+public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicUpdate {
     private SessionTemplate sessionTemplate;
     private BeanSessionTemplate beanSessionTemplate;
 

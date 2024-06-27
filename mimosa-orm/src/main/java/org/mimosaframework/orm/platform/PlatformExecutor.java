@@ -626,7 +626,7 @@ public class PlatformExecutor {
             if (orders == null) orders = new LinkedHashSet<>();
             if (pks != null && pks.size() > 0) {
                 for (MappingField field : pks) {
-                    orders.add(new OrderBy(true, field.getMappingFieldName()));
+                    orders.add(new OrderBy(field.getMappingFieldName(), true));
                 }
             }
         }

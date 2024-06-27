@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.orm.Paging;
 
 import java.util.List;
@@ -18,6 +19,12 @@ public interface Query<T extends Query> extends QueryFilter<T> {
     T orderBy(OrderBy order);
 
     T orderBy(Object field, boolean isAsc);
+
+    <F> T orderBy(FieldFunction<F> field, boolean isAsc);
+
+    T orderBy(Object field, Sort sort);
+
+    <F> T orderBy(FieldFunction<F> field, Sort sort);
 
     T withoutOrderBy();
 
@@ -46,7 +53,11 @@ public interface Query<T extends Query> extends QueryFilter<T> {
      */
     T fields(Object... fields);
 
+    <F> T fields(FieldFunction<F>... fields);
+
     T fields(Class tableClass, Object... fields);
+
+    <F> T fields(Class tableClass, FieldFunction<F>... fields);
 
     T fields(List<Object> fields);
 
@@ -61,7 +72,11 @@ public interface Query<T extends Query> extends QueryFilter<T> {
      */
     T excludes(Object... fields);
 
+    <F> T excludes(FieldFunction<F>... fields);
+
     T excludes(Class tableClass, Object... fields);
+
+    <F> T excludes(Class tableClass, FieldFunction<F>... fields);
 
     T excludes(List<Object> fields);
 

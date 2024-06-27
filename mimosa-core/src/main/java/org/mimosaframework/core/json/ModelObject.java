@@ -15,6 +15,7 @@
  */
 package org.mimosaframework.core.json;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.exception.ModelCheckerException;
 import org.mimosaframework.core.json.annotation.JSONField;
 import org.mimosaframework.core.json.parser.ParserConfig;
@@ -28,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.function.Function;
 
 import static org.mimosaframework.core.json.util.TypeUtils.*;
 
@@ -36,7 +38,7 @@ import static org.mimosaframework.core.json.util.TypeUtils.*;
  * 使用的fastjson的开源代码
  */
 @SuppressWarnings("serial")
-public class ModelObject extends Model implements Map<Object, Object>, Cloneable, Serializable, InvocationHandler, ModelBase {
+public class ModelObject extends Model implements Map<Object, Object>, Cloneable, Serializable, InvocationHandler, ModelBase, ModelFunc {
 
     private static final int DEFAULT_INITIAL_CAPACITY = 16;
 
@@ -704,5 +706,170 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
             Map.Entry<Object, Object> entry = iterator.next();
             this.map.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    @Override
+    public <T> boolean containsKey(FieldFunction<T> key) {
+        return this.containsKey((Object) key);
+    }
+
+    @Override
+    public <T> Object get(FieldFunction<T> key) {
+        return this.get((Object) key);
+    }
+
+    @Override
+    public <T> ModelObject getModelObject(FieldFunction<T> key) {
+        return this.getModelObject((Object) key);
+    }
+
+    @Override
+    public <T> ModelArray getModelArray(FieldFunction<T> key) {
+        return this.getModelArray((Object) key);
+    }
+
+    @Override
+    public <T> List<T> getArray(FieldFunction<T> key) {
+        return this.getArray((Object) key);
+    }
+
+    @Override
+    public <T> T getObject(FieldFunction<T> key, Class<T> clazz) {
+        return this.getObject((Object) key, clazz);
+    }
+
+    @Override
+    public <T> Boolean getBoolean(FieldFunction<T> key) {
+        return this.getBoolean((Object) key);
+    }
+
+    @Override
+    public <T> byte[] getBytes(FieldFunction<T> key) {
+        return this.getBytes((Object) key);
+    }
+
+    @Override
+    public <T> boolean getBooleanValue(FieldFunction<T> key) {
+        return this.getBooleanValue((Object) key);
+    }
+
+    @Override
+    public <T> Byte getByte(FieldFunction<T> key) {
+        return this.getByte((Object) key);
+    }
+
+    @Override
+    public <T> byte getByteValue(FieldFunction<T> key) {
+        return this.getByteValue((Object) key);
+    }
+
+    @Override
+    public <T> Short getShort(FieldFunction<T> key) {
+        return this.getShort((Object) key);
+    }
+
+    @Override
+    public <T> short getShortValue(FieldFunction<T> key) {
+        return this.getShortValue((Object) key);
+    }
+
+    @Override
+    public <T> Integer getInteger(FieldFunction<T> key) {
+        return this.getInteger((Object) key);
+    }
+
+    @Override
+    public <T> int getIntValue(FieldFunction<T> key) {
+        return this.getIntValue((Object) key);
+    }
+
+    @Override
+    public <T> Long getLong(FieldFunction<T> key) {
+        return this.getLong((Object) key);
+    }
+
+    @Override
+    public <T> long getLongValue(FieldFunction<T> key) {
+        return this.getLongValue((Object) key);
+    }
+
+    @Override
+    public <T> Float getFloat(FieldFunction<T> key) {
+        return this.getFloat((Object) key);
+    }
+
+    @Override
+    public <T> float getFloatValue(FieldFunction<T> key) {
+        return this.getFloatValue((Object) key);
+    }
+
+    @Override
+    public <T> Double getDouble(FieldFunction<T> key) {
+        return this.getDouble((Object) key);
+    }
+
+    @Override
+    public <T> double getDoubleValue(FieldFunction<T> key) {
+        return this.getDoubleValue((Object) key);
+    }
+
+    @Override
+    public <T> BigDecimal getBigDecimal(FieldFunction<T> key) {
+        return this.getBigDecimal((Object) key);
+    }
+
+    @Override
+    public <T> BigInteger getBigInteger(FieldFunction<T> key) {
+        return this.getBigInteger((Object) key);
+    }
+
+    @Override
+    public <T> String getString(FieldFunction<T> key) {
+        return this.getString((Object) key);
+    }
+
+    @Override
+    public <T> Date getDate(FieldFunction<T> key) {
+        return this.getDate((Object) key);
+    }
+
+    @Override
+    public <T> java.sql.Date getSqlDate(FieldFunction<T> key) {
+        return this.getSqlDate((Object) key);
+    }
+
+    @Override
+    public <T> Timestamp getTimestamp(FieldFunction<T> key) {
+        return this.getTimestamp((Object) key);
+    }
+
+    @Override
+    public <T> Object put(FieldFunction<T> key, Object value) {
+        return this.put((Object) key, value);
+    }
+
+    @Override
+    public <T> ModelObject chainPut(FieldFunction<T> key, Object value) {
+        return this.chainPut((Object) key, value);
+    }
+
+    @Override
+    public <T> Object remove(FieldFunction<T> key) {
+        return this.remove((Object) key);
+    }
+
+    @Override
+    public <T> ModelObject chainRemove(FieldFunction<T> key) {
+        return this.chainRemove((Object) key);
+    }
+
+    @Override
+    public <T> boolean isEmpty(FieldFunction<T> key) {
+        return this.isEmpty((Object) key);
+    }
+
+    @Override
+    public <T> boolean isNotEmpty(FieldFunction<T> key) {
+        return this.isNotEmpty((Object) key);
     }
 }
