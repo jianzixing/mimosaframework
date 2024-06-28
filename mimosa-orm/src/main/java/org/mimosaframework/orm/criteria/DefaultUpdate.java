@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.SessionTemplate;
@@ -72,12 +73,17 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
-    public Update set(Object key, Object value) {
+    public Update<LogicUpdate> set(Object key, Object value) {
         if (value == null) {
             value = Keyword.NULL;
         }
         values.put(ClassUtils.value(key), value);
         return this;
+    }
+
+    @Override
+    public <F> Update<LogicUpdate> set(FieldFunction<F> key, Object value) {
+        return this.set((Object) key, value);
     }
 
     @Override
@@ -89,11 +95,21 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
+    public <F> LogicUpdate addSelf(FieldFunction<F> key) {
+        return this.addSelf((Object) key);
+    }
+
+    @Override
     public LogicUpdate subSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         values.put(ClassUtils.value(key), v);
         return this;
+    }
+
+    @Override
+    public <F> LogicUpdate subSelf(FieldFunction<F> key) {
+        return this.subSelf((Object) key);
     }
 
     @Override
@@ -106,12 +122,22 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
+    public <F> LogicUpdate addSelf(FieldFunction<F> key, long step) {
+        return this.addSelf((Object) key, step);
+    }
+
+    @Override
     public LogicUpdate subSelf(Object key, long step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
         values.put(ClassUtils.value(key), v);
         return this;
+    }
+
+    @Override
+    public <F> LogicUpdate subSelf(FieldFunction<F> key, long step) {
+        return this.subSelf((Object) key, step);
     }
 
     @Override
@@ -124,12 +150,22 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
+    public <F> LogicUpdate addSelf(FieldFunction<F> key, String step) {
+        return this.addSelf((Object) key, step);
+    }
+
+    @Override
     public LogicUpdate subSelf(Object key, String step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
         values.put(ClassUtils.value(key), v);
         return this;
+    }
+
+    @Override
+    public <F> LogicUpdate subSelf(FieldFunction<F> key, String step) {
+        return this.subSelf((Object) key, step);
     }
 
     @Override
