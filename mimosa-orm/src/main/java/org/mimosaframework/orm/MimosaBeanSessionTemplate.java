@@ -151,12 +151,12 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
     @Override
     public <T> int update(List<T> objects, Object... fields) {
-        return update(objects, UpdateObject.wrap(null, fields));
+        return update(objects, UpdateObject.wrapRetains(null, fields));
     }
 
     @Override
     public <T> int update(List<T> objects, FieldFunction<T>... fields) {
-        return update(objects, UpdateObject.wrap(null, fields));
+        return update(objects, UpdateObject.wrapRetains(null, fields));
     }
 
     private <T> int update(List<T> objects, UpdateObject updateObject) {
