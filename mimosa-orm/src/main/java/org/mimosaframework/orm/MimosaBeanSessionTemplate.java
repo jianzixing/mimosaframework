@@ -1,6 +1,8 @@
 package org.mimosaframework.orm;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.annotation.JoinName;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.i18n.I18n;
@@ -116,7 +118,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(T update) {
+    public <T> int update(T update, Object... fields) {
         if (update instanceof Query || update instanceof Delete) {
             throw new IllegalArgumentException(I18n.print("only_update_object"));
         } else if (update instanceof Update) {
@@ -143,18 +145,18 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(List<T> objects) {
-        return update(objects, null);
+    public <T> int update(T obj, FieldFunction<T>... fields) {
+        return this.update(obj, (Object) fields);
     }
 
     @Override
-    public <T> int edit(T obj, Serializable... fields) {
-        return update(UpdateObject.wrapRetains(obj, fields));
+    public <T> int update(List<T> objects, Object... fields) {
+        return update(objects, UpdateObject.wrap(null, fields));
     }
 
     @Override
-    public <T> int edit(List<T> objects, Serializable... fields) {
-        return update(objects, UpdateObject.wrapRetains(null, fields));
+    public <T> int update(List<T> objects, FieldFunction<T>... fields) {
+        return update(objects, UpdateObject.wrap(null, fields));
     }
 
     private <T> int update(List<T> objects, UpdateObject updateObject) {
@@ -225,14 +227,24 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int delete(Class<T> c, Serializable id) {
-        return modelSession.delete(c, id);
+    public <T> int delete(Class<T> c, Object id) {
+        return modelSession.delete(c, ClassUtils.value(id));
     }
 
     @Override
-    public <T> T get(Class<T> c, Serializable id) {
-        ModelObject object = modelSession.get(c, id);
+    public <T> int delete(Class<T> c, FieldFunction<T> id) {
+        return this.delete(c, (Object) id);
+    }
+
+    @Override
+    public <T> T get(Class<T> c, Object id) {
+        ModelObject object = modelSession.get(c, ClassUtils.value(id));
         return model2BeanFactory.toJavaObject(object, c);
+    }
+
+    @Override
+    public <T> T get(Class<T> c, FieldFunction<T> id) {
+        return this.get(c, (Object) id);
     }
 
     @Override
