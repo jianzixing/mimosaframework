@@ -73,7 +73,7 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
-    public Update<LogicUpdate> set(Object key, Object value) {
+    public Update set(Object key, Object value) {
         if (value == null) {
             value = Keyword.NULL;
         }
@@ -82,7 +82,7 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
-    public <F> Update<LogicUpdate> set(FieldFunction<F> key, Object value) {
+    public <F> Update set(FieldFunction<F> key, Object value) {
         return this.set((Object) key, value);
     }
 
@@ -227,7 +227,7 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
-    public LogicUpdate in(Object key, Iterable values) {
+    public LogicUpdate in(Object key, Iterable<?> values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter);
         return this;
@@ -241,7 +241,7 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
-    public LogicUpdate nin(Object key, Iterable values) {
+    public LogicUpdate nin(Object key, Iterable<?> values) {
         Filter filter = new DefaultFilter().nin(key, values);
         this.add(filter);
         return this;

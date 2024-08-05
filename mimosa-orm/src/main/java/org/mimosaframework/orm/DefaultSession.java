@@ -13,7 +13,6 @@ import org.mimosaframework.orm.mapping.MappingGlobalWrapper;
 import org.mimosaframework.orm.mapping.MappingTable;
 import org.mimosaframework.orm.platform.*;
 import org.mimosaframework.orm.scripting.SQLDefinedLoader;
-import org.mimosaframework.orm.sql.UnifyBuilder;
 import org.mimosaframework.orm.strategy.StrategyFactory;
 import org.mimosaframework.orm.transaction.Transaction;
 import org.mimosaframework.orm.utils.AutonomouslyUtils;
@@ -31,7 +30,7 @@ import java.util.*;
 public class DefaultSession implements Session {
     private static final Log logger = LogFactory.getLog(DefaultSession.class);
     private PlatformExecutor executor;
-    private UpdateSkipReset updateSkipReset = new UpdateSkiptResetEmpty();
+    private UpdateSkipReset updateSkipReset = new UpdateSkipResetEmpty();
     private Configuration context;
     /**
      * 每个Session有且只有一个transaction，每一个transaction有且只有一个
@@ -214,12 +213,12 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public int update(ModelObject obj) {
+    public int update(ModelObject obj, Object... fields) {
         if (obj == null || obj.size() == 0) {
             throw new IllegalArgumentException(I18n.print("update_empty"));
         }
         obj = Clone.cloneModelObject(obj);
-        Class c = obj.getObjectClass();
+        Class<?> c = obj.getObjectClass();
         if (c == null) {
             throw new IllegalArgumentException(I18n.print("miss_table_class"));
         }
@@ -227,7 +226,7 @@ public class DefaultSession implements Session {
         AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         updateSkipReset.skip(obj, mappingTable);
-        SessionUtils.clearModelObject(this.mappingGlobalWrapper, obj.getObjectClass(), obj);
+        SessionUtils.clearModelObject(this.mappingGlobalWrapper, obj.getObjectClass(), obj, fields);
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         if (obj.size() - pks.size() <= 0) {
@@ -249,10 +248,10 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public int update(List<ModelObject> objects) {
+    public int update(List<ModelObject> objects, Object... fields) {
         int i = 0;
         for (ModelObject o : objects) {
-            i += this.update(o);
+            i += this.update(o, fields);
         }
         return i;
     }

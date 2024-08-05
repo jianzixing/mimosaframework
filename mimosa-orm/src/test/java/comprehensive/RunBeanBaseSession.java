@@ -191,6 +191,19 @@ public class RunBeanBaseSession {
         }
     }
 
+    @Test
+    public void testCFun() {
+        BeanUser update = new BeanUser();
+        update.setId(1);
+        update.setUserName("ak1");
+        update.setAge(19);
+        template.update(update, Criteria.nonFields(BeanUser.class, BeanUser::getAge));
+
+        List<String> rs = Criteria.fields(BeanUser.class);
+        System.out.println(ModelObject.toJSONString(rs));
+
+    }
+
 
 //    @Test
 //    public void getAutonomously() throws Exception {

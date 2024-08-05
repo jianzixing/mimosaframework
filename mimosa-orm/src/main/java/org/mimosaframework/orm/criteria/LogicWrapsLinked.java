@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
-public interface LogicWrapsLinked extends WrapsLinked<LogicWrapsLinked>, LogicFilter<WrapsLinked<LogicWrapsLinked>, LogicWrapsLinked> {
-    WrapsLinked<LogicWrapsLinked> and();
+public interface LogicWrapsLinked extends WrapsLinked, LogicFilter<WrapsLinked, LogicWrapsLinked> {
+    WrapsLinked and();
 
-    WrapsLinked<LogicWrapsLinked> or();
+    WrapsLinked or();
 }

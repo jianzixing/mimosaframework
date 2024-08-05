@@ -1448,7 +1448,7 @@ public class PlatformExecutor {
                     if (aliasName.equalsIgnoreCase(entry.getValue())) {
                         Object key = entry.getKey();
                         if (key instanceof Query) {
-                            tableClass = ((Query<?>) key).getTableClass();
+                            tableClass = ((Query) key).getTableClass();
                         } else if (key instanceof Join) {
                             tableClass = ((Join) key).getTableClass();
                         }

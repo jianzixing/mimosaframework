@@ -49,6 +49,11 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
+    public int update(Update update) {
+        return sessionTemplate.update(update);
+    }
+
+    @Override
     public <T> int update(T obj, Object... fields) {
         return sessionTemplate.update(obj, fields);
     }
@@ -84,17 +89,7 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int delete(Class<T> c, FieldFunction<T> id) {
-        return sessionTemplate.delete(c, id);
-    }
-
-    @Override
     public <T> T get(Class<T> c, Object id) {
-        return sessionTemplate.get(c, id);
-    }
-
-    @Override
-    public <T> T get(Class<T> c, FieldFunction<T> id) {
         return sessionTemplate.get(c, id);
     }
 

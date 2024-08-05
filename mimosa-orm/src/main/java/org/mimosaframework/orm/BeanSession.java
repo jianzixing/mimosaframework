@@ -3,6 +3,7 @@ package org.mimosaframework.orm;
 import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.orm.criteria.Function;
 import org.mimosaframework.orm.criteria.Query;
+import org.mimosaframework.orm.criteria.Update;
 
 import java.io.Closeable;
 import java.util.List;
@@ -14,6 +15,8 @@ public interface BeanSession extends Closeable {
     <T> T saveOrUpdate(T obj);
 
     <T> void save(List<T> objects);
+
+    int update(Update update);
 
     <T> int update(T obj, Object... fields);
 
@@ -29,11 +32,7 @@ public interface BeanSession extends Closeable {
 
     <T> int delete(Class<T> c, Object id);
 
-    <T> int delete(Class<T> c, FieldFunction<T> id);
-
     <T> T get(Class<T> c, Object id);
-
-    <T> T get(Class<T> c, FieldFunction<T> id);
 
     <T> T get(Query query);
 

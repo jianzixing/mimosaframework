@@ -19,13 +19,20 @@ import java.util.*;
 
 public final class SessionUtils {
 
-    public static void clearModelObject(MappingGlobalWrapper mappingDatabaseWrapper, Class c, ModelObject object) {
+    public static void clearModelObject(MappingGlobalWrapper mappingDatabaseWrapper, Class c,
+                                        ModelObject object, Object... fields) {
         if (c == null) {
             throw new IllegalArgumentException("没有设置要操作的映射类");
         }
-        MappingTable tableFromClass = mappingDatabaseWrapper.getMappingTable(c);
-        if (tableFromClass == null) {
+        MappingTable mappingTable = mappingDatabaseWrapper.getMappingTable(c);
+        if (mappingTable == null) {
             throw new IllegalArgumentException("没有找到对应的关系映射[" + c.getName() + "]");
+        }
+        Set<MappingField> mappingFields = mappingTable.getMappingFields();
+        List<String> dbFields = new ArrayList<>();
+        List<Object> retainFields = fields != null && fields.length > 0 ? Arrays.asList(fields) : null;
+        for (MappingField mappingField : mappingFields) {
+            dbFields.add(mappingField.getMappingFieldName());
         }
 
         // 不能清空，需要NULL和空字符串更新和添加
@@ -34,7 +41,10 @@ public final class SessionUtils {
         Set<Object> keys = object.keySet();
         List<Object> removed = new ArrayList<>();
         for (Object o : keys) {
-            if (!mappingDatabaseWrapper.contains(tableFromClass, String.valueOf(o))) {
+            if (!dbFields.contains(String.valueOf(o))) {
+                removed.add(o);
+            }
+            if (retainFields != null && !retainFields.isEmpty() && !retainFields.contains(o)) {
                 removed.add(o);
             }
         }

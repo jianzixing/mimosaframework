@@ -8,7 +8,7 @@ public abstract class AbstractFilter<T> implements Filter<T> {
     }
 
     @Override
-    public <F> T in(FieldFunction<F> key, Iterable values) {
+    public <F> T in(FieldFunction<F> key, Iterable<?> values) {
         return this.in((Object) key, values);
     }
 
@@ -18,7 +18,7 @@ public abstract class AbstractFilter<T> implements Filter<T> {
     }
 
     @Override
-    public <F> T nin(FieldFunction<F> key, Iterable values) {
+    public <F> T nin(FieldFunction<F> key, Iterable<?> values) {
         return this.nin((Object) key, values);
     }
 

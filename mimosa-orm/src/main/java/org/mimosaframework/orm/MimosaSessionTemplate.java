@@ -57,13 +57,13 @@ public class MimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public int update(ModelObject obj) {
-        return this.sessionAgency.update(obj);
+    public int update(ModelObject obj, Object... fields) {
+        return this.sessionAgency.update(obj, fields);
     }
 
     @Override
-    public int update(List<ModelObject> objects) {
-        return this.sessionAgency.update(objects);
+    public int update(List<ModelObject> objects, Object... fields) {
+        return this.sessionAgency.update(objects, fields);
     }
 
     @Override

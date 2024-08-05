@@ -6,7 +6,7 @@ import org.mimosaframework.orm.mapping.MappingTable;
 
 import java.util.Set;
 
-public class UpdateSkiptResetEmpty implements UpdateSkipReset {
+public class UpdateSkipResetEmpty implements UpdateSkipReset {
     @Override
     public void skip(ModelObject object, MappingTable mappingTable) {
         if (object != null && mappingTable != null) {

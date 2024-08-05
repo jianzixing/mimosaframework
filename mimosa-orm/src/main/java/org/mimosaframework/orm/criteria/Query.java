@@ -8,41 +8,41 @@ import java.util.List;
 /**
  * @author yangankang
  */
-public interface Query<T extends Query> extends QueryFilter<T> {
+public interface Query extends QueryFilter<LogicQuery> {
 
-    T filter(DefaultFilter as);
+    LogicQuery filter(DefaultFilter as);
 
-    T linked(WrapsLinked linked);
+    LogicQuery linked(WrapsLinked linked);
 
-    T subjoin(Join join);
+    LogicQuery subjoin(Join join);
 
-    T orderBy(OrderBy order);
+    LogicQuery orderBy(OrderBy order);
 
-    T orderBy(Object field, boolean isAsc);
+    LogicQuery orderBy(Object field, boolean isAsc);
 
-    <F> T orderBy(FieldFunction<F> field, boolean isAsc);
+    <F> LogicQuery orderBy(FieldFunction<F> field, boolean isAsc);
 
-    T orderBy(Object field, Sort sort);
+    LogicQuery orderBy(Object field, Sort sort);
 
-    <F> T orderBy(FieldFunction<F> field, Sort sort);
+    <F> LogicQuery orderBy(FieldFunction<F> field, Sort sort);
 
-    T withoutOrderBy();
+    LogicQuery withoutOrderBy();
 
-    T limit(Limit limit);
+    LogicQuery limit(Limit limit);
 
-    T limit(long start, long limit);
+    LogicQuery limit(long start, long limit);
 
-    T setTableClass(Class c);
+    LogicQuery setTableClass(Class c);
 
-    T forUpdate();
+    LogicQuery forUpdate();
 
-    T forUpdate(boolean is);
+    LogicQuery forUpdate(boolean is);
 
-    T master();
+    LogicQuery master();
 
-    T slave();
+    LogicQuery slave();
 
-    T slave(String name);
+    LogicQuery slave(String name);
 
     /**
      * 只查询当前字段值
@@ -51,17 +51,17 @@ public interface Query<T extends Query> extends QueryFilter<T> {
      * @param fields
      * @return
      */
-    T fields(Object... fields);
+    LogicQuery fields(Object... fields);
 
-    <F> T fields(FieldFunction<F>... fields);
+    <F> LogicQuery fields(FieldFunction<F>... fields);
 
-    T fields(Class tableClass, Object... fields);
+    LogicQuery fields(Class tableClass, Object... fields);
 
-    <F> T fields(Class tableClass, FieldFunction<F>... fields);
+    <F> LogicQuery fields(Class tableClass, FieldFunction<F>... fields);
 
-    T fields(List<Object> fields);
+    LogicQuery fields(List<Object> fields);
 
-    T fields(Class tableClass, List<Object> fields);
+    LogicQuery fields(Class tableClass, List<Object> fields);
 
     /**
      * 从映射表中排除当前字段值
@@ -70,17 +70,17 @@ public interface Query<T extends Query> extends QueryFilter<T> {
      * @param fields
      * @return
      */
-    T excludes(Object... fields);
+    LogicQuery excludes(Object... fields);
 
-    <F> T excludes(FieldFunction<F>... fields);
+    <F> LogicQuery excludes(FieldFunction<F>... fields);
 
-    T excludes(Class tableClass, Object... fields);
+    LogicQuery excludes(Class tableClass, Object... fields);
 
-    <F> T excludes(Class tableClass, FieldFunction<F>... fields);
+    <F> LogicQuery excludes(Class tableClass, FieldFunction<F>... fields);
 
-    T excludes(List<Object> fields);
+    LogicQuery excludes(List<Object> fields);
 
-    T excludes(Class tableClass, List<Object> fields);
+    LogicQuery excludes(Class tableClass, List<Object> fields);
 
     Class getTableClass();
 
@@ -92,5 +92,5 @@ public interface Query<T extends Query> extends QueryFilter<T> {
 
     long count();
 
-    T as(String as);
+    LogicQuery as(String as);
 }

@@ -20,17 +20,17 @@ public interface Filter<T> {
 
     <F> T eq(FieldFunction<F> key, Object value);
 
-    T in(Object key, Iterable values);
+    T in(Object key, Iterable<?> values);
 
-    <F> T in(FieldFunction<F> key, Iterable values);
+    <F> T in(FieldFunction<F> key, Iterable<?> values);
 
     T in(Object key, Object... values);
 
     <F> T in(FieldFunction<F> key, Object... values);
 
-    T nin(Object key, Iterable values);
+    T nin(Object key, Iterable<?> values);
 
-    <F> T nin(FieldFunction<F> key, Iterable values);
+    <F> T nin(FieldFunction<F> key, Iterable<?> values);
 
     T nin(Object key, Object... values);
 

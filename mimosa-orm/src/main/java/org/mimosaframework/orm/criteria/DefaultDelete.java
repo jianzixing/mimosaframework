@@ -1,6 +1,5 @@
 package org.mimosaframework.orm.criteria;
 
-import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.SessionTemplate;
