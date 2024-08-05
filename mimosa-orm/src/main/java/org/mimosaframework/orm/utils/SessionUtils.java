@@ -41,10 +41,13 @@ public final class SessionUtils {
         Set<Object> keys = object.keySet();
         List<Object> removed = new ArrayList<>();
         for (Object o : keys) {
-            if (!dbFields.contains(String.valueOf(o))) {
+            String key = String.valueOf(o);
+            MappingField field = mappingTable.getMappingFieldByName(key);
+            if (field == null) {
                 removed.add(o);
-            }
-            if (retainFields != null && !retainFields.isEmpty() && !retainFields.contains(o)) {
+            } else if (retainFields != null && !retainFields.isEmpty()
+                    && !field.isMappingFieldPrimaryKey()
+                    && !retainFields.contains(key)) {
                 removed.add(o);
             }
         }

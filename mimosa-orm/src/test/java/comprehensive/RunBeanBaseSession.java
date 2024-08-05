@@ -197,9 +197,9 @@ public class RunBeanBaseSession {
         update.setId(1);
         update.setUserName("ak1");
         update.setAge(19);
-        template.update(update, Criteria.nonFields(BeanUser.class, BeanUser::getAge));
+        template.update(update, Criteria.nonFields(BeanUser.class,BeanUser::getId, BeanUser::getAge));
 
-        List<String> rs = Criteria.fields(BeanUser.class);
+        String[] rs = Criteria.fields(BeanUser.class);
         System.out.println(ModelObject.toJSONString(rs));
 
     }

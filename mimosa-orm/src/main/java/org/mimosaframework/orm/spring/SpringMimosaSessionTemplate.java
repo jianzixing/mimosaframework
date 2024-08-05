@@ -53,13 +53,13 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public int update(ModelObject obj) {
-        return sessionTemplate.update(obj);
+    public int update(ModelObject obj, Object... fields) {
+        return sessionTemplate.update(obj, fields);
     }
 
     @Override
-    public int update(List<ModelObject> objects) {
-        return sessionTemplate.update(objects);
+    public int update(List<ModelObject> objects, Object... fields) {
+        return sessionTemplate.update(objects, fields);
     }
 
     @Override

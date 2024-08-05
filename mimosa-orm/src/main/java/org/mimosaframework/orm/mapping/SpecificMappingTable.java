@@ -166,11 +166,10 @@ public class SpecificMappingTable implements MappingTable {
 
     @Override
     public MappingField getMappingFieldByName(String fieldName) {
-        MappingField field = null;
         if (this.mappingFields != null) {
-            field = this.mappingFields.get(fieldName);
+            return this.mappingFields.get(fieldName);
         }
-        return field;
+        return null;
     }
 
     @Override

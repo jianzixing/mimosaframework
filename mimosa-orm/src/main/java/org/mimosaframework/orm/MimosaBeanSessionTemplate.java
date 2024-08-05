@@ -119,7 +119,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(update.getClass());
             model.clearNull();
-            return modelSession.update(model);
+            return modelSession.update(model, fields);
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
@@ -127,7 +127,13 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
     @Override
     public <T> int update(T obj, FieldFunction<T>... fields) {
-        return this.update(obj, (Object) fields);
+        List<String> list = new ArrayList<String>();
+        if (fields != null && fields.length > 0) {
+            for (Object object : fields) {
+                list.add(ClassUtils.value(object));
+            }
+        }
+        return this.update(obj, list.toArray());
     }
 
     @Override
@@ -161,7 +167,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
                     throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
                 }
             }
-            return modelSession.update(updates);
+            return modelSession.update(updates, fields);
         }
         return 0;
     }
