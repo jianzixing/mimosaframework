@@ -80,8 +80,12 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         }
     }
 
-    public static ModelObject builder(Class tableContactsClass) {
+    public static ModelObject builder(Class<?> tableContactsClass) {
         return new ModelObject(tableContactsClass);
+    }
+
+    public static ModelObject builder() {
+        return new ModelObject();
     }
 
     public void putAny(Object key, Object value) {
@@ -365,8 +369,17 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         return map.put(key, value);
     }
 
-    public ModelObject chainPut(Object key, Object value) {
+    public Object put(String key, Object value) {
+        return map.put(key, value);
+    }
+
+    public ModelObject append(Object key, Object value) {
         key = ClassUtils.value(key);
+        map.put(key, value);
+        return this;
+    }
+
+    public ModelObject append(String key, Object value) {
         map.put(key, value);
         return this;
     }
@@ -849,8 +862,8 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
     }
 
     @Override
-    public <T> ModelObject chainPut(FieldFunction<T> key, Object value) {
-        return this.chainPut((Object) key, value);
+    public <T> ModelObject append(FieldFunction<T> key, Object value) {
+        return this.append((Object) key, value);
     }
 
     @Override

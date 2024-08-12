@@ -65,7 +65,7 @@ public interface ModelFunc {
 
     <T> Object put(FieldFunction<T> key, Object value);
 
-    <T> ModelObject chainPut(FieldFunction<T> key, Object value);
+    <T> ModelObject append(FieldFunction<T> key, Object value);
 
     <T> Object remove(FieldFunction<T> key);
 
