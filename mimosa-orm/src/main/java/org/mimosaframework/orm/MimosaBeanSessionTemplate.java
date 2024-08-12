@@ -66,7 +66,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveOrUpdate(T obj) {
+    public <T> T saveOrUpdate(T obj, Object... fields) {
         if (obj == null) {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
@@ -79,9 +79,20 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         ModelObject model = (ModelObject) json;
         model.setObjectClass(tableClass);
         model.clearNull();
-        modelSession.saveOrUpdate(model);
+        modelSession.saveOrUpdate(model, fields);
         model2BeanFactory.toJavaObject(model, mappingBean, true);
         return obj;
+    }
+
+    @Override
+    public <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields) {
+        List<String> list = new ArrayList<>();
+        if (fields != null && fields.length > 0) {
+            for (Object object : fields) {
+                list.add(ClassUtils.value(object));
+            }
+        }
+        return saveOrUpdate(obj, list);
     }
 
     @Override
@@ -126,7 +137,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(T obj, FieldFunction<T>... fields) {
+    public <T> int updateUseField(T obj, FieldFunction<T>... fields) {
         List<String> list = new ArrayList<String>();
         if (fields != null && fields.length > 0) {
             for (Object object : fields) {
@@ -138,21 +149,21 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
 
     @Override
     public <T> int update(List<T> objects, Object... fields) {
-        return updates(objects, fields);
+        return doUpdate(objects, fields);
     }
 
     @Override
-    public <T> int update(List<T> objects, FieldFunction<T>... fields) {
-        List<String> list = new ArrayList<String>();
+    public <T> int updateUseField(List<T> objects, FieldFunction<T>... fields) {
+        List<String> list = new ArrayList<>();
         if (fields != null && fields.length > 0) {
             for (Object object : fields) {
                 list.add(ClassUtils.value(object));
             }
         }
-        return updates(objects, list.toArray());
+        return doUpdate(objects, list.toArray());
     }
 
-    private <T> int updates(List<T> objects, Object... fields) {
+    private <T> int doUpdate(List<T> objects, Object... fields) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
             for (T update : objects) {

@@ -211,7 +211,7 @@ public class RunBeanBaseSession {
         old = template.get(Criteria.query(BeanUser.class).eq(BeanUser::getId, 1));
         System.out.println(ModelObject.toJSONString(old));
 
-        String[] rs = Criteria.fields(BeanUser.class);
+        Object[] rs = Criteria.fields(BeanUser.class);
         System.out.println(ModelObject.toJSONString(rs));
 
     }

@@ -47,8 +47,8 @@ public class MimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public ModelObject saveOrUpdate(ModelObject obj) {
-        return this.sessionAgency.saveOrUpdate(obj);
+    public ModelObject saveOrUpdate(ModelObject obj, Object... fields) {
+        return this.sessionAgency.saveOrUpdate(obj, fields);
     }
 
     @Override

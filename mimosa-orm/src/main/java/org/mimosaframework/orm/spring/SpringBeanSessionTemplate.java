@@ -39,8 +39,13 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveOrUpdate(T obj) {
-        return sessionTemplate.saveOrUpdate(obj);
+    public <T> T saveOrUpdate(T obj, Object... fields) {
+        return sessionTemplate.saveOrUpdate(obj, fields);
+    }
+
+    @Override
+    public <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields) {
+        return sessionTemplate.saveOrUpdateUseField(obj, fields);
     }
 
     @Override
@@ -59,7 +64,7 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(T obj, FieldFunction<T>... fields) {
+    public <T> int updateUseField(T obj, FieldFunction<T>... fields) {
         return sessionTemplate.update(obj, fields);
     }
 
@@ -69,7 +74,7 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(List<T> objects, FieldFunction<T>... fields) {
+    public <T> int updateUseField(List<T> objects, FieldFunction<T>... fields) {
         return sessionTemplate.update(objects, fields);
     }
 

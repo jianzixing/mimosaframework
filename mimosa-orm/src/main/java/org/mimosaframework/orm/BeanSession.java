@@ -12,7 +12,9 @@ public interface BeanSession extends Closeable {
 
     <T> T save(T obj);
 
-    <T> T saveOrUpdate(T obj);
+    <T> T saveOrUpdate(T obj, Object... fields);
+
+    <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields);
 
     <T> void save(List<T> objects);
 
@@ -20,11 +22,11 @@ public interface BeanSession extends Closeable {
 
     <T> int update(T obj, Object... fields);
 
-    <T> int update(T obj, FieldFunction<T>... fields);
+    <T> int updateUseField(T obj, FieldFunction<T>... fields);
 
     <T> int update(List<T> objects, Object... fields);
 
-    <T> int update(List<T> objects, FieldFunction<T>... fields);
+    <T> int updateUseField(List<T> objects, FieldFunction<T>... fields);
 
     <T> int delete(T obj);
 

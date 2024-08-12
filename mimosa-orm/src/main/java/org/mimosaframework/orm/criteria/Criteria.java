@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -82,9 +83,9 @@ public final class Criteria {
         return Keyword.NULL;
     }
 
-    public static String[] fields(Class<?> t) {
+    public static <T> Object[] fields(Class<T> t) {
         Class<?> superClass = t.getSuperclass();
-        List<String> list = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
         if (superClass != null) {
             list.addAll(Arrays.asList(fields(superClass)));
         }
@@ -94,31 +95,33 @@ public final class Criteria {
                 list.add(field.getName());
             }
         }
-        return list.toArray(new String[]{});
+        return list.toArray();
     }
 
-    public static String[] nonFieldList(Class<?> t, String... fields) {
+    public static <T> Object[] nonFieldList(Class<T> t, Object... fields) {
         return nonFieldList(t, Arrays.asList(fields));
     }
 
-    public static String[] nonFieldList(Class<?> t, List<String> fields) {
-        String[] list = fields(t);
-        List<String> rs = new ArrayList<>(Arrays.asList(list));
-        rs.removeAll(fields);
-        return rs.toArray(new String[]{});
+    public static <T> Object[] nonFieldList(Class<T> t, List<Object> fields) {
+        Object[] list = fields(t);
+        List<Object> rs = new ArrayList<>(Arrays.asList(list));
+        if (fields != null && !fields.isEmpty()) {
+            rs.removeAll(fields.stream().map(ClassUtils::value).collect(Collectors.toList()));
+        }
+        return rs.toArray();
     }
 
-    public static <T> String[] nonFields(Class<T> t, FieldFunction<T>... fields) {
+    public static <T> Object[] nonFields(Class<T> t, FieldFunction<T>... fields) {
         return nonFields(t, Arrays.asList(fields));
     }
 
-    public static <T> String[] nonFields(Class<T> t, List<FieldFunction<T>> fields) {
-        List<String> list = new ArrayList<>(Arrays.asList(fields(t)));
-        List<String> newFields = new ArrayList<>();
+    public static <T> Object[] nonFields(Class<T> t, List<FieldFunction<T>> fields) {
+        List<Object> list = new ArrayList<>(Arrays.asList(fields(t)));
+        List<Object> newFields = new ArrayList<>();
         for (FieldFunction<T> f : fields) {
             newFields.add(ClassUtils.value(f));
         }
         list.removeAll(newFields);
-        return list.toArray(new String[]{});
+        return list.toArray();
     }
 }

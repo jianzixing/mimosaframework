@@ -103,38 +103,36 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public ModelObject saveOrUpdate(ModelObject objSource) {
-        if (objSource == null || objSource.size() == 0) {
+    public ModelObject saveOrUpdate(ModelObject objSource, Object... fields) {
+        if (objSource == null || objSource.isEmpty()) {
             throw new IllegalArgumentException(I18n.print("save_empty"));
         }
         if (objSource.getObjectClass() == null) {
             throw new IllegalArgumentException(I18n.print("miss_table_class"));
         }
         ModelObject obj = Clone.cloneModelObject(objSource);
-        Class c = obj.getObjectClass();
+        Class<?> c = obj.getObjectClass();
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
+
+        SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, obj, fields);
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         Query query = Criteria.query(c);
 
-        int countpk = 0;
+        int countpk = 0, pksSize = 0;
         if (pks != null) {
             for (MappingField field : pks) {
-                Object pkvalue = obj.get(field.getMappingFieldName());
-                if (pkvalue == null) {
-
-                } else {
-                    Object pkValue = obj.get(field.getMappingFieldName());
-                    if (pkValue != null && !(pkValue instanceof String && StringTools.isEmpty(pkValue + ""))) {
-                        query.eq(field.getMappingFieldName(), pkValue);
-                        countpk++;
-                    }
+                Object pkValue = obj.get(field.getMappingFieldName());
+                if (pkValue != null && !(pkValue instanceof String && StringTools.isEmpty(pkValue + ""))) {
+                    query.eq(field.getMappingFieldName(), pkValue);
+                    countpk++;
                 }
             }
+            pksSize = pks.size();
         }
 
-        if (countpk < pks.size()) {
+        if (countpk < pksSize) {
             this.save(obj);
         } else {
             // 如果使用 insert update 语句就必须保证所有必填字段都存在

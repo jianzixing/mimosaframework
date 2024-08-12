@@ -43,8 +43,8 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public ModelObject saveOrUpdate(ModelObject obj) {
-        return sessionTemplate.saveOrUpdate(obj);
+    public ModelObject saveOrUpdate(ModelObject obj, Object... fields) {
+        return sessionTemplate.saveOrUpdate(obj, fields);
     }
 
     @Override
