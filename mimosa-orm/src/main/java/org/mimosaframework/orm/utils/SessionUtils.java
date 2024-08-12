@@ -19,7 +19,7 @@ import java.util.*;
 
 public final class SessionUtils {
 
-    public static void clearModelObject(MappingGlobalWrapper mappingDatabaseWrapper, Class c,
+    public static void clearModelObject(MappingGlobalWrapper mappingDatabaseWrapper, Class<?> c,
                                         ModelObject object, Object... fields) {
         if (c == null) {
             throw new IllegalArgumentException("没有设置要操作的映射类");
@@ -28,12 +28,7 @@ public final class SessionUtils {
         if (mappingTable == null) {
             throw new IllegalArgumentException("没有找到对应的关系映射[" + c.getName() + "]");
         }
-        Set<MappingField> mappingFields = mappingTable.getMappingFields();
-        List<String> dbFields = new ArrayList<>();
         List<Object> retainFields = fields != null && fields.length > 0 ? Arrays.asList(fields) : null;
-        for (MappingField mappingField : mappingFields) {
-            dbFields.add(mappingField.getMappingFieldName());
-        }
 
         // 不能清空，需要NULL和空字符串更新和添加
         // object.clearEmpty();
@@ -45,12 +40,18 @@ public final class SessionUtils {
             MappingField field = mappingTable.getMappingFieldByName(key);
             if (field == null) {
                 removed.add(o);
-            } else if (retainFields != null && !retainFields.isEmpty()
-                    && !field.isMappingFieldPrimaryKey()
-                    && !retainFields.contains(key)) {
-                removed.add(o);
             }
         }
+
+        // 将必要更新字段设置值,如果存在就不需要设置,不存在就设置为空
+        if (retainFields != null) {
+            for (Object key : retainFields) {
+                if (!object.containsKey(key)) {
+                    object.put(key, null);
+                }
+            }
+        }
+
         for (Object o : removed) {
             object.remove(o);
         }

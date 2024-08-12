@@ -60,11 +60,11 @@ public class DefaultSession implements Session {
     }
 
     private ModelObject save(ModelObject objSource, boolean update) {
-        if (objSource == null || objSource.size() == 0) {
+        if (objSource == null || objSource.isEmpty()) {
             throw new IllegalArgumentException(I18n.print("save_empty"));
         }
         ModelObject obj = Clone.cloneModelObject(objSource);
-        Class c = obj.getObjectClass();
+        Class<?> c = obj.getObjectClass();
         if (c == null) {
             throw new IllegalArgumentException(I18n.print("miss_table_class"));
         }
@@ -87,7 +87,7 @@ public class DefaultSession implements Session {
             Serializable id = null;
             try {
                 List<Long> ids = executor.inserts(mappingTable, Arrays.asList(new ModelObject[]{obj}), update);
-                if (ids != null && ids.size() > 0) {
+                if (ids != null && !ids.isEmpty()) {
                     Long autoId = ids.get(0);
                     if (autoId != null) id = autoId;
                 }
@@ -160,7 +160,7 @@ public class DefaultSession implements Session {
 
     @Override
     public void save(List<ModelObject> objectSources) {
-        if (objectSources == null || objectSources.size() == 0) {
+        if (objectSources == null || objectSources.isEmpty()) {
             throw new IllegalArgumentException(I18n.print("save_empty"));
         }
 
@@ -170,11 +170,11 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = null;
         SessionUtils.checkReference(objects);
         for (ModelObject object : objects) {
-            if (object == null || object.size() == 0) {
+            if (object == null || object.isEmpty()) {
                 throw new IllegalArgumentException(I18n.print("batch_save_empty"));
             }
             object.clearNull();
-            Class c = object.getObjectClass();
+            Class<?> c = object.getObjectClass();
             SessionUtils.clearModelObject(this.mappingGlobalWrapper, c, object);
 
             if (tableClass == null) tableClass = c;
@@ -214,7 +214,7 @@ public class DefaultSession implements Session {
 
     @Override
     public int update(ModelObject obj, Object... fields) {
-        if (obj == null || obj.size() == 0) {
+        if (obj == null || obj.isEmpty()) {
             throw new IllegalArgumentException(I18n.print("update_empty"));
         }
         obj = Clone.cloneModelObject(obj);
