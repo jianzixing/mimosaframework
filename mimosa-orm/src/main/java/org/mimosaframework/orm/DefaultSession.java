@@ -92,7 +92,7 @@ public class DefaultSession implements Session {
                     if (autoId != null) id = autoId;
                 }
             } catch (SQLException e) {
-                throw new IllegalStateException(I18n.print("add_data_error"), e);
+                throw new IllegalStateException(I18n.print("add_data_error", e.getMessage()), e);
             }
             SessionUtils.applyAutoIncrementValue(mappingTable, id, objSource);
 
