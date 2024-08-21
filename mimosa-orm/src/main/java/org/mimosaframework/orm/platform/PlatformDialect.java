@@ -568,18 +568,10 @@ public abstract class PlatformDialect implements Dialect {
     protected boolean isColumnDefaultChanged(KeyColumnType type, String defA, String defB) {
         // int bigint 等 数据库默认值总是0
         if (KeyColumnType.DECIMAL.equals(type)) {
-            if (StringTools.isEmpty(defA) && StringTools.isEmpty(defB)) return false;
-            if (StringTools.isEmpty(defA) && StringTools.isNotEmpty(defB)) return false;
-            if (StringTools.isNotEmpty(defA) && StringTools.isEmpty(defB)) return false;
+            if (Objects.equals(defA, defB)) return false;
             return new BigDecimal(defA).compareTo(new BigDecimal(defB)) != 0;
         }
-        if (!(StringTools.isEmpty(defA) && StringTools.isEmpty(defB)) && !(StringTools.isEmpty(defA) && "0".equals(defB))) {
-            return true;
-        }
-        if ((StringTools.isNotEmpty(defA) && !defA.equals(defB)) || (StringTools.isNotEmpty(defB) && !defB.equals(defA))) {
-            return true;
-        }
-        return false;
+        return !Objects.equals(defA, defB);
     }
 
     /**
@@ -666,11 +658,10 @@ public abstract class PlatformDialect implements Dialect {
             // 自增主键不需要设置默认值
             if (!currField.isMappingAutoIncrement() && (defB == null || !defB.equals("$'clob_get_error'"))) {
                 if (this.isColumnDefaultChanged(keyColumnType, defA, defB)) {
-
-                }
-                boolean last = this.compareColumnChangeDefault(defA, defB);
-                if (!last) {
-                    columnEditTypes.add(ColumnEditType.DEF_VALUE);
+                    boolean last = this.compareColumnChangeDefault(defA, defB);
+                    if (!last) {
+                        columnEditTypes.add(ColumnEditType.DEF_VALUE);
+                    }
                 }
             }
         }
