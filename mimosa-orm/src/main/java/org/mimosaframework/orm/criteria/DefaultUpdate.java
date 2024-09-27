@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BeanSessionTemplate;
 import org.mimosaframework.orm.SessionTemplate;
@@ -10,7 +11,7 @@ import java.util.Map;
 /**
  * @author yangankang
  */
-public class DefaultUpdate implements LogicUpdate {
+public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicUpdate {
     private SessionTemplate sessionTemplate;
     private BeanSessionTemplate beanSessionTemplate;
 
@@ -81,6 +82,11 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
+    public <F> Update set(FieldFunction<F> key, Object value) {
+        return this.set((Object) key, value);
+    }
+
+    @Override
     public LogicUpdate addSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.ADD_SELF);
@@ -89,11 +95,21 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
+    public <F> LogicUpdate addSelf(FieldFunction<F> key) {
+        return this.addSelf((Object) key);
+    }
+
+    @Override
     public LogicUpdate subSelf(Object key) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         values.put(ClassUtils.value(key), v);
         return this;
+    }
+
+    @Override
+    public <F> LogicUpdate subSelf(FieldFunction<F> key) {
+        return this.subSelf((Object) key);
     }
 
     @Override
@@ -106,12 +122,22 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
+    public <F> LogicUpdate addSelf(FieldFunction<F> key, long step) {
+        return this.addSelf((Object) key, step);
+    }
+
+    @Override
     public LogicUpdate subSelf(Object key, long step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
         values.put(ClassUtils.value(key), v);
         return this;
+    }
+
+    @Override
+    public <F> LogicUpdate subSelf(FieldFunction<F> key, long step) {
+        return this.subSelf((Object) key, step);
     }
 
     @Override
@@ -124,12 +150,22 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
+    public <F> LogicUpdate addSelf(FieldFunction<F> key, String step) {
+        return this.addSelf((Object) key, step);
+    }
+
+    @Override
     public LogicUpdate subSelf(Object key, String step) {
         UpdateSetValue v = new UpdateSetValue();
         v.setType(UpdateSpecialType.SUB_SELF);
         v.setStep(step);
         values.put(ClassUtils.value(key), v);
         return this;
+    }
+
+    @Override
+    public <F> LogicUpdate subSelf(FieldFunction<F> key, String step) {
+        return this.subSelf((Object) key, step);
     }
 
     @Override
@@ -191,7 +227,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate in(Object key, Iterable values) {
+    public LogicUpdate in(Object key, Iterable<?> values) {
         Filter filter = new DefaultFilter().in(key, values);
         this.add(filter);
         return this;
@@ -205,7 +241,7 @@ public class DefaultUpdate implements LogicUpdate {
     }
 
     @Override
-    public LogicUpdate nin(Object key, Iterable values) {
+    public LogicUpdate nin(Object key, Iterable<?> values) {
         Filter filter = new DefaultFilter().nin(key, values);
         this.add(filter);
         return this;

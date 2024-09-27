@@ -2,7 +2,7 @@ package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.orm.BasicFunction;
 
-public class HavingField implements Filter {
+public class HavingField extends AbstractFilter<HavingField> implements Filter<HavingField> {
     private BasicFunction function;
     private Filter filter;
     private boolean distinct = false;

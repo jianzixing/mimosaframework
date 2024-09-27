@@ -164,7 +164,7 @@ public class LanguageMessageDefault implements MessagesRegister {
         words.put("miss_table_class", "请先使用setObjectClass设置对象映射类");
         words.put("not_found_mapping", "找不到映射类 %s 的映射表");
         words.put("id_strategy_error", "使用ID生成策略出错");
-        words.put("add_data_error", "添加数据失败");
+        words.put("add_data_error", "添加数据失败, %s");
         words.put("batch_save_empty", "批量保存列表中存在空对象");
         words.put("batch_save_table_diff", "批量保存时所有对象表必须一致,[%s]和[%s]不一致");
         words.put("batch_save_data_error", "批量添加数据失败");

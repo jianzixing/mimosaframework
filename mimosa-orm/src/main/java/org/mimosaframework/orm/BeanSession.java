@@ -1,36 +1,40 @@
 package org.mimosaframework.orm;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.orm.criteria.Function;
 import org.mimosaframework.orm.criteria.Query;
-import org.mimosaframework.orm.criteria.UpdateObject;
+import org.mimosaframework.orm.criteria.Update;
 
 import java.io.Closeable;
-import java.io.Serializable;
 import java.util.List;
 
 public interface BeanSession extends Closeable {
 
     <T> T save(T obj);
 
-    <T> T saveOrUpdate(T obj);
+    <T> T saveOrUpdate(T obj, Object... fields);
+
+    <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields);
 
     <T> void save(List<T> objects);
 
-    <T> int update(T obj);
+    int update(Update update);
 
-    <T> int update(List<T> objects);
+    <T> int update(T obj, Object... fields);
 
-    <T> int edit(T obj, Serializable... fields);
+    <T> int updateUseField(T obj, FieldFunction<T>... fields);
 
-    <T> int edit(List<T> objects, Serializable... fields);
+    <T> int update(List<T> objects, Object... fields);
+
+    <T> int updateUseField(List<T> objects, FieldFunction<T>... fields);
 
     <T> int delete(T obj);
 
     <T> int delete(List<T> objects);
 
-    <T> int delete(Class<T> c, Serializable id);
+    <T> int delete(Class<T> c, Object id);
 
-    <T> T get(Class<T> c, Serializable id);
+    <T> T get(Class<T> c, Object id);
 
     <T> T get(Query query);
 

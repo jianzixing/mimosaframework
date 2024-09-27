@@ -626,7 +626,7 @@ public class PlatformExecutor {
             if (orders == null) orders = new LinkedHashSet<>();
             if (pks != null && pks.size() > 0) {
                 for (MappingField field : pks) {
-                    orders.add(new OrderBy(true, field.getMappingFieldName()));
+                    orders.add(new OrderBy(field.getMappingFieldName(), true));
                 }
             }
         }
@@ -1448,7 +1448,7 @@ public class PlatformExecutor {
                     if (aliasName.equalsIgnoreCase(entry.getValue())) {
                         Object key = entry.getKey();
                         if (key instanceof Query) {
-                            tableClass = ((Query<?>) key).getTableClass();
+                            tableClass = ((Query) key).getTableClass();
                         } else if (key instanceof Join) {
                             tableClass = ((Join) key).getTableClass();
                         }

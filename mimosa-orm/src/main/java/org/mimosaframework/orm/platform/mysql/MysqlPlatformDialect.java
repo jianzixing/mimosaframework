@@ -116,18 +116,15 @@ public class MysqlPlatformDialect extends PlatformDialect {
         List<ColumnEditType> columnEditTypes = this.compareColumnChange(tableStructure, mappingField, columnStructure);
 
         int hasEdit = columnEditTypes.size();
-        if (columnEditTypes.indexOf(ColumnEditType.TYPE_LENGTH) >= 0
+        if (columnEditTypes.contains(ColumnEditType.TYPE_LENGTH)
                 && mappingField.getMappingFieldLength() >= columnStructure.getLength()) {
             columnEditTypes.remove(ColumnEditType.TYPE_LENGTH);
         }
-        if (columnEditTypes.indexOf(ColumnEditType.DEF_VALUE) >= 0) {
-            columnEditTypes.remove(ColumnEditType.DEF_VALUE);
-        }
-        if (columnEditTypes.indexOf(ColumnEditType.COMMENT) >= 0) {
-            columnEditTypes.remove(ColumnEditType.COMMENT);
-        }
+        columnEditTypes.remove(ColumnEditType.DEF_VALUE);
+        columnEditTypes.remove(ColumnEditType.COMMENT);
+        columnEditTypes.remove(ColumnEditType.AUTO_INCREMENT);
 
-        if (hasEdit > 0 && columnEditTypes.size() == 0) {
+        if (hasEdit > 0 && columnEditTypes.isEmpty()) {
             DefaultSQLAlterBuilder sql = new DefaultSQLAlterBuilder();
             sql.alter().table(tableName).modify().column(columnName);
             this.setSQLType(sql, mappingField.getMappingFieldType(),
@@ -136,10 +133,11 @@ public class MysqlPlatformDialect extends PlatformDialect {
                 sql.not();
                 sql.nullable();
             }
-            List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
-            if (pks != null && pks.size() == 1 && mappingField.isMappingFieldPrimaryKey()) {
-                sql.primary().key();
-            }
+            // 修改表时，不修改主键信息
+            // List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
+            // if (pks != null && pks.size() == 1 && mappingField.isMappingFieldPrimaryKey()) {
+            //     sql.primary().key();
+            // }
 
             if (mappingField.isMappingAutoIncrement()) {
                 sql.autoIncrement();
@@ -154,6 +152,8 @@ public class MysqlPlatformDialect extends PlatformDialect {
             if (StringTools.isNotEmpty(cmt)) {
                 sql.comment(cmt);
             }
+
+            this.runner(sql.compile());
 
             this.triggerIndex(definition.getMappingTable(), definition.getTableStructure(),
                     definition.getMappingField(), null);

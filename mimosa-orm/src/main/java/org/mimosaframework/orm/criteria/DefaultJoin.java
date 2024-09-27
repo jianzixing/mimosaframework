@@ -1,6 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.i18n.I18n;
 import org.mimosaframework.orm.utils.SQLUtils;
@@ -13,7 +14,7 @@ import java.util.Set;
 /**
  * @author yangankang
  */
-public class DefaultJoin implements Join {
+public class DefaultJoin extends AbstractFilter<Join> implements Join {
     private List<JoinOnFilter> ons = new ArrayList<JoinOnFilter>();
     private String aliasName;
     private Class<?> table;
@@ -135,10 +136,20 @@ public class DefaultJoin implements Join {
     }
 
     @Override
+    public <F> Join on(FieldFunction<F> self, FieldFunction<F> mainField) {
+        return this.on((Object) self, (Object) mainField);
+    }
+
+    @Override
     public Join oneq(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, "=")));
         this.checkFieldClass(self, mainField);
         return this;
+    }
+
+    @Override
+    public <F> Join oneq(FieldFunction<F> self, FieldFunction<F> mainField) {
+        return this.oneq((Object) self, (Object) mainField);
     }
 
     @Override
@@ -149,10 +160,20 @@ public class DefaultJoin implements Join {
     }
 
     @Override
+    public <F> Join onne(FieldFunction<F> self, FieldFunction<F> mainField) {
+        return this.onne((Object) self, (Object) mainField);
+    }
+
+    @Override
     public Join ongt(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, ">")));
         this.checkFieldClass(self, mainField);
         return this;
+    }
+
+    @Override
+    public <F> Join ongt(FieldFunction<F> self, FieldFunction<F> mainField) {
+        return this.ongt((Object) self, (Object) mainField);
     }
 
     @Override
@@ -163,6 +184,11 @@ public class DefaultJoin implements Join {
     }
 
     @Override
+    public <F> Join onge(FieldFunction<F> self, FieldFunction<F> mainField) {
+        return this.onge((Object) self, (Object) mainField);
+    }
+
+    @Override
     public Join onlt(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, "<")));
         this.checkFieldClass(self, mainField);
@@ -170,10 +196,20 @@ public class DefaultJoin implements Join {
     }
 
     @Override
+    public <F> Join onlt(FieldFunction<F> self, FieldFunction<F> mainField) {
+        return this.onlt((Object) self, (Object) mainField);
+    }
+
+    @Override
     public Join onle(Object self, Object mainField) {
         this.ons.add(new JoinOnFilter(new OnField(self, mainField, "<=")));
         this.checkFieldClass(self, mainField);
         return this;
+    }
+
+    @Override
+    public <F> Join onle(FieldFunction<F> self, FieldFunction<F> mainField) {
+        return this.onle((Object) self, (Object) mainField);
     }
 
     @Override
@@ -222,7 +258,22 @@ public class DefaultJoin implements Join {
 
     @Override
     public Join orderBy(Object field, boolean isAsc) {
-        return this.orderBy(new OrderBy(isAsc, ClassUtils.value(field)));
+        return this.orderBy(new OrderBy(ClassUtils.value(field), isAsc));
+    }
+
+    @Override
+    public <F> Join orderBy(FieldFunction<F> field, boolean isAsc) {
+        return this.orderBy((Object) field, isAsc);
+    }
+
+    @Override
+    public Join orderBy(Object field, Sort sort) {
+        return this.orderBy(field, sort.isAsc());
+    }
+
+    @Override
+    public <F> Join orderBy(FieldFunction<F> field, Sort sort) {
+        return this.orderBy((Object) field, sort.isAsc());
     }
 
     public boolean isMulti() {

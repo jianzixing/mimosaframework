@@ -1,6 +1,5 @@
 package org.mimosaframework.core.encryption;
 
-import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -9,24 +8,6 @@ import javax.crypto.spec.DESKeySpec;
 import java.security.SecureRandom;
 
 public class DESEncrypt {
-
-    public static void main(String args[]) {
-        String str = "测试内容";
-        // 密码，长度要是8的倍数
-        String password = "12345678";
-
-        byte[] result = DESEncrypt.encrypt(str.getBytes(), password);
-        System.out.println("加密后：" + new BASE64Encoder().encode(result));
-
-        // 直接将如上内容解密
-        try {
-            byte[] decryResult = DESEncrypt.decrypt(result, password);
-            System.out.println("解密后：" + new String(decryResult));
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-
-    }
 
     public static byte[] encrypt(byte[] datasource, String password) {
         try {

@@ -1,6 +1,14 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.utils.ClassUtils;
+import org.mimosaframework.orm.annotation.Column;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -8,19 +16,19 @@ import org.mimosaframework.core.utils.ClassUtils;
  */
 public final class Criteria {
 
-    public static Query<LogicQuery> query(Class c) {
+    public static Query query(Class<?> c) {
         return new DefaultQuery(c);
     }
 
-    public static LogicQuery logicQuery(Class c) {
+    public static LogicQuery logicQuery(Class<?> c) {
         return new DefaultQuery(c);
     }
 
-    public static LogicDelete logicDelete(Class c) {
+    public static LogicDelete logicDelete(Class<?> c) {
         return new DefaultDelete(c);
     }
 
-    public static LogicUpdate logicDUpdate(Class c) {
+    public static LogicUpdate logicDUpdate(Class<?> c) {
         return new DefaultUpdate(c);
     }
 
@@ -28,31 +36,31 @@ public final class Criteria {
         return new DefaultFilter();
     }
 
-    public static Join join(Class c) {
+    public static Join join(Class<?> c) {
         return new DefaultJoin(c, 0);
     }
 
-    public static Join left(Class c) {
+    public static Join left(Class<?> c) {
         return new DefaultJoin(c, 0);
     }
 
-    public static Join inner(Class c) {
+    public static Join inner(Class<?> c) {
         return new DefaultJoin(c, 1);
     }
 
-    public static Update<LogicUpdate> update(Class c) {
+    public static Update update(Class<?> c) {
         return new DefaultUpdate(c);
     }
 
-    public static Delete<LogicDelete> delete(Class c) {
+    public static Delete delete(Class<?> c) {
         return new DefaultDelete(c);
     }
 
-    public static Function<LogicFunction> fun(Class c) {
+    public static Function<LogicFunction> fun(Class<?> c) {
         return new DefaultFunction(c);
     }
 
-    public static WrapsLinked<LogicWrapsLinked> linked() {
+    public static WrapsLinked linked() {
         return new DefaultWrapsLinked();
     }
 
@@ -60,14 +68,10 @@ public final class Criteria {
         return new DefaultWrapsLinked();
     }
 
-    public static LogicWrapsLinked linked(WrapsLinked<LogicWrapsLinked> l) {
+    public static LogicWrapsLinked linked(WrapsLinked l) {
         DefaultWrapsLinked linked = new DefaultWrapsLinked();
         linked.linked(l);
         return linked;
-    }
-
-    public static <T> UpdateObject wrapUpdate(T t) {
-        return new UpdateObject(t);
     }
 
     public static AsField as(String alias, Object field) {
@@ -77,5 +81,47 @@ public final class Criteria {
 
     public static Keyword NULL() {
         return Keyword.NULL;
+    }
+
+    public static <T> Object[] fields(Class<T> t) {
+        Class<?> superClass = t.getSuperclass();
+        List<Object> list = new ArrayList<>();
+        if (superClass != null) {
+            list.addAll(Arrays.asList(fields(superClass)));
+        }
+        Field[] fields = t.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getAnnotation(Column.class) != null) {
+                list.add(field.getName());
+            }
+        }
+        return list.toArray();
+    }
+
+    public static <T> Object[] nonFieldList(Class<T> t, Object... fields) {
+        return nonFieldList(t, Arrays.asList(fields));
+    }
+
+    public static <T> Object[] nonFieldList(Class<T> t, List<Object> fields) {
+        Object[] list = fields(t);
+        List<Object> rs = new ArrayList<>(Arrays.asList(list));
+        if (fields != null && !fields.isEmpty()) {
+            rs.removeAll(fields.stream().map(ClassUtils::value).collect(Collectors.toList()));
+        }
+        return rs.toArray();
+    }
+
+    public static <T> Object[] nonFields(Class<T> t, FieldFunction<T>... fields) {
+        return nonFields(t, Arrays.asList(fields));
+    }
+
+    public static <T> Object[] nonFields(Class<T> t, List<FieldFunction<T>> fields) {
+        List<Object> list = new ArrayList<>(Arrays.asList(fields(t)));
+        List<Object> newFields = new ArrayList<>();
+        for (FieldFunction<T> f : fields) {
+            newFields.add(ClassUtils.value(f));
+        }
+        list.removeAll(newFields);
+        return list.toArray();
     }
 }

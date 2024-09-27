@@ -1,12 +1,13 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.BasicFunction;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class DefaultFunction implements LogicFunction {
+public class DefaultFunction extends AbstractFilter<LogicFunction> implements LogicFunction {
     private Set<FunctionField> funs = null;
     private Set<HavingField> havingFields = null;
     private Class tableClass;
@@ -33,12 +34,22 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
+    public <F> LogicFunction addFunction(BasicFunction function, FieldFunction<F> field) {
+        return this.addFunction(function, (Object) field);
+    }
+
+    @Override
     public LogicFunction addFunction(BasicFunction function, Object field, String alias) {
         if (funs == null) {
             funs = new LinkedHashSet<>();
         }
         funs.add(new FunctionField(ClassUtils.value(field), function, alias));
         return this;
+    }
+
+    @Override
+    public <F> LogicFunction addFunction(BasicFunction function, FieldFunction<F> field, String alias) {
+        return this.addFunction(function, (Object) field, alias);
     }
 
     @Override
@@ -117,14 +128,34 @@ public class DefaultFunction implements LogicFunction {
     }
 
     @Override
+    public <F> LogicFunction groupBy(FieldFunction<F> field) {
+        return this.groupBy((Object) field);
+    }
+
+    @Override
     public LogicFunction orderBy(Object field, boolean isAsc) {
         if (orderBy == null && field != null) {
             orderBy = new LinkedHashSet<>();
         }
         if (field != null) {
-            orderBy.add(new OrderBy(isAsc, field));
+            orderBy.add(new OrderBy(ClassUtils.value(field), isAsc));
         }
         return this;
+    }
+
+    @Override
+    public <F> LogicFunction orderBy(FieldFunction<F> field, boolean isAsc) {
+        return this.orderBy((Object) field, isAsc);
+    }
+
+    @Override
+    public LogicFunction orderBy(Object field, Sort sort) {
+        return this.orderBy(field, sort.isAsc());
+    }
+
+    @Override
+    public <F> LogicFunction orderBy(FieldFunction<F> field, Sort sort) {
+        return this.orderBy((Object) field, sort.isAsc());
     }
 
     @Override

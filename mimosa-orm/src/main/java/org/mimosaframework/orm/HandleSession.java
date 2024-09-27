@@ -14,13 +14,13 @@ public interface HandleSession extends Closeable {
 
     ModelObject save(ModelObject obj);
 
-    ModelObject saveOrUpdate(ModelObject obj);
+    ModelObject saveOrUpdate(ModelObject obj, Object... fields);
 
     void save(List<ModelObject> objects);
 
-    int update(ModelObject obj);
+    int update(ModelObject obj, Object... fields);
 
-    int update(List<ModelObject> objects);
+    int update(List<ModelObject> objects, Object... fields);
 
     int update(Update update);
 

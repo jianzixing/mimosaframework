@@ -1,6 +1,8 @@
 package org.mimosaframework.orm;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.core.json.ModelObject;
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.annotation.JoinName;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.i18n.I18n;
@@ -10,6 +12,7 @@ import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionManager;
 import org.mimosaframework.orm.utils.Model2BeanFactory;
 import org.mimosaframework.orm.utils.ModelObjectToBean;
+import org.mimosaframework.orm.utils.SessionUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -63,36 +66,33 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveOrUpdate(T obj) {
+    public <T> T saveOrUpdate(T obj, Object... fields) {
         if (obj == null) {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
-        Object json = null;
-        ModelObject model = null;
-        Class tableClass = obj.getClass();
+        Class<?> tableClass = obj.getClass();
         Object mappingBean = obj;
-        if (obj instanceof UpdateObject) {
-            mappingBean = ((UpdateObject<?>) obj).get();
-            json = ModelObject.toJSON(mappingBean);
-            if (json == null || !(json instanceof ModelObject)) {
-                throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
-            }
-            tableClass = ((UpdateObject<?>) obj).get().getClass();
-            model = (ModelObject) json;
-            model.setObjectClass(tableClass);
-            this.setUpdateModelField((UpdateObject) obj, model, null);
-        } else {
-            json = ModelObject.toJSON(obj);
-            if (!(json instanceof ModelObject)) {
-                throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
-            }
-            model = (ModelObject) json;
-            model.setObjectClass(tableClass);
-            model.clearNull();
+        Object json = ModelObject.toJSON(obj);
+        if (!(json instanceof ModelObject)) {
+            throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
-        modelSession.saveOrUpdate(model);
+        ModelObject model = (ModelObject) json;
+        model.setObjectClass(tableClass);
+        model.clearNull();
+        modelSession.saveOrUpdate(model, fields);
         model2BeanFactory.toJavaObject(model, mappingBean, true);
         return obj;
+    }
+
+    @Override
+    public <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields) {
+        List<String> list = new ArrayList<>();
+        if (fields != null && fields.length > 0) {
+            for (Object object : fields) {
+                list.add(ClassUtils.value(object));
+            }
+        }
+        return saveOrUpdate(obj, list);
     }
 
     @Override
@@ -116,72 +116,69 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(T update) {
-        if (update instanceof Query || update instanceof Delete) {
+    public int update(Update update) {
+        if (update == null || !(update instanceof Update)) {
             throw new IllegalArgumentException(I18n.print("only_update_object"));
-        } else if (update instanceof Update) {
-            return modelSession.update((Update) update);
+        }
+        return modelSession.update(update);
+    }
+
+    @Override
+    public <T> int update(T update, Object... fields) {
+        Object json = ModelObject.toJSON(update);
+        if (json instanceof ModelObject) {
+            ModelObject model = (ModelObject) json;
+            model.setObjectClass(update.getClass());
+            model.clearNull();
+            return modelSession.update(model, fields);
         } else {
-            Object obj = update;
-            if (update instanceof UpdateObject) {
-                obj = ((UpdateObject) obj).get();
-            }
-            Object json = ModelObject.toJSON(obj);
-            if (json instanceof ModelObject) {
-                ModelObject model = (ModelObject) json;
-                model.setObjectClass(obj.getClass());
-                if (update instanceof UpdateObject) {
-                    this.setUpdateModelField((UpdateObject) update, model, null);
-                } else {
-                    model.clearNull();
-                }
-                return modelSession.update(model);
-            } else {
-                throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
-            }
+            throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }
     }
 
     @Override
-    public <T> int update(List<T> objects) {
-        return update(objects, null);
+    public <T> int updateUseField(T obj, FieldFunction<T>... fields) {
+        List<String> list = new ArrayList<String>();
+        if (fields != null && fields.length > 0) {
+            for (Object object : fields) {
+                list.add(ClassUtils.value(object));
+            }
+        }
+        return this.update(obj, list.toArray());
     }
 
     @Override
-    public <T> int edit(T obj, Serializable... fields) {
-        return update(UpdateObject.wrapRetains(obj, fields));
+    public <T> int update(List<T> objects, Object... fields) {
+        return doUpdate(objects, fields);
     }
 
     @Override
-    public <T> int edit(List<T> objects, Serializable... fields) {
-        return update(objects, UpdateObject.wrapRetains(null, fields));
+    public <T> int updateUseField(List<T> objects, FieldFunction<T>... fields) {
+        List<String> list = new ArrayList<>();
+        if (fields != null && fields.length > 0) {
+            for (Object object : fields) {
+                list.add(ClassUtils.value(object));
+            }
+        }
+        return doUpdate(objects, list.toArray());
     }
 
-    private <T> int update(List<T> objects, UpdateObject updateObject) {
+    private <T> int doUpdate(List<T> objects, Object... fields) {
         List<ModelObject> updates = null;
         if (objects != null && objects.size() > 0) {
             for (T update : objects) {
                 if (updates == null) updates = new ArrayList<>();
-                Object object = update;
-                if (update instanceof UpdateObject) {
-                    object = ((UpdateObject) object).get();
-                }
-                Object json = ModelObject.toJSON(object);
+                Object json = ModelObject.toJSON(update);
                 if (json instanceof ModelObject) {
                     ModelObject model = (ModelObject) json;
-                    model.setObjectClass(object.getClass());
-                    if (update instanceof UpdateObject || updateObject != null) {
-                        this.setUpdateModelField(update instanceof UpdateObject ? (UpdateObject) update : null,
-                                model, updateObject);
-                    } else {
-                        model.clearNull();
-                    }
+                    model.setObjectClass(update.getClass());
+                    model.clearNull();
                     updates.add(model);
                 } else {
                     throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
                 }
             }
-            return modelSession.update(updates);
+            return modelSession.update(updates, fields);
         }
         return 0;
     }
@@ -225,13 +222,13 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int delete(Class<T> c, Serializable id) {
-        return modelSession.delete(c, id);
+    public <T> int delete(Class<T> c, Object id) {
+        return modelSession.delete(c, ClassUtils.value(id));
     }
 
     @Override
-    public <T> T get(Class<T> c, Serializable id) {
-        ModelObject object = modelSession.get(c, id);
+    public <T> T get(Class<T> c, Object id) {
+        ModelObject object = modelSession.get(c, ClassUtils.value(id));
         return model2BeanFactory.toJavaObject(object, c);
     }
 
@@ -533,42 +530,5 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     @Override
     public <T> T execute(TransactionExecutor<T> executor) {
         return modelSession.execute(executor);
-    }
-
-    private void setUpdateModelField(UpdateObject obj, ModelObject model, UpdateObject global) {
-        if (obj != null && obj.isFull() == false || global != null) {
-            model.clearNull();
-
-            Serializable[] excludeFields = obj != null ? obj.getExcludeFields() : null;
-            Serializable[] globalExcludeFields = global != null ? global.getExcludeFields() : null;
-            if (excludeFields != null || globalExcludeFields != null) {
-                if (excludeFields != null) {
-                    for (Serializable f : excludeFields) {
-                        model.remove(f.toString());
-                    }
-                } else if (globalExcludeFields != null) {
-                    for (Serializable f : globalExcludeFields) {
-                        model.remove(f.toString());
-                    }
-                }
-            }
-
-            Serializable[] fields = obj != null ? obj.getNullFields() : null;
-            Serializable[] retains = obj != null ? obj.getRetainFields() : null;
-            Serializable[] globalFields = global != null ? global.getNullFields() : null;
-            Serializable[] globalRetains = global != null ? global.getRetainFields() : null;
-            if (fields != null) {
-                for (Serializable f : fields) if (f != null) model.put(f.toString(), null);
-            } else if (globalFields != null) {
-                for (Serializable f : globalFields) if (f != null) model.put(f.toString(), null);
-            }
-            if (retains != null) {
-                for (Serializable f : retains) if (f != null) model.put(f.toString(), model.get(f.toString()));
-            } else if (globalRetains != null) {
-                for (Serializable f : globalRetains) if (f != null) model.put(f.toString(), model.get(f.toString()));
-            }
-        } else if (obj != null) {
-            // 这里需要保留所有值
-        }
     }
 }

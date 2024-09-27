@@ -7,7 +7,7 @@ import org.mimosaframework.orm.SessionTemplate;
 /**
  * @author yangankang
  */
-public class DefaultDelete implements LogicDelete {
+public class DefaultDelete extends AbstractFilter<LogicDelete> implements LogicDelete {
     private SessionTemplate sessionTemplate;
     private BeanSessionTemplate beanSessionTemplate;
 

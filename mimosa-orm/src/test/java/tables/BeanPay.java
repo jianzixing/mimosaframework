@@ -4,22 +4,23 @@ import org.mimosaframework.orm.annotation.Column;
 import org.mimosaframework.orm.annotation.Table;
 import org.mimosaframework.orm.strategy.AutoIncrementStrategy;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Table
-public class BeanPay {
+public class BeanPay implements Serializable {
     @Column(pk = true, strategy = AutoIncrementStrategy.class)
-    private int id;
+    private Integer id;
     @Column(type = int.class)
     private int userId;
     @Column(type = BigDecimal.class, scale = 2)
     private BigDecimal money;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

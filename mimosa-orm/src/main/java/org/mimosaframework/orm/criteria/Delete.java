@@ -3,14 +3,14 @@ package org.mimosaframework.orm.criteria;
 /**
  * @author yangankang
  */
-public interface Delete<T extends Delete> extends Filter<T> {
-    T setTableClass(Class c);
+public interface Delete extends Filter<LogicDelete> {
+    LogicDelete setTableClass(Class<?> c);
 
-    T linked(WrapsLinked linked);
+    LogicDelete linked(WrapsLinked linked);
 
     long delete();
 
-    T unsafe();
+    LogicDelete unsafe();
 
     Query covert2query();
 }

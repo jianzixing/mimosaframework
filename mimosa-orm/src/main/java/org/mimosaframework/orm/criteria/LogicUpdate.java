@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
-public interface LogicUpdate extends Update<LogicUpdate> {
-    Update<LogicUpdate> and();
+public interface LogicUpdate extends Update {
+    Update and();
 
-    Update<LogicUpdate> or();
+    Update or();
 }

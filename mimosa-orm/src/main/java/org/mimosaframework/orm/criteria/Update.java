@@ -1,26 +1,42 @@
 package org.mimosaframework.orm.criteria;
 
+import org.mimosaframework.core.FieldFunction;
+
 /**
  * @author yangankang
  */
-public interface Update<T extends Update> extends Filter<T> {
-    T setTableClass(Class c);
+public interface Update extends Filter<LogicUpdate> {
+    LogicUpdate setTableClass(Class<?> c);
 
-    T linked(WrapsLinked linked);
+    LogicUpdate linked(WrapsLinked linked);
 
-    Update<LogicUpdate> set(Object key, Object value);
+    Update set(Object key, Object value);
 
-    T addSelf(Object key);
+    <F> Update set(FieldFunction<F> key, Object value);
 
-    T subSelf(Object key);
+    LogicUpdate addSelf(Object key);
 
-    T addSelf(Object key, long step);
+    <F> LogicUpdate addSelf(FieldFunction<F> key);
 
-    T subSelf(Object key, long step);
+    LogicUpdate subSelf(Object key);
 
-    T addSelf(Object key, String step);
+    <F> LogicUpdate subSelf(FieldFunction<F> key);
 
-    T subSelf(Object key, String step);
+    LogicUpdate addSelf(Object key, long step);
+
+    <F> LogicUpdate addSelf(FieldFunction<F> key, long step);
+
+    LogicUpdate subSelf(Object key, long step);
+
+    <F> LogicUpdate subSelf(FieldFunction<F> key, long step);
+
+    LogicUpdate addSelf(Object key, String step);
+
+    <F> LogicUpdate addSelf(FieldFunction<F> key, String step);
+
+    LogicUpdate subSelf(Object key, String step);
+
+    <F> LogicUpdate subSelf(FieldFunction<F> key, String step);
 
     long update();
 

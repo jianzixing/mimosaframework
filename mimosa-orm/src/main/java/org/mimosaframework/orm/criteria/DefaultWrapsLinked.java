@@ -1,6 +1,6 @@
 package org.mimosaframework.orm.criteria;
 
-public class DefaultWrapsLinked implements LogicWrapsLinked {
+public class DefaultWrapsLinked extends AbstractFilter<LogicWrapsLinked> implements LogicWrapsLinked {
     private Wraps<Filter> logicWraps;
 
     public Wraps<Filter> getLogicWraps() {

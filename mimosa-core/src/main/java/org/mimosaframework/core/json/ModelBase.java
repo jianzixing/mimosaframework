@@ -62,7 +62,7 @@ public interface ModelBase {
 
     Object put(Object key, Object value);
 
-    ModelObject chainPut(Object key, Object value);
+    ModelObject append(Object key, Object value);
 
     Object remove(Object key);
 

@@ -191,6 +191,31 @@ public class RunBeanBaseSession {
         }
     }
 
+    @Test
+    public void testCFun() {
+        BeanUser update = new BeanUser();
+        update.setId(1);
+        update.setUserName("ak1");
+        update.setAge(19);
+
+        template.saveOrUpdate(update);
+
+        update.setId(1);
+        update.setUserName("ak2");
+        update.setAge(18);
+
+        template.update(update, Criteria.nonFields(BeanUser.class, BeanUser::getId, BeanUser::getAge));
+        BeanUser old = template.get(Criteria.query(BeanUser.class).eq(BeanUser::getId, 1));
+        System.out.println(ModelObject.toJSONString(old));
+        template.update(update, Criteria.nonFields(BeanUser.class));
+        old = template.get(Criteria.query(BeanUser.class).eq(BeanUser::getId, 1));
+        System.out.println(ModelObject.toJSONString(old));
+
+        Object[] rs = Criteria.fields(BeanUser.class);
+        System.out.println(ModelObject.toJSONString(rs));
+
+    }
+
 
 //    @Test
 //    public void getAutonomously() throws Exception {

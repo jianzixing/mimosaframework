@@ -1,7 +1,7 @@
 package org.mimosaframework.orm.criteria;
 
-public interface LogicDelete extends Delete<LogicDelete> {
-    Delete<LogicDelete> and();
+public interface LogicDelete extends Delete {
+    Delete and();
 
-    Delete<LogicDelete> or();
+    Delete or();
 }

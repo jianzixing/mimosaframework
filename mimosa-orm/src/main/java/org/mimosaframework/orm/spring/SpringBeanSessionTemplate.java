@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.spring;
 
+import org.mimosaframework.core.FieldFunction;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.transaction.TransactionManager;
@@ -38,8 +39,13 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveOrUpdate(T obj) {
-        return sessionTemplate.saveOrUpdate(obj);
+    public <T> T saveOrUpdate(T obj, Object... fields) {
+        return sessionTemplate.saveOrUpdate(obj, fields);
+    }
+
+    @Override
+    public <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields) {
+        return sessionTemplate.saveOrUpdateUseField(obj, fields);
     }
 
     @Override
@@ -48,23 +54,28 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int update(T obj) {
-        return sessionTemplate.update(obj);
+    public int update(Update update) {
+        return sessionTemplate.update(update);
     }
 
     @Override
-    public <T> int update(List<T> objects) {
-        return sessionTemplate.update(objects);
+    public <T> int update(T obj, Object... fields) {
+        return sessionTemplate.update(obj, fields);
     }
 
     @Override
-    public <T> int edit(T obj, Serializable... fields) {
-        return sessionTemplate.edit(obj, fields);
+    public <T> int updateUseField(T obj, FieldFunction<T>... fields) {
+        return sessionTemplate.update(obj, fields);
     }
 
     @Override
-    public <T> int edit(List<T> objects, Serializable... fields) {
-        return sessionTemplate.edit(objects, fields);
+    public <T> int update(List<T> objects, Object... fields) {
+        return sessionTemplate.update(objects, fields);
+    }
+
+    @Override
+    public <T> int updateUseField(List<T> objects, FieldFunction<T>... fields) {
+        return sessionTemplate.update(objects, fields);
     }
 
     @Override
@@ -78,12 +89,12 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int delete(Class<T> c, Serializable id) {
+    public <T> int delete(Class<T> c, Object id) {
         return sessionTemplate.delete(c, id);
     }
 
     @Override
-    public <T> T get(Class<T> c, Serializable id) {
+    public <T> T get(Class<T> c, Object id) {
         return sessionTemplate.get(c, id);
     }
 

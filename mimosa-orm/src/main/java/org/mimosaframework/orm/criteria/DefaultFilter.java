@@ -7,7 +7,7 @@ import org.mimosaframework.orm.utils.SQLUtils;
 /**
  * @author yangankang
  */
-public class DefaultFilter implements QueryFilter {
+public class DefaultFilter extends AbstractFilter<DefaultFilter> implements QueryFilter<DefaultFilter> {
     private String as;
     private String key;
     private Object value;
