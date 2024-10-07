@@ -72,6 +72,11 @@ public class MimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
+    public int cover(ModelObject obj) {
+        return this.sessionAgency.cover(obj);
+    }
+
+    @Override
     public int delete(ModelObject obj) {
         return this.sessionAgency.delete(obj);
     }

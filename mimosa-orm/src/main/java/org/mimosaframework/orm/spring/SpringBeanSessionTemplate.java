@@ -6,7 +6,6 @@ import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.transaction.TransactionManager;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
 
 public class SpringBeanSessionTemplate implements BeanSessionTemplate {
@@ -44,8 +43,8 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields) {
-        return sessionTemplate.saveOrUpdateUseField(obj, fields);
+    public <T> T saveOrUpdateSelective(T obj, FieldFunction<T>... fields) {
+        return sessionTemplate.saveOrUpdateSelective(obj, fields);
     }
 
     @Override
@@ -64,7 +63,7 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updateUseField(T obj, FieldFunction<T>... fields) {
+    public <T> int updateSelective(T obj, FieldFunction<T>... fields) {
         return sessionTemplate.update(obj, fields);
     }
 
@@ -74,8 +73,13 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updateUseField(List<T> objects, FieldFunction<T>... fields) {
+    public <T> int updateSelective(List<T> objects, FieldFunction<T>... fields) {
         return sessionTemplate.update(objects, fields);
+    }
+
+    @Override
+    public <T> int cover(T obj) {
+        return sessionTemplate.cover(obj);
     }
 
     @Override

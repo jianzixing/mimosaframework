@@ -85,7 +85,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields) {
+    public <T> T saveOrUpdateSelective(T obj, FieldFunction<T>... fields) {
         List<String> list = new ArrayList<>();
         if (fields != null && fields.length > 0) {
             for (Object object : fields) {
@@ -137,7 +137,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updateUseField(T obj, FieldFunction<T>... fields) {
+    public <T> int updateSelective(T obj, FieldFunction<T>... fields) {
         List<String> list = new ArrayList<String>();
         if (fields != null && fields.length > 0) {
             for (Object object : fields) {
@@ -153,7 +153,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updateUseField(List<T> objects, FieldFunction<T>... fields) {
+    public <T> int updateSelective(List<T> objects, FieldFunction<T>... fields) {
         List<String> list = new ArrayList<>();
         if (fields != null && fields.length > 0) {
             for (Object object : fields) {
@@ -161,6 +161,19 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             }
         }
         return doUpdate(objects, list.toArray());
+    }
+
+    @Override
+    public <T> int cover(T obj) {
+        Object json = ModelObject.toJSON(obj);
+        if (json instanceof ModelObject) {
+            ModelObject model = (ModelObject) json;
+            model.setObjectClass(obj.getClass());
+            model.clearNull();
+            return modelSession.cover(model);
+        } else {
+            throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
+        }
     }
 
     private <T> int doUpdate(List<T> objects, Object... fields) {

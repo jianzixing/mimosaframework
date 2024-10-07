@@ -275,6 +275,18 @@ public class DefaultSession implements Session {
     }
 
     @Override
+    public int cover(ModelObject obj) {
+        MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(obj.getObjectClass());
+        List<String> fields = new ArrayList<>();
+        if (mappingTable.getMappingFields() != null) {
+            for (MappingField field : mappingTable.getMappingFields()) {
+                fields.add(field.getMappingFieldName());
+            }
+        }
+        return this.update(obj, fields.toArray());
+    }
+
+    @Override
     public int delete(ModelObject objSource) {
         ModelObject obj = Clone.cloneModelObject(objSource);
         Class c = obj.getObjectClass();
