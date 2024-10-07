@@ -246,7 +246,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T get(Query query) {
+    public <T> T get(Query<T> query) {
         ModelObject result = modelSession.get(query);
         if (result != null) {
             List list = this.model2JavaObject(query, Arrays.asList(result));
@@ -258,7 +258,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> List<T> list(Query query) {
+    public <T> List<T> list(Query<T> query) {
         List<ModelObject> results = modelSession.list(query);
         if (results != null && results.size() > 0) {
             List<T> r = this.model2JavaObject(query, results);
@@ -273,7 +273,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> Paging<T> paging(Query query) {
+    public <T> Paging<T> paging(Query<T> query) {
         Paging paging = modelSession.paging(query);
         List<ModelObject> results = paging.getObjects();
         if (results != null && results.size() > 0) {

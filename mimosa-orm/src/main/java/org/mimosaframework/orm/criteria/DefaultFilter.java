@@ -280,7 +280,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
     }
 
     @Override
-    public DefaultFilter exists(Query query) {
+    public DefaultFilter exists(LogicQuery query) {
         this.symbol = "exists";
         this.query = query;
         return this;

@@ -38,13 +38,13 @@ public interface BeanSession extends Closeable {
 
     <T> T get(Class<T> c, Object id);
 
-    <T> T get(Query query);
+    <T> T get(Query<T> query);
 
-    <T> List<T> list(Query query);
+    <T> List<T> list(Query<T> query);
 
     long count(Query query);
 
-    <T> Paging<T> paging(Query query);
+    <T> Paging<T> paging(Query<T> query);
 
     AutoResult calculate(Function function);
 

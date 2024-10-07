@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * @author yangankang
  */
-public class DefaultQuery extends AbstractFilter<LogicQuery> implements LogicQuery {
+public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements LogicQuery<T> {
     private SessionTemplate sessionTemplate;
     private BeanSessionTemplate beanSessionTemplate;
 
@@ -104,9 +104,9 @@ public class DefaultQuery extends AbstractFilter<LogicQuery> implements LogicQue
     }
 
     @Override
-    public <M> M get() {
+    public T get() {
         if (this.sessionTemplate != null) {
-            return (M) this.sessionTemplate.get(this);
+            return (T) this.sessionTemplate.get(this);
         }
         if (this.beanSessionTemplate != null) {
             return this.beanSessionTemplate.get(this);
@@ -115,9 +115,9 @@ public class DefaultQuery extends AbstractFilter<LogicQuery> implements LogicQue
     }
 
     @Override
-    public <M> List<M> list() {
+    public List<T> list() {
         if (this.sessionTemplate != null) {
-            return (List<M>) this.sessionTemplate.list(this);
+            return (List<T>) this.sessionTemplate.list(this);
         }
         if (this.beanSessionTemplate != null) {
             return this.beanSessionTemplate.list(this);
@@ -387,7 +387,7 @@ public class DefaultQuery extends AbstractFilter<LogicQuery> implements LogicQue
     }
 
     @Override
-    public LogicQuery exists(Query query) {
+    public LogicQuery exists(LogicQuery query) {
         Filter filter = new DefaultFilter().exists(query);
         this.addFilterInLinked(filter);
         return this;

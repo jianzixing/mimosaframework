@@ -103,12 +103,12 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T get(Query query) {
+    public <T> T get(Query<T> query) {
         return sessionTemplate.get(query);
     }
 
     @Override
-    public <T> List<T> list(Query query) {
+    public <T> List<T> list(Query<T> query) {
         return sessionTemplate.list(query);
     }
 
@@ -118,7 +118,7 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> Paging<T> paging(Query query) {
+    public <T> Paging<T> paging(Query<T> query) {
         return sessionTemplate.paging(query);
     }
 

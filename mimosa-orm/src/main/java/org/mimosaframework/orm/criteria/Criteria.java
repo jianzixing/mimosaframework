@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
  */
 public final class Criteria {
 
-    public static Query query(Class<?> c) {
-        return new DefaultQuery(c);
+    public static <T> Query<T> query(Class<T> c) {
+        return new DefaultQuery<T>(c);
     }
 
-    public static LogicQuery logicQuery(Class<?> c) {
+    public static <T> LogicQuery<T> logicQuery(Class<T> c) {
         return new DefaultQuery(c);
     }
 
@@ -44,7 +44,7 @@ public final class Criteria {
         return new DefaultJoin(c, 0);
     }
 
-    public static Join inner(Class<?> c) {
+    public static <T> Join inner(Class<T> c) {
         return new DefaultJoin(c, 1);
     }
 

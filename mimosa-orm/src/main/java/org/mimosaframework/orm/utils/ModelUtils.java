@@ -259,7 +259,7 @@ public abstract class ModelUtils {
         }
     }
 
-    public static ModelObject queryModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class c, Serializable keyQuery) {
+    public static ModelObject queryModelObject(SessionTemplate sessionTemplate, ModelObject object, Object keyFrom, Class<?> c, Serializable keyQuery) {
         if (sessionTemplate != null && object != null && keyFrom != null && c != null && keyQuery != null) {
             return sessionTemplate.get(Criteria.query(c).eq(keyQuery, object.get(keyFrom)));
         }
