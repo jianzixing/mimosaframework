@@ -410,7 +410,9 @@ public class DefaultSession implements Session {
         } catch (SQLException e) {
             throw new IllegalStateException(I18n.print("get_data_fail"), e);
         }
-
+        if (objects == null) {
+            objects = new ArrayList<>();
+        }
         return objects;
     }
 

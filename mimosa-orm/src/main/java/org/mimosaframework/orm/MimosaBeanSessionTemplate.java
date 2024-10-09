@@ -262,9 +262,10 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
         List<ModelObject> results = modelSession.list(query);
         if (results != null && results.size() > 0) {
             List<T> r = this.model2JavaObject(query, results);
+            if (r == null) r = new ArrayList<>();
             return r;
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
