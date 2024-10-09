@@ -128,21 +128,21 @@ public final class Cri {
     /**
      * like start
      */
-    public static String ls(String str) {
+    public static String likeS(String str) {
         return str + "%";
     }
 
     /**
      * like end
      */
-    public static String le(String str) {
+    public static String likeE(String str) {
         return "%" + str;
     }
 
     /**
      * like between
      */
-    public static String lb(String str) {
+    public static String likeB(String str) {
         return "%" + str + "%";
     }
 }
