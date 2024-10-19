@@ -28,7 +28,7 @@ public interface BeanSession extends Closeable {
 
     <T> int updateSelective(List<T> objects, FieldFunction<T>... fields);
 
-    <T> int cover(T obj);
+    <T> int modify(T obj);
 
     <T> int delete(T obj);
 

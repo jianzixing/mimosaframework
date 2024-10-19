@@ -6,20 +6,14 @@ import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.annotation.JoinName;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.i18n.I18n;
-import org.mimosaframework.orm.transaction.Transaction;
-import org.mimosaframework.orm.transaction.TransactionCallback;
-import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionManager;
 import org.mimosaframework.orm.utils.Model2BeanFactory;
 import org.mimosaframework.orm.utils.ModelObjectToBean;
-import org.mimosaframework.orm.utils.SessionUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.SQLException;
 import java.util.*;
 
 public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
@@ -164,13 +158,13 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int cover(T obj) {
+    public <T> int modify(T obj) {
         Object json = ModelObject.toJSON(obj);
         if (json instanceof ModelObject) {
             ModelObject model = (ModelObject) json;
             model.setObjectClass(obj.getClass());
             model.clearNull();
-            return modelSession.cover(model);
+            return modelSession.modify(model);
         } else {
             throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
         }

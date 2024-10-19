@@ -68,8 +68,8 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    public int cover(ModelObject obj) {
-        return this.sessionTemplate.cover(obj);
+    public int modify(ModelObject obj) {
+        return this.sessionTemplate.modify(obj);
     }
 
     @Override

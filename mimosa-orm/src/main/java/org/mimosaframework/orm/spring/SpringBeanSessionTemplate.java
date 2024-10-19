@@ -78,8 +78,8 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int cover(T obj) {
-        return sessionTemplate.cover(obj);
+    public <T> int modify(T obj) {
+        return sessionTemplate.modify(obj);
     }
 
     @Override

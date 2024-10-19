@@ -24,7 +24,7 @@ public interface HandleSession extends Closeable {
 
     int update(Update update);
 
-    int cover(ModelObject obj);
+    int modify(ModelObject obj);
 
     int delete(ModelObject obj);
 

@@ -122,8 +122,7 @@ public class MysqlStampCreate extends PlatformStampCreate {
                 sb.append(this.reference.getColumnName(wrapper, create, column.column));
 
                 if (column.timeForUpdate) {
-                    sb.append(" DATETIME");
-                    sb.append(" NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+                    sb.append(" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
                 } else if (column.timeForCreate) {
                     sb.append(" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP");
                 } else {

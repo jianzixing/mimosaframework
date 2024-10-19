@@ -275,7 +275,7 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public int cover(ModelObject obj) {
+    public int modify(ModelObject obj) {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(obj.getObjectClass());
         List<String> fields = new ArrayList<>();
         if (mappingTable.getMappingFields() != null) {
