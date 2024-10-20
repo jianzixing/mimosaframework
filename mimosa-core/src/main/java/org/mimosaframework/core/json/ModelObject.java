@@ -29,7 +29,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.function.Function;
 
 import static org.mimosaframework.core.json.util.TypeUtils.*;
 
@@ -80,12 +79,12 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
         }
     }
 
-    public static ModelObject builder(Class<?> tableContactsClass) {
-        return new ModelObject(tableContactsClass);
+    public static ModelObjectBuilder builder(Class<?> tableContactsClass) {
+        return new ModelObjectBuilder(tableContactsClass);
     }
 
-    public static ModelObject builder() {
-        return new ModelObject();
+    public static ModelObjectBuilder builder() {
+        return new ModelObjectBuilder();
     }
 
     public void putAny(Object key, Object value) {

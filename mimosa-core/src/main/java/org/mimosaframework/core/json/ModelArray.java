@@ -442,4 +442,8 @@ public class ModelArray extends Model implements List<Object>, Cloneable, Random
 
         return (ModelArray) Model.toJSON(obj);
     }
+
+    public static ModelArrayBuilder builder() {
+        return new ModelArrayBuilder();
+    }
 }
