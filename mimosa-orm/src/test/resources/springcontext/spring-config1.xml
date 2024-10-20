@@ -33,6 +33,7 @@
     <bean name="factory" class="org.mimosaframework.orm.spring.SpringMimosaSessionFactory">
         <property name="scanPackage" value="tables"/>
         <property name="dataSource" ref="ds"/>
+        <property name="showSQL" value="true"/>
     </bean>
     <bean name="template" class="org.mimosaframework.orm.spring.SpringMimosaSessionTemplate">
         <property name="factory" ref="factory"/>

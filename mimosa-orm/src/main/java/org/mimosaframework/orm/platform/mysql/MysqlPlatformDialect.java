@@ -147,6 +147,12 @@ public class MysqlPlatformDialect extends PlatformDialect {
             if (StringTools.isNotEmpty(def)) {
                 sql.defaultValue(def);
             }
+            if (mappingField.isMappingFieldTimeForCreate()) {
+                sql.timeForCreate();
+            }
+            if (mappingField.isMappingFieldTimeForUpdate()) {
+                sql.timeForUpdate();
+            }
 
             String cmt = mappingField.getMappingFieldComment();
             if (StringTools.isNotEmpty(cmt)) {
