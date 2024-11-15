@@ -71,4 +71,8 @@ public interface Filter<T> {
     T isNotNull(Object key);
 
     <F> T isNotNull(FieldFunction<F> key);
+
+    T when(boolean condition, Condition<T> then);
+
+    T when(boolean condition, Condition<T> then, Condition<T> other);
 }
