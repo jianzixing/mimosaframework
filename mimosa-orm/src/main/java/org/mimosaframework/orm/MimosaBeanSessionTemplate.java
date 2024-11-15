@@ -6,20 +6,14 @@ import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.annotation.JoinName;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.i18n.I18n;
-import org.mimosaframework.orm.transaction.Transaction;
-import org.mimosaframework.orm.transaction.TransactionCallback;
-import org.mimosaframework.orm.transaction.TransactionIsolationType;
 import org.mimosaframework.orm.transaction.TransactionManager;
 import org.mimosaframework.orm.utils.Model2BeanFactory;
 import org.mimosaframework.orm.utils.ModelObjectToBean;
-import org.mimosaframework.orm.utils.SessionUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.SQLException;
 import java.util.*;
 
 public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
@@ -85,7 +79,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields) {
+    public <T> T saveOrUpdateSelective(T obj, FieldFunction<T>... fields) {
         List<String> list = new ArrayList<>();
         if (fields != null && fields.length > 0) {
             for (Object object : fields) {
@@ -137,7 +131,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updateUseField(T obj, FieldFunction<T>... fields) {
+    public <T> int updateSelective(T obj, FieldFunction<T>... fields) {
         List<String> list = new ArrayList<String>();
         if (fields != null && fields.length > 0) {
             for (Object object : fields) {
@@ -153,7 +147,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updateUseField(List<T> objects, FieldFunction<T>... fields) {
+    public <T> int updateSelective(List<T> objects, FieldFunction<T>... fields) {
         List<String> list = new ArrayList<>();
         if (fields != null && fields.length > 0) {
             for (Object object : fields) {
@@ -161,6 +155,19 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
             }
         }
         return doUpdate(objects, list.toArray());
+    }
+
+    @Override
+    public <T> int modify(T obj) {
+        Object json = ModelObject.toJSON(obj);
+        if (json instanceof ModelObject) {
+            ModelObject model = (ModelObject) json;
+            model.setObjectClass(obj.getClass());
+            model.clearNull();
+            return modelSession.modify(model);
+        } else {
+            throw new IllegalArgumentException(I18n.print("bean_save_not_json"));
+        }
     }
 
     private <T> int doUpdate(List<T> objects, Object... fields) {
@@ -233,7 +240,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T get(Query query) {
+    public <T> T get(Query<T> query) {
         ModelObject result = modelSession.get(query);
         if (result != null) {
             List list = this.model2JavaObject(query, Arrays.asList(result));
@@ -245,13 +252,14 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> List<T> list(Query query) {
+    public <T> List<T> list(Query<T> query) {
         List<ModelObject> results = modelSession.list(query);
         if (results != null && results.size() > 0) {
             List<T> r = this.model2JavaObject(query, results);
+            if (r == null) r = new ArrayList<>();
             return r;
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -260,7 +268,7 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> Paging<T> paging(Query query) {
+    public <T> Paging<T> paging(Query<T> query) {
         Paging paging = modelSession.paging(query);
         List<ModelObject> results = paging.getObjects();
         if (results != null && results.size() > 0) {

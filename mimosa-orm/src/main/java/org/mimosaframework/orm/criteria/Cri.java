@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 
 
 /**
- * @author yangankang
+ * 需要和Criteria保持一致，是Criteria镜像别名
  */
-public final class Criteria {
+public final class Cri {
 
     public static <T> Query<T> query(Class<T> c) {
         return new DefaultQuery<T>(c);

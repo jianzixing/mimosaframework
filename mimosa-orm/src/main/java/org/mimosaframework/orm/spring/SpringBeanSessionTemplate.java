@@ -6,7 +6,6 @@ import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.transaction.TransactionManager;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
 
 public class SpringBeanSessionTemplate implements BeanSessionTemplate {
@@ -44,8 +43,8 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T saveOrUpdateUseField(T obj, FieldFunction<T>... fields) {
-        return sessionTemplate.saveOrUpdateUseField(obj, fields);
+    public <T> T saveOrUpdateSelective(T obj, FieldFunction<T>... fields) {
+        return sessionTemplate.saveOrUpdateSelective(obj, fields);
     }
 
     @Override
@@ -64,7 +63,7 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updateUseField(T obj, FieldFunction<T>... fields) {
+    public <T> int updateSelective(T obj, FieldFunction<T>... fields) {
         return sessionTemplate.update(obj, fields);
     }
 
@@ -74,8 +73,13 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> int updateUseField(List<T> objects, FieldFunction<T>... fields) {
+    public <T> int updateSelective(List<T> objects, FieldFunction<T>... fields) {
         return sessionTemplate.update(objects, fields);
+    }
+
+    @Override
+    public <T> int modify(T obj) {
+        return sessionTemplate.modify(obj);
     }
 
     @Override
@@ -99,12 +103,12 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> T get(Query query) {
+    public <T> T get(Query<T> query) {
         return sessionTemplate.get(query);
     }
 
     @Override
-    public <T> List<T> list(Query query) {
+    public <T> List<T> list(Query<T> query) {
         return sessionTemplate.list(query);
     }
 
@@ -114,7 +118,7 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    public <T> Paging<T> paging(Query query) {
+    public <T> Paging<T> paging(Query<T> query) {
         return sessionTemplate.paging(query);
     }
 

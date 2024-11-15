@@ -137,7 +137,7 @@ public class DefaultWrapsLinked extends AbstractFilter<LogicWrapsLinked> impleme
     }
 
     @Override
-    public LogicWrapsLinked exists(Query query) {
+    public LogicWrapsLinked exists(LogicQuery query) {
         // 之后需要实现
         return this;
     }

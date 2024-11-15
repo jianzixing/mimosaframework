@@ -24,6 +24,8 @@ public interface HandleSession extends Closeable {
 
     int update(Update update);
 
+    int modify(ModelObject obj);
+
     int delete(ModelObject obj);
 
     int delete(List<ModelObject> objects);
@@ -34,13 +36,13 @@ public interface HandleSession extends Closeable {
 
     ModelObject get(Class c, Serializable id);
 
-    ModelObject get(Query query);
+    ModelObject get(Query<?> query);
 
-    List<ModelObject> list(Query query);
+    List<ModelObject> list(Query<?> query);
 
     long count(Query query);
 
-    Paging<ModelObject> paging(Query query);
+    Paging<ModelObject> paging(Query<?> query);
 
     ZipperTable<ModelObject> getZipperTable(Class c);
 

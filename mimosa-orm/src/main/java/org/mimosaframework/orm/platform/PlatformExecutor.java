@@ -1309,7 +1309,7 @@ public class PlatformExecutor {
             builder.value(value);
         }
         if (symbol.equalsIgnoreCase("notIn")) {
-            builder.in();
+            builder.nin();
             builder.value(value);
         }
         if (symbol.equalsIgnoreCase("like")) {
