@@ -71,4 +71,22 @@ public abstract class AbstractFilter<T> implements Filter<T> {
     public <F> T isNotNull(FieldFunction<F> key) {
         return this.isNotNull((Object) key);
     }
+
+    @Override
+    public T when(boolean condition, Condition<T> then, Condition<T> other) {
+        if (condition) {
+            then.criteria(this);
+        } else {
+            other.criteria(this);
+        }
+        return (T) this;
+    }
+
+    @Override
+    public T when(boolean condition, Condition<T> then) {
+        if (condition) {
+            then.criteria(this);
+        }
+        return (T) this;
+    }
 }
