@@ -40,17 +40,15 @@ public abstract class AbstractCompareMapping implements CompareMapping {
                                 isRebuildTable = createTable(tableMate);
                             }
 
+                            // create field
+                            if (!isRebuildTable && tableMate.getCreateFields() != null && tableMate.getCreateFields().size() > 0) {
+                                isRebuildTable = createFields(tableMate);
+                            }
 
                             // update fields
                             if (!isRebuildTable && tableMate.getUpdateFields() != null && tableMate.getUpdateFields().size() > 0) {
                                 Map<MappingField, CompareUpdateMate> updateFields = tableMate.getUpdateFields();
                                 isRebuildTable = updateFields(tableMate, updateFields);
-                            }
-
-
-                            // create field
-                            if (!isRebuildTable && tableMate.getCreateFields() != null && tableMate.getCreateFields().size() > 0) {
-                                isRebuildTable = createFields(tableMate);
                             }
 
                             // del fields
