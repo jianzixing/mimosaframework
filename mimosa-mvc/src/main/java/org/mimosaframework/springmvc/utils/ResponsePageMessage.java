@@ -48,18 +48,18 @@ public class ResponsePageMessage<T> extends ResponseMessage<T> {
             this.total = paging.getCount();
             this.data = (T) paging.getObjects();
         }
-        this.setCode(100);
+        this.setCode(SUCCESS);
     }
 
     public ResponsePageMessage(long total, T data) {
         this.total = total;
         this.data = data;
-        this.setCode(100);
+        this.setCode(SUCCESS);
     }
 
     public ResponsePageMessage() {
         this.total = 0;
-        this.setCode(100);
+        this.setCode(SUCCESS);
     }
 
     public long getTotal() {

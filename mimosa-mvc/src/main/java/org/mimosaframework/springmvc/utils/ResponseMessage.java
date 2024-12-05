@@ -66,7 +66,7 @@ public class ResponseMessage<T> implements Serializable {
     }
 
     public ResponseMessage() {
-        this.code = 100;
+        this.code = 200;
         this.msg = "success";
     }
 
@@ -83,7 +83,7 @@ public class ResponseMessage<T> implements Serializable {
             this.msg = ((ModuleForceException) data).getMessage();
         } else if (data instanceof ModelCheckerException) {
             Object code = ((ModelCheckerException) data).getCode();
-            if (code == null) code = -100;
+            if (code == null) code = 500;
             this.code = code;
             this.msg = ((ModelCheckerException) data).getMessage();
         } else if (data instanceof UndeclaredThrowableException || data instanceof UndeclaredThrowableException) {
@@ -148,7 +148,7 @@ public class ResponseMessage<T> implements Serializable {
             }
             ((Exception) data).printStackTrace();
         } else {
-            this.code = 100;
+            this.code = 200;
             this.data = (T) data;
         }
     }
@@ -245,7 +245,7 @@ public class ResponseMessage<T> implements Serializable {
         return ModelObject.toFrontString(this);
     }
 
-    public static final int SUCCESS = 100;
+    public static final int SUCCESS = 200;
 
     public static <T> T toObject(ResponseMessage responseMessage, TypeReference<T> reference) {
         Type type = reference != null ? reference.getType() : null;
