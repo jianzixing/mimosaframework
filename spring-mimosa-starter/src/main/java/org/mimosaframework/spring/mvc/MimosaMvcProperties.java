@@ -1,38 +1,30 @@
 package org.mimosaframework.spring.mvc;
 
+import org.mimosaframework.springmvc.CurdImplement;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Map;
 
 @ConfigurationProperties("mimosa.mvc")
 public class MimosaMvcProperties {
-    private Class curdImplementClass;
-    private Map<String, String> prefixs;
+    private Class<? extends CurdImplement> curdImplementClass;
+    private Map<String, String> prefix;
     private Map<String, String> replaces;
-    private String[] packages;
 
-    public String[] getPackages() {
-        return packages;
-    }
-
-    public void setPackages(String[] packages) {
-        this.packages = packages;
-    }
-
-    public Class getCurdImplementClass() {
+    public Class<? extends CurdImplement> getCurdImplementClass() {
         return curdImplementClass;
     }
 
-    public void setCurdImplementClass(Class curdImplementClass) {
+    public void setCurdImplementClass(Class<? extends CurdImplement> curdImplementClass) {
         this.curdImplementClass = curdImplementClass;
     }
 
-    public Map<String, String> getPrefixs() {
-        return prefixs;
+    public Map<String, String> getPrefix() {
+        return prefix;
     }
 
-    public void setPrefixs(Map<String, String> prefixs) {
-        this.prefixs = prefixs;
+    public void setPrefix(Map<String, String> prefix) {
+        this.prefix = prefix;
     }
 
     public Map<String, String> getReplaces() {

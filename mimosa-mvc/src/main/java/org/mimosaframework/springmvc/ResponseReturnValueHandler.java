@@ -1,8 +1,6 @@
 package org.mimosaframework.springmvc;
 
 import org.mimosaframework.core.json.ModelObject;
-import org.mimosaframework.core.json.serializer.SerializeConfig;
-import org.mimosaframework.core.utils.DyToStringSerializer;
 import org.mimosaframework.core.utils.StringTools;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -12,23 +10,20 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
-public class PrinterReturnValueHandler implements HandlerMethodReturnValueHandler {
+public class ResponseReturnValueHandler implements HandlerMethodReturnValueHandler {
     private static final String DEFAULT_CONTENT_TYPE = "application/json;charset=UTF-8";
     private String contentType = null;
 
-    public PrinterReturnValueHandler(String contentType) {
+    public ResponseReturnValueHandler(String contentType) {
         this.contentType = contentType;
     }
 
     @Override
     public boolean supportsReturnType(MethodParameter methodParameter) {
-        Class c = methodParameter.getParameterType();
+        Class<?> c = methodParameter.getParameterType();
         Method method = methodParameter.getMethod();
-        Printer printer = method.getAnnotation(Printer.class);
-        if (printer != null && printer.plaintext()) {
-            return true;
-        }
-        return false;
+        Response printer = method.getAnnotation(Response.class);
+        return printer != null && printer.plaintext();
     }
 
     @Override
@@ -38,7 +33,7 @@ public class PrinterReturnValueHandler implements HandlerMethodReturnValueHandle
             return;
         }
         Method method = methodParameter.getMethod();
-        Printer printer = method.getAnnotation(Printer.class);
+        Response printer = method.getAnnotation(Response.class);
         if (printer != null && printer.plaintext()) {
             modelAndViewContainer.setRequestHandled(true);
             HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);

@@ -1,7 +1,5 @@
 package org.mimosaframework.spring.mvc;
 
-import org.mimosaframework.orm.MimosaSessionTemplate;
-import org.mimosaframework.orm.exception.ContextException;
 import org.mimosaframework.orm.spring.SpringMimosaSessionTemplate;
 import org.mimosaframework.springmvc.MimosaHandlerMethodExceptionResolver;
 import org.mimosaframework.springmvc.MimosaRequestHandlerAdapter;
@@ -18,7 +16,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExc
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +45,7 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
         MimosaRequestHandlerMapping requestHandlerMapping = new MimosaRequestHandlerMapping();
         requestHandlerMapping.setSessionTemplate(mimosaSessionTemplate);
         requestHandlerMapping.setCurdImplementClass(mimosaMvcProperties.getCurdImplementClass());
-        requestHandlerMapping.setPrefixs(mimosaMvcProperties.getPrefixs());
+        requestHandlerMapping.setPrefixs(mimosaMvcProperties.getPrefix());
         requestHandlerMapping.setReplaces(mimosaMvcProperties.getReplaces());
         return requestHandlerMapping;
     }
@@ -58,12 +55,6 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
         MimosaRequestHandlerAdapter requestMappingHandlerAdapter = new MimosaRequestHandlerAdapter();
         requestMappingHandlerAdapter.setBeforeArgumentResolvers(this.getArgsResolver());
         requestMappingHandlerAdapter.setBeforeReturnValueHandlers(this.getReturnHandler());
-        String[] pkg2 = mimosaMvcProperties.getPackages();
-        String[] pkg1 = this.getPackages();
-        List<String> list = new ArrayList<>();
-        if (pkg1 != null) for (String pkg : pkg1) list.add(pkg);
-        if (pkg2 != null) for (String pkg : pkg2) list.add(pkg);
-        requestMappingHandlerAdapter.setPackages(list.toArray(new String[]{}));
         return requestMappingHandlerAdapter;
     }
 
@@ -75,9 +66,6 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
         return null;
     }
 
-    protected String[] getPackages() {
-        return null;
-    }
 
     @Override
     public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {

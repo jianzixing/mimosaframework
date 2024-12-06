@@ -18,10 +18,6 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
         I18n.register();
     }
 
-    public void setPackages(String[] packages) {
-        resolver.setPackages(packages);
-    }
-
     public void setDefaultContentType(String defaultContentType) {
         this.defaultContentType = defaultContentType;
     }
@@ -45,7 +41,7 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
 
         List<HandlerMethodReturnValueHandler> fixReturnValueHandlers = this.getReturnValueHandlers();
         List<HandlerMethodReturnValueHandler> returnValueHandlers = new ArrayList<>(fixReturnValueHandlers);
-        returnValueHandlers.add(0, new PrinterReturnValueHandler(defaultContentType));
+        returnValueHandlers.add(0, new ResponseReturnValueHandler(defaultContentType));
         if (beforeReturnValueHandlers != null) {
             for (HandlerMethodReturnValueHandler handler : beforeReturnValueHandlers) {
                 returnValueHandlers.add(0, handler);

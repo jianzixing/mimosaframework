@@ -7,7 +7,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,7 +44,7 @@ public class MimosaHandlerExceptionResolver extends SimpleMappingExceptionResolv
     protected ModelAndView doResolveException(HttpServletRequest httpServletRequest, HttpServletResponse response, Object handler, Exception e) {
         if (handler instanceof HandlerMethod && e != null) {
             HandlerMethod methodHandler = (HandlerMethod) handler;
-            Printer printer = methodHandler.getMethodAnnotation(Printer.class);
+            Response printer = methodHandler.getMethodAnnotation(Response.class);
             if (printer != null) {
                 if (StringTools.isNotEmpty(printer.contentType())) {
                     response.setContentType(printer.contentType());

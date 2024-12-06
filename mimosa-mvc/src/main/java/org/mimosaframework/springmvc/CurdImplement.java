@@ -12,30 +12,30 @@ public interface CurdImplement {
 
     void setPrimarykey(String pk);
 
-    @Printer
+    @Response
     String add(ModelObject object);
 
-    @Printer
+    @Response
     String del(String id);
 
-    @Printer
+    @Response
     String dels(List<String> ids);
 
-    @Printer
+    @Response
     String delSearch(SearchForm form);
 
-    @Printer
+    @Response
     String update(ModelObject object);
 
-    @Printer
+    @Response
     String updateSearch(SearchForm form);
 
-    @Printer
+    @Response
     String get(String id);
 
-    @Printer
+    @Response
     String list(SearchForm form, Long start, Long limit);
 
-    @Printer
+    @Response
     String page(SearchForm form, Long start, Long limit);
 }
