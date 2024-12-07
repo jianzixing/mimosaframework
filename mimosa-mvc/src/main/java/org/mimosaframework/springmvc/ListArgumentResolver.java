@@ -24,7 +24,7 @@ public class ListArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         Method method = parameter.getMethod();
-        Response printer = method.getAnnotation(Response.class);
+        Body printer = method.getAnnotation(Body.class);
         Class type = parameter.getParameterType();
         if ((type.isAssignableFrom(List.class) || type.equals(ModelArray.class)) && printer != null) {
             return true;

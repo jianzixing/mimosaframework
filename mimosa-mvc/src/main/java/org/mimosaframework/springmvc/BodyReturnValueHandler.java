@@ -10,11 +10,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
-public class ResponseReturnValueHandler implements HandlerMethodReturnValueHandler {
+public class BodyReturnValueHandler implements HandlerMethodReturnValueHandler {
     private static final String DEFAULT_CONTENT_TYPE = "application/json;charset=UTF-8";
     private String contentType = null;
 
-    public ResponseReturnValueHandler(String contentType) {
+    public BodyReturnValueHandler(String contentType) {
         this.contentType = contentType;
     }
 
@@ -22,7 +22,7 @@ public class ResponseReturnValueHandler implements HandlerMethodReturnValueHandl
     public boolean supportsReturnType(MethodParameter methodParameter) {
         Class<?> c = methodParameter.getParameterType();
         Method method = methodParameter.getMethod();
-        Response printer = method.getAnnotation(Response.class);
+        Body printer = method.getAnnotation(Body.class);
         return printer != null && printer.plaintext();
     }
 
@@ -33,7 +33,7 @@ public class ResponseReturnValueHandler implements HandlerMethodReturnValueHandl
             return;
         }
         Method method = methodParameter.getMethod();
-        Response printer = method.getAnnotation(Response.class);
+        Body printer = method.getAnnotation(Body.class);
         if (printer != null && printer.plaintext()) {
             modelAndViewContainer.setRequestHandled(true);
             HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);

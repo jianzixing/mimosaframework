@@ -41,7 +41,7 @@ public class MimosaRequestHandlerAdapter extends RequestMappingHandlerAdapter {
 
         List<HandlerMethodReturnValueHandler> fixReturnValueHandlers = this.getReturnValueHandlers();
         List<HandlerMethodReturnValueHandler> returnValueHandlers = new ArrayList<>(fixReturnValueHandlers);
-        returnValueHandlers.add(0, new ResponseReturnValueHandler(defaultContentType));
+        returnValueHandlers.add(0, new BodyReturnValueHandler(defaultContentType));
         if (beforeReturnValueHandlers != null) {
             for (HandlerMethodReturnValueHandler handler : beforeReturnValueHandlers) {
                 returnValueHandlers.add(0, handler);

@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Response {
+public @interface Body {
     String name() default "";
 
     String value() default "";

@@ -149,7 +149,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
 
     private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
         RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
-        Response printer = AnnotatedElementUtils.findMergedAnnotation(element, Response.class);
+        Body printer = AnnotatedElementUtils.findMergedAnnotation(element, Body.class);
         RequestCondition<?> condition = (element instanceof Class<?> ?
                 getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
         if (requestMapping != null) {
@@ -351,7 +351,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         return null;
     }
 
-    protected RequestMappingInfo createRequestMappingInfoByPrinter(Response requestMapping, RequestCondition<?> customCondition, String[] path) {
+    protected RequestMappingInfo createRequestMappingInfoByPrinter(Body requestMapping, RequestCondition<?> customCondition, String[] path) {
 
         return RequestMappingInfo
                 .paths(resolveEmbeddedValuesInPatterns(path))
