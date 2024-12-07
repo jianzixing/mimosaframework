@@ -179,6 +179,10 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
                     }
 
                     String prefixUri = this.getCommonPrefix(type);
+                    // 优先使用注解上的
+                    if (StringTools.isNotEmpty(apiController.prefix())) {
+                        prefixUri = apiController.prefix();
+                    }
                     String typeUri = this.replaceCommonPrefix(type, className);
                     String handleUri = methodName;
                     String url = prefixUri + (typeUri.startsWith("/") ? "" : "/") + typeUri + (handleUri.startsWith("/") ? "" : "/") + handleUri;
