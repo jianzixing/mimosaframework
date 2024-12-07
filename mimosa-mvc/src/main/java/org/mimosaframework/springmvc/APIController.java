@@ -33,4 +33,11 @@ public @interface APIController {
      * @return
      */
     String value() default "";
+
+    /**
+     * URL前缀
+     *
+     * @return
+     */
+    String prefix() default "";
 }
