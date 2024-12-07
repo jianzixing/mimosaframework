@@ -19,7 +19,13 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
     public boolean supportsParameter(MethodParameter methodParameter) {
         Class<?> type = methodParameter.getParameterType();
         Method method = methodParameter.getMethod();
-        return !ClassUtils.isPrimitiveOrWrapper(type);
+
+        Body body = method.getAnnotation(Body.class);
+        RequestBody requestBody = methodParameter.getMethodAnnotation(RequestBody.class);
+        if (requestBody == null && body != null) {
+            return !ClassUtils.isPrimitiveOrWrapper(type);
+        }
+        return false;
     }
 
     @Override
