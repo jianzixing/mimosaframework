@@ -19,7 +19,15 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
     public boolean supportsParameter(MethodParameter methodParameter) {
         Class<?> type = methodParameter.getParameterType();
         Method method = methodParameter.getMethod();
-        return !ClassUtils.isPrimitiveOrWrapper(type);
+
+        Body body = method.getAnnotation(Body.class);
+        RequestBody requestBody = methodParameter.getMethodAnnotation(RequestBody.class);
+        if (requestBody == null && body != null) {
+            return !ClassUtils.isPrimitiveOrWrapper(type)
+                    && !String.class.equals(type)
+                    && !type.isEnum();
+        }
+        return false;
     }
 
     @Override
@@ -30,12 +38,20 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
         if (value == null) {
             return null;
         }
-
-        ModelObject object = ModelObject.parseObject(value, Feature.OrderedField);
-        if (type.isAssignableFrom(ModelObject.class)) {
-            return object;
+        String txt = value.trim();
+        if (txt.startsWith("{") && txt.endsWith("}") || txt.startsWith("[") && txt.endsWith("]")) {
+            try {
+                ModelObject object = ModelObject.parseObject(value, Feature.OrderedField);
+                if (type.isAssignableFrom(ModelObject.class)) {
+                    return object;
+                } else {
+                    return ModelObject.toJavaObject(object, type);
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException("unable to convert to " + type.getSimpleName() + " with argument " + value, e);
+            }
         } else {
-            return ModelObject.toJavaObject(object, type);
+            throw new IllegalArgumentException("unable to convert to " + type.getSimpleName() + " with argument " + value);
         }
     }
 }
