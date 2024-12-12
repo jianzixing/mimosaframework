@@ -494,6 +494,9 @@ public class PlatformExecutor {
                 } else {
                     updateBuilder.set(fieldName, value);
                 }
+            } else {
+                throw new IllegalArgumentException(I18n.print("miss_symbol_field",
+                        table.getMappingTableName(), String.valueOf(key)));
             }
         }
 

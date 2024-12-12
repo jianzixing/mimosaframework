@@ -57,6 +57,7 @@ public class RunBeanBaseSession {
 
         template.update(Criteria.update(BeanUser.class)
                 .set("userName", RandomUtils.randomIgnoreCaseAlphanumeric(30))
+                .set("userName2", RandomUtils.randomIgnoreCaseAlphanumeric(30))
                 .eq("id", id));
     }
 
