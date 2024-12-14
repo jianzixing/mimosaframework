@@ -12,6 +12,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -25,7 +26,9 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
         if (requestBody == null && body != null) {
             return !ClassUtils.isPrimitiveOrWrapper(type)
                     && !String.class.equals(type)
-                    && !type.isEnum();
+                    && !type.isEnum()
+                    && !type.isAssignableFrom(List.class)
+                    && !type.isArray();
         }
         return false;
     }
