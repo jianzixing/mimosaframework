@@ -125,7 +125,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
 
     private void checkFieldClass(Object self, Object mainField) {
         if (self.getClass().equals(mainTable)
-                && mainField.getClass().equals(table) && mainTable != table) {
+            && mainField.getClass().equals(table) && mainTable != table) {
             throw new IllegalArgumentException(I18n.print("rel_reversal"));
         }
     }
@@ -136,7 +136,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
     }
 
     @Override
-    public <F> Join on(FieldFunction<F> self, FieldFunction<F> mainField) {
+    public <L, R> Join on(FieldFunction<L> self, FieldFunction<R> mainField) {
         return this.on((Object) self, (Object) mainField);
     }
 
@@ -148,7 +148,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
     }
 
     @Override
-    public <F> Join oneq(FieldFunction<F> self, FieldFunction<F> mainField) {
+    public <L, R> Join oneq(FieldFunction<L> self, FieldFunction<R> mainField) {
         return this.oneq((Object) self, (Object) mainField);
     }
 
@@ -160,7 +160,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
     }
 
     @Override
-    public <F> Join onne(FieldFunction<F> self, FieldFunction<F> mainField) {
+    public <L, R> Join onne(FieldFunction<L> self, FieldFunction<R> mainField) {
         return this.onne((Object) self, (Object) mainField);
     }
 
@@ -172,7 +172,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
     }
 
     @Override
-    public <F> Join ongt(FieldFunction<F> self, FieldFunction<F> mainField) {
+    public <L, R> Join ongt(FieldFunction<L> self, FieldFunction<R> mainField) {
         return this.ongt((Object) self, (Object) mainField);
     }
 
@@ -184,7 +184,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
     }
 
     @Override
-    public <F> Join onge(FieldFunction<F> self, FieldFunction<F> mainField) {
+    public <L, R> Join onge(FieldFunction<L> self, FieldFunction<R> mainField) {
         return this.onge((Object) self, (Object) mainField);
     }
 
@@ -196,7 +196,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
     }
 
     @Override
-    public <F> Join onlt(FieldFunction<F> self, FieldFunction<F> mainField) {
+    public <L, R> Join onlt(FieldFunction<L> self, FieldFunction<R> mainField) {
         return this.onlt((Object) self, (Object) mainField);
     }
 
@@ -208,7 +208,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
     }
 
     @Override
-    public <F> Join onle(FieldFunction<F> self, FieldFunction<F> mainField) {
+    public <L, R> Join onle(FieldFunction<L> self, FieldFunction<R> mainField) {
         return this.onle((Object) self, (Object) mainField);
     }
 

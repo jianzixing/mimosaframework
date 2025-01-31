@@ -12,31 +12,31 @@ public interface Join extends Filter<Join> {
 
     Join on(Object self, Object mainField);
 
-    <F> Join on(FieldFunction<F> self, FieldFunction<F> mainField);
+    <L, R> Join on(FieldFunction<L> self, FieldFunction<R> mainField);
 
     Join oneq(Object self, Object mainField);
 
-    <F> Join oneq(FieldFunction<F> self, FieldFunction<F> mainField);
+    <L, R> Join oneq(FieldFunction<L> self, FieldFunction<R> mainField);
 
     Join onne(Object self, Object mainField);
 
-    <F> Join onne(FieldFunction<F> self, FieldFunction<F> mainField);
+    <L, R> Join onne(FieldFunction<L> self, FieldFunction<R> mainField);
 
     Join ongt(Object self, Object mainField);
 
-    <F> Join ongt(FieldFunction<F> self, FieldFunction<F> mainField);
+    <L, R> Join ongt(FieldFunction<L> self, FieldFunction<R> mainField);
 
     Join onge(Object self, Object mainField);
 
-    <F> Join onge(FieldFunction<F> self, FieldFunction<F> mainField);
+    <L, R> Join onge(FieldFunction<L> self, FieldFunction<R> mainField);
 
     Join onlt(Object self, Object mainField);
 
-    <F> Join onlt(FieldFunction<F> self, FieldFunction<F> mainField);
+    <L, R> Join onlt(FieldFunction<L> self, FieldFunction<R> mainField);
 
     Join onle(Object self, Object mainField);
 
-    <F> Join onle(FieldFunction<F> self, FieldFunction<F> mainField);
+    <L, R> Join onle(FieldFunction<L> self, FieldFunction<R> mainField);
 
     Join aliasName(Object s);
 
