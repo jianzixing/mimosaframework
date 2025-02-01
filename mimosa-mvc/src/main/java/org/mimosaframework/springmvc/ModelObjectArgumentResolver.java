@@ -11,6 +11,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -25,10 +27,13 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
         RequestBody requestBody = methodParameter.getMethodAnnotation(RequestBody.class);
         if (requestBody == null && body != null) {
             return !ClassUtils.isPrimitiveOrWrapper(type)
-                    && !String.class.equals(type)
-                    && !type.isEnum()
-                    && !type.isAssignableFrom(List.class)
-                    && !type.isArray();
+                   && !String.class.equals(type)
+                   && !type.isEnum()
+                   && !type.isAssignableFrom(List.class)
+                   && !type.isArray()
+                   && !type.isAssignableFrom(HttpServletResponse.class)
+                   && !type.isAssignableFrom(HttpServletRequest.class)
+                    ;
         }
         return false;
     }
