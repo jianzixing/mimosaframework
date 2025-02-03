@@ -6,7 +6,6 @@ import org.mimosaframework.core.exception.ModuleException;
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
-import java.util.function.Function;
 
 public class ClassUtils {
     public static boolean isEqual(Object a, Object b) {

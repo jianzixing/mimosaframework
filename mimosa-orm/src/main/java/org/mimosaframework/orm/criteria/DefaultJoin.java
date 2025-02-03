@@ -137,7 +137,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
 
     @Override
     public <L, R> Join on(FieldFunction<L> self, FieldFunction<R> mainField) {
-        return this.on((Object) self, (Object) mainField);
+        return this.on(ClassUtils.value(self), ClassUtils.value(mainField));
     }
 
     @Override
@@ -149,7 +149,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
 
     @Override
     public <L, R> Join oneq(FieldFunction<L> self, FieldFunction<R> mainField) {
-        return this.oneq((Object) self, (Object) mainField);
+        return this.oneq(ClassUtils.value(self), ClassUtils.value(mainField));
     }
 
     @Override
@@ -161,7 +161,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
 
     @Override
     public <L, R> Join onne(FieldFunction<L> self, FieldFunction<R> mainField) {
-        return this.onne((Object) self, (Object) mainField);
+        return this.onne(ClassUtils.value(self), ClassUtils.value(mainField));
     }
 
     @Override
@@ -173,7 +173,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
 
     @Override
     public <L, R> Join ongt(FieldFunction<L> self, FieldFunction<R> mainField) {
-        return this.ongt((Object) self, (Object) mainField);
+        return this.ongt(ClassUtils.value(self), ClassUtils.value(mainField));
     }
 
     @Override
@@ -185,7 +185,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
 
     @Override
     public <L, R> Join onge(FieldFunction<L> self, FieldFunction<R> mainField) {
-        return this.onge((Object) self, (Object) mainField);
+        return this.onge(ClassUtils.value(self), ClassUtils.value(mainField));
     }
 
     @Override
@@ -197,7 +197,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
 
     @Override
     public <L, R> Join onlt(FieldFunction<L> self, FieldFunction<R> mainField) {
-        return this.onlt((Object) self, (Object) mainField);
+        return this.onlt(ClassUtils.value(self), ClassUtils.value(mainField));
     }
 
     @Override
@@ -209,7 +209,7 @@ public class DefaultJoin extends AbstractFilter<Join> implements Join {
 
     @Override
     public <L, R> Join onle(FieldFunction<L> self, FieldFunction<R> mainField) {
-        return this.onle((Object) self, (Object) mainField);
+        return this.onle(ClassUtils.value(self), ClassUtils.value(mainField));
     }
 
     @Override
