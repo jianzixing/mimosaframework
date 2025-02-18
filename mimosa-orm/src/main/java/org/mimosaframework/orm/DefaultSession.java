@@ -212,6 +212,10 @@ public class DefaultSession implements Session {
 
     @Override
     public int update(ModelObject obj, Object... fields) {
+        return this.update(obj, false, fields);
+    }
+
+    public int update(ModelObject obj, boolean isModify, Object... fields) {
         if (obj == null || obj.isEmpty()) {
             throw new IllegalArgumentException(I18n.print("update_empty"));
         }
@@ -223,7 +227,9 @@ public class DefaultSession implements Session {
         MappingTable mappingTable = this.mappingGlobalWrapper.getMappingTable(c);
         AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
-        updateSkipReset.skip(obj, mappingTable);
+        if (!isModify) {
+            updateSkipReset.skip(obj, mappingTable);
+        }
         SessionUtils.clearModelObject(this.mappingGlobalWrapper, obj.getObjectClass(), obj, fields);
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
@@ -283,7 +289,7 @@ public class DefaultSession implements Session {
                 fields.add(field.getMappingFieldName());
             }
         }
-        return this.update(obj, fields.toArray());
+        return this.update(obj, true, fields.toArray());
     }
 
     @Override
