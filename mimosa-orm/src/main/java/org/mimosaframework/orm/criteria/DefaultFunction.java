@@ -90,8 +90,8 @@ public class DefaultFunction extends AbstractFilter<LogicFunction> implements Lo
     }
 
     @Override
-    public LogicFunction linked(WrapsLinked linked) {
-        Wraps lw = linked.getLogicWraps();
+    public LogicFunction nested(WrapsNested nested) {
+        Wraps lw = nested.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
         }

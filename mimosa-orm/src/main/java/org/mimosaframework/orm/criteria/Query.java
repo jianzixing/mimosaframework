@@ -12,7 +12,7 @@ public interface Query<T> extends QueryFilter<LogicQuery<T>> {
 
     LogicQuery<T> filter(DefaultFilter as);
 
-    LogicQuery<T> linked(WrapsLinked linked);
+    LogicQuery<T> nested(WrapsNested nested);
 
     LogicQuery<T> subjoin(Join join);
 

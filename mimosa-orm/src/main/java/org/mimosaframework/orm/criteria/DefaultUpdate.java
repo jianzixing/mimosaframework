@@ -186,8 +186,8 @@ public class DefaultUpdate extends AbstractFilter<LogicUpdate> implements LogicU
     }
 
     @Override
-    public LogicUpdate linked(WrapsLinked linked) {
-        Wraps lw = linked.getLogicWraps();
+    public LogicUpdate nested(WrapsNested nested) {
+        Wraps lw = nested.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
         }

@@ -20,7 +20,7 @@ public interface Function<T extends Function> extends Filter<T> {
 
     T slave(String name);
 
-    T linked(WrapsLinked linked);
+    T nested(WrapsNested nested);
 
     T groupBy(Object field);
 

@@ -6,7 +6,7 @@ package org.mimosaframework.orm.criteria;
 public interface Delete extends Filter<LogicDelete> {
     LogicDelete setTableClass(Class<?> c);
 
-    LogicDelete linked(WrapsLinked linked);
+    LogicDelete nested(WrapsNested nested);
 
     long delete();
 

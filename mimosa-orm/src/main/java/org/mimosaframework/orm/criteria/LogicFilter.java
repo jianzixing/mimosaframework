@@ -5,5 +5,5 @@ public interface LogicFilter<Q, T> extends QueryFilter<T> {
 
     Q and();
 
-    T linked(WrapsLinked linked);
+    T nested(WrapsNested nested);
 }

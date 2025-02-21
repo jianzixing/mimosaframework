@@ -72,8 +72,8 @@ public class DefaultDelete extends AbstractFilter<LogicDelete> implements LogicD
     }
 
     @Override
-    public LogicDelete linked(WrapsLinked linked) {
-        Wraps lw = linked.getLogicWraps();
+    public LogicDelete nested(WrapsNested nested) {
+        Wraps lw = nested.getLogicWraps();
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
         }

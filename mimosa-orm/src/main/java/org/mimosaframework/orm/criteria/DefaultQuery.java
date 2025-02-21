@@ -149,17 +149,17 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
 
     @Override
     public LogicQuery filter(DefaultFilter as) {
-        this.addFilterInLinked(as);
+        this.addFilterInNested(as);
         return this;
     }
 
     @Override
-    public LogicQuery linked(WrapsLinked linked) {
-        if (linked != null) {
+    public LogicQuery nested(WrapsNested nested) {
+        if (nested != null) {
             if (this.logicWraps == null) {
                 this.logicWraps = new Wraps<>();
             }
-            this.logicWraps.addLastLink(linked.getLogicWraps());
+            this.logicWraps.addLastLink(nested.getLogicWraps());
         }
         return this;
     }
@@ -279,7 +279,7 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
     @Override
     public LogicQuery eq(Object key, Object value) {
         Filter filter = new DefaultFilter().eq(key, value);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
@@ -289,7 +289,7 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
             throw new IllegalArgumentException(I18n.print("must_value"));
         }
         Filter filter = new DefaultFilter().in(key, values);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
@@ -299,7 +299,7 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
             throw new IllegalArgumentException(I18n.print("in_must_key_value"));
         }
         Filter filter = new DefaultFilter().in(key, values);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
@@ -309,7 +309,7 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
             throw new IllegalArgumentException(I18n.print("not_in_must_value"));
         }
         Filter filter = new DefaultFilter().nin(key, values);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
@@ -319,81 +319,81 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
             throw new IllegalArgumentException(I18n.print("not_in_must_key_value"));
         }
         Filter filter = new DefaultFilter().nin(key, values);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery like(Object key, Object value) {
         Filter filter = new DefaultFilter().like(key, value);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery ne(Object key, Object value) {
         Filter filter = new DefaultFilter().ne(key, value);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery gt(Object key, Object value) {
         Filter filter = new DefaultFilter().gt(key, value);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery gte(Object key, Object value) {
         Filter filter = new DefaultFilter().gte(key, value);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery lt(Object key, Object value) {
         Filter filter = new DefaultFilter().lt(key, value);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery lte(Object key, Object value) {
         Filter filter = new DefaultFilter().lte(key, value);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery between(Object key, Object start, Object end) {
         Filter filter = new DefaultFilter().between(key, start, end);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery isNull(Object key) {
         Filter filter = new DefaultFilter().isNull(key);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery isNotNull(Object key) {
         Filter filter = new DefaultFilter().isNotNull(key);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
     @Override
     public LogicQuery exists(LogicQuery query) {
         Filter filter = new DefaultFilter().exists(query);
-        this.addFilterInLinked(filter);
+        this.addFilterInNested(filter);
         return this;
     }
 
-    private void addFilterInLinked(Filter filter) {
+    private void addFilterInNested(Filter filter) {
         if (this.logicWraps == null) {
             this.logicWraps = new Wraps<>();
             this.logicWraps.add(new WrapsObject<>(filter));

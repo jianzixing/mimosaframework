@@ -8,7 +8,7 @@ import org.mimosaframework.core.FieldFunction;
 public interface Update extends Filter<LogicUpdate> {
     LogicUpdate setTableClass(Class<?> c);
 
-    LogicUpdate linked(WrapsLinked linked);
+    LogicUpdate nested(WrapsNested nested);
 
     Update set(Object key, Object value);
 

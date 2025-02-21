@@ -60,18 +60,18 @@ public final class Cri {
         return new DefaultFunction(c);
     }
 
-    public static WrapsLinked linked() {
-        return new DefaultWrapsLinked();
+    public static WrapsNested nested() {
+        return new DefaultWrapsNested();
     }
 
-    public static LogicWrapsLinked logicLinked() {
-        return new DefaultWrapsLinked();
+    public static LogicWrapsNested logicNested() {
+        return new DefaultWrapsNested();
     }
 
-    public static LogicWrapsLinked linked(WrapsLinked l) {
-        DefaultWrapsLinked linked = new DefaultWrapsLinked();
-        linked.linked(l);
-        return linked;
+    public static LogicWrapsNested nested(WrapsNested l) {
+        DefaultWrapsNested nested = new DefaultWrapsNested();
+        nested.nested(l);
+        return nested;
     }
 
     public static AsField as(String alias, Object field) {
