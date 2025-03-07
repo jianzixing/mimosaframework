@@ -7,6 +7,7 @@ import java.util.Map;
 @ConfigurationProperties("mimosa.mvc")
 public class MimosaMvcProperties {
     private String prefix;
+    private String module;
     private Map<String, String> replaces;
 
     public String getPrefix() {
@@ -15,6 +16,14 @@ public class MimosaMvcProperties {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
     }
 
     public Map<String, String> getReplaces() {
