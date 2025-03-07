@@ -6,14 +6,14 @@ import java.util.Map;
 
 @ConfigurationProperties("mimosa.mvc")
 public class MimosaMvcProperties {
-    private Map<String, String> prefix;
+    private String prefix;
     private Map<String, String> replaces;
 
-    public Map<String, String> getPrefix() {
+    public String getPrefix() {
         return prefix;
     }
 
-    public void setPrefix(Map<String, String> prefix) {
+    public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 

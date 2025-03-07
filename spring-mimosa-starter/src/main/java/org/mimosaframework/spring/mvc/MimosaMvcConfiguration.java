@@ -43,6 +43,7 @@ public class MimosaMvcConfiguration implements WebMvcRegistrations {
     @Override
     public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
         MimosaRequestHandlerMapping requestHandlerMapping = new MimosaRequestHandlerMapping();
+        requestHandlerMapping.setPrefix(mimosaMvcProperties.getPrefix());
         requestHandlerMapping.setSessionTemplate(mimosaSessionTemplate);
         requestHandlerMapping.setReplaces(mimosaMvcProperties.getReplaces());
         return requestHandlerMapping;
