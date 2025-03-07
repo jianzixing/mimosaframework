@@ -12,7 +12,7 @@ public final class StringTools {
     private static Pattern linePattern = Pattern.compile("_(\\w)");
 
     public static boolean isEmpty(String s) {
-        return s == null || s.equals("") ? true : false;
+        return s == null || s.isEmpty() || s.trim().isEmpty();
     }
 
     public static boolean isNotEmpty(String s) {
@@ -111,16 +111,16 @@ public final class StringTools {
             if (!first) {
                 if (c >= 'A' && c <= 'Z' && inBrace == false) {
                     if ((i + 1 < sources.length && sources[i + 1] >= 'A' && sources[i + 1] <= 'Z')
-                            && (i > 0 && sources[i - 1] >= 'a' && sources[i - 1] <= 'z')) {
+                        && (i > 0 && sources[i - 1] >= 'a' && sources[i - 1] <= 'z')) {
                         column.append("_" + Character.toLowerCase(c));
                     } else if ((i + 1 < sources.length && sources[i + 1] >= 'A' && sources[i + 1] <= 'Z')
-                            && (i > 0 && sources[i - 1] >= 'A' && sources[i - 1] <= 'Z')) {
+                               && (i > 0 && sources[i - 1] >= 'A' && sources[i - 1] <= 'Z')) {
                         column.append(Character.toLowerCase(c));
                     } else if ((i + 1 < sources.length && sources[i + 1] >= 'a' && sources[i + 1] <= 'z')
-                            && (i > 0 && sources[i - 1] >= 'A' && sources[i - 1] <= 'Z')) {
+                               && (i > 0 && sources[i - 1] >= 'A' && sources[i - 1] <= 'Z')) {
                         column.append("_" + Character.toLowerCase(c));
                     } else if ((i + 1 == sources.length)
-                            && (i > 0 && sources[i - 1] >= 'A' && sources[i - 1] <= 'Z')) {
+                               && (i > 0 && sources[i - 1] >= 'A' && sources[i - 1] <= 'Z')) {
                         column.append(Character.toLowerCase(c));
                     } else {
                         column.append("_" + Character.toLowerCase(c));

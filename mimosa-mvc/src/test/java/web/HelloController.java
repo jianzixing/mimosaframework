@@ -49,7 +49,7 @@ public class HelloController {
         System.out.println(ModelObject.toJSONString(ids));
     }
 
-    @Body(path = "/{code}")
+    @Body(value = "/{code}")
     public String setPath(@PathVariable(name = "code") String code) {
         System.out.println(code);
         return code;

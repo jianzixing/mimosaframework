@@ -1,6 +1,5 @@
 package org.mimosaframework.springmvc;
 
-import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.springmvc.i18n.I18n;
@@ -38,17 +37,11 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
     protected RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
 
     protected String prefix = null;
-    protected Map<String, String> prefixs = null;
     protected Map<String, String> replaces = null;
-    protected Class<? extends CurdImplement> curdImplementClass;
     protected SessionTemplate sessionTemplate;
 
     static {
         I18n.register();
-    }
-
-    public void setCurdImplementClass(Class<? extends CurdImplement> curdImplementClass) {
-        this.curdImplementClass = curdImplementClass;
     }
 
     public void setSessionTemplate(SessionTemplate sessionTemplate) {
@@ -57,10 +50,6 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
-    }
-
-    public void setPrefixs(Map<String, String> prefixs) {
-        this.prefixs = prefixs;
     }
 
     public void setReplaces(Map<String, String> replaces) {
@@ -149,7 +138,8 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
 
     private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
         RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
-        Body printer = AnnotatedElementUtils.findMergedAnnotation(element, Body.class);
+        Body body = AnnotatedElementUtils.findMergedAnnotation(element, Body.class);
+        ApiRequest apiRequest = AnnotatedElementUtils.findMergedAnnotation(element, ApiRequest.class);
         RequestCondition<?> condition = (element instanceof Class<?> ?
                 getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
         if (requestMapping != null) {
@@ -160,57 +150,12 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         if (element instanceof Method) {
             APIController apiController = ((Method) element).getDeclaringClass().getAnnotation(APIController.class);
             if (apiController != null) {
-                Class type = ((Method) element).getDeclaringClass();
-                String className = ((Method) element).getDeclaringClass().getSimpleName();
-                String methodName = ((Method) element).getName();
-
-                if (className.indexOf("Controller") >= 0) {
-                    className = className.replace("Controller", "");
-                }
-                if (apiController != null && StringTools.isNotEmpty(apiController.value())) {
-                    className = apiController.value();
-                }
-
-                this.isCurdController(type, element, className);
-
-                if (printer != null) {
-                    if (StringTools.isNotEmpty(printer.value())) {
-                        methodName = printer.value();
-                    }
-
-                    String prefixUri = this.getCommonPrefix(type);
-                    // 优先使用注解上的
-                    if (StringTools.isNotEmpty(apiController.prefix())) {
-                        prefixUri = apiController.prefix();
-                    }
-                    String typeUri = this.replaceCommonPrefix(type, className);
-                    String handleUri = methodName;
-                    String url = prefixUri + (typeUri.startsWith("/") ? "" : "/") + typeUri + (handleUri.startsWith("/") ? "" : "/") + handleUri;
-
-                    if (StringTools.isNotEmpty(printer.path())) {
-                        url += printer.path();
-                    }
-                    List<String> list = new ArrayList<>(3);
-                    list.add(url);
-                    String toLowerUrl = StringTools.toLowerIgnoreBrace(url);
-                    if (!list.contains(toLowerUrl)) {
-                        list.add(toLowerUrl);
-                    }
-
-                    String[] s = url.split("/");
-                    String sr = "";
-                    for (int i = 0; i < s.length; i++) {
-                        if (i == 0) {
-                            sr += StringTools.humpToLine(s[i], true);
-                        } else {
-                            sr = sr + "/" + StringTools.humpToLine(s[i], true);
-                        }
-                    }
-                    if (!list.contains(sr)) {
-                        list.add(sr);
-                    }
-
-                    return createRequestMappingInfoByPrinter(printer, condition, list.toArray(new String[]{}));
+                if (body != null) {
+                    List<String> list = this.getApiCodes(element, apiController, body, apiRequest);
+                    return createRequestMappingInfoByPrinter(body, condition, list.toArray(new String[]{}));
+                } else if (apiRequest != null) {
+                    List<String> list = this.getApiCodes(element, apiController, body, apiRequest);
+                    return createRequestMappingInfoByPrinter(apiRequest, condition, list.toArray(new String[]{}));
                 }
             }
         }
@@ -218,108 +163,54 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         return null;
     }
 
-    private void isCurdController(Class type, AnnotatedElement element, String className) {
-        if (curdImplementClass != null && sessionTemplate != null) {
-            CURDPrinter curdPrinter = AnnotationUtils.findAnnotation(element, CURDPrinter.class);
+    private List<String> getApiCodes(AnnotatedElement element, APIController apiController, Body body, ApiRequest apiRequest) {
+        Class<?> type = ((Method) element).getDeclaringClass();
+        String className = ((Method) element).getDeclaringClass().getSimpleName();
+        String methodName = ((Method) element).getName();
+        String prefixUri = this.getCommonPrefix(apiController);
 
-            try {
-                this.setCurdController(type, curdPrinter, element, className);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+        String apiCode = null;
+        if (body != null) apiCode = body.code();
+        if (apiRequest != null && StringTools.isEmpty(apiCode)) apiCode = apiRequest.code();
+
+        if (StringTools.isNotEmpty(apiCode)) {
+            return Collections.singletonList(prefixUri + "/" + apiCode);
+        }
+
+        if (className.endsWith("Controller")) {
+            className = className.substring(0, className.length() - "Controller".length());
+        }
+        className = this.replaceCommonPrefix(type, className);
+
+        String methodValue = null;
+        if (body != null) methodValue = body.value();
+        if (apiRequest != null && StringTools.isEmpty(methodValue)) methodValue = apiRequest.value();
+
+        if (StringTools.isNotEmpty(apiController.value())) {
+            if (StringTools.isNotEmpty(methodValue)) {
+                return Collections.singletonList(prefixUri + "/" + apiController.value() + "." + methodValue);
+            } else {
+                List<String> list = new ArrayList<>();
+                list.add(prefixUri + "/" + apiController.value() + "." + StringTools.humpToLine(methodName, true));
+                list.add(prefixUri + "/" + apiController.value() + "." + methodName);
+                return list;
             }
+        } else {
+            List<String> list = new ArrayList<>();
+            if (StringTools.isNotEmpty(methodValue)) {
+                list.add(prefixUri + "/" + StringTools.humpToLine(className, true) + "." + methodValue);
+                list.add(prefixUri + "/" + className + "." + methodValue);
+            } else {
+                list.add(prefixUri + "/" + StringTools.humpToLine(className, true) + "." + StringTools.humpToLine(methodName, true));
+                list.add(prefixUri + "/" + className + "." + methodName);
+            }
+            return list;
         }
     }
 
-    private void setCurdController(Class type, CURDPrinter curdPrinter, AnnotatedElement element, String className) throws IllegalAccessException, InstantiationException {
-        if (curdPrinter != null) {
-            Method m = (Method) element;
-            String cname = m.getName();
-            if (StringTools.isNotEmpty(curdPrinter.name())) {
-                cname = curdPrinter.name();
-            }
-
-            CurdImplement curdImplement = curdImplementClass.newInstance();
-            curdImplement.setSessionTemplate(sessionTemplate);
-            curdImplement.setTableClass(m.getReturnType());
-            curdImplement.setPrimarykey(curdPrinter.pk());
-
-
-            String[] methodNames = new String[]{
-                    "add",
-                    "del",
-                    "dels",
-                    "delSearch",
-                    "update",
-                    "updateSearch",
-                    "get",
-                    "list",
-                    "page"
-            };
-            Method[] methods = new Method[0];
-            try {
-                methods = new Method[]{
-                        curdImplementClass.getMethod("add", ModelObject.class),
-                        curdImplementClass.getMethod("del", String.class),
-                        curdImplementClass.getMethod("dels", List.class),
-                        curdImplementClass.getMethod("delSearch", SearchForm.class),
-                        curdImplementClass.getMethod("update", ModelObject.class),
-                        curdImplementClass.getMethod("updateSearch", SearchForm.class),
-                        curdImplementClass.getMethod("get", String.class),
-                        curdImplementClass.getMethod("list", SearchForm.class, Long.class, Long.class),
-                        curdImplementClass.getMethod("page", SearchForm.class, Long.class, Long.class),
-                };
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-
-            if (methodNames.length != methods.length) {
-                throw new IllegalArgumentException("init curd controller but method names length not equals methods length");
-            }
-
-            for (int i = 0; i < methodNames.length; i++) {
-                String methodName = methodNames[i];
-                Method method = methods[i];
-                String url = this.getCommonPrefix(type)
-                        + "/" + this.replaceCommonPrefix(type, className)
-                        + "/" + methodName;
-                String lineUrl = this.getCommonPrefix(type)
-                        + "/" + StringTools.humpToLine(this.replaceCommonPrefix(type, className))
-                        + "/" + StringTools.humpToLine(methodName);
-
-                String[] path = new String[]{url, lineUrl};
-                RequestMappingInfo info = RequestMappingInfo
-                        .paths(resolveEmbeddedValuesInPatterns(path))
-                        .methods(new RequestMethod[]{})
-                        .params(new String[]{})
-                        .headers(new String[]{})
-                        .consumes(new String[]{})
-                        .produces(new String[]{})
-                        .mappingName("")
-                        .customCondition(null)
-                        .options(this.config)
-                        .build();
-                registerHandlerMethod(curdImplement, method, info);
-            }
-        }
-    }
-
-    private synchronized String getCommonPrefix(Class c) {
-        String name = c.getName();
-        if (prefixs != null) {
-            int last = name.lastIndexOf(".");
-            if (last > 0) {
-                String s = name.substring(0, last);
-                Iterator<Map.Entry<String, String>> iterator = prefixs.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, String> entry = iterator.next();
-                    String key = entry.getKey();
-                    if (s.endsWith(key) && entry.getValue() != null) {
-                        return entry.getValue();
-                    }
-                }
-            }
+    private synchronized String getCommonPrefix(APIController apiController) {
+        if (StringTools.isNotEmpty(apiController.prefix())) {
+            return apiController.prefix();
         }
         if (prefix != null) {
             return prefix;
@@ -327,14 +218,14 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         return "";
     }
 
-    private synchronized String replaceCommonPrefix(Class c, String name) {
+    private synchronized String replaceCommonPrefix(Class<?> c, String name) {
         String clsName = c.getName();
         String simpleName = c.getSimpleName();
         clsName = clsName.substring(0, clsName.length() - simpleName.length() - 1);
         if (replaces != null) {
             String replace = replaces.get(clsName);
             if (StringTools.isNotEmpty(replace)) {
-                String[] rs = replace.split(";");
+                String[] rs = replace.split(":");
                 if (rs.length >= 1) {
                     String r1 = rs[0].trim();
                     String r2 = rs.length == 1 ? "" : rs[1];
@@ -356,7 +247,20 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
     }
 
     protected RequestMappingInfo createRequestMappingInfoByPrinter(Body requestMapping, RequestCondition<?> customCondition, String[] path) {
+        return RequestMappingInfo
+                .paths(resolveEmbeddedValuesInPatterns(path))
+                .methods(requestMapping.method())
+                .params(requestMapping.params())
+                .headers(requestMapping.headers())
+                .consumes(requestMapping.consumes())
+                .produces(requestMapping.produces())
+                .mappingName(requestMapping.name())
+                .customCondition(customCondition)
+                .options(this.config)
+                .build();
+    }
 
+    protected RequestMappingInfo createRequestMappingInfoByPrinter(ApiRequest requestMapping, RequestCondition<?> customCondition, String[] path) {
         return RequestMappingInfo
                 .paths(resolveEmbeddedValuesInPatterns(path))
                 .methods(requestMapping.method())
@@ -459,7 +363,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
             config.setAllowCredentials(false);
         } else if (!allowCredentials.isEmpty()) {
             throw new IllegalStateException("@CrossOrigin's allowCredentials value must be \"true\", \"false\", "
-                    + "or an empty string (\"\"); current value is [" + allowCredentials + "].");
+                                            + "or an empty string (\"\"); current value is [" + allowCredentials + "].");
         }
 
         if (annotation.maxAge() >= 0 && config.getMaxAge() == null) {

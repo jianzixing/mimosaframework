@@ -7,15 +7,11 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Body {
+public @interface ApiRequest {
     String name() default "";
 
     String value() default "";
 
-    /**
-     * 如果不填写使用的是 类名称+方法名称 方式，如果填写了
-     * 那么就按照当前填写的作为路径
-     */
     String code() default "";
 
     RequestMethod[] method() default {};
