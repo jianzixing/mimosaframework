@@ -37,6 +37,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
     protected RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
 
     protected String prefix = null;
+    protected String module = null;
     protected Map<String, String> replaces = null;
     protected SessionTemplate sessionTemplate;
 
@@ -50,6 +51,10 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
     }
 
     public void setReplaces(Map<String, String> replaces) {
@@ -186,23 +191,25 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         if (body != null) methodValue = body.value();
         if (apiRequest != null && StringTools.isEmpty(methodValue)) methodValue = apiRequest.value();
 
+        String module = StringTools.isNotEmpty(this.module) ? this.module : "system";
+
         if (StringTools.isNotEmpty(apiController.value())) {
             if (StringTools.isNotEmpty(methodValue)) {
-                return Collections.singletonList(prefixUri + "/" + apiController.value() + "." + methodValue);
+                return Collections.singletonList(prefixUri + "/" + module + "." + apiController.value() + "." + methodValue);
             } else {
                 List<String> list = new ArrayList<>();
-                list.add(prefixUri + "/" + apiController.value() + "." + StringTools.humpToLine(methodName, true));
-                list.add(prefixUri + "/" + apiController.value() + "." + methodName);
+                list.add(prefixUri + "/" + module + "." + apiController.value() + "." + StringTools.humpToLine(methodName, true));
+                list.add(prefixUri + "/" + module + "." + apiController.value() + "." + methodName);
                 return list;
             }
         } else {
             List<String> list = new ArrayList<>();
             if (StringTools.isNotEmpty(methodValue)) {
-                list.add(prefixUri + "/" + StringTools.humpToLine(className, true) + "." + methodValue);
-                list.add(prefixUri + "/" + className + "." + methodValue);
+                list.add(prefixUri + "/" + module + "." + StringTools.humpToLine(className, true) + "." + methodValue);
+                list.add(prefixUri + "/" + module + "." + className + "." + methodValue);
             } else {
-                list.add(prefixUri + "/" + StringTools.humpToLine(className, true) + "." + StringTools.humpToLine(methodName, true));
-                list.add(prefixUri + "/" + className + "." + methodName);
+                list.add(prefixUri + "/" + module + "." + StringTools.humpToLine(className, true) + "." + StringTools.humpToLine(methodName, true));
+                list.add(prefixUri + "/" + module + "." + className + "." + methodName);
             }
             return list;
         }
