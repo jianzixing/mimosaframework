@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Objects;
 
 /**
  * @author yangankang
@@ -103,7 +104,7 @@ public class ResponseMessage<T> implements Serializable {
             }
             if (!this.setMatchMessage(causedBy)) {
                 this.msg = I18n.print("access_fail") + "," + causedBy.getClass().getSimpleName() +
-                        ":" + causedBy.getMessage();
+                           ":" + causedBy.getMessage();
             }
             ((Exception) data).printStackTrace();
         } else if (data instanceof TransactionException) {
@@ -257,5 +258,9 @@ public class ResponseMessage<T> implements Serializable {
             return ModelObject.parseObject((String) responseMessage.getData(), t);
         }
         return ModelObject.parseObject(ModelObject.toJSONString(responseMessage.getData()), t);
+    }
+
+    public boolean isSuccess() {
+        return Objects.equals(SUCCESS, this.code);
     }
 }
