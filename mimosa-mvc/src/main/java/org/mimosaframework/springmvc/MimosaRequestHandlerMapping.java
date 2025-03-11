@@ -161,6 +161,10 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         String methodName = ((Method) element).getName();
         String prefixUri = this.getCommonPrefix(apiController);
 
+        if (prefixUri.trim().endsWith("/")) {
+            prefixUri = prefixUri.substring(0, prefixUri.length() - 1);
+        }
+
         String apiCode = null;
         if (body != null) apiCode = body.code();
         if (apiRequest != null && StringTools.isEmpty(apiCode)) apiCode = apiRequest.code();
