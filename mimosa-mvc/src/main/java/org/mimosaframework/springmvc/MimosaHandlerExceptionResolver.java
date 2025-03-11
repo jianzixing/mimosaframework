@@ -1,5 +1,7 @@
 package org.mimosaframework.springmvc;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.springmvc.utils.ResponseMessage;
 import org.mimosaframework.springmvc.utils.ResponsePageMessage;
@@ -8,8 +10,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -59,7 +59,7 @@ public class MimosaHandlerExceptionResolver extends SimpleMappingExceptionResolv
                         String json = (new ResponseMessage(e)).toString();
                         response.getWriter().write(json);
                     } else if (ResponsePageMessage.class.isAssignableFrom(parameter.getParameterType())
-                            || parameter.getParameterType().equals(ResponsePageMessage.class)) {
+                               || parameter.getParameterType().equals(ResponsePageMessage.class)) {
                         String json = (new ResponsePageMessage(e)).toString();
                         response.getWriter().write(json);
                     }

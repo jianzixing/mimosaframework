@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MimosaDataSource implements Closeable {
     private static final Log logger = LogFactory.getLog(MimosaDataSource.class);

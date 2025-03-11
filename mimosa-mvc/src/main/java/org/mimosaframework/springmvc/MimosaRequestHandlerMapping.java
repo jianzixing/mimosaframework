@@ -86,19 +86,6 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
 
     @Override
     public void afterPropertiesSet() {
-        this.config = new RequestMappingInfo.BuilderConfiguration();
-        try {
-            this.config.getClass().getMethod("setPathHelper", UrlPathHelper.class);
-            this.config.setPathHelper(getUrlPathHelper());
-        } catch (NoSuchMethodException e) {
-            this.config.setUrlPathHelper(getUrlPathHelper());
-        }
-        this.config.setPathMatcher(getPathMatcher());
-        this.config.setSuffixPatternMatch(this.useSuffixPatternMatch);
-        this.config.setTrailingSlashMatch(this.useTrailingSlashMatch);
-        this.config.setRegisteredSuffixPatternMatch(this.useRegisteredSuffixPatternMatch);
-        this.config.setContentNegotiationManager(getContentNegotiationManager());
-
         super.afterPropertiesSet();
     }
 
@@ -311,75 +298,4 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
             return resolvedPatterns;
         }
     }
-
-    @Override
-    protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mappingInfo) {
-        HandlerMethod handlerMethod = createHandlerMethod(handler, method);
-        CrossOrigin typeAnnotation = AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), CrossOrigin.class);
-        CrossOrigin methodAnnotation = AnnotationUtils.findAnnotation(method, CrossOrigin.class);
-
-        if (typeAnnotation == null && methodAnnotation == null) {
-            return null;
-        }
-
-        CorsConfiguration config = new CorsConfiguration();
-        updateCorsConfig(config, typeAnnotation);
-        updateCorsConfig(config, methodAnnotation);
-
-        if (CollectionUtils.isEmpty(config.getAllowedOrigins())) {
-            config.setAllowedOrigins(Arrays.asList(CrossOrigin.DEFAULT_ORIGINS));
-        }
-        if (CollectionUtils.isEmpty(config.getAllowedMethods())) {
-            for (RequestMethod allowedMethod : mappingInfo.getMethodsCondition().getMethods()) {
-                config.addAllowedMethod(allowedMethod.name());
-            }
-        }
-        if (CollectionUtils.isEmpty(config.getAllowedHeaders())) {
-            config.setAllowedHeaders(Arrays.asList(CrossOrigin.DEFAULT_ALLOWED_HEADERS));
-        }
-        if (config.getAllowCredentials() == null) {
-            config.setAllowCredentials(CrossOrigin.DEFAULT_ALLOW_CREDENTIALS);
-        }
-        if (config.getMaxAge() == null) {
-            config.setMaxAge(CrossOrigin.DEFAULT_MAX_AGE);
-        }
-        return config;
-    }
-
-    private void updateCorsConfig(CorsConfiguration config, CrossOrigin annotation) {
-        if (annotation == null) {
-            return;
-        }
-        for (String origin : annotation.origins()) {
-            config.addAllowedOrigin(origin);
-        }
-        for (RequestMethod method : annotation.methods()) {
-            config.addAllowedMethod(method.name());
-        }
-        for (String header : annotation.allowedHeaders()) {
-            config.addAllowedHeader(header);
-        }
-        for (String header : annotation.exposedHeaders()) {
-            config.addExposedHeader(header);
-        }
-
-        String allowCredentials = annotation.allowCredentials();
-        if ("true".equalsIgnoreCase(allowCredentials)) {
-            config.setAllowCredentials(true);
-        } else if ("false".equalsIgnoreCase(allowCredentials)) {
-            config.setAllowCredentials(false);
-        } else if (!allowCredentials.isEmpty()) {
-            throw new IllegalStateException("@CrossOrigin's allowCredentials value must be \"true\", \"false\", "
-                                            + "or an empty string (\"\"); current value is [" + allowCredentials + "].");
-        }
-
-        if (annotation.maxAge() >= 0 && config.getMaxAge() == null) {
-            config.setMaxAge(annotation.maxAge());
-        }
-    }
-
-    protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
-        return super.getHandlerInternal(request);
-    }
-
 }

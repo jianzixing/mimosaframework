@@ -39,7 +39,7 @@ MimosaFramework是一组框架组合，主要功能是提供数据库读写的�
     <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.2</version>
+        <version>1.3.5</version>
     </dependency>
 
     <!--数据库连接池包-->

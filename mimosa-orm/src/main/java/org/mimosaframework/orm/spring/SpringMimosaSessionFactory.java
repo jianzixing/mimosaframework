@@ -18,7 +18,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;

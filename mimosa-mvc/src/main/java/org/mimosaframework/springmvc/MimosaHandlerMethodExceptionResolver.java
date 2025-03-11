@@ -1,5 +1,7 @@
 package org.mimosaframework.springmvc;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.springmvc.utils.ResponseMessage;
 import org.mimosaframework.springmvc.utils.ResponsePageMessage;
@@ -8,8 +10,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**

@@ -8,6 +8,7 @@ import org.springframework.util.FileCopyUtils;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class UTF8StringHttpMessageConverter extends StringHttpMessageConverter {
     }
 
     protected List<Charset> getAcceptedCharsets() {
-        return Arrays.asList(utf8.getCharSet());
+        return List.of(StandardCharsets.UTF_8);
     }
 
     protected void writeInternal(String s, HttpOutputMessage outputMessage)
@@ -34,7 +35,7 @@ public class UTF8StringHttpMessageConverter extends StringHttpMessageConverter {
         if (this.writeAcceptCharset) {
             outputMessage.getHeaders().setAcceptCharset(getAcceptedCharsets());
         }
-        Charset charset = utf8.getCharSet();
+        Charset charset = StandardCharsets.UTF_8;
         FileCopyUtils.copy(s, new OutputStreamWriter(outputMessage.getBody(),
                 charset));
     }
