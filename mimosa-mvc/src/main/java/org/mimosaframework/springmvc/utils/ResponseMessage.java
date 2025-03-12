@@ -259,8 +259,4 @@ public class ResponseMessage<T> implements Serializable {
         }
         return ModelObject.parseObject(ModelObject.toJSONString(responseMessage.getData()), t);
     }
-
-    public boolean isSuccess() {
-        return Objects.equals(SUCCESS, this.code);
-    }
 }
