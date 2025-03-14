@@ -1,8 +1,9 @@
 package org.mimosaframework.springmvc;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.json.parser.Feature;
-import org.mimosaframework.orm.annotation.Table;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,8 +12,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.util.List;
 

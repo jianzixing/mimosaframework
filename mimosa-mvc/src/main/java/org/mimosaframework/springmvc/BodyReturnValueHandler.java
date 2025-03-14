@@ -1,5 +1,6 @@
 package org.mimosaframework.springmvc;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.StringTools;
 import org.springframework.core.MethodParameter;
@@ -7,7 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
 public class BodyReturnValueHandler implements HandlerMethodReturnValueHandler {
