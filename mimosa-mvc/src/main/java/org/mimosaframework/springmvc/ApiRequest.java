@@ -39,4 +39,6 @@ public @interface ApiRequest {
 
     // 仅给第三方做权限码使用,资源码
     String resource() default "";
+
+    String[] resources() default "";
 }
