@@ -22,7 +22,7 @@ public class BodyReturnValueHandler implements HandlerMethodReturnValueHandler {
     public boolean supportsReturnType(MethodParameter methodParameter) {
         Class<?> c = methodParameter.getParameterType();
         Method method = methodParameter.getMethod();
-        Body printer = method.getAnnotation(Body.class);
+        ApiRequest printer = method.getAnnotation(ApiRequest.class);
         return printer != null && printer.plaintext();
     }
 
@@ -33,7 +33,7 @@ public class BodyReturnValueHandler implements HandlerMethodReturnValueHandler {
             return;
         }
         Method method = methodParameter.getMethod();
-        Body printer = method.getAnnotation(Body.class);
+        ApiRequest printer = method.getAnnotation(ApiRequest.class);
         if (printer != null && printer.plaintext()) {
             modelAndViewContainer.setRequestHandled(true);
             HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);

@@ -44,7 +44,7 @@ public class MimosaHandlerExceptionResolver extends SimpleMappingExceptionResolv
     protected ModelAndView doResolveException(HttpServletRequest httpServletRequest, HttpServletResponse response, Object handler, Exception e) {
         if (handler instanceof HandlerMethod && e != null) {
             HandlerMethod methodHandler = (HandlerMethod) handler;
-            Body printer = methodHandler.getMethodAnnotation(Body.class);
+            ApiRequest printer = methodHandler.getMethodAnnotation(ApiRequest.class);
             if (printer != null) {
                 if (StringTools.isNotEmpty(printer.contentType())) {
                     response.setContentType(printer.contentType());

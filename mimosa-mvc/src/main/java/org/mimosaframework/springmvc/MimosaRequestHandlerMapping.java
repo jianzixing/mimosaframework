@@ -17,7 +17,10 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         implements EmbeddedValueResolverAware {
@@ -123,7 +126,6 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
 
     private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
         RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
-        Body body = AnnotatedElementUtils.findMergedAnnotation(element, Body.class);
         ApiRequest apiRequest = AnnotatedElementUtils.findMergedAnnotation(element, ApiRequest.class);
         RequestCondition<?> condition = (element instanceof Class<?> ?
                 getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
@@ -135,20 +137,15 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         if (element instanceof Method) {
             APIController apiController = ((Method) element).getDeclaringClass().getAnnotation(APIController.class);
             if (apiController != null) {
-                if (body != null) {
-                    List<String> list = this.getApiCodes(element, apiController, body, apiRequest);
-                    return createRequestMappingInfoByPrinter(body, condition, list.toArray(new String[]{}));
-                } else if (apiRequest != null) {
-                    List<String> list = this.getApiCodes(element, apiController, body, apiRequest);
-                    return createRequestMappingInfoByPrinter(apiRequest, condition, list.toArray(new String[]{}));
-                }
+                List<String> list = this.getApiCodes(element, apiController, apiRequest);
+                return createRequestMappingInfoByPrinter(apiRequest, condition, list.toArray(new String[]{}));
             }
         }
 
         return null;
     }
 
-    private List<String> getApiCodes(AnnotatedElement element, APIController apiController, Body body, ApiRequest apiRequest) {
+    private List<String> getApiCodes(AnnotatedElement element, APIController apiController, ApiRequest apiRequest) {
         Class<?> type = ((Method) element).getDeclaringClass();
         String className = ((Method) element).getDeclaringClass().getSimpleName();
         String methodName = ((Method) element).getName();
@@ -159,8 +156,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         }
 
         String apiCode = null;
-        if (body != null) apiCode = body.code();
-        if (apiRequest != null && StringTools.isEmpty(apiCode)) apiCode = apiRequest.code();
+        if (apiRequest != null) apiCode = apiRequest.code();
 
         if (StringTools.isNotEmpty(apiCode)) {
             return Collections.singletonList(prefixUri + "/" + apiCode);
@@ -172,8 +168,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         className = this.replaceCommonPrefix(type, className);
 
         String methodValue = null;
-        if (body != null) methodValue = body.value();
-        if (apiRequest != null && StringTools.isEmpty(methodValue)) methodValue = apiRequest.value();
+        if (apiRequest != null) methodValue = apiRequest.value();
 
         String module = StringTools.isNotEmpty(this.module) ? this.module : "system";
 
@@ -235,20 +230,6 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
 
     protected RequestCondition<?> getCustomMethodCondition(Method method) {
         return null;
-    }
-
-    protected RequestMappingInfo createRequestMappingInfoByPrinter(Body requestMapping, RequestCondition<?> customCondition, String[] path) {
-        return RequestMappingInfo
-                .paths(resolveEmbeddedValuesInPatterns(path))
-                .methods(requestMapping.method())
-                .params(requestMapping.params())
-                .headers(requestMapping.headers())
-                .consumes(requestMapping.consumes())
-                .produces(requestMapping.produces())
-                .mappingName(requestMapping.name())
-                .customCondition(customCondition)
-                .options(this.config)
-                .build();
     }
 
     protected RequestMappingInfo createRequestMappingInfoByPrinter(ApiRequest requestMapping, RequestCondition<?> customCondition, String[] path) {

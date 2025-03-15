@@ -22,7 +22,7 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
         Class<?> type = methodParameter.getParameterType();
         Method method = methodParameter.getMethod();
 
-        Body body = method.getAnnotation(Body.class);
+        ApiRequest body = method.getAnnotation(ApiRequest.class);
         RequestBody requestBody = methodParameter.getMethodAnnotation(RequestBody.class);
         if (requestBody == null && body != null) {
             return !ClassUtils.isPrimitiveOrWrapper(type)

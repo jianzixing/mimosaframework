@@ -2,7 +2,7 @@ package web;
 
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.springmvc.APIController;
-import org.mimosaframework.springmvc.Body;
+import org.mimosaframework.springmvc.ApiRequest;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
@@ -11,12 +11,12 @@ import java.util.List;
 @APIController
 public class HelloController {
 
-    @Body
+    @ApiRequest
     public String getName(String name) {
         return "Hello " + name;
     }
 
-    @Body
+    @ApiRequest
     public String setJson(String name, ModelObject object) {
         if (object != null) {
             System.out.println(object.toJSONString());
@@ -25,7 +25,7 @@ public class HelloController {
         return name;
     }
 
-    @Body
+    @ApiRequest
     public String setWORDAction(String name, ModelObject object) {
         if (object != null) {
             System.out.println(object.toJSONString());
@@ -34,22 +34,22 @@ public class HelloController {
         return name;
     }
 
-    @Body
+    @ApiRequest
     public ResponseMessage response(String name) {
         return new ResponseMessage(100, name);
     }
 
-    @Body
+    @ApiRequest
     public void list(List<String> strings) {
         System.out.println(ModelObject.toJSONString(strings));
     }
 
-    @Body
+    @ApiRequest
     public void del(List<Integer> ids) {
         System.out.println(ModelObject.toJSONString(ids));
     }
 
-    @Body(value = "/{code}")
+    @ApiRequest(value = "/{code}")
     public String setPath(@PathVariable(name = "code") String code) {
         System.out.println(code);
         return code;
