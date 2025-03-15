@@ -134,7 +134,7 @@ public class MimosaRequestHandlerMapping extends RequestMappingHandlerMapping
         }
 
         // only support method
-        if (element instanceof Method) {
+        if (element instanceof Method && apiRequest != null) {
             APIController apiController = ((Method) element).getDeclaringClass().getAnnotation(APIController.class);
             if (apiController != null) {
                 List<String> list = this.getApiCodes(element, apiController, apiRequest);
