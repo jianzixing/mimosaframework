@@ -28,6 +28,9 @@ public @interface ApiRequest {
 
     String contentType() default "";
 
+    // 接口作用分类，比如后台的，前端的，自定义使用方式
+    ApiType type() default ApiType.DEFAULT;
+
     // 接口描述
     String detail() default "";
 
