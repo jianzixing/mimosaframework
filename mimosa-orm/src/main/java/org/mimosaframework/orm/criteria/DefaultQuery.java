@@ -213,19 +213,19 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
     }
 
     @Override
-    public LogicQuery orderBy(OrderBy order) {
+    public LogicQuery<T> orderBy(OrderBy order) {
         if (withoutOrderBy == false) this.orderBy.add(order);
         return this;
     }
 
     @Override
-    public LogicQuery limit(Limit limit) {
+    public LogicQuery<T> limit(Limit limit) {
         this.limit = limit;
         return this;
     }
 
     @Override
-    public LogicQuery setTableClass(Class c) {
+    public LogicQuery<T> setTableClass(Class<?> c) {
         this.tableClass = c;
         return this;
     }
@@ -558,7 +558,7 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
     }
 
     @Override
-    public LogicQuery limit(long start, long count) {
+    public LogicQuery<T> limit(long start, long count) {
         Limit limit = new Limit();
         limit.limit(start, count);
         this.limit(limit);
@@ -566,28 +566,53 @@ public class DefaultQuery<T> extends AbstractFilter<LogicQuery<T>> implements Lo
     }
 
     @Override
-    public LogicQuery orderBy(Object field, boolean isAsc) {
+    public LogicQuery<T> limit(long limit) {
+        return this.limit(0, limit);
+    }
+
+    @Override
+    public LogicQuery<T> orderBy(Object field, boolean isAsc) {
         if (!withoutOrderBy) return this.orderBy(new OrderBy(ClassUtils.value(field), isAsc));
         return null;
     }
 
     @Override
-    public <F> LogicQuery orderBy(FieldFunction<F> field, boolean isAsc) {
+    public <F> LogicQuery<T> orderBy(FieldFunction<F> field, boolean isAsc) {
         return this.orderBy((Object) field, isAsc);
     }
 
     @Override
-    public LogicQuery orderBy(Object field, Sort sort) {
+    public LogicQuery<T> orderBy(Object field, Sort sort) {
         return this.orderBy(field, sort.isAsc());
     }
 
     @Override
-    public <F> LogicQuery orderBy(FieldFunction<F> field, Sort sort) {
+    public <F> LogicQuery<T> orderBy(FieldFunction<F> field, Sort sort) {
         return this.orderBy((Object) field, sort.isAsc());
     }
 
     @Override
-    public LogicQuery withoutOrderBy() {
+    public LogicQuery<T> orderByAsc(Object field) {
+        return this.orderBy(field, true);
+    }
+
+    @Override
+    public <F> LogicQuery<T> orderByAsc(FieldFunction<F> field) {
+        return this.orderBy(field, true);
+    }
+
+    @Override
+    public LogicQuery<T> orderByDesc(Object field) {
+        return this.orderBy(field, false);
+    }
+
+    @Override
+    public <F> LogicQuery<T> orderByDesc(FieldFunction<F> field) {
+        return this.orderBy(field, false);
+    }
+
+    @Override
+    public LogicQuery<T> withoutOrderBy() {
         this.orderBy.clear();
         this.withoutOrderBy = true;
         return this;

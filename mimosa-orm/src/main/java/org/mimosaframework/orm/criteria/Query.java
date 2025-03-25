@@ -22,6 +22,14 @@ public interface Query<T> extends QueryFilter<LogicQuery<T>> {
 
     <F> LogicQuery<T> orderBy(FieldFunction<F> field, boolean isAsc);
 
+    LogicQuery<T> orderByAsc(Object field);
+
+    <F> LogicQuery<T> orderByAsc(FieldFunction<F> field);
+
+    LogicQuery<T> orderByDesc(Object field);
+
+    <F> LogicQuery<T> orderByDesc(FieldFunction<F> field);
+
     LogicQuery<T> orderBy(Object field, Sort sort);
 
     <F> LogicQuery<T> orderBy(FieldFunction<F> field, Sort sort);
@@ -32,7 +40,9 @@ public interface Query<T> extends QueryFilter<LogicQuery<T>> {
 
     LogicQuery<T> limit(long start, long limit);
 
-    LogicQuery<T> setTableClass(Class c);
+    LogicQuery<T> limit(long limit);
+
+    LogicQuery<T> setTableClass(Class<?> c);
 
     LogicQuery<T> forUpdate();
 
