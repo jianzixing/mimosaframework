@@ -157,7 +157,7 @@ public final class Criteria {
 
     public static <T> Object[] must(T t, FieldFunction<T>... fields) {
         Map<String, Field> mapping = new HashMap<>();
-        Object[] list = fields(t.getClass());
+        Object[] list = fields(t.getClass(), mapping);
         List<Object> rs = new ArrayList<>();
         if (fields != null && fields.length > 0) {
             for (var f : fields) {
