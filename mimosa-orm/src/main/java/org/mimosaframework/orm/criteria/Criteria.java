@@ -82,7 +82,7 @@ public final class Criteria {
         return Keyword.NULL;
     }
 
-    private static <T> Object[] fields(Class<T> t) {
+    public static <T> Object[] fields(Class<T> t) {
         return fields(t, null);
     }
 
