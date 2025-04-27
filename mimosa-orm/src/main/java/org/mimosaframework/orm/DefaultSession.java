@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.AssistUtils;
+import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.criteria.*;
 import org.mimosaframework.orm.exception.StrategyException;
@@ -26,6 +27,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class DefaultSession implements Session {
     private static final Log logger = LogFactory.getLog(DefaultSession.class);
@@ -212,10 +214,14 @@ public class DefaultSession implements Session {
 
     @Override
     public int update(ModelObject obj, Object... fields) {
-        return this.update(obj, false, fields);
+        List<String> list = null;
+        if (fields != null && fields.length > 0) {
+            list = Stream.of(fields).map(v -> ClassUtils.value(v)).toList();
+        }
+        return this.update(obj, false, list);
     }
 
-    public int update(ModelObject obj, boolean isModify, Object... fields) {
+    public int update(ModelObject obj, boolean isModify, List<String> fields) {
         if (obj == null || obj.isEmpty()) {
             throw new IllegalArgumentException(I18n.print("update_empty"));
         }
@@ -228,9 +234,10 @@ public class DefaultSession implements Session {
         AssistUtils.isNull(mappingTable, I18n.print("not_found_mapping", c.getName()));
 
         if (!isModify) {
-            updateSkipReset.skip(obj, mappingTable);
+            updateSkipReset.skip(obj, mappingTable, fields);
         }
-        SessionUtils.clearModelObject(this.mappingGlobalWrapper, obj.getObjectClass(), obj, fields);
+        SessionUtils.clearModelObject(this.mappingGlobalWrapper, obj.getObjectClass(), obj,
+                fields != null ? fields.toArray() : null);
 
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         if (obj.size() - pks.size() <= 0) {
@@ -289,7 +296,7 @@ public class DefaultSession implements Session {
                 fields.add(field.getMappingFieldName());
             }
         }
-        return this.update(obj, true, fields.toArray());
+        return this.update(obj, true, fields);
     }
 
     @Override

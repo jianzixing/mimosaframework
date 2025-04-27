@@ -1,13 +1,12 @@
 package org.mimosaframework.orm.criteria;
 
 import org.mimosaframework.core.FieldFunction;
+import org.mimosaframework.core.exception.ModuleException;
 import org.mimosaframework.core.utils.ClassUtils;
 import org.mimosaframework.orm.annotation.Column;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -84,15 +83,25 @@ public final class Criteria {
     }
 
     public static <T> Object[] fields(Class<T> t) {
-        Class<?> superClass = t.getSuperclass();
+        return fields(t, null);
+    }
+
+    private static <T> Object[] fields(Class<T> t, Map<String, Field> mapping) {
         List<Object> list = new ArrayList<>();
+        if (t.equals(Object.class)) {
+            return list.toArray();
+        }
+        Class<?> superClass = t.getSuperclass();
         if (superClass != null) {
-            list.addAll(Arrays.asList(fields(superClass)));
+            list.addAll(Arrays.asList(fields(superClass, mapping)));
         }
         Field[] fields = t.getDeclaredFields();
         for (Field field : fields) {
             if (field.getAnnotation(Column.class) != null) {
                 list.add(field.getName());
+                if (mapping != null) {
+                    mapping.put(field.getName(), field);
+                }
             }
         }
         return list.toArray();
@@ -144,5 +153,33 @@ public final class Criteria {
      */
     public static String likeB(String str) {
         return "%" + str + "%";
+    }
+
+    public static <T> Object[] must(T t, FieldFunction<T>... fields) {
+        Map<String, Field> mapping = new HashMap<>();
+        Object[] list = fields(t.getClass(), mapping);
+        List<Object> rs = new ArrayList<>();
+        if (fields != null && fields.length > 0) {
+            for (var f : fields) {
+                rs.add(ClassUtils.value(f));
+            }
+        }
+        for (var l : list) {
+            if (l instanceof String ls) {
+                var field = mapping.get(ls);
+                if (field != null) {
+                    field.setAccessible(true);
+                    try {
+                        var v = field.get(t);
+                        if (v != null) {
+                            rs.add(ls);
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("set must file error");
+                    }
+                }
+            }
+        }
+        return rs.toArray();
     }
 }

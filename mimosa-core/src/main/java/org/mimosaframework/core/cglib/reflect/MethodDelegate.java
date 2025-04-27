@@ -17,7 +17,6 @@ package org.mimosaframework.core.cglib.reflect;
 
 import java.lang.reflect.*;
 import java.security.ProtectionDomain;
-import org.mimosaframework.core.cglib.*;
 import org.mimosaframework.core.cglib.core.*;
 import org.mimosaframework.core.asm.ClassVisitor;
 import org.mimosaframework.core.asm.Type;

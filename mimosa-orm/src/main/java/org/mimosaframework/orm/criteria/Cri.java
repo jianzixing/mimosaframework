@@ -145,4 +145,8 @@ public final class Cri {
     public static String likeB(String str) {
         return "%" + str + "%";
     }
+
+    public static <T> Object[] must(T t, FieldFunction<T>... fields) {
+        return Criteria.must(t, fields);
+    }
 }
