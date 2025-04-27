@@ -74,7 +74,7 @@ public class XmlAppContextTesting {
 
         ModelObject param = new ModelObject();
         param.put(TableUser.id, user.getIntValue(TableUser.id));
-        AutoResult result = template.getAutonomously(TAutonomously.newInstance("user_mapper.getUserById", param));
+        AutoResult result = template.getAutonomously(Mapper.newInstance("user_mapper.getUserById", param));
         result.setTableClass(TableUser.class, TableContacts.class);
         System.out.println(result.getSingle());
 
@@ -84,7 +84,7 @@ public class XmlAppContextTesting {
 
         param = new ModelObject();
         param.put(TableUser.id, user.getIntValue(TableUser.id));
-        AutoResult result2 = template.getAutonomously(TAutonomously.newInstance("user2_mapper.getUserById", param));
+        AutoResult result2 = template.getAutonomously(Mapper.newInstance("user2_mapper.getUserById", param));
         System.out.println(result2.getSingle());
     }
 

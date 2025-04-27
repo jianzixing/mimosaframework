@@ -5,16 +5,6 @@ import org.junit.Test;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.orm.*;
 import org.mimosaframework.orm.exception.ContextException;
-import org.mimosaframework.orm.sql.FieldItem;
-import org.mimosaframework.orm.sql.Wrapper;
-import org.mimosaframework.orm.sql.alter.AlterFactory;
-import org.mimosaframework.orm.sql.create.CreateFactory;
-import org.mimosaframework.orm.sql.drop.DropFactory;
-import tables.TablePay;
-import tables.TableUser;
-
-import java.util.Date;
-import java.util.List;
 
 public class SessionTemplateTesting {
     private static SessionTemplate template = null;
@@ -54,8 +44,8 @@ public class SessionTemplateTesting {
     public void testSql1() throws Exception {
         ModelObject params = new ModelObject();
         params.put("id", 1);
-        SQLAutonomously sqlAutonomously = SQLAutonomously.select("select * from t_cms where project_id=#{projectId} and template_id=#{templateId} " +
-                "and del=0 and name = #{name} json->$.age = #{jsonage} order by top,publish_time desc limit #{from},#{size}", params);
+        Sql sqlAutonomously = Sql.select("select * from t_cms where project_id=#{projectId} and template_id=#{templateId} " +
+                                         "and del=0 and name = #{name} json->$.age = #{jsonage} order by top,publish_time desc limit #{from},#{size}", params);
         AutoResult autoResult = template.getAutonomously(sqlAutonomously);
         System.out.println(ModelObject.toJSONString(autoResult.getObjects()));
     }

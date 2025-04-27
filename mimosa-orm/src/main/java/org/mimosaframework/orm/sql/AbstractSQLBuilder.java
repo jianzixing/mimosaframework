@@ -1,7 +1,5 @@
 package org.mimosaframework.orm.sql;
 
-import org.mimosaframework.orm.SQLAutonomously;
-
 import java.util.ArrayList;
 import java.util.List;
 

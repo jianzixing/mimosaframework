@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLAutonomously implements Serializable {
+public class Sql implements Serializable {
     private List<LinkAutonomously> dataSourceLinks;
     private String sql;
     private boolean isMaster = true;
@@ -17,94 +17,114 @@ public class SQLAutonomously implements Serializable {
     private ModelObject parameter;
     private Action action;
 
-    public SQLAutonomously() {
+    public Sql() {
     }
 
-    public SQLAutonomously(String sql, ModelObject parameter) {
+    public Sql(String sql, ModelObject parameter) {
         this.sql = sql;
         this.parameter = parameter;
     }
 
-    public SQLAutonomously(String sql, ModelObject parameter, String slaveName) {
+    public Sql(String sql, ModelObject parameter, String slaveName) {
         this.sql = sql;
         this.slaveName = slaveName;
         this.parameter = parameter;
     }
 
-    public SQLAutonomously(String sql) {
+    public Sql(String sql) {
         this.sql = sql;
     }
 
-    public SQLAutonomously(String sql, boolean isMaster) {
+    public Sql(String sql, boolean isMaster) {
         this.sql = sql;
         this.isMaster = isMaster;
     }
 
-    public SQLAutonomously(String sql, String slaveName) {
+    public Sql(String sql, String slaveName) {
         this.sql = sql;
         this.isMaster = true;
         this.slaveName = slaveName;
     }
 
-    public static SQLAutonomously newInstance() {
-        return new SQLAutonomously();
+    public static Sql newInstance() {
+        return new Sql();
     }
 
-    public static SQLAutonomously newInstance(String sql) {
-        return new SQLAutonomously(sql);
+    public static Sql newInstance(String sql) {
+        return new Sql(sql);
     }
 
-    public static SQLAutonomously newInstance(String sql, ModelObject parameter) {
-        return new SQLAutonomously(sql, parameter);
+    public static Sql newInstance(String sql, ModelObject parameter) {
+        return new Sql(sql, parameter);
     }
 
-    public static SQLAutonomously newInstance(String sql, boolean isMaster) {
-        return new SQLAutonomously(sql, isMaster);
+    public static Sql newInstance(String sql, boolean isMaster) {
+        return new Sql(sql, isMaster);
     }
 
-    public static SQLAutonomously newInstance(String sql, String slaveName) {
-        return new SQLAutonomously(sql, slaveName);
+    public static Sql newInstance(String sql, String slaveName) {
+        return new Sql(sql, slaveName);
+    }
+
+    public static Sql build() {
+        return new Sql();
+    }
+
+    public static Sql build(String sql) {
+        return new Sql(sql);
+    }
+
+    public static Sql build(String sql, ModelObject parameter) {
+        return new Sql(sql, parameter);
+    }
+
+    public static Sql build(String sql, boolean isMaster) {
+        return new Sql(sql, isMaster);
+    }
+
+    public static Sql build(String sql, String slaveName) {
+        return new Sql(sql, slaveName);
     }
 
     // select start
 
-    public static SQLAutonomously select(String sql) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql select(String sql) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.select);
         return autonomously;
     }
 
-    public static SQLAutonomously select(String sql, ModelObject parameter) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql select(String sql, ModelObject parameter) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.select);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously select(String sql, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql select(String sql, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.select);
         autonomously.setMaster(isMaster);
         return autonomously;
     }
 
-    public static SQLAutonomously select(String sql, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql select(String sql, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.select);
         autonomously.setSlaveName(slaveName);
         return autonomously;
     }
 
-    public static SQLAutonomously select(String sql, ModelObject parameter, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql select(String sql, ModelObject parameter, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.select);
         autonomously.setMaster(isMaster);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously select(String sql, ModelObject parameter, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql select(String sql, ModelObject parameter, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.select);
         autonomously.setSlaveName(slaveName);
         autonomously.setParameter(parameter);
@@ -114,43 +134,43 @@ public class SQLAutonomously implements Serializable {
     // delete start
 
 
-    public static SQLAutonomously delete(String sql) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql delete(String sql) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.delete);
         return autonomously;
     }
 
-    public static SQLAutonomously delete(String sql, ModelObject parameter) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql delete(String sql, ModelObject parameter) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.delete);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously delete(String sql, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql delete(String sql, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.delete);
         autonomously.setMaster(isMaster);
         return autonomously;
     }
 
-    public static SQLAutonomously delete(String sql, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql delete(String sql, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.delete);
         autonomously.setSlaveName(slaveName);
         return autonomously;
     }
 
-    public static SQLAutonomously delete(String sql, ModelObject parameter, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql delete(String sql, ModelObject parameter, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.delete);
         autonomously.setMaster(isMaster);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously delete(String sql, ModelObject parameter, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql delete(String sql, ModelObject parameter, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.delete);
         autonomously.setSlaveName(slaveName);
         autonomously.setParameter(parameter);
@@ -160,43 +180,43 @@ public class SQLAutonomously implements Serializable {
     // update start
 
 
-    public static SQLAutonomously update(String sql) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql update(String sql) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.update);
         return autonomously;
     }
 
-    public static SQLAutonomously update(String sql, ModelObject parameter) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql update(String sql, ModelObject parameter) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.update);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously update(String sql, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql update(String sql, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.update);
         autonomously.setMaster(isMaster);
         return autonomously;
     }
 
-    public static SQLAutonomously update(String sql, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql update(String sql, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.update);
         autonomously.setSlaveName(slaveName);
         return autonomously;
     }
 
-    public static SQLAutonomously update(String sql, ModelObject parameter, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql update(String sql, ModelObject parameter, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.update);
         autonomously.setMaster(isMaster);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously update(String sql, ModelObject parameter, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql update(String sql, ModelObject parameter, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.update);
         autonomously.setSlaveName(slaveName);
         autonomously.setParameter(parameter);
@@ -206,43 +226,43 @@ public class SQLAutonomously implements Serializable {
     // insert start
 
 
-    public static SQLAutonomously insert(String sql) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql insert(String sql) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.insert);
         return autonomously;
     }
 
-    public static SQLAutonomously insert(String sql, ModelObject parameter) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql insert(String sql, ModelObject parameter) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.insert);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously insert(String sql, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql insert(String sql, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.insert);
         autonomously.setMaster(isMaster);
         return autonomously;
     }
 
-    public static SQLAutonomously insert(String sql, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql insert(String sql, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.insert);
         autonomously.setSlaveName(slaveName);
         return autonomously;
     }
 
-    public static SQLAutonomously insert(String sql, ModelObject parameter, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql insert(String sql, ModelObject parameter, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.insert);
         autonomously.setMaster(isMaster);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously insert(String sql, ModelObject parameter, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql insert(String sql, ModelObject parameter, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.insert);
         autonomously.setSlaveName(slaveName);
         autonomously.setParameter(parameter);
@@ -252,43 +272,43 @@ public class SQLAutonomously implements Serializable {
     // sql start
 
 
-    public static SQLAutonomously sql(String sql) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql sql(String sql) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.sql);
         return autonomously;
     }
 
-    public static SQLAutonomously sql(String sql, ModelObject parameter) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql sql(String sql, ModelObject parameter) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.sql);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously sql(String sql, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql sql(String sql, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.sql);
         autonomously.setMaster(isMaster);
         return autonomously;
     }
 
-    public static SQLAutonomously sql(String sql, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql sql(String sql, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.sql);
         autonomously.setSlaveName(slaveName);
         return autonomously;
     }
 
-    public static SQLAutonomously sql(String sql, ModelObject parameter, boolean isMaster) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql sql(String sql, ModelObject parameter, boolean isMaster) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.sql);
         autonomously.setMaster(isMaster);
         autonomously.setParameter(parameter);
         return autonomously;
     }
 
-    public static SQLAutonomously sql(String sql, ModelObject parameter, String slaveName) {
-        SQLAutonomously autonomously = new SQLAutonomously(sql);
+    public static Sql sql(String sql, ModelObject parameter, String slaveName) {
+        Sql autonomously = new Sql(sql);
         autonomously.setAction(Action.sql);
         autonomously.setSlaveName(slaveName);
         autonomously.setParameter(parameter);

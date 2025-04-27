@@ -51,20 +51,10 @@ public interface HandleSession extends Closeable {
     /**
      * 指定在哪些数据源上执行SQL
      * 得到的结果会汇总然后给使用者
-     *
-     * @param autonomously
-     * @return
-     * @throws Exception
      */
-    @Deprecated
-    AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception;
+    AutoResult sql(Sql autonomously);
 
-    AutoResult sql(SQLAutonomously autonomously);
-
-    @Deprecated
-    AutoResult getAutonomously(TAutonomously autonomously) throws Exception;
-
-    AutoResult mapper(TAutonomously autonomously);
+    AutoResult mapper(Mapper autonomously);
 
     List<DataSourceTableName> getDataSourceNames(Class c);
 }

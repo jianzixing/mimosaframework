@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TAutonomously implements Serializable {
+public class Mapper implements Serializable {
     private List<MapperAutonomously> dataSourceMappers;
     /**
      * SQL文件的名称,以.作为分隔
@@ -17,26 +17,39 @@ public class TAutonomously implements Serializable {
     private boolean isMaster = true;
     private String slaveName;
 
-    public static TAutonomously newInstance() {
-        return new TAutonomously();
+    public static Mapper newInstance() {
+        return new Mapper();
     }
 
-    public static TAutonomously newInstance(String name) {
-        return new TAutonomously(name);
+    public static Mapper newInstance(String name) {
+        return new Mapper(name);
     }
 
-    public static TAutonomously newInstance(String name, ModelObject parameter) {
-        return new TAutonomously(name, parameter);
+    public static Mapper newInstance(String name, ModelObject parameter) {
+        return new Mapper(name, parameter);
     }
 
-    public TAutonomously() {
+    public static Mapper build() {
+        return new Mapper();
     }
 
-    public TAutonomously(String name) {
+    public static Mapper build(String name) {
+        return new Mapper(name);
+    }
+
+    public static Mapper build(String name, ModelObject parameter) {
+        return new Mapper(name, parameter);
+    }
+
+
+    public Mapper() {
+    }
+
+    public Mapper(String name) {
         this.name = name;
     }
 
-    public TAutonomously(String name, ModelObject parameter) {
+    public Mapper(String name, ModelObject parameter) {
         this.name = name;
         this.parameter = parameter;
     }

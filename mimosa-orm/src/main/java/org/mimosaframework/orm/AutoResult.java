@@ -31,10 +31,10 @@ public class AutoResult {
                             search.put("start", start);
                             search.put("limit", limit);
                         }
-                        return template.getAutonomously(TAutonomously.newInstance(name, search));
+                        return template.mapper(Mapper.newInstance(name, search));
                     }
                 } else {
-                    return template.getAutonomously(TAutonomously.newInstance(name));
+                    return template.mapper(Mapper.newInstance(name));
                 }
             } catch (Exception e) {
                 throw new IllegalArgumentException(I18n.print("call_custom_sql_error"), e);
@@ -61,7 +61,7 @@ public class AutoResult {
                         search.put("start", start);
                         search.put("limit", limit);
                     }
-                    result = template.getAutonomously(TAutonomously.newInstance(name, search));
+                    result = template.mapper(Mapper.newInstance(name, search));
                 }
             } catch (Exception e) {
                 throw new IllegalArgumentException(I18n.print("call_custom_sql_error"), e);
@@ -105,7 +105,7 @@ public class AutoResult {
             try {
                 search.clearEmpty();
                 if (search.size() > 0) {
-                    result = template.getAutonomously(TAutonomously.newInstance(name, search));
+                    result = template.mapper(Mapper.newInstance(name, search));
                 }
             } catch (Exception e) {
                 throw new IllegalArgumentException(I18n.print("call_custom_sql_error"), e);
@@ -302,11 +302,11 @@ public class AutoResult {
             return bigDecimal;
         }
         if (this.value instanceof Integer
-                || this.value instanceof Long
-                || this.value instanceof Byte
-                || this.value instanceof Short
-                || this.value instanceof Double
-                || this.value instanceof Float) {
+            || this.value instanceof Long
+            || this.value instanceof Byte
+            || this.value instanceof Short
+            || this.value instanceof Double
+            || this.value instanceof Float) {
             return new BigDecimal("" + this.value);
         }
         return null;

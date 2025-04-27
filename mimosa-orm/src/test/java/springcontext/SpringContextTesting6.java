@@ -4,14 +4,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.RandomUtils;
-import org.mimosaframework.orm.AutoResult;
 import org.mimosaframework.orm.SessionTemplate;
-import org.mimosaframework.orm.TAutonomously;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import tables.TableContacts;
-import tables.TableUser;
 import xmlcontext.TableAddition;
 
 

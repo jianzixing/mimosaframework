@@ -519,8 +519,7 @@ public class DefaultSession implements Session {
         }
     }
 
-    @Override
-    public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
+    private AutoResult getAutonomously(Sql autonomously) throws Exception {
         String sql = autonomously.getSql();
 
         boolean isMaster = autonomously.isMaster();
@@ -544,7 +543,7 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public AutoResult sql(SQLAutonomously autonomously) {
+    public AutoResult sql(Sql autonomously) {
         try {
             return this.getAutonomously(autonomously);
         } catch (Exception e) {
@@ -552,12 +551,11 @@ public class DefaultSession implements Session {
         }
     }
 
-    @Override
-    public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
+    private AutoResult getAutonomously(Mapper mapper) throws Exception {
         SQLDefinedLoader definedLoader = this.context.getDefinedLoader();
         if (definedLoader != null) {
             JDBCTraversing structure = AutonomouslyUtils.parseStructure(definedLoader,
-                    autonomously.getName(), autonomously.getParameter());
+                    mapper.getName(), mapper.getParameter());
             if (structure != null) {
                 Object object = executor.original(structure);
                 // 这里返回的原生的字段，不会逆向转换
@@ -571,9 +569,9 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public AutoResult mapper(TAutonomously autonomously) {
+    public AutoResult mapper(Mapper mapper) {
         try {
-            return this.getAutonomously(autonomously);
+            return this.getAutonomously(mapper);
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }

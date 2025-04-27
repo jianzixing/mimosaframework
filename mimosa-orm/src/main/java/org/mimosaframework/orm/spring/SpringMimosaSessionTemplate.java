@@ -128,24 +128,12 @@ public class SpringMimosaSessionTemplate implements SessionTemplate {
     }
 
     @Override
-    @Deprecated
-    public AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception {
-        return sessionTemplate.getAutonomously(autonomously);
-    }
-
-    @Override
-    public AutoResult sql(SQLAutonomously autonomously) {
+    public AutoResult sql(Sql autonomously) {
         return sessionTemplate.sql(autonomously);
     }
 
     @Override
-    @Deprecated
-    public AutoResult getAutonomously(TAutonomously autonomously) throws Exception {
-        return sessionTemplate.getAutonomously(autonomously);
-    }
-
-    @Override
-    public AutoResult mapper(TAutonomously autonomously) {
+    public AutoResult mapper(Mapper autonomously) {
         return sessionTemplate.mapper(autonomously);
     }
 

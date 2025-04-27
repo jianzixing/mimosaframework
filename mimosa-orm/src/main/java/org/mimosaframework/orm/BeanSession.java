@@ -59,14 +59,14 @@ public interface BeanSession extends Closeable {
      * @throws Exception
      */
     @Deprecated
-    AutoResult getAutonomously(SQLAutonomously autonomously) throws Exception;
+    AutoResult getAutonomously(Sql autonomously) throws Exception;
 
-    AutoResult sql(SQLAutonomously autonomously);
+    AutoResult sql(Sql autonomously);
 
     @Deprecated
-    AutoResult getAutonomously(TAutonomously autonomously) throws Exception;
+    AutoResult getAutonomously(Mapper autonomously) throws Exception;
 
-    AutoResult mapper(TAutonomously autonomously);
+    AutoResult mapper(Mapper autonomously);
 
     List<DataSourceTableName> getDataSourceNames(Class c);
 }
