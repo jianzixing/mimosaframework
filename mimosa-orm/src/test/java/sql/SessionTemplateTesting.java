@@ -46,7 +46,7 @@ public class SessionTemplateTesting {
         params.put("id", 1);
         Sql sqlAutonomously = Sql.select("select * from t_cms where project_id=#{projectId} and template_id=#{templateId} " +
                                          "and del=0 and name = #{name} json->$.age = #{jsonage} order by top,publish_time desc limit #{from},#{size}", params);
-        AutoResult autoResult = template.getAutonomously(sqlAutonomously);
+        AutoResult autoResult = template.sql(sqlAutonomously);
         System.out.println(ModelObject.toJSONString(autoResult.getObjects()));
     }
 
