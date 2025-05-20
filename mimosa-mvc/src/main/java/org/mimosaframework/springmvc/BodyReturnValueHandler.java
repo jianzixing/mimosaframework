@@ -8,6 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
 public class BodyReturnValueHandler implements HandlerMethodReturnValueHandler {
@@ -23,7 +24,13 @@ public class BodyReturnValueHandler implements HandlerMethodReturnValueHandler {
         Class<?> c = methodParameter.getParameterType();
         Method method = methodParameter.getMethod();
         ApiRequest printer = method.getAnnotation(ApiRequest.class);
-        return printer != null && printer.plaintext();
+        boolean isSupportType = printer != null && printer.plaintext();
+
+        if (!isPrimitiveOrWrapper(c) && !Serializable.class.isAssignableFrom(c)) {
+            isSupportType = false;
+        }
+
+        return isSupportType;
     }
 
     @Override
@@ -61,14 +68,30 @@ public class BodyReturnValueHandler implements HandlerMethodReturnValueHandler {
                 }
             }
             String text = null;
-            if (o instanceof String) {
-                text = (String) o;
-            } else if (o instanceof Number) {
+            if (isPrimitiveOrWrapper(o.getClass())) {
                 text = String.valueOf(o);
             } else {
                 text = ModelObject.toFrontString(o);
             }
             response.getWriter().write(text);
         }
+    }
+
+    private static boolean isPrimitiveOrWrapper(Class<?> clazz) {
+        // 判断基本类型
+        if (clazz.isPrimitive()) {
+            return true;
+        }
+
+        // 判断包装类型
+        return clazz == Number.class ||
+               clazz == Integer.class ||
+               clazz == Boolean.class ||
+               clazz == Character.class ||
+               clazz == Byte.class ||
+               clazz == Short.class ||
+               clazz == Long.class ||
+               clazz == Float.class ||
+               clazz == Double.class;
     }
 }
