@@ -295,7 +295,7 @@ public abstract class PlatformDialect implements Dialect {
 
             }
             return (StringTools.isNotEmpty(catalog) ? catalog : "") +
-                    (StringTools.isNotEmpty(schema) ? (StringTools.isNotEmpty(catalog) ? "." : "") + schema : "");
+                   (StringTools.isNotEmpty(schema) ? (StringTools.isNotEmpty(catalog) ? "." : "") + schema : "");
         } finally {
             close(connection);
         }
@@ -498,7 +498,7 @@ public abstract class PlatformDialect implements Dialect {
 
             List<MappingField> pkFields = mappingTable.getMappingPrimaryKeyFields();
             if (!(pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey())
-                    && mappingField.isMappingFieldUnique() != unique) {
+                && mappingField.isMappingFieldUnique() != unique) {
                 if (mappingField.isMappingFieldUnique()) {
                     this.createIndex(mappingTable, mappingField, true);
 
@@ -509,14 +509,14 @@ public abstract class PlatformDialect implements Dialect {
             }
 
             if (!(pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey())
-                    && !mappingField.isMappingFieldUnique()) {
+                && !mappingField.isMappingFieldUnique()) {
                 if (mappingField.isMappingFieldIndex() != index) {
                     this.createIndex(mappingTable, mappingField, false);
                 }
             }
 
             if (((pkFields != null && pkFields.size() == 1 && mappingField.isMappingFieldPrimaryKey()) && (unique || index))
-                    || (mappingField.isMappingFieldUnique() && index)) {
+                || (mappingField.isMappingFieldUnique() && index)) {
                 this.dropIndex(mappingTable, mappingField, false);
             }
         }
@@ -569,6 +569,7 @@ public abstract class PlatformDialect implements Dialect {
         // int bigint 等 数据库默认值总是0
         if (KeyColumnType.DECIMAL.equals(type)) {
             if (Objects.equals(defA, defB)) return false;
+            if (defA == null || defB == null) return true;
             return new BigDecimal(defA).compareTo(new BigDecimal(defB)) != 0;
         }
         return !Objects.equals(defA, defB);
@@ -623,20 +624,20 @@ public abstract class PlatformDialect implements Dialect {
         if (currField.isMappingFieldTimeForUpdate()) return columnEditTypes;
         KeyColumnType pkAutoType = this.getAutoIncrementPrimaryKeyType();
         if (currField.isMappingFieldPrimaryKey()
-                && currField.isMappingAutoIncrement()
-                && pkAutoType != null) {
+            && currField.isMappingAutoIncrement()
+            && pkAutoType != null) {
             if (!this.compareColumnChangeType(columnStructure, this.getColumnType(pkAutoType))) {
                 columnEditTypes.add(ColumnEditType.TYPE);
             }
         } else {
             if (this.compareColumnChangeType(columnStructure, columnType)) {
                 if (columnType.getCompareType() == ColumnCompareType.JAVA
-                        && (columnStructure.getLength() != currField.getMappingFieldLength()
+                    && (columnStructure.getLength() != currField.getMappingFieldLength()
                         || columnStructure.getScale() != currField.getMappingFieldDecimalDigits())) {
                     columnEditTypes.add(ColumnEditType.TYPE_LENGTH);
                 }
                 if (columnType.getCompareType() == ColumnCompareType.SELF
-                        && (columnStructure.getLength() != columnType.getLength())) {
+                    && (columnStructure.getLength() != columnType.getLength())) {
                     columnEditTypes.add(ColumnEditType.TYPE_LENGTH);
                 }
             } else {
@@ -755,7 +756,7 @@ public abstract class PlatformDialect implements Dialect {
             List<TableConstraintStructure> pks = structure.getPrimaryKey();
             List<TableColumnStructure> autos = structure.getAutoIncrement();
             if ((pks != null && pks.size() > 0 && mappingField.isMappingFieldPrimaryKey())
-                    || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
+                || (autos != null && autos.size() > 0 && mappingField.isMappingAutoIncrement())) {
                 return DialectNextStep.REBUILD;
             } else {
                 String def = mappingField.getMappingFieldDefaultValue();
