@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -47,7 +48,7 @@ public class DefaultFilterPackageClass implements FilterPackageClass {
     @Override
     public Set<Class> getScanClass(Class<? extends Annotation> annotationClass) {
 
-        if (packagePaths == null || packagePaths.size() == 0) {
+        if (packagePaths == null || packagePaths.isEmpty()) {
             throw new IllegalArgumentException("查找类时包信息不能为空");
         }
 
@@ -57,7 +58,7 @@ public class DefaultFilterPackageClass implements FilterPackageClass {
 
         Set<Class> classes = new LinkedHashSet<>();
 
-        for (String packagePath : packagePaths) {
+        for (String packagePath : this.getPackages()) {
             if (StringTools.isNotEmpty(packagePath)) {
                 //获取包下的所有类
                 List<Class<?>> allClasses = getClasses(packagePath);
@@ -72,7 +73,7 @@ public class DefaultFilterPackageClass implements FilterPackageClass {
                 }
             }
         }
-        if (classes.size() > 0) {
+        if (!classes.isEmpty()) {
             return classes;
         }
         return null;
@@ -293,5 +294,100 @@ public class DefaultFilterPackageClass implements FilterPackageClass {
                 }
             }
         }
+    }
+
+
+    private List<String> getPackages() {
+        List<String> list = new ArrayList<String>();
+        for (String packagePath : packagePaths) {
+            List<String> pkgs = this.getSubMatchPackages(packagePath);
+            if (pkgs != null && !pkgs.isEmpty()) {
+                list.addAll(pkgs);
+            }
+        }
+        return list;
+    }
+
+    private List<String> getSubMatchPackages(String packageName) {
+        String[] packageDirNames = packageName.split("\\.");
+        StringBuilder prefixPackage = new StringBuilder();
+        for (String packageDirName : packageDirNames) {
+            if ("*".equals(packageDirName) || "**".equals(packageDirName)) {
+                List<String> pkgs = new ArrayList<>();
+                List<String> subs = this.getSubPackages(prefixPackage.toString());
+                if (subs != null && !subs.isEmpty()) {
+                    for (String sub : subs) {
+                        List<String> list = this.getSubMatchPackages(sub);
+                        if (list != null) pkgs.addAll(list);
+                    }
+                }
+                return pkgs;
+            } else {
+                if (!prefixPackage.isEmpty()) {
+                    prefixPackage.append(".");
+                }
+                prefixPackage.append(packageDirName);
+            }
+        }
+        return List.of(packageName);
+    }
+
+    private List<String> getSubPackages(String packageName) {
+        List<String> pkgs = new ArrayList<>();
+        if (packageName == null || packageName.trim().isEmpty()) {
+            throw new IllegalArgumentException("查找类时包信息不能为空");
+        }
+
+        String packageDirName = packageName.replace('.', '/');
+        Enumeration<URL> dirs;
+        try {
+            //获得包下的所有资源文件
+            dirs = classLoader.getResources(packageDirName);
+            while (dirs.hasMoreElements()) {
+                URL url = dirs.nextElement();
+                String protocol = url.getProtocol();
+                //通过资源协议判断是否是类文件
+                if ("file".equals(protocol)) {
+                    String filePath = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
+                    File dir = new File(filePath);
+                    if (dir.exists() && dir.isDirectory()) {
+                        File[] dirFiles = dir.listFiles(File::isDirectory);
+                        if (dirFiles != null) {
+                            for (File file : dirFiles) {
+                                String className = file.getName();
+                                pkgs.add(packageName + '.' + className);
+                            }
+                        }
+                    }
+                } else if ("jar".equals(protocol)) {
+                    JarFile jar;
+                    try {
+                        //从jar包中获取所有的.class文件
+                        jar = ((JarURLConnection) url.openConnection()).getJarFile();
+                        Enumeration<JarEntry> entries = jar.entries();
+                        while (entries.hasMoreElements()) {
+                            JarEntry entry = entries.nextElement();
+                            String name = entry.getName();
+                            if (name.charAt(0) == '/') {
+                                name = name.substring(1);
+                            }
+                            if (name.startsWith(packageDirName) && entry.isDirectory()) {
+                                int idx = name.lastIndexOf('/');
+                                if (idx != -1) {
+                                    packageName = name.substring(0, idx).replace('/', '.');
+                                }
+                                pkgs.add(packageName);
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return pkgs;
     }
 }

@@ -10,17 +10,16 @@ import org.mimosaframework.orm.exception.ContextException;
 
 import javax.sql.DataSource;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class BuilderUtils {
     public static Set<Class> getMappingClass(Class<? extends Annotation> annotation,
                                              String mappingClassPackage,
                                              Set<String> additionClasses) throws ContextException {
+        List<String> classPackagePaths = Arrays.asList(mappingClassPackage.split(","));
+        
         FilterPackageClass filterPackageClass = new DefaultFilterPackageClass();
-        filterPackageClass.setPackagePath(Arrays.asList(mappingClassPackage.split(",")));
+        filterPackageClass.setPackagePath(classPackagePaths);
         Set<Class> classes = filterPackageClass.getScanClass(annotation);
         if (classes == null && additionClasses != null && additionClasses.size() > 0) {
             classes = new LinkedHashSet<>();
