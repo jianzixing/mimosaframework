@@ -31,6 +31,8 @@ public @interface ApiRequest {
     // 接口作用分类，比如后台的，前端的，自定义使用方式
     ApiAction action() default ApiAction.DEFAULT;
 
+    ApiAction[] actions() default {};
+
     // 接口级别分类
     ApiLevel level() default ApiLevel.LOGIN;
 
