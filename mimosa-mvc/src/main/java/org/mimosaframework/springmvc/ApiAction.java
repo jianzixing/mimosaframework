@@ -6,6 +6,10 @@ public enum ApiAction {
      */
     DEFAULT,
     /**
+     * 官方网站请求
+     */
+    OFFICIALLY,
+    /**
      * 后台管理接口
      */
     ADMIN,
