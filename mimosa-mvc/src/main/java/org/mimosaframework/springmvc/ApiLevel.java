@@ -16,7 +16,15 @@ public enum ApiLevel {
     /**
      * 严格模式
      */
-    STRICT(3);
+    STRICT(3),
+    /**
+     * 使用密钥访问
+     */
+    API_KEY(4),
+    /**
+     * 使用Token访问
+     */
+    TOKEN(5);
 
     private final int value;
 
