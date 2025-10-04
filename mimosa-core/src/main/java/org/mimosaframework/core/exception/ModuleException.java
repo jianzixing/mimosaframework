@@ -10,7 +10,6 @@ public class ModuleException extends RuntimeException {
     public ModuleException(ModelCheckerException e) {
         super(e.getMessage());
         this.code = -100;
-        e.printStackTrace();
     }
 
     public ModuleException(Exception e) {
@@ -18,9 +17,6 @@ public class ModuleException extends RuntimeException {
         this.code = -100;
         if (e instanceof ModuleException) {
             this.code = ((ModuleException) e).code;
-        }
-        if (!(e instanceof ModuleException) && !(e instanceof ModelCheckerException)) {
-            e.printStackTrace();
         }
     }
 
@@ -37,15 +33,11 @@ public class ModuleException extends RuntimeException {
     public ModuleException(String code, String message, Throwable throwable) {
         super(message, throwable);
         this.code = code;
-        throwable.printStackTrace();
     }
 
     public ModuleException(String code, Throwable throwable) {
         super(throwable.getMessage(), throwable);
         this.code = code;
-        if (!(throwable instanceof ModuleException) && !(throwable instanceof ModelCheckerException)) {
-            throwable.printStackTrace();
-        }
     }
 
     public ModuleException(int code) {
@@ -61,7 +53,21 @@ public class ModuleException extends RuntimeException {
     public ModuleException(int code, String message, Throwable throwable) {
         super(message, throwable);
         this.code = code;
-        throwable.printStackTrace();
+    }
+
+    public ModuleException(Object code) {
+        super();
+        this.code = code;
+    }
+
+    public ModuleException(Object code, String message) {
+        super(message);
+        this.code = code;
+    }
+
+    public ModuleException(Object code, String message, Throwable throwable) {
+        super(message, throwable);
+        this.code = code;
     }
 
     public Object getCode() {
