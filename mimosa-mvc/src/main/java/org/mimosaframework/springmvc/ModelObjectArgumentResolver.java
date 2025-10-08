@@ -2,6 +2,7 @@ package org.mimosaframework.springmvc;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.mimosaframework.core.json.ModelArray;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.json.parser.Feature;
 import org.springframework.core.MethodParameter;
@@ -26,12 +27,12 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
         RequestBody requestBody = methodParameter.getMethodAnnotation(RequestBody.class);
         if (requestBody == null && body != null) {
             return !ClassUtils.isPrimitiveOrWrapper(type)
-                   && !String.class.equals(type)
-                   && !type.isEnum()
-                   && !type.isAssignableFrom(List.class)
-                   && !type.isArray()
-                   && !type.isAssignableFrom(HttpServletResponse.class)
-                   && !type.isAssignableFrom(HttpServletRequest.class)
+                    && !String.class.equals(type)
+                    && !type.isEnum()
+                    && !type.isAssignableFrom(List.class)
+                    && !type.isArray()
+                    && !type.isAssignableFrom(HttpServletResponse.class)
+                    && !type.isAssignableFrom(HttpServletRequest.class)
                     ;
         }
         return false;
@@ -48,11 +49,17 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
         String txt = value.trim();
         if (txt.startsWith("{") && txt.endsWith("}") || txt.startsWith("[") && txt.endsWith("]")) {
             try {
-                ModelObject object = ModelObject.parseObject(value, Feature.OrderedField);
+                Object object = ModelObject.parse(value, Feature.OrderedField);
                 if (type.isAssignableFrom(ModelObject.class)) {
                     return object;
+                } else if (type.isAssignableFrom(ModelArray.class)) {
+                    return object;
                 } else {
-                    return ModelObject.toJavaObject(object, type);
+                    if (object instanceof List<?>) {
+                        return ((ModelArray) object).toJavaObjects(type);
+                    } else {
+                        return ModelObject.toJavaObject((ModelObject) object, type);
+                    }
                 }
             } catch (Exception e) {
                 throw new IllegalArgumentException("unable to convert to " + type.getSimpleName() + " with argument " + value, e);
