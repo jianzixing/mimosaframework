@@ -8,7 +8,7 @@ import java.util.Map;
 public class ModuleException extends RuntimeException {
 
     private Object code;
-    private Map<String, String> args;
+    private Map<?, ?> args;
 
     public ModuleException(ModelCheckerException e) {
         super(e.getMessage());
@@ -69,7 +69,7 @@ public class ModuleException extends RuntimeException {
     }
 
 
-    public ModuleException(Object code, Map<String, String> args) {
+    public ModuleException(Object code, Map<?, ?> args) {
         super();
         this.code = code;
         this.args = args;
@@ -84,7 +84,7 @@ public class ModuleException extends RuntimeException {
         return code;
     }
 
-    public Map<String, String> getArgs() {
+    public Map<?, ?> getArgs() {
         return args;
     }
 }
