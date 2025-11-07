@@ -20,7 +20,7 @@ public enum ApiLevel {
     /**
      * 使用密钥访问
      */
-    API_KEY(4),
+    KEY(4),
     /**
      * 使用Token访问
      */
