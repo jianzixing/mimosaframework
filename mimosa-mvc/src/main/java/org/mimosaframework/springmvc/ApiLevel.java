@@ -33,6 +33,10 @@ public enum ApiLevel {
      * 内部API调用鉴权
      */
     CALL(7),
+    /**
+     * 多步验证
+     */
+    NFA(8),
     ;
 
     private final int value;
