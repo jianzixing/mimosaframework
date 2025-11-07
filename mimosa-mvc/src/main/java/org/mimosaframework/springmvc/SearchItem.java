@@ -47,11 +47,11 @@ public class SearchItem {
         this.end = end;
     }
 
-    enum Symbol {
+    public enum Symbol {
         eq, between, gt, lt, gte, lte, like
     }
 
-    enum Logic {
+    public enum Logic {
         or, and
     }
 }
