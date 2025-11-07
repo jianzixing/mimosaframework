@@ -28,10 +28,13 @@ public @interface ApiRequest {
 
     String contentType() default "";
 
-    // 接口鉴权级别分类
-    ApiLevel level() default ApiLevel.LOGIN;
+    // 接口作用分类，比如后台的，前端的，自定义使用方式
+    ApiScene scene() default ApiScene.DEFAULT;
 
-    ApiLevel[] levels() default {};
+    ApiScene[] scenes() default {};
+
+    // 接口级别分类
+    ApiLevel level() default ApiLevel.LOGIN;
 
     // 接口作用作用，比如用作查询的，用作删除的等等，自定义使用方式
     String type() default "";
