@@ -2,29 +2,46 @@ package org.mimosaframework.springmvc;
 
 public enum ApiLevel {
     /**
-     * 开放，不需要登录
+     * 开放，不需要鉴权
      */
     OPEN(0),
     /**
-     * 需要登录
+     * 需要用户登录鉴权
      */
     LOGIN(1),
     /**
-     * 项目级权限
+     * 需要后台登录鉴权
      */
-    PROJECT(2),
+    ADMIN(2),
     /**
-     * 严格模式
+     * 项目级权限鉴权
      */
-    STRICT(3),
+    PROJECT(3),
     /**
-     * 使用密钥访问
+     * 官网级权限鉴权
      */
-    API_KEY(4),
+    OFFICIAL(4),
     /**
-     * 使用Token访问
+     * 严格模式，无含义自行使用
      */
-    TOKEN(5);
+    STRICT(5),
+    /**
+     * 使用密钥访问鉴权
+     */
+    KEY(6),
+    /**
+     * 使用Token访问鉴权
+     */
+    TOKEN(7),
+    /**
+     * 内部API调用鉴权
+     */
+    CALL(8),
+    /**
+     * 多步验证
+     */
+    NFA(9),
+    ;
 
     private final int value;
 
