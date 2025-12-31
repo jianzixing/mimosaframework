@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.SessionTemplate;
+import org.mimosaframework.orm.Sql;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.TransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,5 +145,14 @@ public class SpringContextTesting1 {
         System.out.println(user);
         user = template.get(TableUser.class, user2.getLong(TableUser.id));
         System.out.println(user);
+    }
+
+    @Test
+    public void test6() {
+        var data = template.sql(Sql.select("""
+                select * from t_user
+                where id>0;
+                """));
+        System.out.println(ModelObject.toJSONString(data));
     }
 }

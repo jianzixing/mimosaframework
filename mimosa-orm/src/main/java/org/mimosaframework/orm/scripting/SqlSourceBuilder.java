@@ -20,7 +20,7 @@ public class SqlSourceBuilder {
 
         if (sql != null) {
             sql = sql.replaceAll("\\s{2,}", " ");
-            sql = sql.replaceAll("\\n", "");
+            sql = sql.replaceAll("\\n{2,}", "\n");
         }
 
         tokenHandler.sql = sql;
