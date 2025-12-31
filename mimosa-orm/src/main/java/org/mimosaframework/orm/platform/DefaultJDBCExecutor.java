@@ -212,9 +212,10 @@ public class DefaultJDBCExecutor implements JDBCExecutor {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            String sql = this.getStructureSql(structure);
+            // String sql = this.getStructureSql(structure);
             connection = this.getConnection();
-            statement = connection.prepareStatement(sql);
+            // statement = connection.prepareStatement(sql);
+            statement = replacePlaceholder(connection, structure, false);
             return statement.execute();
         } finally {
             this.close(connection, statement);
