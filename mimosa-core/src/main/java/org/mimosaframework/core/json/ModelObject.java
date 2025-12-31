@@ -884,4 +884,17 @@ public class ModelObject extends Model implements Map<Object, Object>, Cloneable
     public <T> boolean isNotEmpty(FieldFunction<T> key) {
         return this.isNotEmpty((Object) key);
     }
+
+    /**
+     * json对象转LinkedHashMap对象
+     */
+    public Map<String, Object> toMap() {
+        var map = new LinkedHashMap<String, Object>();
+        for (var entry : this.entrySet()) {
+            if (entry.getKey() instanceof String s) {
+                map.put(s, entry.getValue());
+            }
+        }
+        return map;
+    }
 }
