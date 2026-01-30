@@ -133,20 +133,8 @@ public class SpringBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    @Deprecated
-    public AutoResult getAutonomously(Sql autonomously) throws Exception {
-        return sessionTemplate.getAutonomously(autonomously);
-    }
-
-    @Override
     public AutoResult sql(Sql autonomously) {
         return sessionTemplate.sql(autonomously);
-    }
-
-    @Override
-    @Deprecated
-    public AutoResult getAutonomously(Mapper autonomously) throws Exception {
-        return sessionTemplate.getAutonomously(autonomously);
     }
 
     @Override

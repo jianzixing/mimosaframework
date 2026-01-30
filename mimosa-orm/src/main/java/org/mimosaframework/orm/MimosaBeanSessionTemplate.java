@@ -474,20 +474,8 @@ public class MimosaBeanSessionTemplate implements BeanSessionTemplate {
     }
 
     @Override
-    @Deprecated
-    public AutoResult getAutonomously(Sql autonomously) throws Exception {
-        return modelSession.sql(autonomously);
-    }
-
-    @Override
     public AutoResult sql(Sql autonomously) {
         return modelSession.sql(autonomously);
-    }
-
-    @Override
-    @Deprecated
-    public AutoResult getAutonomously(Mapper autonomously) throws Exception {
-        return modelSession.mapper(autonomously);
     }
 
     @Override

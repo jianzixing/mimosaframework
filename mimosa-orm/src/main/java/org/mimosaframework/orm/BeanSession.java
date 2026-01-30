@@ -50,21 +50,7 @@ public interface BeanSession extends Closeable {
 
     <T> ZipperTable<T> getZipperTable(Class<T> c);
 
-    /**
-     * 指定在哪些数据源上执行SQL
-     * 得到的结果会汇总然后给使用者
-     *
-     * @param autonomously
-     * @return
-     * @throws Exception
-     */
-    @Deprecated
-    AutoResult getAutonomously(Sql autonomously) throws Exception;
-
     AutoResult sql(Sql autonomously);
-
-    @Deprecated
-    AutoResult getAutonomously(Mapper autonomously) throws Exception;
 
     AutoResult mapper(Mapper autonomously);
 
