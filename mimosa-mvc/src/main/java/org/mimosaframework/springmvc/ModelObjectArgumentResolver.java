@@ -12,6 +12,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -42,6 +44,17 @@ public class ModelObjectArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
         String parameterName = methodParameter.getParameterName();
         Class<?> type = methodParameter.getParameterType();
+        var request = nativeWebRequest.getNativeRequest();
+
+        // 如果是文件则返回文件对象
+        if (parameterName != null
+                && type == MultipartFile.class
+                && request instanceof MultipartHttpServletRequest) {
+            MultipartHttpServletRequest m = (MultipartHttpServletRequest) request;
+            return m.getFile(parameterName);
+        }
+
+        // 如果不是文件则使用json转化bean
         String value = nativeWebRequest.getParameter(parameterName);
         if (value == null) {
             return null;
