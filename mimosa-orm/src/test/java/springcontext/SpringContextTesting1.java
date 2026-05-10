@@ -6,12 +6,14 @@ import org.mimosaframework.core.json.ModelObject;
 import org.mimosaframework.core.utils.RandomUtils;
 import org.mimosaframework.orm.SessionTemplate;
 import org.mimosaframework.orm.Sql;
+import org.mimosaframework.orm.criteria.Criteria;
 import org.mimosaframework.orm.exception.TransactionException;
 import org.mimosaframework.orm.transaction.TransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import tables.TableOrder;
 import tables.TableUser;
 
 
@@ -154,5 +156,18 @@ public class SpringContextTesting1 {
                 where id>0;
                 """));
         System.out.println(ModelObject.toJSONString(data));
+    }
+
+    @Test
+    public void test7() {
+        var data = template.paging(Criteria.query(TableUser.class)
+                .gte(TableUser.age, 0)
+                .subjoin(Criteria.left(TableOrder.class)
+                        .on(TableOrder.userId, TableUser.id)
+                        .as("t2"))
+                .eq(Criteria.as("t2", TableOrder.phone), "10")
+                .isNull(Criteria.as("t2", TableOrder.address))
+                .limit(0, 20));
+        System.out.println(ModelObject.toFrontString(data));
     }
 }

@@ -660,8 +660,8 @@ public class PlatformExecutor {
             }
         }
         select.from().table(queryTable.getMappingTableName(), query.getQueryTableAs());
-        // 如果是子查询语句，则子查询语句只需要包含inner join的联合条件
-        this.buildJoinQuery(context, select, alias, joins, isChildSelect ? true : false);
+        // 子查询的所有join都需要加上，因为会影响查询结果
+        this.buildJoinQuery(context, select, alias, joins, false);
         if (logicWraps != null) select.where();
         this.buildWraps(context, select, queryTable, logicWraps, hasJoin);
 
@@ -748,7 +748,7 @@ public class PlatformExecutor {
         } else {
             select.from().table(mappingTable.getMappingTableName());
         }
-        this.buildJoinQuery(context, select, alias, joins, true);
+        this.buildJoinQuery(context, select, alias, joins, false);
         if (logicWraps != null) select.where();
         this.buildWraps(context, select, mappingTable, logicWraps, hasJoins);
 
