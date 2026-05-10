@@ -711,7 +711,7 @@ public class PlatformExecutor {
         alias.put(query, query.getQueryTableAs());
         AtomicInteger i = new AtomicInteger(1);
         boolean hasJoins = false, hasInnerJoin = false;
-        if (joins != null && joins.size() > 0) {
+        if (joins != null && !joins.isEmpty()) {
             hasJoins = true;
             alias.put(query, query.getQueryTableAs());
             for (Join join : joins) {
@@ -726,7 +726,7 @@ public class PlatformExecutor {
         MappingTable mappingTable = mappingGlobalWrapper.getMappingTable(tableClass);
         List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
         Serializable[] params = new Serializable[1];
-        if (pks != null && pks.size() >= 1) {
+        if (pks != null && !pks.isEmpty()) {
             FieldItem fieldItem = null;
             if (hasJoins) {
                 fieldItem = new FieldItem(query.getQueryTableAs(), pks.get(0).getMappingColumnName());
@@ -756,7 +756,7 @@ public class PlatformExecutor {
         Object result = this.runner.doHandler(new JDBCTraversing(TypeForRunner.SELECT,
                 combine.getSql(), combine.getPlaceholders()));
         List<ModelObject> objects = (List<ModelObject>) result;
-        if (objects != null && objects.size() > 0) {
+        if (objects != null && !objects.isEmpty()) {
             return objects.get(0).getIntValue("count");
         } else {
             return 0;

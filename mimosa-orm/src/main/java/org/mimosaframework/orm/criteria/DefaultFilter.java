@@ -9,7 +9,7 @@ import org.mimosaframework.orm.utils.SQLUtils;
  */
 public class DefaultFilter extends AbstractFilter<DefaultFilter> implements QueryFilter<DefaultFilter> {
     private String as;
-    private String key;
+    private Object key;
     private Object value;
     private Object startValue;
     private Object endValue;
@@ -21,7 +21,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
     }
 
     public DefaultFilter(Object key, Object value, String symbol) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = value;
         if (symbol != null) {
             this.symbol = symbol.trim();
@@ -36,7 +36,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
         this.as = as;
     }
 
-    public String getKey() {
+    public Object getKey() {
         return key;
     }
 
@@ -57,7 +57,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
     }
 
     public void setKey(Object key) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
     }
 
     public void setValue(Object value) {
@@ -92,7 +92,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter eq(Object key, Object value) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = value;
         this.symbol = "=";
         if (key == null) {
@@ -106,7 +106,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter in(Object key, Iterable values) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = values;
         this.symbol = "in";
         if (key == null) {
@@ -120,7 +120,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter in(Object key, Object... values) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = values;
         this.symbol = "in";
         if (key == null) {
@@ -134,7 +134,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter nin(Object key, Iterable values) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = values;
         this.symbol = "notIn";
         if (key == null) {
@@ -148,7 +148,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter nin(Object key, Object... values) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = values;
         this.symbol = "notIn";
         if (key == null) {
@@ -162,7 +162,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter like(Object key, Object value) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = value;
         this.symbol = "like";
         if (key == null) {
@@ -176,7 +176,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter ne(Object key, Object value) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = value;
         this.symbol = "!=";
         if (key == null) {
@@ -190,7 +190,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter gt(Object key, Object value) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = value;
         this.symbol = ">";
         if (key == null) {
@@ -204,7 +204,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter gte(Object key, Object value) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = value;
         this.symbol = ">=";
         if (key == null) {
@@ -218,7 +218,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter lt(Object key, Object value) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = value;
         this.symbol = "<";
         if (key == null) {
@@ -232,7 +232,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter lte(Object key, Object value) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.value = value;
         this.symbol = "<=";
         if (key == null) {
@@ -246,7 +246,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter between(Object key, Object start, Object end) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.startValue = start;
         this.endValue = end;
         this.symbol = "between";
@@ -261,7 +261,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter isNull(Object key) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.symbol = "isNull";
         if (key == null) {
             throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
@@ -271,7 +271,7 @@ public class DefaultFilter extends AbstractFilter<DefaultFilter> implements Quer
 
     @Override
     public DefaultFilter isNotNull(Object key) {
-        this.key = ClassUtils.value(key);
+        this.key = CriteriaUtils.getFilterKey(key);
         this.symbol = "notNull";
         if (key == null) {
             throw new IllegalArgumentException(I18n.print("key_not_allow_null"));
