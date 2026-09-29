@@ -5,7 +5,7 @@ import org.mimosaframework.core.utils.ClassUtils;
 
 public class OrderBy {
     private boolean isAsc;
-    private String field;
+    private Object field;
 
     public OrderBy() {
     }
@@ -17,12 +17,12 @@ public class OrderBy {
 
     public OrderBy(Object field, boolean isAsc) {
         this.isAsc = isAsc;
-        this.field = ClassUtils.value(field);
+        this.field = CriteriaUtils.getFilterKey(field);
     }
 
     public <T> OrderBy(FieldFunction<T> field, boolean isAsc) {
         this.isAsc = isAsc;
-        this.field = ClassUtils.value(field);
+        this.field = CriteriaUtils.getFilterKey(field);
     }
 
     public OrderBy(String field, Sort sort) {
@@ -32,12 +32,12 @@ public class OrderBy {
 
     public OrderBy(Object field, Sort sort) {
         this.isAsc = sort.isAsc();
-        this.field = ClassUtils.value(field);
+        this.field = CriteriaUtils.getFilterKey(field);
     }
 
     public <T> OrderBy(FieldFunction<T> field, Sort sort) {
         this.isAsc = sort.isAsc();
-        this.field = ClassUtils.value(field);
+        this.field = CriteriaUtils.getFilterKey(field);
     }
 
     public boolean isAsc() {
@@ -48,11 +48,11 @@ public class OrderBy {
         isAsc = asc;
     }
 
-    public String getField() {
+    public Object getField() {
         return field;
     }
 
-    public void setField(String field) {
+    public void setField(Object field) {
         this.field = field;
     }
 }
