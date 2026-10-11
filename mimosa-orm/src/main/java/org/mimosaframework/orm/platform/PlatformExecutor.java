@@ -226,7 +226,7 @@ public class PlatformExecutor {
                                     for (TableIndexStructure is : iss) {
                                         for (TableColumnStructure delC : delColumns) {
                                             if (StringTools.isNotEmpty(is.getColumnName())
-                                                    && is.getColumnName().equals(delC.getColumnName())) {
+                                                && is.getColumnName().equals(delC.getColumnName())) {
                                                 if (rms == null) rms = new ArrayList<>();
                                                 rms.add(entry);
                                                 break;
@@ -840,8 +840,8 @@ public class PlatformExecutor {
 
         // 如果having要求必须传入group by那么就传入主键
         if (havingFields != null && havingFields.size() > 0
-                && (groups == null || groups.size() == 0)
-                && dialect.isSelectHavingMustGroupBy()) {
+            && (groups == null || groups.size() == 0)
+            && dialect.isSelectHavingMustGroupBy()) {
             groups = new LinkedHashSet();
             List<MappingField> pks = mappingTable.getMappingPrimaryKeyFields();
             if (pks != null) {
@@ -876,7 +876,7 @@ public class PlatformExecutor {
                 String columnName = mappingField.getMappingColumnName();
 
                 if (!symbol.equalsIgnoreCase("isNull")
-                        && !symbol.equalsIgnoreCase("isNotNull")) {
+                    && !symbol.equalsIgnoreCase("isNotNull")) {
                     if (function == BasicFunction.AVG) {
                         if (distinct) {
                             select.avg("DISTINCT", columnName);
@@ -914,7 +914,7 @@ public class PlatformExecutor {
                     }
                 }
 
-                this.setSymbol(context, select, filter, null, mappingTable, 1);
+                this.setSymbol(context, select, filter, null, mappingTable, true);
             }
         }
 
@@ -1054,7 +1054,7 @@ public class PlatformExecutor {
                             }
                         } else {
                             DefaultFilter f = (DefaultFilter) filter.getFilter();
-                            this.setSymbol(context, select, f, aliasName, mappingTable, 0);
+                            this.setSymbol(context, select, f, aliasName, mappingTable, false);
                         }
                         if (iterator.hasNext()) {
                             select.and();
@@ -1204,7 +1204,7 @@ public class PlatformExecutor {
                 CriteriaLogic logic = filter.getLogic();
 
                 if (where != null) {
-                    this.setSymbol(context, builder, where, hasJoins ? query.getQueryTableAs() : null, table, 0);
+                    this.setSymbol(context, builder, where, hasJoins ? query.getQueryTableAs() : null, table, false);
                 } else if (link != null) {
                     SimpleCommonWhereBuilder builderWraps = new SimpleCommonWhereBuilder();
                     this.buildWraps(context, builderWraps, table, link, hasJoins);
@@ -1232,7 +1232,7 @@ public class PlatformExecutor {
                               DefaultFilter filter,
                               String aliasName,
                               MappingTable table,
-                              int type) {
+                              boolean skipColumn) {
         DefaultQuery query = context.getQuery();
         Object key = filter.getKey();
         String as = filter.getAs();
@@ -1295,9 +1295,8 @@ public class PlatformExecutor {
             aliasName = as;
         }
 
-        if (!symbol.equalsIgnoreCase("isNull")
-                && !symbol.equalsIgnoreCase("notNull")) {
-            if (type != 1) {
+        if (!symbol.equalsIgnoreCase("isNull") && !symbol.equalsIgnoreCase("notNull")) {
+            if (!skipColumn) {
                 if (StringTools.isNotEmpty(aliasName)) builder.column(aliasName, columnName);
                 else builder.column(columnName);
             }
@@ -1344,6 +1343,7 @@ public class PlatformExecutor {
             return false;
         }
         if (symbol.equalsIgnoreCase("isNull") && builder != null) {
+            builder.column(null);
             if (StringTools.isNotEmpty(aliasName)) {
                 builder.isNull(aliasName, columnName);
             } else {
@@ -1352,6 +1352,7 @@ public class PlatformExecutor {
             return false;
         }
         if (symbol.equalsIgnoreCase("notNull") && builder != null) {
+            builder.column(null);
             if (StringTools.isNotEmpty(aliasName)) {
                 builder.isNotNull(aliasName, columnName);
             } else {

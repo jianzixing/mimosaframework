@@ -170,4 +170,13 @@ public class SpringContextTesting1 {
                 .limit(0, 20));
         System.out.println(ModelObject.toFrontString(data));
     }
+
+    @Test
+    public void test8() {
+        var data = template.paging(Criteria.query(TableUser.class)
+                .gte(TableUser.age, 0)
+                .nested(Criteria.nested().isNull(TableUser.address))
+                .limit(0, 20));
+        System.out.println(ModelObject.toFrontString(data));
+    }
 }

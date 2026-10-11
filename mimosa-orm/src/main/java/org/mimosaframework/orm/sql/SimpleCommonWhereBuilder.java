@@ -1,5 +1,6 @@
 package org.mimosaframework.orm.sql;
 
+import org.mimosaframework.core.utils.StringTools;
 import org.mimosaframework.orm.sql.stamp.*;
 
 import java.io.Serializable;
@@ -26,7 +27,9 @@ public class SimpleCommonWhereBuilder
             this.lastWhere.rightColumn = new StampColumn(field);
         } else {
             StampWhere where = new StampWhere();
-            where.leftColumn = new StampColumn(field);
+            if (field != null) {
+                where.leftColumn = new StampColumn(field);
+            }
             if (this.lastWhere != null) this.lastWhere.next = where;
             this.lastWhere = where;
             if (this.where == null) this.where = where;
